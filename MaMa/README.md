@@ -30,7 +30,7 @@ npm install zeromq --save
     * Connects to zmq node, fetches transactions under a certain tag and gives out the encoded message
 
 
-##Others
+## Others
 * npm install @iota/core
 ```sh
  sudo chown -R <usr> <path>
