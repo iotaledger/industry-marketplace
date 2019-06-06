@@ -42,11 +42,6 @@ ws.onmessage = (msg) => {
        // publish.sendToUI(data)
     }
 
-    if(type === 'callForProposal'){
-        publish.sendToTangle(data, tag)
-       // publish.sendToUI(data)
-    }
-
 
  }
 
