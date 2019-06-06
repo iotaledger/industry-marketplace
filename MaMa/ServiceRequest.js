@@ -42,6 +42,15 @@ ws.onmessage = (msg) => {
        // publish.sendToUI(data)
     }
 
+    if(type === 'rejectProposal'){
+        publish.sendToTangle(data, tag)
+       // publish.sendToUI(data)
+    }
+
+    if(type === 'acceptProposal'){
+        publish.sendToTangle(data, tag)
+       // publish.sendToUI(data)
+    }
 
  }
 
