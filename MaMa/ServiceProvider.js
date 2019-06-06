@@ -12,7 +12,7 @@ const publish = require('./Publish.js')
 //var ws = new WebSocket("wss://echo.websocket.org");
  var ws = new WebSocket("ws://127.0.0.1:1880/ws/sp")
 
-
+const role = "sp"
  const iota = Iota.composeAPI({
     provider: 'https://nodes.devnet.iota.org:443'
     });
@@ -46,8 +46,8 @@ if (data[12] == tag)
 {
 
          const get = async () => {
-               let nachricht = await fetch.fetchFromTangle(data)
-               console.log(nachricht) 
+               let message = await fetch.fetchFromTangle(data)
+               publish.sendToUI(message, role)
          }
         
         get();
