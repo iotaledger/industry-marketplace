@@ -46,9 +46,14 @@ if (data[12] == tag)
 {
 
 
-        nachricht = fetch.fetchFromTangle(data)
+      
+
+        nachricht = await fetch.fetchFromTangle(data)
         
-        console.log(nachricht)
+        console.log("before")
+
+        console.log(nachricht)          
+        console.log("after")
 }
   
 });
