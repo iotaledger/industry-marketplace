@@ -1,0 +1,15 @@
+{
+  "name": "mama",
+  "version": "1.0.0",
+  "description": "* Node.js 8 * npm (included in Node.js)",
+  "main": "ServiceProvider.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@iota/compress": "git+https://github.com/obany/iota-compress.git",
+    "@iota/core": "^1.0.0-beta.12"
+  }
+}
