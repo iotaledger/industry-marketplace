@@ -45,10 +45,13 @@ const data = msg.toString().split(' ');
 if (data[12] == tag)
 {
 
-
-        nachricht = fetch.fetchFromTangle(data)
+         const get = async () => {
+               let nachricht = await fetch.fetchFromTangle(data)
+               console.log(nachricht) 
+         }
         
-        console.log(nachricht)
+        get();
+        
 }
   
 });

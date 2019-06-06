@@ -10,9 +10,13 @@ const iota = Iota.composeAPI({
 exports.fetchFromTangle = (data) => 
 
 { 
+
+ return new Promise(resolve => {
+               
+          
        
          //Get bundle and extract data
-var bundle = data[8]
+var bundle = data[8]  
 
 iota.findTransactionObjects({bundles: [bundle]})
         .then( transObj => { 
@@ -21,12 +25,14 @@ iota.findTransactionObjects({bundles: [bundle]})
                 const trytes = transObj[0].signatureMessageFragment + '9'
                 //Convert to text
                 msg = Converter.trytesToAscii(trytes)
-                console.log("FETCH DEBUG" + msg)
-                return msg 
+                resolve( msg ) 
         })
        
         .catch(err => { 
                 console.error(err) 
         })
 
-    }
+    
+
+})
+}
