@@ -21,8 +21,8 @@ iota.findTransactionObjects({bundles: [bundle]})
                 const trytes = transObj[0].signatureMessageFragment + '9'
                 //Convert to text
                 msg = Converter.trytesToAscii(trytes)
-
-                console.log(typeof msg)
+                console.log("FETCH DEBUG" + msg)
+                return msg 
         })
        
         .catch(err => { 

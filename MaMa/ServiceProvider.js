@@ -6,11 +6,11 @@ var WebSocket = require('ws');
 
 const Iota = require('@iota/core');
 const Converter = require('@iota/converter');
-//let fetch = require('./Fetch.js')
-let publish = require('./Publish.js')
+const fetch = require('./Fetch.js')
+const publish = require('./Publish.js')
 
 //var ws = new WebSocket("wss://echo.websocket.org");
- var ws = new WebSocket("ws://127.0.0.1:1880/ws/newService")
+ var ws = new WebSocket("ws://127.0.0.1:1880/ws/sp")
 
 
  const iota = Iota.composeAPI({
@@ -41,28 +41,16 @@ sock.on('message', msg => {
 
 const data = msg.toString().split(' ');
 
-
 //Filter for certain tag
 if (data[12] == tag)
 {
-        var bundle = data[8]
 
-        iota.findTransactionObjects({bundles: [bundle]})
-                .then( transObj => { 
-                
-                        // Modify to consumable length
-                        const trytes = transObj[0].signatureMessageFragment + '9'
-                        //Convert to text
-                        msg = Converter.trytesToAscii(trytes)
-                        publish.sendToUI(msg)
-                })
-               
-                .catch(err => { 
-                        console.error(err) 
-                })
+
+        nachricht = fetch.fetchFromTangle(data)
         
-            }
-           
+        console.log(nachricht)
+}
+  
 });
  
 }

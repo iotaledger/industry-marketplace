@@ -42,9 +42,9 @@ const iota = Iota.composeAPI({
  }
  
 
- exports.sendToUI = (data) => {
+ exports.sendToUI = (data, role) => {
 //var ws = new WebSocket("ws://10.197.0.135:1880/ws/cfp")    
-var ws = new WebSocket("ws://127.0.0.1:1880/ws/debug")
+var ws = new WebSocket("ws://127.0.0.1:1880/ws/" + role)
 
 ws.onopen = () => {
     ws.send(data)
