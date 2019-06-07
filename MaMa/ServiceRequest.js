@@ -2,6 +2,11 @@
 const Iota = require('@iota/core');
 const Converter = require('@iota/converter');
 var WebSocket = require('ws');
+// Import libraries and create a ZMQ subscribe socket 
+let zmq = require('zeromq');
+//Create a <query text="zmq" /> socket
+let sock = zmq.socket('sub');
+var WebSocket = require('ws');
 
 let publish = require('./Publish.js')
 
@@ -19,7 +24,7 @@ ws.onopen = () => {
     console.log("CONNECTED")
       };
 
-
+const role = "sr"
 // Get json from websocket 
 ws.onmessage = (msg) => {
      
@@ -39,6 +44,25 @@ ws.onmessage = (msg) => {
 
     if(type === 'callForProposal'){
         publish.sendToTangle(data, tag)
+        sock.connect('tcp://zmq.devnet.iota.org:5556');
+        sock.subscribe('tx');
+        sock.on('message', msg => {
+        const data = msg.toString().split(' ');
+        
+        //Filter for certain tag
+        if (data[12] == tag)
+        {
+                console.log("RECEIVED ANOTHER MSG FROM ZMQ")
+                 const get = async () => {
+                      let message = await fetch.fetchFromTangle(data)
+                      publish.sendToUI(message, role)
+                      console.log("GOT MSG FROM TANGLE")
+                }
+                
+                 get();
+                
+        }
+    })
        // publish.sendToUI(data)
     }
 

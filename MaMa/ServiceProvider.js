@@ -13,22 +13,41 @@ const publish = require('./Publish.js')
 var ws = new WebSocket("ws://127.0.0.1:1880/ws/sp")
 
 const role = "sp"
- const iota = Iota.composeAPI({
+const iota = Iota.composeAPI({
     provider: 'https://nodes.devnet.iota.org:443'
     });
 
  ws.onopen = () => {
       console.log("CONNECTED")
-        };
+};
+let tag;
 
  ws.onmessage = (serviceID) => {
-
     console.log("Received Service ID" + serviceID + "from UI")
     serviceID = serviceID.data
     var abbrServiceID = serviceID.replace(/#/g,'').replace(/-/g,''); 
-    var tag = abbrServiceID.substr(0, abbrServiceID.length-3)
+    tag = abbrServiceID.substr(0, abbrServiceID.length-3)
     tag = Converter.asciiToTrytes(tag) + '9'
 
-    msg = fetch.fetchFromZMQ(tag)
-    publish.sendToUI(msg, role)
- }
+    sock.connect('tcp://zmq.devnet.iota.org:5556');
+    sock.subscribe('tx');
+    sock.on('message', msg => {
+    const data = msg.toString().split(' ');
+    
+    //Filter for certain tag
+    if (data[12] == tag)
+    {
+            console.log("RECEIVED ANOTHER MSG FROM ZMQ")
+             const get = async () => {
+                  let message = await fetch.fetchFromTangle(data)
+                  publish.sendToUI(message, role)
+                  console.log("GOT MSG FROM TANGLE")
+            }
+            
+             get();
+            
+    }
+})
+      
+}
+ 

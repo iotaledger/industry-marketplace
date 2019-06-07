@@ -11,38 +11,9 @@ const iota = Iota.composeAPI({
         provider: 'https://nodes.devnet.iota.org:443'
         });
     
-exports.fetchFromZMQ = (tag) => {
-
-        sock.connect('tcp://zmq.devnet.iota.org:5556');
-        //Subscribe to the confirmed transactions event
-        sock.subscribe('tx');
-        
-        
-        //Create a callback function to process the data that is returned from the ZMQ
-        sock.on('message', msg => {
-        //Split the data into an array
-        
-        const data = msg.toString().split(' ');
-        
-        //Filter for certain tag
-        if (data[12] == tag)
-        {
-        
-                 const get = async () => {
-                      let message = await fetchFromTangle(data)
-                      console.log(message) // publish.sendToUI(message, role)
-                 }
-                
-                get();
-                
-        }
-          
-        });
-         
-}
-        
-
-fetchFromTangle = (data) => 
+      
+       
+exports.fetchFromTangle = (data) => 
 
 { 
  return new Promise(resolve => {
@@ -58,6 +29,7 @@ iota.findTransactionObjects({bundles: [bundle]})
                 //Convert to text
                 msg = Converter.trytesToAscii(trytes)
                 resolve( msg ) 
+                
         })
        
         .catch(err => { 
