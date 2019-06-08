@@ -6,10 +6,10 @@ var WebSocket = require('ws');
 
 const Iota = require('@iota/core');
 const Converter = require('@iota/converter');
-const fetch = require('./Fetch.js')
-const publish = require('./Publish.js')
 
-//var ws = new WebSocket("wss://echo.websocket.org");
+
+let functions = require('./Functions.js')
+
 var ws = new WebSocket("ws://127.0.0.1:1880/ws/sp")
 
 const role = "sp"
@@ -39,8 +39,8 @@ let tag;
     {
             console.log("RECEIVED ANOTHER MSG FROM ZMQ")
              const get = async () => {
-                  let message = await fetch.fetchFromTangle(data)
-                  publish.sendToUI(message, role)
+                  let message = await functions.fetchFromTangle(data)
+                  functions.sendToUI(message, role)
                   console.log("GOT MSG FROM TANGLE")
             }
             
