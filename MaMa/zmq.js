@@ -9,7 +9,7 @@ const provider = 'https://nodes.devnet.iota.org:443';
 const iota = composeAPI({ provider });
 
 // Create a <query text="zmq" /> socket
-let sock = zmq.socket('sub');
+const sock = zmq.socket('sub');
 
 /**
  * Connect the <query text="ZMQ" /> socket to the IRI by passing the
@@ -26,7 +26,7 @@ sock.on('message', msg => {
     const data = msg.toString().split(' ');
 
     // Filter for certain tag
-    if (data[12] == 'MBPCHDRCWCWBTCICWB9CFA99999') {
+    if (data[12] === 'MBPCHDRCWCWBTCICWB9CFA99999') {
         console.log(`Value: ${data[3]}` );
         console.log(`Timestamp: ${data[5]}` );
         console.log(`Tag: ${data[12]}` );
@@ -35,10 +35,10 @@ sock.on('message', msg => {
         const bundle = data[8];
 
         iota.findTransactionObjects({bundles: [bundle]})
-          .then(transactionObject => {
-              console.log('Decoded message:');
-              console.log(decodeMessage(transactionObject));
-          })
-          .catch(err => console.error(err))
+            .then(transactionObject => {
+                console.log('Decoded message:');
+                console.log(decodeMessage(transactionObject));
+            })
+            .catch(err => console.error(err))
     }
 });

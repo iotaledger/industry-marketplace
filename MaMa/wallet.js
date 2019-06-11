@@ -9,7 +9,7 @@ const iota = composeAPI({ provider });
 const seed = generateSeed();
 
 iota.getNewAddress(seed)
-  .then(address => console.log(`Address: ${address} \nSeed: ${seed}`))
-  .catch(err => console.log(err));
+    .then(address => console.log(`Address: ${address} \nSeed: ${seed}`))
+    .catch(err => console.log(err));
 
 // Insert public adress into https://data.iota.org/#/faucet to get IOTA tokens
