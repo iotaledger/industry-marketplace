@@ -28,17 +28,17 @@ sock.on('message', msg => {
     // Filter for certain tag
     if (data[12] == 'MBPCHDRCWCWBTCICWB9CFA99999') {
         console.log(`Value: ${data[3]}` );
-        console.log(`timestamp: ${data[5]}` );
-        console.log(`tag: ${data[12]}` );
+        console.log(`Timestamp: ${data[5]}` );
+        console.log(`Tag: ${data[12]}` );
 
         // Get bundle and extract data
-        const bundle = data[8]
+        const bundle = data[8];
 
         iota.findTransactionObjects({bundles: [bundle]})
           .then(transObj => {
               // Modify to consumable length
               const fragment = transObj[0].signatureMessageFragment;
-              const trytes = fragment % 2 !== 0 ? fragment += '9' : fragment;
+              const trytes = fragment % 2 !== 0 ? fragment + '9' : fragment;
 
               // Decode message
               const message = trytesToAscii(trytes);
