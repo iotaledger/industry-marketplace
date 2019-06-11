@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@iota/compress": "git+https://github.com/obany/iota-compress.git",
-    "@iota/core": "^1.0.0-beta.12"
+    "@iota/core": "^1.0.0-beta.12",
+    "zeromq": "^5.1.0"
   }
 }
