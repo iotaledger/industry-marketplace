@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { trytesToAscii } = require('@iota/converter');
 
 const generateSeed = (length = 81) => {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
@@ -12,6 +13,20 @@ const generateSeed = (length = 81) => {
     return seed;
 };
 
+const decodeMessage = transaction => {
+  // Modify to consumable length
+  if (!transaction.length || !transaction[0].signatureMessageFragment) {
+    return null;
+  }
+  const fragment = transaction[0].signatureMessageFragment;
+  const trytes = fragment % 2 !== 0 ? fragment + '9' : fragment;
+
+  // Decode message
+  const message = trytesToAscii(trytes);
+  return message;
+}
+
 module.exports = {
   generateSeed,
+  decodeMessage
 }
