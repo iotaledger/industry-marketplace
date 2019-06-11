@@ -1,7 +1,7 @@
 // Import libraries and create a ZMQ subscribe socket
 const zmq = require('zeromq');
 const { composeAPI } = require('@iota/core');
-const { trytesToAscii } = require('@iota/converter');
+const { decodeMessage } = require('./helpers');
 
 // Create a new instance of the IOTA object
 // Use the `provider` field to specify which IRI node to connect to
@@ -35,16 +35,9 @@ sock.on('message', msg => {
         const bundle = data[8];
 
         iota.findTransactionObjects({bundles: [bundle]})
-          .then(transObj => {
-              // Modify to consumable length
-              const fragment = transObj[0].signatureMessageFragment;
-              const trytes = fragment % 2 !== 0 ? fragment + '9' : fragment;
-
-              // Decode message
-              const message = trytesToAscii(trytes);
-
+          .then(transactionObject => {
               console.log('Decoded message:');
-              console.log(message);
+              console.log(decodeMessage(transactionObject));
           })
           .catch(err => console.error(err))
     }
