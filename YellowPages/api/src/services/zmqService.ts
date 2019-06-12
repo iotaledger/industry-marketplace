@@ -152,23 +152,14 @@ export class ZmqService {
                 data = {
                     hash: messageParams[1],
                     address: messageParams[2],
-                    value: parseInt(messageParams[3], 10),
-                    obsoleteTag: messageParams[4],
                     timestamp: parseInt(messageParams[5], 10),
-                    currentIndex: parseInt(messageParams[6], 10),
-                    lastIndex: parseInt(messageParams[7], 10),
                     bundle: messageParams[8],
-                    trunk: messageParams[9],
-                    branch: messageParams[10],
-                    attachmentTimestamp: parseInt(messageParams[11], 10),
                     tag: messageParams[12]
                 };
             }
 
-            if (data.tag === 'MBPCHDRCWCWBTCICWB9CFA99999') {
-                for (let i = 0; i < this._subscriptions[event].length; i++) {
-                    this._subscriptions[event][i].callback(event, data);
-                }
+            if (data.tag.startsWith(this._config.prefix)) {
+                this._subscriptions[event][0].callback(event, data);
             }
         }
     }

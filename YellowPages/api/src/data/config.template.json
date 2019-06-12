@@ -1,5 +1,0 @@
-{
-    "zmq": {
-        "endpoint": "ZMQ_ENDPOINT"
-    }
-}

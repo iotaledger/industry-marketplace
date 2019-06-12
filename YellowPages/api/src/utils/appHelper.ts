@@ -13,8 +13,7 @@ export class AppHelper {
      */
     public static build(onComplete, customListener) {
         const packageJson = require('../../package.json');
-        const configId = process.env.CONFIG_ID || 'local';
-        const config = require(`../data/config.${configId}.json`);
+        const config = require(`../data/config.json`);
 
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -40,7 +39,6 @@ export class AppHelper {
                 }
 
                 console.log(`Started API Server on port ${port} v${packageJson.version}`);
-                console.log(`Running Config '${configId}'`);
 
                 if (onComplete) {
                     onComplete(app, config, port);
