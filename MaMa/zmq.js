@@ -27,7 +27,7 @@ sock.on('message', msg => {
     console.log(data)
 
     // Filter for certain tag
-    if (data[12] === 'MBPCHDRCWCWBTCICWB9CFA99999') {
+    if (data[12].startsWith('SEMARKET')) {
         console.log(`Value: ${data[3]}` );
         console.log(`Timestamp: ${data[5]}` );
         console.log(`Tag: ${data[12]}` );
