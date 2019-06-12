@@ -24,6 +24,7 @@ sock.subscribe('tx');
 sock.on('message', msg => {
     // Split the data into an array
     const data = msg.toString().split(' ');
+    console.log(data)
 
     // Filter for certain tag
     if (data[12] === 'MBPCHDRCWCWBTCICWB9CFA99999') {
