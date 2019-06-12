@@ -1,0 +1,10 @@
+{
+    "version": 1,
+    "name": "iota-poc-zmq-api",
+    "features": {
+      "cloud": "v1"
+    },
+    "scale": {
+      "sfo": { "min": 1, "max": 1 }
+    }
+}

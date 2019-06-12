@@ -1,0 +1,33 @@
+{
+    "name": "SeMarket-Yellow-Pages",
+    "description": "Client Side UI for SeMarket",
+    "version": "1.0.0",
+    "author": "Alexey Sobolev <alexey@iota.org>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iotaledger/SeMarket.git"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "iota-css-theme": "iotaledger/iota-css-theme",
+        "iota-react-components": "iotaledger/iota-react-components",
+        "node-sass": "^4.12.0",
+        "react": "^16.8.6",
+        "react-dom": "^16.8.6",
+        "react-router-dom": "^4.3.1",
+        "react-scripts": "^2.1.8",
+        "socket.io-client": "^2.2.0"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
+}
