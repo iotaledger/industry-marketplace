@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": [
+      // "dom",
+      "esnext",
+      // "es2017.iterable"
+    ],
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
+    ],
+    "outDir": "dist",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src"
+  ]
+}

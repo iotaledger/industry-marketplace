@@ -1,0 +1,45 @@
+.zmq-card {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid var(--light-grey);
+    border-radius: 5px;
+
+    .zmq-card-title {
+        margin-top: 0px;
+        text-transform: uppercase;
+    }
+
+    .zmq-card-data {
+        display: flex;
+        flex-direction: column;
+        justify-content: stretch;
+
+        .zmq-card-data-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+
+            @media (max-width: 514px) {
+                flex-direction: column;
+            }
+
+            .zmq-card-data-row-label {
+                flex: 0 0 250px;
+                font-weight: bold;
+
+                @media (max-width: 514px) {
+                    flex: 0;
+                    margin-bottom: 10px;
+                }
+            }
+
+            .zmq-card-data-row-value {
+                flex-grow: 1;
+                word-break: break-all;
+                word-break: break-word;
+            }
+        }
+    }
+}
