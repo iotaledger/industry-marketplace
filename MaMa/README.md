@@ -65,7 +65,7 @@ Client is configured via Interface and listens to ZMQ transactions with defined 
 Finally, client receives the message and sends it back to the interface 
 In terminal of UI.js the message is displayed 
 
-## Explaination of functions 
+## Explanation of functions 
 
 
 ### UI.js 
