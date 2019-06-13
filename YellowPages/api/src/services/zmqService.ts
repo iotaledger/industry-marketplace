@@ -148,7 +148,6 @@ export class ZmqService {
                     bundle: messageParams[8]
                 };
 
-                console.log('handleMessage', data)
                 this._subscriptions[event][0].callback(event, data);
             }
         }
