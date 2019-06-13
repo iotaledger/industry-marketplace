@@ -30,14 +30,6 @@ export class ZmqService {
     }
 
     /**
-     * Subscribe to tx event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event, callback);
-
-    /**
      * Subscribe to named event.
      * @param event The event to subscribe to.
      * @param callback The callback to call with data for the event.
@@ -144,21 +136,19 @@ export class ZmqService {
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
+        const tag = messageParams[12];
 
-        if (this._subscriptions[event]) {
-            let data;
-
-            if (event === 'tx') {
-                data = {
+        if (event === 'tx' && this._subscriptions[event]) {
+            if (tag.startsWith(this._config.prefix)) {
+                const data = {
+                    tag,
                     hash: messageParams[1],
                     address: messageParams[2],
                     timestamp: parseInt(messageParams[5], 10),
-                    bundle: messageParams[8],
-                    tag: messageParams[12]
+                    bundle: messageParams[8]
                 };
-            }
 
-            if (data.tag.startsWith(this._config.prefix)) {
+                console.log('handleMessage', data)
                 this._subscriptions[event][0].callback(event, data);
             }
         }
