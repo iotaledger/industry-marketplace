@@ -17,6 +17,19 @@ class ZmqView extends Component {
             totalEvents: 0,
             events: []
         };
+
+        this.restart = this.restart.bind(this);
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
+    }
+
+    componentDidMount(){
+        window.addEventListener('beforeunload', this.stop);
+    }
+
+    componentWillUnmount() {
+        this.stop();
+        window.removeEventListener('beforeunload', this.stop); // remove the event handler for normal unmounting
     }
 
     render() {
@@ -86,7 +99,7 @@ class ZmqView extends Component {
                 (event, data) => {
                     const events = this.state.events;
                     events.unshift({ event, data });
-                    this.setState({ events: events.slice(0, 30), totalEvents: this.state.totalEvents + 1 });
+                    this.setState({ events: events.slice(0, 50), totalEvents: this.state.totalEvents + 1 });
                 });
 
             this._subscriptions = [];

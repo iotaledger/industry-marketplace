@@ -17,15 +17,12 @@ export function zmqSubscribe(config, socket, request) {
         if (request.events && request.events.length > 0) {
             const zmqService = ServiceFactory.get('zmq');
 
-            for (let i = 0; i < request.events.length; i++) {
-                const subscriptionId = zmqService.subscribeEvent(request.events[i], (event, zmqData) => {
-                    socket.emit('zmq', {
-                        event,
-                        data: zmqData
-                    });
-                });
-                subscriptionIds.push(subscriptionId);
-            }
+            const subscriptionId = zmqService.subscribeEvent('tx', (event, data) => {
+                console.log('emit', event, data)
+                socket.emit('zmq', { event, data });
+            });
+            subscriptionIds.push(subscriptionId);
+            console.log('zmqSubscribe', subscriptionId);
         }
 
         response = {

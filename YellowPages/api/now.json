@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "name": "iota-poc-zmq-api",
+    "name": "semarket-yellowpages-backend",
     "features": {
       "cloud": "v1"
     },

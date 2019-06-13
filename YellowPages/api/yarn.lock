@@ -54,7 +54,7 @@
   resolved "https://registry.yarnpkg.com/@iota/converter/-/converter-1.0.0-beta.12.tgz#873dfacbef2ac18aec814100c10f50568d54ef51"
   integrity sha512-h12Wk72/lCMHOFLE7B6TctMizhGcDQspaYIZlqwQTdij3mPynfTrlyAIJhJw26cf3sNER9sOwR6FgVgSpVYUnQ==
 
-"@iota/core@^1.0.0-beta.8":
+"@iota/core@^1.0.0-beta.12":
   version "1.0.0-beta.12"
   resolved "https://registry.yarnpkg.com/@iota/core/-/core-1.0.0-beta.12.tgz#c7d9a1aca0363cb2f95ea9fb484f991ca5d1cf36"
   integrity sha512-OFJu0SaYrQP+PCFNWx9pvqL6jQwN+DIMt2h5vcEOSlJVIBDyEfDOOiFuMkBgTB7+jF9hDWpg1mtkTrEl9FmLKQ==
