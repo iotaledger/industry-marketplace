@@ -1,6 +1,8 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { EClassHelper } from '../utils/eclassHelper';
+import { TrytesHelper } from '../utils/trytesHelper';
+import { IotaHelper } from '../utils/iotaHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -132,7 +134,7 @@ export class ZmqService {
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
-    private handleMessage(message) {
+    private async handleMessage(message) {
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
@@ -142,16 +144,25 @@ export class ZmqService {
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = EClassHelper.extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
-                const data = {
+
+                const bundle = messageParams[8];
+                const transactions = await IotaHelper.findTransactions(bundle);
+                if (!transactions.length || !transactions[0].signatureMessageFragment) {
+                    return null;
+                }
+                const trytes = transactions[0].signatureMessageFragment;
+                const data = TrytesHelper.fromTrytes(trytes);
+
+                const payload = {
                     tag,
+                    data,
                     messageType,
                     hash: messageParams[1],
                     address: messageParams[2],
-                    timestamp: parseInt(messageParams[5], 10),
-                    bundle: messageParams[8]
+                    timestamp: parseInt(messageParams[5], 10)
                 };
 
-                this._subscriptions[event][0].callback(event, data);
+                this._subscriptions[event][0].callback(event, payload);
             }
         }
     }
