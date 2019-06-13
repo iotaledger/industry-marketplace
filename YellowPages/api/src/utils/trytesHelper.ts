@@ -31,8 +31,7 @@ export class TrytesHelper {
         }
 
         const ascii = trytesToAscii(trimmed);
-        const json = TextHelper.decodeNonASCII(ascii);
-
-        return json ? JSON.parse(json) : undefined;
+        return TextHelper.decodeNonASCII(ascii);
+        // return json ? JSON.parse(json) : undefined;
     }
 }

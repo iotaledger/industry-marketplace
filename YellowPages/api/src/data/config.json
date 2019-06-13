@@ -2,5 +2,6 @@
     "zmq": {
         "endpoint": "tcp://zmq.devnet.iota.org:5556",
         "prefix": "SEMARKET"
-    }
+    },
+    "provider": "https://nodes.devnet.iota.org:443"
 }
