@@ -58,42 +58,8 @@ client.emit() only refers to current instance of the client
 UI.js -> server.js -> client.js
 client.js -> server.js -> UI.js
 
--> socket.io const buildTag = (messageType, id) => {
+-> socket.io 
 
-    console.log(messageType)
-    messageTypecode = getCodeFromMessageType(messageType)
-    console.log(messageTypecode)
-    id = id.replace(/#/g, '').replace(/-/g, '');
-    id = id.substr(4);
-    id = id.split("")
-  
-
-    var tag = "SEMARKET"
-          + messageTypecode
-          + getLetterFromNumber(parseInt(id[0]))
-          + getLetterFromNumber(parseInt(id[1]))         
-          + getLetterFromNumber(parseInt(id[2]))
-          + id[3]
-          + id[4]
-          + id[5]
-          + getLetterFromNumber(parseInt(id[6])) 
-          + getLetterFromNumber(parseInt(id[7]))
-          + getLetterFromNumber(parseInt(id[8]))
-          + getLetterFromNumber(parseInt(id[9]))
-          + getLetterFromNumber(parseInt(id[10])) 
-          + getLetterFromNumber(parseInt(id[11]))
-          + "999999"
-    return tag
-
-}
-
-const alterTag = (tag, type) => {
-
-    newType = getCodeFromMessageType(type)
-    newTag = tag.substr(0,8) + newType + tag.substr(9)
-
-    return newTag
-}
 
 ## sub.js 
 
