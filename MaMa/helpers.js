@@ -27,7 +27,7 @@ const decodeMessage = transaction => {
 }
 
 const extractMessageType = tag => {
-    const regex = /(?<=SEMARKET)([0-9]+)/gi;
+    const regex = /(?<=SEMARKET)([A-E])/gi;
     const match = tag.match(regex);
     if (match !== null && match.length >= 1) {
         return match[0];
