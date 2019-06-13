@@ -18,6 +18,7 @@ export function zmqSubscribe(config, socket, request) {
             const zmqService = ServiceFactory.get('zmq');
 
             const subscriptionId = zmqService.subscribeEvent('tx', (event, data) => {
+                console.log('emit', event, data)
                 socket.emit('zmq', { event, data });
             });
             subscriptionIds.push(subscriptionId);
