@@ -23,7 +23,7 @@ function sendMessage(purpose, data_elements, conversation_ID, message_ID, reply_
 
     const address = 'HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD';
 
-    const tag = 'SEMARKETABC9999999999999999';
+    const tag = 'SEMARKETABACBAFFHHAAE999999';
 
     //transfer array specifies transfers you want to make
     const transfers = [{ value, address, message, tag }];
