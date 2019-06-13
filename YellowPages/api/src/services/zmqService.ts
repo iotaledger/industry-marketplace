@@ -1,5 +1,8 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
+import { EClassHelper } from '../utils/eclassHelper';
+import { TrytesHelper } from '../utils/trytesHelper';
+import { IotaHelper } from '../utils/iotaHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -28,14 +31,6 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
     }
-
-    /**
-     * Subscribe to tx event.
-     * @param event The event to subscribe to.
-     * @param callback The callback to call with data for the event.
-     * @returns An id to use for unsubscribe.
-     */
-    public subscribe(event, callback);
 
     /**
      * Subscribe to named event.
@@ -139,27 +134,35 @@ export class ZmqService {
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
-    private handleMessage(message) {
+    private async handleMessage(message) {
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
+        const tag = messageParams[12];
 
-        if (this._subscriptions[event]) {
-            let data;
+        if (event === 'tx' && this._subscriptions[event]) {
+            const messageType = EClassHelper.extractMessageType(tag);
+            if (tag.startsWith(this._config.prefix) && messageType) {
 
-            if (event === 'tx') {
-                data = {
+                const bundle = messageParams[8];
+                const transactions = await IotaHelper.findTransactions(bundle);
+                if (!transactions.length || !transactions[0].signatureMessageFragment) {
+                    return null;
+                }
+                const trytes = transactions[0].signatureMessageFragment;
+                const data = TrytesHelper.fromTrytes(trytes);
+
+                const payload = {
+                    tag,
+                    data,
+                    messageType,
                     hash: messageParams[1],
                     address: messageParams[2],
-                    timestamp: parseInt(messageParams[5], 10),
-                    bundle: messageParams[8],
-                    tag: messageParams[12]
+                    timestamp: parseInt(messageParams[5], 10)
                 };
-            }
 
-            if (data.tag.startsWith(this._config.prefix)) {
-                this._subscriptions[event][0].callback(event, data);
+                this._subscriptions[event][0].callback(event, payload);
             }
         }
     }
