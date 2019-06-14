@@ -1,0 +1,49 @@
+{
+  "name": "SeMarket",
+  "version": "0.1.0",
+  "description": "SeMarket",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iotaledger/SeMarket.git"
+  },
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "date-fns": "^1.30.1",
+    "express": "^4.17.1",
+    "lodash-es": "^4.17.11",
+    "react": "16.8.6",
+    "react-datepicker": "^2.5.0",
+    "react-dom": "16.8.6",
+    "react-router": "^5.0.0",
+    "react-router-dom": "^5.0.0",
+    "styled-components": "4.2.0",
+    "webfontloader": "^1.6.28"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.0",
+    "node-sass": "^4.12.0",
+    "nodemon": "^1.19.1",
+    "react-scripts": "2.1.8"
+  },
+  "scripts": {
+    "client": "yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "engines": {
+    "node": ">=8.0"
+  },
+  "browserslist": [
+    "> 2%",
+    "last 2 versions",
+    "edge >= 16"
+  ],
+  "proxy": "http://localhost:5000/"
+}
