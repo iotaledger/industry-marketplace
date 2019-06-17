@@ -8,6 +8,9 @@ import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
 
+import cfp from '../sample_requests/cfp.json';
+import proposal from '../sample_requests/proposal.json';
+
 export const AssetContext = React.createContext({});
 
 class Dashboard extends React.Component {
@@ -47,34 +50,22 @@ class Dashboard extends React.Component {
   }
 
   async callApi() {
-    const packet = {
-      testNumber: 11,
-      testString: 'hello'
-    }
-    const response = await api.post('postTest', packet);
+    const response = await api.post('cfp', cfp);
     return response.message;
   };
 
-  createOffer(asset) {
-    return this.create(asset, 'offers');
+  createOffer() {
+    return this.create('proposal', proposal);
   };
 
-  createRequest(asset) {
-    return this.create(asset, 'requests');
+  createRequest() {
+    return this.create('cfp', cfp);
   };
 
-  create(asset, category) {
-    const { userData } = this.props;
-
+  create(endpoint, packet) {
     return new Promise(async (resolve) => {
-      const packet = {
-        apiKey: userData.apiKey,
-        asset,
-        category
-      };
-
       // Call server
-      const data = await api.post('newAsset', packet);
+      const data = await api.post(endpoint, packet);
       // Check success
       if (data.success) {
         this.findAssets();
@@ -82,17 +73,6 @@ class Dashboard extends React.Component {
           displayNewOfferForm: false,
           displayNewRequestForm: false
         });
-
-        if (data.matchingAssets && data.matchingAssets.length > 0) {
-          this.setState({
-            showModal: true,
-            error: false,
-            notification: 'assetMatchFound',
-            assetDetails: {
-              category, assetId: data.assetId
-            }
-          });
-        }
       } else if (data.error) {
         this.setState({
           showModal: true,
