@@ -92,17 +92,17 @@ export default class extends React.Component {
     const startDate = parse(this.state.assetStart);
     const endDate = parse(this.state.assetEnd);
 
-    if (!this.state.assetName) return alert('Please enter asset name');
-    if (!this.state.assetType)
-      return alert('Specify type of asset');
-    if (!this.state.city || !this.state.country) return alert('Enter city and country');
+    // if (!this.state.assetName) return alert('Please enter asset name');
+    // if (!this.state.assetType)
+    //   return alert('Specify type of asset');
+    // if (!this.state.city || !this.state.country) return alert('Enter city and country');
 
-    if (this.props.category === 'requests') {
-      if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
-        return alert('Please enter a valid date/time when the offer starts');
-      if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
-        return alert('Please enter a valid date/time when the offer ends');
-    }  
+    // if (this.props.category === 'requests') {
+    //   if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
+    //     return alert('Please enter a valid date/time when the offer starts');
+    //   if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
+    //     return alert('Please enter a valid date/time when the offer ends');
+    // }  
 
     this.setState({ loading: true });
 
