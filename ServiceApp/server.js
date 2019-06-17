@@ -32,4 +32,39 @@ app.post('/postTest', (req, res) => {
   });
 });
 
+app.post('/cfp', (req, res) => {
+  console.log(req.body);
+  res.send({
+    message: JSON.stringify(req.body),
+  });
+});
+
+app.post('/proposal', (req, res) => {
+  console.log(req.body);
+  res.send({
+    message: JSON.stringify(req.body),
+  });
+});
+
+app.post('/acceptProposal', (req, res) => {
+  console.log(req.body);
+  res.send({
+    message: JSON.stringify(req.body),
+  });
+});
+
+app.post('/rejectProposal', (req, res) => {
+  console.log(req.body);
+  res.send({
+    message: JSON.stringify(req.body),
+  });
+});
+
+app.post('/informConfirm', (req, res) => {
+  console.log(req.body);
+  res.send({
+    message: JSON.stringify(req.body),
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
