@@ -1,6 +1,8 @@
 const io = require('socket.io-client');
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect("http://localhost:3001");
 
+var WebSocket = require('ws');
+var wsRole = new WebSocket("ws://127.0.0.1:1880/ws/role")
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -318,36 +320,55 @@ const informConfirm = {
    }
 }
 
+
+function sendMessage (role) {
+
+   socket.emit('config', role)
+
+   // Configure Interface either for SR or SP
+
+   if (role === "SR"){
+      console.log("Interface konfiguriert MaMa als SR")
+
+      //send cfp
+      socket.emit('cfp', cfp)
+   }
+
+   else if (role === "SP"){
+      console.log("Interface konfiguriert MaMa als SP")
+      //send serviceID
+      socket.emit('serviceID', serviceID)
+
+      //Listen to cfp for service that client can provide
+      socket.on('cfp', (data)  => {
+      console.log("OUTPUT UI: "),
+      console.log("There is a call for proposal for you"),
+      console.log(data)
+      //socket.emit('proposal', proposal)
+   })
+
+   }
+
+}
+
 // Configuration of client
 // ServiceID just needed for Service Provider
 // For Service Requestor it's already in the CFP JSON string
 
-var role = "SP"
+
+wsRole.onopen = function() {
+   console.log("CONNECTED")
+     };
+
+wsRole.onmessage = function (roleSettings) {
+
+   data = roleSettings
+   console.log(data)  
+   sendMessage(data)
+   }
+
+
+//var role 
 var serviceID =  "0173-1#02-BAF577#004"
 
-socket.emit('config', role)
 
-// Configure Interface either for SR or SP
-
-if (role === "SR"){
-    console.log("Interface konfiguriert MaMa als SR")
-
-    //send cfp
-    socket.emit('cfp', cfp)
-}
-
-else {
-    console.log("Interface konfiguriert MaMa als SP")
-    //send serviceID
-    socket.emit('serviceID', serviceID)
-
-    //Listen to cfp for service that client can provide
-    socket.on('cfp', (data)  => {
-    console.log("OUTPUT UI: "),
-    console.log("There is a call for proposal for you"),
-    console.log(data)
-    //socket.emit('proposal', proposal)
-})
-
-
-}
