@@ -93,8 +93,10 @@ exports.sendToTangle = (properties, tag) => {
     iota.prepareTransfers(seed, transfers)
         .then(trytes => iota.sendTrytes(trytes, 3, 9))
         .then(bundle => {
-            console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
-            console.log(`Bundle: ${JSON.stringify(bundle, null, 1)}`);
+           // console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
+           // console.log(`Bundle: ${JSON.stringify(bundle, null, 1)}`);
+           console.log("Successfully sent to Tangle with tail hash " + bundle[0].hash)
+           console.log("Successfully sent to Tangle with Tag" + tag)
         })
         .catch(err => console.log(err));
 };
@@ -108,19 +110,17 @@ exports.sendToUI = (data, role) => {
     };
 };
 
+exports.buildTag = (data) => {
 
-exports.buildTag = (messageType, id) => {
-
-    console.log(messageType)
-    messageTypecode = getCodeFromMessageType(messageType)
-    console.log(messageTypecode)
+    var messageType = getCodeFromMessageType(data.frame.type)
+    var id =  data.dataElements.submodels[0].identification.id
     id = id.replace(/#/g, '').replace(/-/g, '');
     id = id.substr(4);
     id = id.split("")
-  
 
+  
     var tag = "SEMARKET"
-          + messageTypecode
+          + messageType
           + getLetterFromNumber(parseInt(id[0]))
           + getLetterFromNumber(parseInt(id[1]))         
           + getLetterFromNumber(parseInt(id[2]))
@@ -134,8 +134,8 @@ exports.buildTag = (messageType, id) => {
           + getLetterFromNumber(parseInt(id[10])) 
           + getLetterFromNumber(parseInt(id[11]))
           + "999999"
-    return tag
-
+    
+             return tag
 }
 
 exports.alterTag = (tag, type) => {
