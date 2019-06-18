@@ -28,65 +28,37 @@ npm install socket.io-client
 
 ## Run 
 
-### As Service Provider
+Clone, go to directory and 'npm install' the ServiceApp.
+Then 'npm start' the ServiceApp  and it will you an examplary UI for the MarketManager. 
 
-Change role to "SP" in UI.js and save file
+Open 2 Terminals, direct one to 'MaMa' folder, the other one to 'ServiceApp' folder. 
+Type in both terminals 'node server.js' 
 
-Open 4 Terminals
+The one in the 'MaMa' folder starts the websocket server that connects later on with the ZMQ. 
+The other one is the server for the API with the UI.
 
-1. Terminal: node server.js
-2. Terminal: node client.js 
-3. Terminal: node UI.js 
-4. Terminal: node transaction.js 
+Now press "create Offer" to send out a Proposal and start listening to CallForProposals, just submit the empty form, an example JSON will be send out. 
+As soon as you press the other button "create Request", a CFP is created and appears in the terminal as "New CFP from Tangle...", which belongs to the code of the Service Provider.  
 
-Output: 
+Important: 
 
-Client is configured via Interface and listens to ZMQ transactions with defined tag. Transactions.js sends a message unter the defined tag. 
-Finally, client receives the message and sends it back to the interface 
-In terminal of UI.js the message is displayed 
 
-### As Service Requester
+Since it wasn't clear what is send out for the Service Provider (E.g. already pro-active Proposal, just a config file with serviceID... ), I just chose this approach, to show that basic functionalities are working. 
 
-Change role to "SR" in UI.js and save file
+To check whether ServiceProvider and ServiceRequester only get relevant messages, it's nice to use the transaction.js function and adapt its tag. 
 
-Open 4 Terminals
 
-1. Terminal: node server.js
-2. Terminal: node client.js 
-3. Terminal: node UI.js 
-
-Client receives CFP JSON string from UI.js 
-From extracted elements, the tag is created 
-Client sends CFP under defined Tag to tangle and displays result 
-
-Output: 
-
-Client is configured via Interface and listens to ZMQ transactions with defined tag. Transactions.js sends a message unter the defined tag. 
-Finally, client receives the message and sends it back to the interface 
-In terminal of UI.js the message is displayed 
 
 ## Explanation of functions 
 
 
-### UI.js 
-
-This file simulates the interface between the MarketManager and the Asset Administration Shell. 
-Configurations for the clients are hardcoded and send to the server via socket.io 
-The server distributes the content to the client. 
-
-In case of a ServiceProvider it is assumed that in the beginning only the ServiceID are known for the Market Manager to start looking for Call For Proposals. 
-
-Depending on the configuration of the client, the UI.js sends out JSON strings as they are expected from the Asset Administration shell. (cfp, proposal...) 
-
-
 ### client.js 
 
-A client can either act as a Service Provider or a Service Requestor. 
-It gets configured via socket.io with topic 'config', which is controlled by UI.js 
 
-Depending on the configuration, the client.js listens to certain socket.io topics to get input from the Asset Administration Shell (or here from the UI.js) 
+A client can either act as a Service Provider or a Service Requestor.
+Client.js includes all functions that have to be executed by either a SP or SR. 
 
-Depending on the message, it starts subscribing to certain ZMQ Topics, sends messages to the tangle or starts listening to other socket.io topics. 
+Depending on what type of message the client receives from the UI (/Asset Administration Shell) certain functions within this file are triggered. It starts subscribing to certain ZMQ Topics, sends messages to the tangle etc. 
 
 Dunring the process the Tag of the messages are changing since the different type of messages are hidden behind different letters. However, since the other letters stay the same, it is sufficient to alter the tag with the "alterTag" function which needs the new type of message and the old tag as an input. 
 
@@ -96,15 +68,13 @@ The server receives and distributes messages via socket.io
 With server.emit(...) messages are forwarded to all connected clients 
 client.emit() only refers to current instance of the client
 
-UI.js -> server.js -> client.js
-client.js -> server.js -> UI.js
-
--> socket.io 
-
+Wtihin the server.js the connection to the ZMQ is created by calling the ZMQsubscribe function 
 
 ### sub.js 
 
 Subscribes to certain ZMQ events, filters all events for the input tag and decodes only those messages
+According to what type of message the client is subscribing, the messages are published via the websockets.
+
 
 ### helpers.js
 
@@ -117,12 +87,5 @@ Creates public address from seed to fill wallet with IOTA-Dev-tokens and gives o
 
 ### transaction.js
 
-Creates transaction in Devnet
-
-### zmq.js
-
-Connects to zmq node, fetches transactions under a certain tag and gives out the encoded message
-
-
-
+Creates transaction in Devnet. Useful to test current state of implementation. 
 
