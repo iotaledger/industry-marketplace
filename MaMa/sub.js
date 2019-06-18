@@ -9,9 +9,7 @@ const { sendToUI, fetchFromTangle } = require('./Functions.js');
 
 function sub(ZMQ_ENDPOINT, tag)  {
 
-
   sock.connect(ZMQ_ENDPOINT);
-
   sock.subscribe('tx');
   console.log('Subscriber connected to ZMQ');
 
@@ -20,9 +18,20 @@ function sub(ZMQ_ENDPOINT, tag)  {
 
     if (data[12] === tag) {
 
-      const get = async () => {
-        const message = await fetchFromTangle(data);
-        eventEmitter.emit('msg', message)
+       const get = async () => {
+       const message = await fetchFromTangle(data);
+
+       tag.split("")
+
+       if (tag[8] === "A" ){
+        eventEmitter.emit('cfp', message)
+       }
+       if (tag[8] === "B" ){
+        eventEmitter.emit('proposal', message)
+       }
+
+       
+ 
     };
     get();
   }
@@ -34,14 +43,20 @@ function sub(ZMQ_ENDPOINT, tag)  {
 
 }
  
-exports.zmqSubscribe = (tag, client) => {
+
+exports.zmqSubscribe = (tag, client, id) => {
 
 const Sub = new sub("tcp://zmq.devnet.iota.org:5556", tag)
+console.log("CLIENT:" + client.id + "folgt" + tag)
 
- Sub.on('msg', function(msg){
+    Sub.on('cfp', function(msg){
+      client.emit('cfp', msg)
+   })
 
-    
- client.emit('subscribe', msg)
+   Sub.on('proposal', function(msg){
+   client.emit('proposal', msg)
+})
+  }
 
- })
-}
+  
+ 
