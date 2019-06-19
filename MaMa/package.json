@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@iota/compress": "git+https://github.com/obany/iota-compress.git",
-    "@iota/core": "^1.0.0-beta.12",
+    "@iota/core": "^1.0.0-beta.15",
+    "leveldown": "^5.1.0",
+    "levelup": "^4.0.2",
+    "node-fetch": "^2.6.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "zeromq": "^5.1.0"
