@@ -14,7 +14,7 @@
       "node_modules/@types",
       "types"
     ],
-    "outDir": "dist",
+    "outDir": "build",
     "resolveJsonModule": true
   },
   "include": [

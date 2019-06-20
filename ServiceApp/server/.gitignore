@@ -3,6 +3,7 @@
 
 # build artifacts
 /build
+/market_manager
 .DS_Store
 *.log
 
