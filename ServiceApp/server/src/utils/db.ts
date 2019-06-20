@@ -1,34 +1,34 @@
 import leveldown from 'leveldown';
 import levelup from 'levelup';
+import { database } from '../config.json';
 
-const db = levelup(leveldown('../../wallet'));
-
-const writeData = async data => {
+export const writeData = async (data, table = 'wallet', location = 'existing') => {
     return new Promise(async (resolve, reject) => {
-        db.put('wallet', JSON.stringify(data), (err) => {
+        const db = levelup(leveldown(database[location]));
+        db.put(table, JSON.stringify(data), (err) => {
             if (err) {
+                db.close();
                 reject(err); // some kind of I/O error
             }
+            db.close();
             resolve();
         });
     });
 };
 
-const readData = async () => {
+export const readData = async (table = 'wallet') => {
     return new Promise(async (resolve, reject) => {
-        db.get('wallet', (err, value) => {
+        const db = levelup(leveldown('./market_manager'));
+        db.get(table, (err, value) => {
             if (err) {
+                db.close();
                 reject(err);
             } // likely the key was not found
             const result = JSON.parse(value.toString());
+            db.close();
             resolve(result);
         });
     });
-};
-
-module.exports = {
-    readData,
-    writeData
 };
 
 // const data = {

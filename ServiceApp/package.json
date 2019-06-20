@@ -32,7 +32,9 @@
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "new-wallet": "cd server/build/utils/ && node userHelper.js --create wallet",
+    "new-user": "f(){ cd server/build/utils/ && node userHelper.js --create user --role $1 --id $2 ;};f"
   },
   "eslintConfig": {
     "extends": "react-app"

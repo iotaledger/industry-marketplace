@@ -3,5 +3,9 @@
         "endpoint": "tcp://zmq.devnet.iota.org:5556",
         "prefix": "SEMARKET"
     },
+    "database": {
+        "new": "../../market_manager",
+        "existing": "./market_manager"
+    },
     "provider": "https://nodes.devnet.iota.org:443"
 }
