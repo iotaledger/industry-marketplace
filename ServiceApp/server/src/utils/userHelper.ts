@@ -1,15 +1,7 @@
+import fetch from 'node-fetch';
 import yargs from 'yargs';
-import { writeData } from './db';
-
-const argv = yargs
-	.usage('Create new user or wallet')
-	.example('$0 --create user --role SR --id user-123', 'Creates a new Service Requeser with ID user-123')
-	.required('create', 'Mode must be provided').describe('create', 'Create new user or wallet. Options: ["user", "wallet"]')
-	.describe('role', 'Define user role. Options: ["SR", "SP"]')
-	.describe('id', 'Define user ID')
-	.help('help')
-    .argv;
-
+import { faucet } from '../config.json';
+import { writeData } from './databaseHelper';
 
 const createUser = async () => {
     const { id, role } = argv;
@@ -22,7 +14,21 @@ const createUser = async () => {
 
 const createWallet = async () => {
     console.log('Creating wallet...');
+    const response = await fetch(faucet);
+    const json = await response.json();
+    if (json.success) {
+        await writeData(json.wallet, 'wallet', 'new');
+    }
 };
+
+const argv = yargs
+    .usage('Create new user or wallet')
+    .example('$0 --create user --role SR --id user-123', 'Creates a new Service Requeser with ID user-123')
+    .required('create', 'Mode must be provided').describe('create', 'Create new user or wallet. Options: ["user", "wallet"]')
+    .describe('role', 'Define user role. Options: ["SR", "SP"]')
+    .describe('id', 'Define user ID')
+    .help('help')
+    .argv;
 
 if (argv.create === 'user') {
     createUser();
