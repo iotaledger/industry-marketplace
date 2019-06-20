@@ -5,13 +5,14 @@ import { database } from '../config.json';
 export const writeData = async (data, table = 'wallet', location = 'existing') => {
     return new Promise(async (resolve, reject) => {
         const db = levelup(leveldown(database[location]));
-        db.put(table, JSON.stringify(data), (err) => {
-            if (err) {
-                db.close();
-                reject(err); // some kind of I/O error
+        console.log('writeData', table, database[location], data);
+        db.put(table, JSON.stringify(data), async (err) => {
+            if (err || data === undefined) {
+                await db.close();
+                return reject(err); // some kind of I/O error
             }
-            db.close();
-            resolve();
+            await db.close();
+            return resolve();
         });
     });
 };
@@ -19,14 +20,15 @@ export const writeData = async (data, table = 'wallet', location = 'existing') =
 export const readData = async (table = 'wallet') => {
     return new Promise(async (resolve, reject) => {
         const db = levelup(leveldown('./market_manager'));
-        db.get(table, (err, value) => {
-            if (err) {
-                db.close();
-                reject(err);
+        db.get(table, async (err, value) => {
+            if (err || value === undefined) {
+                await db.close();
+                return reject(err);
             } // likely the key was not found
+
             const result = JSON.parse(value.toString());
-            db.close();
-            resolve(result);
+            await db.close();
+            return resolve(result);
         });
     });
 };

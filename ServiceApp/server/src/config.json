@@ -7,5 +7,6 @@
         "new": "../../market_manager",
         "existing": "./market_manager"
     },
+    "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443"
 }
