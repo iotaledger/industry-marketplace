@@ -50,8 +50,8 @@ class Dashboard extends React.Component {
   }
 
   async callApi() {
-    const response = await api.post('cfp', cfp);
-    return response.message;
+    // const response = await api.post('cfp', cfp);
+    // return response.message;
   };
 
   createOffer() {
