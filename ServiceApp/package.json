@@ -40,10 +40,5 @@
   "engines": {
     "node": ">=8.0"
   },
-  "browserslist": [
-    "> 2%",
-    "last 2 versions",
-    "edge >= 16"
-  ],
   "proxy": "http://localhost:4000/"
 }
