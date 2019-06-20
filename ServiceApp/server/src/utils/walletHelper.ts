@@ -2,7 +2,7 @@ import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core'
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
-const getBalance = async address => {
+export const getBalance = async address => {
     try {
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([ address ], 100);
@@ -92,11 +92,12 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 
 export const processPayment = async (receiveAddress, paymentValue) => {
     interface IWallet {
-        address?: string,
-        balance?: number,
-        keyIndex?: number,
-        seed?: string
+        address?: string;
+        balance?: number;
+        keyIndex?: number;
+        seed?: string;
     }
+
     const wallet: IWallet = await readData('wallet');
     const { address, balance, keyIndex, seed } = wallet;
     if (balance < paymentValue) {
