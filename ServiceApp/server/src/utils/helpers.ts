@@ -1,6 +1,6 @@
 import { trytesToAscii } from '@iota/converter';
 
-const decodeMessage = transaction => {
+export const decodeMessage = transaction => {
     // Modify to consumable length
     if (!transaction.length || !transaction[0].signatureMessageFragment) {
         return null;
@@ -12,7 +12,7 @@ const decodeMessage = transaction => {
     return trytesToAscii(trytes);
 };
 
-const extractMessageType = tag => {
+export const extractMessageType = tag => {
     const regex = /(?<=SEMARKET)([A-E])/gi;
     const match = tag.match(regex);
     if (match !== null && match.length >= 1) {
@@ -21,7 +21,7 @@ const extractMessageType = tag => {
     return null;
 };
 
-const getCodeFromMessageType = message => {
+export const getCodeFromMessageType = message => {
     const map = {
         callForProposal: 'A',
         proposal: 'B',
@@ -32,7 +32,7 @@ const getCodeFromMessageType = message => {
     return map[message] || null;
 };
 
-const getMessageTypeFromCode = code => {
+export const getMessageTypeFromCode = code => {
     const map = {
         A: 'callForProposal',
         B: 'proposal',
@@ -43,19 +43,10 @@ const getMessageTypeFromCode = code => {
     return map[code] || null;
 };
 
-const getNumberFromLetter = letter => {
+export const getNumberFromLetter = letter => {
     return letter.charCodeAt(0) - 65;
 };
 
-const getLetterFromNumber = number => {
+export const getLetterFromNumber = number => {
     return String.fromCharCode(65 + number);
-};
-
-module.exports = {
-  decodeMessage,
-  extractMessageType,
-  getCodeFromMessageType,
-  getMessageTypeFromCode,
-  getLetterFromNumber,
-  getNumberFromLetter
 };

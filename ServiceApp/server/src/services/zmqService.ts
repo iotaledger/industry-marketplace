@@ -1,8 +1,8 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { EClassHelper } from '../utils/eclassHelper';
-import { TrytesHelper } from '../utils/trytesHelper';
 import { IotaHelper } from '../utils/iotaHelper';
+import { TrytesHelper } from '../utils/trytesHelper';
 
 /**
  * Class to handle ZMQ service.

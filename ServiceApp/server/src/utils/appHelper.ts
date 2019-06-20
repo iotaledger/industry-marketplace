@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-
+import { readData, writeData } from './db';
 /**
  * Class to help with expressjs routing.
  */
@@ -45,10 +45,13 @@ export class AppHelper {
             next();
         });
 
-        app.post('/cfp', (req, res) => {
+        app.post('/cfp', async (req, res) => {
+            const user = await readData('user');
             console.log(req.body);
+            console.log(user);
             res.send({
-                message: JSON.stringify(req.body)
+                message: JSON.stringify(req.body),
+                user
             });
         });
 
