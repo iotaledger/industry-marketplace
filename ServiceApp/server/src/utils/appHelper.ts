@@ -1,7 +1,9 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { readData, writeData } from './db';
+import { readData } from './databaseHelper';
+import { processPayment } from './walletHelper';
+
 /**
  * Class to help with expressjs routing.
  */
@@ -47,16 +49,25 @@ export class AppHelper {
 
         app.post('/cfp', async (req, res) => {
             const user = await readData('user');
+            const wallet = await readData('wallet');
             console.log(req.body);
             console.log(user);
+            console.log(wallet);
             res.send({
                 message: JSON.stringify(req.body),
-                user
+                user,
+                wallet
             });
         });
 
-        app.post('/proposal', (req, res) => {
-            console.log(req.body);
+        app.post('/proposal', async (req, res) => {
+            const address = 'AKDNWKHUEBXMKZPOLFPQJQOSXDEWLB9LZPCQKCLHPETEDBWORBWHOIGB9YLYIYIUU9ZWRIUNGGVQBZIEC9BWYFZGRW';
+            const transactions = await processPayment(address, 5);
+
+            if (transactions.length > 0) {
+                console.log('Success');
+            }
+            
             res.send({
                 message: JSON.stringify(req.body)
             });
