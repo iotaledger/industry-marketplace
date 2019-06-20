@@ -117,7 +117,7 @@
         "comment-format": [
             true
         ],
-        "completed-docs": true,
+        "completed-docs": false,
         "export-name": false,
         "function-name": [
             true,
@@ -170,6 +170,7 @@
         "no-relative-imports": false,
         "no-require-imports": true,
         "no-redundant-jsdoc": false,
+        "no-return-await": false,
         "no-shadowed-variable": true,
         "no-suspicious-comment": true,
         "no-typeof-undefined": false,
