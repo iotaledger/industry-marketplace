@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@iota/core": "^1.0.0-beta.15",
+    "node-fetch": "^2.6.0",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "zeromq": "^5.1.0"
