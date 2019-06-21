@@ -112,3 +112,24 @@ export const processPayment = async (receiveAddress, paymentValue) => {
         paymentValue
     );
 };
+
+/*
+Example getBalance operation:
+
+import { getBalance } from './walletHelper';
+
+await getBalance(address);
+
+*/
+
+/*
+Example payment operation:
+
+import { processPayment } from './walletHelper';
+
+const transactions = await processPayment(address, amount);
+if (transactions.length > 0) {
+    console.log('Success');
+}
+
+*/

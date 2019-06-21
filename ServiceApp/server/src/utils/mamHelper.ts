@@ -26,14 +26,15 @@ export const publish = async (channelId, packet, tag = 'SEMARKETMAM') => {
     // Create MAM Payload - STRING OF TRYTES
     const trytes = asciiToTrytes(JSON.stringify(packet));
     const message = Mam.create(mamState, trytes);
+    const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
 
     // Save new mamState
-    await writeData({ ...message.state, root: message.root }, `mam-${channelId}`);
+    await writeData({ ...message.state, root }, `mam-${channelId}`);
 
     // Attach the payload
     await Mam.attach(message.payload, message.address, 3, 9, tag);
 
-    return mamStateFromDB ? mamStateFromDB.root : message.root;
+    return root;
 };
 
 export const fetchFromRoot = async root => {
@@ -70,8 +71,8 @@ import { fetchFromChannelId } from './mamHelper';
 import { readData } from './databaseHelper';
 
 const fetchData = async channelId => {
-  const messages = await fetchFromChannelId(channelId);
-  messages.forEach(message => console.log(message));
+    const messages = await fetchFromChannelId(channelId);
+    messages.forEach(message => console.log(message));
 }
 
 */
