@@ -1,22 +1,23 @@
 # SeMarket Industry 4.0 Language Library
 
-API Description:
+## API Description:
 
-GET /operations/{message_type}
-    For CfP message type returns list of operations (plain text)
+#### GET /operations/{message_type}  
+1. For CfP message type **returns** list of operations (plain text)
 
-GET /submodel/{operation}
-    Converts operation to IRDI
-    Performs lookup in the eCl@ss catalog, retrieves submodel
-    Returns submodel 
+#### GET /submodel/{operation}  
+1. Converts operation to IRDI  
+2. Performs lookup in the eCl@ss catalog, retrieves submodel  
+3. **Returns** submodel  
 
-GET /evaluate/{submodel_parameter_values}
-    Evaluates values
-    Returns success or failure notification
+#### GET /evaluate/{submodel_parameter_values}  
+1. Evaluates values  
+2. **Returns** success or failure notification
     
-GET /generate/{message_type}/user/{user_id}/operation/{operation}/values/{submodel_parameter_values}
-    Converts operation to IRDI
-    Converts submodel parameter values to IRDIs
-    Generates conversationId, messageId, 
-    Fills placeholder JSON for selected message type with provided values, appends submodel
-    Returns generated message of the selected type (CfP, Proposal, etc.)
+#### GET /generate/{message_type}/user/{user_id}/operation/{operation}/values/{submodel_parameter_values}  
+1. Converts operation to IRDI  
+2. Converts submodel parameter values to IRDIs  
+3. Generates conversationId, messageId,  
+4. Fills placeholder JSON for selected message type with provided values, appends submodel  
+5. **Returns** generated message of the selected type (CfP, Proposal, etc.)  
+
