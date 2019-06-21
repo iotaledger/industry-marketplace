@@ -50,14 +50,14 @@
     "@iota/converter" "^1.0.0-beta.16"
     "@iota/kerl" "^1.0.0-beta.16"
 
-"@iota/converter@^1.0.0-beta.16":
+"@iota/converter@^1.0.0-beta.11", "@iota/converter@^1.0.0-beta.16":
   version "1.0.0-beta.16"
   resolved "https://registry.yarnpkg.com/@iota/converter/-/converter-1.0.0-beta.16.tgz#a4b3004bb03c870efff1ebd41b368527846fe8bf"
   integrity sha512-x+kDZuUZ1yMJm1chrqPWO4AQ+tRXUGIhtYwIJbb4+54VbJGitagXSNPZBg83G3zB7oyUOiCPAsEFxSogJOQ8FQ==
   dependencies:
     core-js "^3.1.4"
 
-"@iota/core@^1.0.0-beta.16":
+"@iota/core@^1.0.0-beta.11", "@iota/core@^1.0.0-beta.16":
   version "1.0.0-beta.16"
   resolved "https://registry.yarnpkg.com/@iota/core/-/core-1.0.0-beta.16.tgz#dbeafe361d3dd2841664db112646ed59b2bfd771"
   integrity sha512-EBrhPW26/bv7e+vwxKQJcJV+ygn5TXwGQ3r+iSx0LNVIVNefXepPUVP3nD/l67BcPW1BpVNWZwIBRswi9yeBjA==
@@ -75,7 +75,7 @@
     "@iota/transaction-converter" "^1.0.0-beta.16"
     bluebird "^3.5.5"
 
-"@iota/curl@^1.0.0-beta.16":
+"@iota/curl@^1.0.0-beta.11", "@iota/curl@^1.0.0-beta.16":
   version "1.0.0-beta.16"
   resolved "https://registry.yarnpkg.com/@iota/curl/-/curl-1.0.0-beta.16.tgz#27fef314180a1722e308c8f1df3e078ca6a3fac6"
   integrity sha512-vOB0WkaJHkzG0UiP2/aGvAuddDgYEl+zox/PCK5IMUGbVPLS3eSLhdpMTo1XpO2o0oUOMSWOSxN86Dz88yZLPA==
@@ -97,6 +97,15 @@
     "@types/crypto-js" "^3.1.38"
     core-js "^3.1.4"
     crypto-js "^3.1.9-1"
+
+"@iota/mam@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@iota/mam/-/mam-0.7.2.tgz#5bc2554ad0ae498ff9837e74276d26b7091f1029"
+  integrity sha512-5X4bh3BupSulbULeSNYaqvvOxtV9UkGkYVLPJRshPrh6GNhM0611p9MRswDiHpvWvG7oLAuDXe6mfsTzPTZx0A==
+  dependencies:
+    "@iota/converter" "^1.0.0-beta.11"
+    "@iota/core" "^1.0.0-beta.11"
+    "@iota/curl" "^1.0.0-beta.11"
 
 "@iota/pad@^1.0.0-beta.16":
   version "1.0.0-beta.16"
