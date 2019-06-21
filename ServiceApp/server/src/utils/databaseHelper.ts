@@ -61,16 +61,37 @@ export const removeData = async (table) => {
     });
 };
 
-// const data = {
-//     address: 'CCCCCDDDDD',
-//     seed: 'SSSSSSEEEEDDDD',
-//     amount: 555
-// }
+/*
+Example write operation:
 
-// const run = async () => {
-//     await writeData(data)
-//     const result = await readData()
-//     console.log(result.address, result.amount, result.seed)
-// }
+import { writeData } from './databaseHelper';
 
-// run()
+const data = {
+    address: 'CCCCCDDDDD',
+    seed: 'SSSSSSEEEEDDDD',
+    amount: 555
+};
+
+await writeData(data, entry);
+*/
+
+/*
+Example read operation:
+
+import { readData } from './databaseHelper';
+
+const result = await readData(channelId);
+if (result) {
+    return result;
+}
+
+*/
+
+/*
+Example delete operation:
+
+import { removeData } from './databaseHelper';
+
+await removeData(entry);
+
+*/
