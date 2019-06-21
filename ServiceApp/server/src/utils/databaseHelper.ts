@@ -20,16 +20,44 @@ export const writeData = async (data, table = 'wallet', location = 'existing') =
 export const readData = async (table = 'wallet') => {
     return new Promise(async (resolve, reject) => {
         const db = levelup(leveldown('./market_manager'));
-        db.get(table, async (err, value) => {
-            if (err || value === undefined) {
-                await db.close();
-                return reject(err);
-            } // likely the key was not found
+        try {
+            db.get(table, async (err, value) => {
+                if (err === null) {
+                    const result = JSON.parse(value.toString());
+                    await db.close();
+                    return resolve(result);
+                }
 
-            const result = JSON.parse(value.toString());
+                console.log(err);
+                // likely the key was not found
+                await db.close();
+                return resolve(null);
+            });
+        } catch (error) {
+            console.log('readData', error);
             await db.close();
-            return resolve(result);
-        });
+            return reject(null);
+        }
+    });
+};
+
+export const removeData = async (table) => {
+    return new Promise(async (resolve, reject) => {
+        const db = levelup(leveldown('./market_manager'));
+        try {
+            db.del(table, async (err) => {
+                if (err) {
+                    console.log('removeData', err);
+                }
+                console.log('removeData OK');
+                await db.close();
+                return resolve(null);
+            });
+        } catch (error) {
+            console.log('removeData', error);
+            await db.close();
+            return reject(null);
+        }
     });
 };
 
