@@ -36,8 +36,42 @@ export const publish = async (channelId, packet, tag = 'SEMARKETMAM') => {
     return mamStateFromDB ? mamStateFromDB.root : message.root;
 };
 
-export const fetch = async root => {
+export const fetchFromRoot = async root => {
     // Output syncronously once fetch is completed
     const result = await Mam.fetch(root, mode);
     return result.messages.map(message => JSON.parse(trytesToAscii(message)));
 };
+
+export const fetchFromChannelId = async channelId => {
+    const channelData: IMamState = await readData(`mam-${channelId}`);
+    if (channelData) {
+        return await fetchFromRoot(channelData.root);
+    }
+    return [];
+};
+
+/*
+Example write operation:
+
+import uuid from 'uuid/v4';
+import { publish } from './mamHelper';
+
+const channelId = uuid();
+
+await publish(channelId, { message: 'Message from Alice' });
+await publish(channelId, { message: 'Message from Bob' });
+
+*/
+
+/*
+Example read operation:
+
+import { fetchFromChannelId } from './mamHelper';
+import { readData } from './databaseHelper';
+
+const fetchData = async channelId => {
+  const messages = await fetchFromChannelId(channelId);
+  messages.forEach(message => console.log(message));
+}
+
+*/
