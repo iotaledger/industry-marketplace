@@ -30,6 +30,7 @@
   "scripts": {
     "client": "yarn start",
     "server": "nodemon server.js",
+    "server-build": "cd server && yarn build",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
