@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 import yargs from 'yargs';
 import { faucet } from '../config.json';
 import { writeData } from './databaseHelper';
@@ -14,10 +14,10 @@ const createUser = async () => {
 
 const createWallet = async () => {
     console.log('Creating wallet...');
-    const response = await fetch(faucet);
-    const json = await response.json();
-    if (json.success) {
-        await writeData(json.wallet, 'wallet', 'new');
+    const response = await axios.get(faucet);
+    const data = response.data;
+    if (data.success) {
+        await writeData(data.wallet, 'wallet', 'new');
     }
 };
 
