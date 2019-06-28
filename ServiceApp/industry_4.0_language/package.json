@@ -1,0 +1,16 @@
+{
+    "name": "industry_4.0_language",
+    "description": "Industry_4.0_Language",
+    "version": "1.0.0",
+    "author": "Alexey Sobolev <alexey@iota.org>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iotaledger/SeMarket.git"
+    },
+    "license": "Apache-2.0",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+        "uuid": "^3.3.2"
+    }
+}
