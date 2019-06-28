@@ -22,13 +22,6 @@
              "identification":{
                 "id":"",
                 "submodelElements":[
-                   {
-                      "idShort":"",
-                      "modelType":"Property",
-                      "value":"",
-                      "valueType":"string",
-                      "semanticId":""
-                   }
                 ]
              }
           }
