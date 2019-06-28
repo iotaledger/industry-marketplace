@@ -189,10 +189,15 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
-"@types/node@*", "@types/node@^12.0.8":
+"@types/node@*":
   version "12.0.8"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.8.tgz#551466be11b2adc3f3d47156758f610bd9f6b1d8"
   integrity sha512-b8bbUOTwzIY3V5vDTY1fIJ+ePKDUBqt2hC2woVGotdQQhG/2Sh62HOKHrT7ab+VerXAcPyAiTEipPu/FsreUtg==
+
+"@types/node@^12.0.10":
+  version "12.0.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.10.tgz#51babf9c7deadd5343620055fc8aff7995c8b031"
+  integrity sha512-LcsGbPomWsad6wmMNv7nBLw7YYYyfdYcz6xryKYQhx89c3XXan+8Q6AJ43G5XDIaklaVkK3mE4fCb0SBvMiPSQ==
 
 "@types/range-parser@*":
   version "1.2.3"
@@ -687,10 +692,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-concurrently@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-4.1.0.tgz#17fdf067da71210685d9ea554423ef239da30d33"
-  integrity sha512-pwzXCE7qtOB346LyO9eFWpkFJVO3JQZ/qU/feGeaAHiX1M3Rw3zgXKc5cZ8vSH5DGygkjzLFDzA/pwoQDkRNGg==
+concurrently@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/concurrently/-/concurrently-4.1.1.tgz#42cf84d625163f3f5b2e2262568211ad76e1dbe8"
+  integrity sha512-48+FE5RJ0qc8azwKv4keVQWlni1hZeSjcWr8shBelOBtBHcKj1aJFM9lHRiSc1x7lq416pkvsqfBMhSRja+Lhw==
   dependencies:
     chalk "^2.4.1"
     date-fns "^1.23.0"
@@ -869,10 +874,10 @@ deep-extend@^0.6.0:
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.6.0.tgz#c4fa7c95404a17a9c3e8ca7e1537312b736330ac"
   integrity sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==
 
-deferred-leveldown@~5.0.0:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/deferred-leveldown/-/deferred-leveldown-5.0.1.tgz#1642eb18b535dfb2b6ac4d39fb10a9cbcfd13b09"
-  integrity sha512-BXohsvTedWOLkj2n/TY+yqVlrCWa2Zs8LSxh3uCAgFOru7/pjxKyZAexGa1j83BaKloER4PqUyQ9rGPJLt9bqA==
+deferred-leveldown@~5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/deferred-leveldown/-/deferred-leveldown-5.1.0.tgz#c21e40641a8e48530255a4ad31371cc7fe76b332"
+  integrity sha512-PvDY+BT2ONu2XVRgxHb77hYelLtMYxKSGuWuJJdVRXh9ntqx9GYTFJno/SKAz5xcd+yjQwyQeIZrUPjPvA52mg==
   dependencies:
     abstract-leveldown "~6.0.0"
     inherits "^2.0.3"
@@ -1854,12 +1859,12 @@ leveldown@^5.1.0:
     napi-macros "~1.8.1"
     node-gyp-build "~4.1.0"
 
-levelup@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/levelup/-/levelup-4.0.2.tgz#bcb8d28d0a82ee97f1c6d00f20ea6d32c2803c5b"
-  integrity sha512-cx9PmLENwbGA3svWBEbeO2HazpOSOYSXH4VA+ahVpYyurvD+SDSfURl29VBY2qgyk+Vfy2dJd71SBRckj/EZVA==
+levelup@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/levelup/-/levelup-4.1.0.tgz#49ab5d3a341731cd102f91c6bc17a1acb1969a17"
+  integrity sha512-+Qhe2/jb5affN7BeFgWUUWVdYoGXO2nFS3QLEZKZynnQyP9xqA+7wgOz3fD8SST2UKpHQuZgjyJjTcB2nMl2dQ==
   dependencies:
-    deferred-leveldown "~5.0.0"
+    deferred-leveldown "~5.1.0"
     level-errors "~2.0.0"
     level-iterator-stream "~4.0.0"
     xtend "~4.0.0"
@@ -2128,7 +2133,7 @@ node-abi@^2.2.0:
   dependencies:
     semver "^5.4.1"
 
-node-fetch@2.6.0, node-fetch@^2.6.0:
+node-fetch@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
@@ -3228,10 +3233,10 @@ tslint-microsoft-contrib@^6.2.0:
   dependencies:
     tsutils "^2.27.2 <2.29.0"
 
-tslint@^5.17.0:
-  version "5.17.0"
-  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.17.0.tgz#f9f0ce2011d8e90debaa6e9b4975f24cd16852b8"
-  integrity sha512-pflx87WfVoYepTet3xLfDOLDm9Jqi61UXIKePOuca0qoAZyrGWonDG9VTbji58Fy+8gciUn8Bt7y69+KEVjc/w==
+tslint@^5.18.0:
+  version "5.18.0"
+  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.18.0.tgz#f61a6ddcf372344ac5e41708095bbf043a147ac6"
+  integrity sha512-Q3kXkuDEijQ37nXZZLKErssQVnwCV/+23gFEMROi8IlbaBG6tXqLPQJ5Wjcyt/yHPKBC+hD5SzuGaMora+ZS6w==
   dependencies:
     "@babel/code-frame" "^7.0.0"
     builtin-modules "^1.1.1"
