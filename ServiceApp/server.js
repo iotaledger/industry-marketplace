@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const { sendToTangle, buildTag, alterTag } = require('../MaMa/Functions.js');
-const {actOnCallForProposal, actOnProposal} = require('../MaMa/client.js');
+const {actOnCallForProposal, actOnProposal, actOnAcceptProposal} = require('../MaMa/client.js');
 
 
 
@@ -49,6 +49,8 @@ app.post('/proposal', (req, res) => {
 
 
 app.post('/acceptProposal', (req, res) => {
+  console.log('ACCEPT PROPOSAL');
+  actOnAcceptProposal(req.body)
   console.log(req.body);
   res.send({
     message: JSON.stringify(req.body),
