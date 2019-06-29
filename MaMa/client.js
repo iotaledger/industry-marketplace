@@ -21,7 +21,7 @@ const actOnProposal = (req) => {
        return data
     }
       })
-    }
+}
 
     
 const actOnCallForProposal = (req) => {
@@ -43,13 +43,21 @@ const actOnCallForProposal = (req) => {
     return data
   }
 }) 
-  
-
-
 }
+  
+const actOnAcceptProposal = (req) => {
+  var socket = io.connect("http://localhost:7000");
+  console.log("Proposal Accepted")
 
+  var tag = buildTag(req)
+  sendToTangle(JSON.stringify(req), tag)
+
+  console.log("proposal accept send with tag" + tag)
+  newtag = alterTag(tag, 'acceptProposal')
+}
 
 module.exports = {
   actOnProposal,
-  actOnCallForProposal
+  actOnCallForProposal,
+  actOnAcceptProposal
 }

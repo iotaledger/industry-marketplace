@@ -14,6 +14,7 @@ server.on('connection', client => {
  // client.on('cfp', (cfp) => server.emit('cfp', cfp))
  // client.on('serviceID', (id) => server.emit('serviceID', id))
 
+
    //ZMQ subscription 
    client.on('cfp', (tag) => client.emit('cfp', zmqSubscribe(tag, client, client.id)))
    client.on('proposal', (tag) => client.emit('proposal', zmqSubscribe(tag, client, client.id)))

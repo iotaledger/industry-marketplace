@@ -8,6 +8,8 @@ import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
 
+
+import ap from  '../sample_requests/acceptProposal.json';
 import cfp from '../sample_requests/cfp.json';
 import proposal from '../sample_requests/proposal.json';
 
@@ -38,6 +40,7 @@ class Dashboard extends React.Component {
     this.createOffer = this.createOffer.bind(this);
     this.deleteAsset = this.deleteAsset.bind(this);
     this.createRequest = this.createRequest.bind(this);
+    this.acceptProposal = this.acceptProposal.bind(this);
     this.showNewOfferForm = this.showNewOfferForm.bind(this);
     this.hideNewOfferForm = this.hideNewOfferForm.bind(this);
     this.showNewRequestForm = this.showNewRequestForm.bind(this);
@@ -62,6 +65,10 @@ class Dashboard extends React.Component {
     return this.create('cfp', cfp);
   };
 
+  acceptProposal() {
+    return this.create('acceptProposal', ap);
+  };
+
   create(endpoint, packet) {
     return new Promise(async (resolve) => {
       // Call server
@@ -71,7 +78,7 @@ class Dashboard extends React.Component {
         this.findAssets();
         this.setState({
           displayNewOfferForm: false,
-          displayNewRequestForm: false
+          displayNewRequestForm: false,
         });
       } else if (data.error) {
         this.setState({
@@ -123,7 +130,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { assets, noAssets, loading, displayNewOfferForm, displayNewRequestForm } = this.state;
+    const { assets, noAssets, loading, displayNewOfferForm, displayNewRequestForm} = this.state;
 
     const activeOffers = assets.offers && !isEmpty(assets.offers)
       ? assets.offers.filter(asset => asset.active) : [];
@@ -142,6 +149,7 @@ class Dashboard extends React.Component {
         <AssetNav
           createOffer={this.showNewOfferForm}
           createRequest={this.showNewRequestForm}
+          acceptProposal={this.acceptProposal}
         />
         <Data>
           {
@@ -169,6 +177,9 @@ class Dashboard extends React.Component {
                           </Button>
                           <Button onClick={this.showNewRequestForm}>
                             Create request
+                          </Button>
+                          <Button onClick={this.acceptProposal}>
+                            Accept proposal
                           </Button>
                         </ButtonWrapper>
                       </NoAssetsInnerWrapper>
