@@ -35,6 +35,13 @@
                 "value":"",
                 "valueType":"date",
                 "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
             }
         ]
     },
@@ -74,6 +81,13 @@
                 "value":"",
                 "valueType":"date",
                 "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
             }
         ]
     },
@@ -113,6 +127,13 @@
                 "value":"",
                 "valueType":"date",
                 "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
             }
         ]
     },
@@ -152,6 +173,13 @@
                 "value":"",
                 "valueType":"date",
                 "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
             }
         ]
     },
@@ -191,6 +219,13 @@
                 "value":"",
                 "valueType":"date",
                 "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
             }
         ]
     }
