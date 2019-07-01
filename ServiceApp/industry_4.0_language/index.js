@@ -169,3 +169,48 @@ module.exports = {
     operations,
     submodel
 }
+
+// const values = {
+//     "0173-1#02-AAB713#005": 4.5,
+//     "0173-1#02-AAN521#005": "Rot",
+//     "0173-1#02-BAF634#008": "Stahl",
+//     "0173-1#02-BAF163#002": "Berlin",
+//     "0173-1#02-AAO738#001": 1561968195120
+// }
+// const test3 = evaluate('0173-1#02-BAF574#004', values);
+// console.log('Result', test3);
+// console.log('=======================');
+
+// const generateValuesCFP = {
+//     messageType: 'cfp', 
+//     userId: 'test-user1',
+//     irdi: '0173-1#02-BAF574#004', 
+//     submodelValues: values, 
+//     replyTime: 10, 
+// }
+// const originalMessage = generate(generateValuesCFP);
+// console.log(JSON.stringify(originalMessage));
+// console.log('=========================')
+
+// const generateValuesProposal = {
+//     messageType: 'proposal', 
+//     userId: 'test-user2',
+//     irdi: '0173-1#02-BAF574#004', 
+//     replyTime: 10,
+//     price: 120,
+//     originalMessage,
+// }
+
+// const proposalTest = generate(generateValuesProposal);
+// console.log(JSON.stringify(proposalTest));
+// console.log('=========================')
+
+// const generateValuesAccept = {
+//     messageType: 'acceptProposal', 
+//     userId: 'test-user1',
+//     replyTime: 10,
+//     originalMessage: proposalTest,
+// }
+
+// const acceptTest = generate(generateValuesAccept);
+// console.log(JSON.stringify(acceptTest));
