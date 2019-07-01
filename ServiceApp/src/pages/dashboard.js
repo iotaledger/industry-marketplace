@@ -78,7 +78,7 @@ class Dashboard extends React.Component {
         this.findAssets();
         this.setState({
           displayNewOfferForm: false,
-          displayNewRequestForm: false,
+          displayNewRequestForm: false
         });
       } else if (data.error) {
         this.setState({
@@ -130,7 +130,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { assets, noAssets, loading, displayNewOfferForm, displayNewRequestForm} = this.state;
+    const { assets, noAssets, loading, displayNewOfferForm, displayNewRequestForm } = this.state;
 
     const activeOffers = assets.offers && !isEmpty(assets.offers)
       ? assets.offers.filter(asset => asset.active) : [];
