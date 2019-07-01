@@ -1,11 +1,11 @@
-import uuid from 'uuid/v4';
-import sample_operations from './templates/operations.json';
-import eClass from './templates/eClass.json';
-import cfp from '../templates/cfp.json';
-import proposal from '../templates/proposal.json';
-import acceptProposal from '../templates/acceptProposal.json';
-import rejectProposal from '../templates/rejectProposal.json';
-import informConfirm from '../templates/informConfirm.json';
+const uuid = require('uuid/v4');
+const sample_operations = require('./templates/operations.json');
+const eClass = require('./templates/eClass.json');
+const cfp = require('./templates/cfp.json');
+const proposal = require('./templates/proposal.json');
+const acceptProposal = require('./templates/acceptProposal.json');
+const rejectProposal = require('./templates/rejectProposal.json');
+const informConfirm = require('./templates/informConfirm.json');
 
 /**
  * GET /operations
@@ -21,7 +21,7 @@ const operations = () => {
  * 2. Returns submodel  
  */
 const submodel = (irdi) => {
-    return eClass[irdi];
+    return eClass[irdi].submodelElements;
 }
 
 /**
@@ -31,18 +31,21 @@ const submodel = (irdi) => {
  */
 const evaluate = (irdi, values) => {
     const submodelTemplate = eClass[irdi];
-    submodelTemplate.forEach(element => {
+    let status;
+    submodelTemplate.submodelElements.some(element => {
         const value = values[element.semanticId];
         if (!value) {
-            return `Value for ${element.idShort} (${element.semanticId}) is missing`;
+            status = `Value for ${element.idShort} (${element.semanticId}) is missing`;
+            return null;
         }
 
         const isTypeValid = checkType(element.valueType, value);
         if (!isTypeValid) {
-            return `Type for ${element.idShort} (${element.semanticId}) is invalid`; 
+            status = `Type for ${element.idShort} (${element.semanticId}) is invalid`; 
+            return null;
         }
     });
-    return 'success';
+    return status || 'success';
 }
 
 const checkType = (type, value) => {
@@ -101,25 +104,46 @@ const checkType = (type, value) => {
  * 2. Fills placeholder JSON for selected message type with provided values, appends submodel  
  * 3. Returns generated message of the selected type (CfP, Proposal, etc.)  
  */
-const generate = ({ messageType, userId, irdi, submodel, replyTime }) => {
-    const template = getTemplate(messageType);
-    if (!template) {
+const generate = ({ messageType, userId, irdi, submodelValues, replyTime, originalMessage, price }) => {
+    const message = getTemplate(messageType);
+    if (!message) {
         return null;
     }
     const conversationId = uuid();
-    template.frame.conversationId = conversationId;
-    template.frame.sender.identification.id = userId;
-    template.frame.replyBy = getReplyByTime(replyTime);
+    message.frame.conversationId = conversationId;
+    message.frame.sender.identification.id = userId;
+    message.frame.replyBy = getReplyByTime(replyTime);
 
-    // template.frame.dataElements = {};
+    if (originalMessage && ['proposal', 'acceptProposal', 'rejectProposal', 'informConfirm'].includes(messageType)) {
+        message.frame.receiver.identification.id = originalMessage.frame.sender.identification.id;
+        message.dataElements = originalMessage.dataElements;
+        
+        if (messageType === 'proposal' && price && irdi) {
+            const priceModel = submodel(irdi).find(({ idShort }) => idShort === 'preis');
+            priceModel.value = price;
+            message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
+        }
+    } else if (messageType === 'cfp' && irdi) {
+        const submodelTemplate = submodel(irdi);
+        const submodelElements = submodelTemplate.map(element => (
+            { ...element, value: submodelValues[element.semanticId] } 
+        ));
+        message.dataElements.submodels.push({
+            identification: {
+                id: irdi,
+                submodelElements
+            }
+        });
+    }
 
+    return message;
 }
 
 const getReplyByTime = (minutes = 10) => {
     const timestamp = new Date();
     const timeToReply = minutes * 60 * 1000; // 10 minutes in milliseconds
     timestamp.setTime(timestamp.getTime() + timeToReply);
-    return timestamp;
+    return Date.parse(timestamp);
 }
 
 const getTemplate = (type) => {
@@ -136,6 +160,7 @@ const getTemplate = (type) => {
             return informConfirm;
         default:
             return null;
+    }
 }
 
 module.exports = {
