@@ -18,10 +18,10 @@ const operations = () => {
 /**
  * GET /submodel/{irdi}
  * 1. Performs lookup in the eCl@ss catalog, retrieves submodel  
- * 2. Returns submodel  
+ * 2. Returns submodel without price property
  */
 const submodel = (irdi) => {
-    return eClass[irdi].submodelElements;
+    return eClass[irdi].submodelElements.filter(({ idShort }) => idShort !== 'preis');
 }
 
 /**
@@ -30,9 +30,9 @@ const submodel = (irdi) => {
  * 2. Returns success or failure notification
  */
 const evaluate = (irdi, values) => {
-    const submodelTemplate = eClass[irdi];
+    const submodelTemplate = submodel(irdi);
     let status;
-    submodelTemplate.submodelElements.some(element => {
+    submodelTemplate.some(element => {
         const value = values[element.semanticId];
         if (!value) {
             status = `Value for ${element.idShort} (${element.semanticId}) is missing`;
@@ -119,21 +119,23 @@ const generate = ({ messageType, userId, irdi, submodelValues, replyTime, origin
         message.dataElements = originalMessage.dataElements;
         
         if (messageType === 'proposal' && price && irdi) {
-            const priceModel = submodel(irdi).find(({ idShort }) => idShort === 'preis');
+            const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => idShort === 'preis');
             priceModel.value = price;
             message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
         }
     } else if (messageType === 'cfp' && irdi) {
-        const submodelTemplate = submodel(irdi);
-        const submodelElements = submodelTemplate.map(element => (
-            { ...element, value: submodelValues[element.semanticId] } 
-        ));
-        message.dataElements.submodels.push({
-            identification: {
-                id: irdi,
-                submodelElements
-            }
-        });
+        if (evaluate(irdi, submodelValues) === 'success') {
+            const submodelTemplate = submodel(irdi);
+            const submodelElements = submodelTemplate.map(element => (
+                { ...element, value: submodelValues[element.semanticId] } 
+            ));
+            message.dataElements.submodels.push({
+                identification: {
+                    id: irdi,
+                    submodelElements
+                }
+            });
+        }
     }
 
     return message;
