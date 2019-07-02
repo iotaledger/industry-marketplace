@@ -12,15 +12,6 @@ export const decodeMessage = transaction => {
     return trytesToAscii(trytes);
 };
 
-export const extractMessageType = tag => {
-    const regex = /(?<=SEMARKET)([A-E])/gi;
-    const match = tag.match(regex);
-    if (match !== null && match.length >= 1) {
-        return match[0];
-    }
-    return null;
-};
-
 export const getCodeFromMessageType = message => {
     const map = {
         callForProposal: 'A',

@@ -8,14 +8,14 @@ export class EClassHelper {
      * @returns Found message type.
      */
     public static extractMessageType(tag) {
-        const regex = /(?<=SEMARKET)([A-C])/gi; // change to [A-D] to support the whole range of types
+        const regex = /(?<=SEMARKET)([A-E])/gi;
         const match = tag.match(regex);
         const map = {
             A: 'callForProposal',
             B: 'proposal',
-            C: 'acceptProposal'
-            // D: 'rejectProposal',
-            // E: 'informConfirm'
+            C: 'acceptProposal',
+            D: 'rejectProposal',
+            E: 'informConfirm'
         };
 
         if (match !== null && match.length >= 1) {
