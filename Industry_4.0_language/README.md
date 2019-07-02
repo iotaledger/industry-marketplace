@@ -1,5 +1,20 @@
 # SeMarket Industry 4.0 Language Library
 
+## Usage
+
+Add the following line to your `package.json` dependencies list
+```
+    "SeMarket": "iotaledger/SeMarket",
+```
+
+Import functions and call it within your application
+```
+import { operations, submodel } from 'SeMarket/industry_4.0_language';
+
+const eClassOperations = operations();
+const eClassSubmodel = submodel(eClassOperations[0].id);
+```
+
 ## API Description:
 
 #### GET /operations  
