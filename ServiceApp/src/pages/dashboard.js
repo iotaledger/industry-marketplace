@@ -1,7 +1,7 @@
 import React from 'react';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
-import { generate, evaluate, operations, submodel } from 'SeMarket/ServiceApp/industry_4.0_language';
+import { generate, evaluate, operations, submodel } from 'SeMarket/industry_4.0_language';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
 import AssetList from '../components/asset-list';
@@ -38,6 +38,7 @@ class Dashboard extends React.Component {
       response: ''
     };
 
+    this.getUser = this.getUser.bind(this);
     this.createOffer = this.createOffer.bind(this);
     this.deleteAsset = this.deleteAsset.bind(this);
     this.createRequest = this.createRequest.bind(this);
@@ -50,7 +51,7 @@ class Dashboard extends React.Component {
   }
 
   componentDidMount() {
-    this.callApi();
+    this.getUser();
     const operation = operations();
     console.log('operations', operation);
 
@@ -58,9 +59,10 @@ class Dashboard extends React.Component {
     console.log('model', model);
   }
 
-  async callApi() {
-    // const response = await api.post('cfp', cfp);
-    // return response.message;
+  async getUser() {
+    const user = await api.get('user');
+    console.log('getUser', user);
+    this.setState({ user });
   };
 
   createOffer() {

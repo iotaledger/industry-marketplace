@@ -1,8 +1,11 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { readData } from './databaseHelper';
-import { processPayment } from './walletHelper';
+// import uuid from 'uuid/v4';
+import { readData /*, removeData */ } from './databaseHelper';
+import { getBalance, processPayment } from './walletHelper';
+
+// import { fetchFromChannelId, publish } from './mamHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -45,6 +48,23 @@ export class AppHelper {
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
 
             next();
+        });
+
+        app.get('/user', async (req, res) => {
+            interface IUser {
+                id?: string;
+                role?: string;
+            }
+            const user: IUser = await readData('user');
+
+            interface IWallet {
+                address?: string;
+            }
+            const wallet: IWallet = await readData('wallet');
+            const { address } = wallet;
+            const balance = await getBalance(address);
+
+            res.json({ ...user, balance });
         });
 
         app.post('/cfp', async (req, res) => {
