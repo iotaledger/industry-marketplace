@@ -1,7 +1,7 @@
 import React from 'react';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
-import { generate, evaluate, operations, submodel } from 'SeMarket/industry_4.0_language';
+import { generate, evaluate, operations, submodel } from 'SeMarket/Industry_4.0_language';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
 import AssetList from '../components/asset-list';
@@ -52,11 +52,8 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     this.getUser();
-    const operation = operations();
-    console.log('operations', operation);
-
-    const model = submodel(operation[0].id);
-    console.log('model', model);
+    const eClassOperations = operations();
+    console.log('operations', eClassOperations);
   }
 
   async getUser() {
