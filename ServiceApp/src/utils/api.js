@@ -1,8 +1,8 @@
 import { domain } from '../config.json';
 
-const parseSettings = ({ data } = {}) => ({
+const parseSettings = ({ method, data } = {}) => ({
   headers: { 'Content-Type': 'application/json' },
-  method: 'post',
+  method,
   body: data ? JSON.stringify(data) : undefined,
 });
 
@@ -15,7 +15,10 @@ const request = async (endpoint, { params, ...settings } = {}) => {
 };
 
 export default {
+  get: async (endpoint, params) => {
+    return await request(`${domain}/${endpoint}`, { method: 'get', params });
+  },
   post: async (endpoint, data = {}) => {
-    return await request(`${domain}/${endpoint}`, { data });
+    return await request(`${domain}/${endpoint}`, { method: 'post', data });
   }
 };
