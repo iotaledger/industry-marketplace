@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const HeaderWrapper = ({ createOffer, createRequest }) => (
+const HeaderWrapper = ({ createRequest }) => (
   <Main>
-    <RightHeader createOffer={createOffer}>
+    <RightHeader>
       {
-        createOffer && createRequest ? (
+        createRequest ? (
           <ButtonWrapper>
-            <Button onClick={createOffer}>Create offer</Button>
             <Button onClick={createRequest}>Create request</Button>
           </ButtonWrapper>
         ) : null
