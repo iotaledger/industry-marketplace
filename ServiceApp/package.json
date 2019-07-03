@@ -23,7 +23,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
-    "concurrently": "^4.1.0",
+    "concurrently": "^4.1.1",
     "node-sass": "^4.12.0",
     "nodemon": "^1.19.1",
     "react-scripts": "2.1.8"
@@ -32,7 +32,7 @@
     "client": "yarn start",
     "server": "nodemon server.js",
     "server-build": "cd server && yarn build",
-    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "dev": "concurrently --kill-others-on-fail \"yarn client\" \"cd server && yarn start-dev\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "new-wallet": "cd server/build/utils/ && node userHelper.js --create wallet",

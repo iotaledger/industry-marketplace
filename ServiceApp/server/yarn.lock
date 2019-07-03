@@ -1192,11 +1192,6 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-fast-future@~1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/fast-future/-/fast-future-1.0.2.tgz#8435a9aaa02d79248d17d704e76259301d99280a"
-  integrity sha1-hDWpqqAteSSNF9cE52JZMB2ZKAo=
-
 fill-range@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/fill-range/-/fill-range-4.0.0.tgz#d544811d428f98eb06a63dc402d2403c328c38f7"
@@ -1849,13 +1844,12 @@ level-iterator-stream@~4.0.0:
     readable-stream "^3.0.2"
     xtend "^4.0.0"
 
-leveldown@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/leveldown/-/leveldown-5.1.0.tgz#89f8a4fd4eb51793988368fc7f91e6d4db5f6d53"
-  integrity sha512-+Ws1IDVSbJRJl/cP/JlapGSmt8xPSvZQpTlYGpyaMQiXtlx/fdMX30K2aHiTLxhLcnAg74D8odBG1Fk12/8SRA==
+leveldown@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/leveldown/-/leveldown-5.1.1.tgz#5d3a043f0ec76e91e189117ec3627bef0436c0dc"
+  integrity sha512-4n2R/vEA/sssh5TKtFwM9gshW2tirNoURLqekLRUUzuF+eUBLFAufO8UW7bz8lBbG2jw8tQDF3LC+LcUCc12kg==
   dependencies:
     abstract-leveldown "~6.0.3"
-    fast-future "~1.0.2"
     napi-macros "~1.8.1"
     node-gyp-build "~4.1.0"
 

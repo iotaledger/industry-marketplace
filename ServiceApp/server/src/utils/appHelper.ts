@@ -73,6 +73,7 @@ export class AppHelper {
             console.log(req.body);
             console.log(user);
             console.log(wallet);
+            console.log('CfP success');
             res.send({
                 success: true,
                 message: JSON.stringify(req.body),
