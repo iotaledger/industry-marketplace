@@ -1,0 +1,5 @@
+{
+    "name": "market-manager",
+    "version": 2,
+    "builds": [{ "use": "@now/node" }]
+}
