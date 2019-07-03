@@ -145,6 +145,26 @@ export class ZmqService {
             const messageType = EClassHelper.extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
 
+                /*
+                    1. Check user role (SR, SP, YP)
+
+                    2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                        2.1 Decode every such message of type B, E and retrieve receiver ID
+                        2.2 Compare receiver ID with user ID. Only if match, send message to UI
+
+                    3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                        2.1 Decode every message of type A, retrieve location.
+                        2.2 If NO own location and NO accepted range are set, send message to UI
+                        2.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                            2.2.1 If distance within accepted range, send message to UI
+
+                        2.4 Decode every message of type C, D, F and retrieve receiver ID
+                        2.5 Compare receiver ID with user ID. Only if match, send message to UI
+
+                    4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                        2.1 Send every such message to UI
+                */
+
                 const bundle = messageParams[8];
                 const transactions = await IotaHelper.findTransactions(bundle);
                 if (!transactions.length || !transactions[0].signatureMessageFragment) {
