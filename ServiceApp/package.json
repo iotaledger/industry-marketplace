@@ -29,10 +29,11 @@
     "react-scripts": "2.1.8"
   },
   "scripts": {
+    "install-all": "yarn && cd server && yarn",
     "client": "yarn start",
     "server": "nodemon server.js",
     "server-build": "cd server && yarn build",
-    "dev": "concurrently --kill-others-on-fail \"yarn client\" \"cd server && yarn start-dev\"",
+    "dev": "yarn install-all && yarn server-build && concurrently --kill-others-on-fail \"yarn client\" \"cd server && yarn start-dev\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "new-wallet": "cd server/build/utils/ && node userHelper.js --create wallet",
