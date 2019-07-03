@@ -74,6 +74,7 @@ export class AppHelper {
             console.log(user);
             console.log(wallet);
             res.send({
+                success: true,
                 message: JSON.stringify(req.body),
                 user,
                 wallet

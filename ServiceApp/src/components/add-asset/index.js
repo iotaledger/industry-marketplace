@@ -2,14 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
+import { generate, evaluate, operations, submodel } from 'SeMarket/Industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
 import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loading from '../loading';
-
-const Heading = category => <Header>New {category.replace(/s([^s]*)$/,'')}</Header>;
+import { areaCode, waitingTime } from '../../config.json';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -19,346 +19,255 @@ const Card = props => (
   </CardWrapper>
 );
 
+const getInputType = (type) => {
+  switch (type) {
+      case 'decimal':
+      case 'double':
+      case 'float':
+      case 'int':
+      case 'integer':
+      case 'long':
+      case 'short':
+      case 'byte':
+      case 'unsignedLong':
+      case 'unsignedShort':
+      case 'unsignedByte':
+      case 'nonNegativeInteger':
+      case 'positiveInteger':
+      case 'nonPositiveInteger':
+      case 'negativeInteger':
+      case 'dateTimeStamp':
+          return 'number';
+  
+      case 'date':
+          return 'date';
+
+      case 'dateTime':
+          return 'datetime-local';
+
+      case 'boolean':
+          return 'checkbox';
+      
+      case 'string':
+      case 'langString':
+      case 'anyURI':
+      case 'complexType':
+      case 'anyType':
+      case 'anySimpleType':
+      case 'anyAtomicType':
+      case 'time':
+      default:
+        return 'text';
+  }
+} 
+
 export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
-      active: true,
-      submit: false,
-      city: '',
-      country: '',
-      company: '',
-      assetName: '',
-      assetDescription: '',
-      assetType: '',
-      assetLocation: '',
-      assetLat: '',
-      assetLon: '',
-      assetPrice: '',
       assetStart: new Date(),
       assetEnd: new Date(),
-      assetActive: true,
-      dataTypes: [{ name: '', value: '' }],
+      operation: '',
+      operations: [],
+      submodel: [],
     };
 
-    this.addRow = this.addRow.bind(this);
-    this.activate = this.activate.bind(this);
-    this.cancel = this.cancel.bind(this);
-    this.remove = this.remove.bind(this);
     this.change = this.change.bind(this);
-    this.changeRow = this.changeRow.bind(this);
+    this.changeSubmodelValue = this.changeSubmodelValue.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.submit = this.submit.bind(this);
   }
 
-  addRow() {
-    const dataTypes = this.state.dataTypes;
-    dataTypes.push({ name: '', value: '' });
-    this.setState({ dataTypes });
-  };
-
-  activate() {
-    this.setState({ active: true });
+  async componentDidMount() {
+    const eClassOperations = await operations();
+    this.setState({ operations: eClassOperations });
   }
 
-  cancel() {
-    this.setState({ active: false });
-    this.props.cancel();
-  }
-
-  remove(i) {
-    const dataTypes = this.state.dataTypes;
-    if (dataTypes.length === 1) return alert('You must have at least one data field.');
-    dataTypes.splice(i, 1);
-    this.setState({ dataTypes });
+  async change({ target: { name, value } }) {
+    if (name === 'operation') {
+      const eClassSubmodel = await submodel(value);
+      this.setState({
+        submodel: eClassSubmodel,
+        [name]: value
+      });
+    } else {
+      this.setState({ [name]: value });
+    }
   };
 
-  change(e) {
-    this.setState({ [e.target.name]: e.target.value });
+  changeSubmodelValue({ target: { name, type, value } }, index) {
+    const submodel = this.state.submodel;
+    if (value && type === 'number') {
+      submodel[index][name] = Number(value);
+    } else {
+      submodel[index][name] = value;
+    }
+    this.setState({ submodel });
   };
 
   handleDateChange(date, component) {
     this.setState({ [component]: date });
   }
 
-  changeRow(e, i) {
-    const dataTypes = this.state.dataTypes;
-    dataTypes[i][e.target.name] = e.target.value;
-    this.setState({ dataTypes });
-  };
-
   async submit() {
-    const startDate = parse(this.state.assetStart);
-    const endDate = parse(this.state.assetEnd);
+    const { operation, submodel, assetStart, assetEnd } = this.state;
+    const startDate = parse(assetStart);
+    const endDate = parse(assetEnd);
 
-    // if (!this.state.assetName) return alert('Please enter asset name');
-    // if (!this.state.assetType)
-    //   return alert('Specify type of asset');
-    // if (!this.state.city || !this.state.country) return alert('Enter city and country');
+    if (!this.state.operation)
+      return alert('Please specify required operation');
+    if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
+      return alert('Please enter a valid date/time when the request starts');
+    if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
+      return alert('Please enter a valid date/time when the request ends');
 
-    // if (this.props.category === 'requests') {
-    //   if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
-    //     return alert('Please enter a valid date/time when the offer starts');
-    //   if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
-    //     return alert('Please enter a valid date/time when the offer ends');
-    // }  
+
+    const submodelValues = {};
+    submodel.forEach(({ semanticId, value, valueType }) => {
+      if (['date', 'dateTime', 'dateTimeStamp'].includes(valueType)) {
+        submodelValues[semanticId] = Date.parse(value);
+      } else {
+        submodelValues[semanticId] = value;
+      }
+    });
+
+    const fieldsEvaluationResult = evaluate(operation, submodelValues);
+    if (fieldsEvaluationResult !== 'success') {
+      return alert(fieldsEvaluationResult);
+    }
+
+    const messageParameters = {
+      submodelValues,
+      irdi: operation, 
+      messageType: 'callForProposal', 
+      userId: this.props.userId,
+      creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
+      startTimestamp: Date.parse(assetStart),
+      endTimestamp: Date.parse(assetEnd),
+      replyTime: waitingTime,
+      location: areaCode
+    };
 
     this.setState({ loading: true });
 
-    const asset = {
-      location: {
-        city: this.state.city,
-        country: this.state.country,
-      },
-      assetName: this.state.assetName,
-      assetDescription: this.state.assetDescription,
-      type: this.state.assetType,
-      dataTypes: this.state.dataTypes,
-      lat: parseFloat(this.state.assetLat),
-      lon: parseFloat(this.state.assetLon),
-      company: this.state.company,
-      price: Number(this.state.assetPrice),
-      category: this.props.category,
-      creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
-    };
+    const message = await generate(messageParameters);
+    const createRequestResult = await this.props.createRequest(message);
 
-    if (this.props.category === 'requests') {
-      asset.start = startDate;
-      asset.end = endDate;
-    }
-
-    const createAssetResult = await this.props.createAsset(asset);
-
-    if (createAssetResult.error) {
+    if (createRequestResult.error) {
       this.setState({ loading: false });
-      return alert(createAssetResult.error);
+      return alert(createRequestResult.error);
     }
 
-    this.setState({
-      loading: false,
-      active: false,
-      city: '',
-      country: '',
-      company: '',
-      assetName: '',
-      assetDescription: '',
-      assetType: '',
-      assetLocation: '',
-      assetLat: '',
-      assetLon: '',
-      assetPrice: '',
-      assetStart: '',
-      assetEnd: '',
-      dataTypes: [{ id: '', name: '', unit: '' }],
-    });
+    // this.setState({
+    //   loading: false,
+    //   submodel: [],
+    //   operation: '',
+    //   assetStart: '',
+    //   assetEnd: ''
+    // });
 
   };
 
   render() {
-    const { active, loading } = this.state;
+    const { loading, operation, operations, submodel } = this.state;
+    
     return (
       <React.Fragment>
-        {
-          active ? (
-            <Modal className="access-modal-wrapper" show={true}>
-              <AddAsset className="access-modal">
-                <Card header={Heading(this.props.category)}>
-                  {
-                    !loading ? (
-                      <Form>
-                        <Column>
-                          <label>Asset Name:</label>
-                          <Input
-                            placeholder="unique Asset Name"
-                            type="text"
-                            name="assetName"
-                            value={this.state.assetName}
-                            onChange={this.change}
-                          />
-                        </Column>
-                        <Column>
-                          <label>Asset Description:</label>
-                          <Input
-                            placeholder="asset description"
-                            type="text"
-                            name="assetDescription"
-                            value={this.state.assetDescription}
-                            onChange={this.change}
-                          />
-                        </Column>
-                        <Column>
-                          <label>Asset Type:</label>
-                          <select
-                            placeholder="eg. network bandwidth"
-                            type="text"
-                            name="assetType"
-                            value={this.state.assetType}
-                            onChange={this.change}
-                          >
-                            <option value=""></option>     
-                            <option value="frequency">Frequency</option>
-                            <option value="infrastructure">Infrastructure</option>
-                            <option value="cell">Cell</option>
-                            <option value="connectivity">Connectivity</option>
-                          </select>
-                        </Column>
-                        <Column>
-                          <label>
-                            {this.props.category === 'offers' ? 'Asset' : 'Service'} Provider:
-                          </label>
-                          <Input
-                            placeholder="eg. Orange"
-                            type="text"
-                            name="company"
-                            value={this.state.company}
-                            onChange={this.change}
-                          />
-                        </Column>
-                        <Column>
-                          <label>Price / min:</label>
-                          <Input
-                            placeholder={100}
-                            type="number"
-                            name="assetPrice"
-                            value={this.state.assetPrice}
-                            onChange={this.change}
-                          />
-                        </Column>
+        <Modal className="access-modal-wrapper" show={true}>
+          <AddAsset className="access-modal">
+            <Card header={<Header>New Request</Header>}>
+              {
+                !loading ? (
+                  <Form>
+                    <Column>
+                      <label>Select Operation:</label>
+                      <select
+                        type="text"
+                        name="operation"
+                        value={operation}
+                        onChange={this.change}
+                      >
+                        <option value=""></option> 
                         {
-                          this.props.category === 'requests' ? (   
-                            <Row>
-                              <Column>
-                                <label>Start Time:</label>
-                                <DatePicker
-                                  showTimeSelect
-                                  todayButton="Today"
-                                  placeholderText="Click to select a date"
-                                  timeFormat="HH:mm"
-                                  timeIntervals={15}
-                                  dateFormat="MMMM d, yyyy h:mm aa"
-                                  timeCaption="time"
-                                  minDate={new Date()}
-                                  selected={this.state.assetStart}
-                                  onChange={date => this.handleDateChange(date, 'assetStart')}
-                                />
-                              </Column>
-                              <Column>
-                                <label>End Time:</label>
-                                <DatePicker
-                                  showTimeSelect
-                                  todayButton="Today"
-                                  placeholderText="Click to select a date"
-                                  timeFormat="HH:mm"
-                                  timeIntervals={15}
-                                  dateFormat="MMMM d, yyyy h:mm aa"
-                                  timeCaption="time"
-                                  minDate={new Date()}
-                                  selected={this.state.assetEnd}
-                                  onChange={date => this.handleDateChange(date, 'assetEnd')}
-                                />
-                              </Column>
-                            </Row>
-                          ) : null
-                        }
-                        <Column>
-                          <label>Location:</label>
-                          <Row>
-                            <Input
-                              placeholder="eg. Nice"
-                              type="text"
-                              name="city"
-                              value={this.state.city}
-                              onChange={this.change}
-                            />
-                            <Input
-                              placeholder="eg. France"
-                              type="text"
-                              name="country"
-                              value={this.state.country}
-                              onChange={this.change}
-                            />
-                          </Row>
-                        </Column>
+                          operations.map(({ id, name }) => 
+                            <option key={id} value={id}>{name}</option>
+                          )
+                        }    
+                      </select>
+                    </Column>
+                    {
+                      operation ? (
                         <Row>
                           <Column>
-                            <label>Latitude:</label>
-                            <Input
-                              placeholder="eg. 43.701"
-                              type="number"
-                              name="assetLat"
-                              value={this.state.assetLat}
-                              onChange={this.change}
+                            <label>Start Time:</label>
+                            <DatePicker
+                              showTimeSelect
+                              todayButton="Today"
+                              placeholderText="Click to select a date"
+                              timeFormat="HH:mm"
+                              timeIntervals={15}
+                              dateFormat="MMMM d, yyyy h:mm aa"
+                              timeCaption="time"
+                              minDate={new Date()}
+                              selected={this.state.assetStart}
+                              onChange={date => this.handleDateChange(date, 'assetStart')}
                             />
                           </Column>
                           <Column>
-                            <label>Longitude:</label>
-                            <Input
-                              placeholder="eg. 7.264"
-                              type="number"
-                              name="assetLon"
-                              value={this.state.assetLon}
-                              onChange={this.change}
+                            <label>End Time:</label>
+                            <DatePicker
+                              showTimeSelect
+                              todayButton="Today"
+                              placeholderText="Click to select a date"
+                              timeFormat="HH:mm"
+                              timeIntervals={15}
+                              dateFormat="MMMM d, yyyy h:mm aa"
+                              timeCaption="time"
+                              minDate={new Date()}
+                              selected={this.state.assetEnd}
+                              onChange={date => this.handleDateChange(date, 'assetEnd')}
                             />
                           </Column>
                         </Row>
-                        <Row style={{ justifyContent: 'space-between' }}>
-                          <Header>Additional Parameters:</Header>
-                          <Add onClick={this.addRow}>
-                            <IconButton src="/static/icons/icon-add.svg" />
-                          </Add>
+                      ) : null
+                    }
+                    {
+                      submodel.map(({ idShort, valueType }, i) => (
+                        <Row key={i}>
+                          <Small>
+                            <label>{idShort}:</label>
+                            <Input
+                              type={getInputType(valueType)}
+                              name="value"
+                              value={submodel[i].value}
+                              onChange={e => this.changeSubmodelValue(e, i)}
+                            />
+                          </Small>
                         </Row>
-                        {this.state.dataTypes.map((fields, i) => (
-                          <Row key={i}>
-                            <Small>
-                              <label>Field Name:</label>
-                              <Input
-                                placeholder="eg. Frequency"
-                                type="text"
-                                name="name"
-                                value={this.state.dataTypes[i].name}
-                                onChange={e => this.changeRow(e, i)}
-                              />
-                            </Small>
-
-                            <Small>
-                              <label>Field Value:</label>
-                              <Input
-                                placeholder="eg. Hz"
-                                type="text"
-                                name="value"
-                                value={this.state.dataTypes[i].unit}
-                                onChange={e => this.changeRow(e, i)}
-                              />
-                            </Small>
-                            <Add style={{ flex: 1 }} onClick={() => this.remove(i)}>
-                              <IconButton src="/static/icons/icon-delete.svg" />
-                            </Add>
-                          </Row>
-                        ))}
-                      </Form>
-                    ) : null
-                  }
-                  {
-                    loading && (
-                      <LoadingBox>
-                        <Loading color="#e2e2e2" size="130" />
-                      </LoadingBox>
-                    )
-                  }
-                  <FootRow>
-                    <FooterButton secondary onClick={this.cancel}>
-                      Cancel
-                    </FooterButton>
-                    <FooterButton onClick={this.submit}>
-                      Submit
-                    </FooterButton>
-                  </FootRow>
-                </Card>
-              </AddAsset>
-            </Modal>
-          ) : null
-        }
+                      ))
+                    }
+                  </Form>
+                ) : null
+              }
+              {
+                loading && (
+                  <LoadingBox>
+                    <Loading color="#e2e2e2" size="130" />
+                  </LoadingBox>
+                )
+              }
+              <FootRow>
+                <FooterButton secondary onClick={() => this.props.cancel()}>
+                  Cancel
+                </FooterButton>
+                <FooterButton onClick={this.submit}>
+                  Submit
+                </FooterButton>
+              </FootRow>
+            </Card>
+          </AddAsset>
+        </Modal>
       </React.Fragment>
     );
   }
@@ -419,11 +328,6 @@ const Row = styled.div`
   }
 `;
 
-const IconButton = styled.img`
-  height: 20px;
-  width: 20px;
-`;
-
 const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -456,14 +360,6 @@ const Input = styled.input`
   margin: 0px 5px 10px 0;
   border-bottom: 2px solid #eee;
   background: transparent;
-`;
-
-const Add = styled.div`
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  paddin: 10px 0 0;
 `;
 
 const Modal = styled.div`
