@@ -33,7 +33,7 @@
                 "idShort":"zeit",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"date",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAO738#001"
             },
             {
@@ -79,7 +79,7 @@
                 "idShort":"zeit",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"date",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAO738#001"
             },
             {
@@ -125,7 +125,7 @@
                 "idShort":"zeit",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"date",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAO738#001"
             },
             {
@@ -171,7 +171,7 @@
                 "idShort":"zeit",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"date",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAO738#001"
             },
             {
@@ -217,7 +217,7 @@
                 "idShort":"zeit",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"date",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAO738#001"
             },
             {
