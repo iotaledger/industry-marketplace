@@ -15,9 +15,9 @@
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
-        "serve-mon": "nodemon ./build/index",
+        "serve-mon": "nodemon ./build/src/index",
         "start-dev": "run-p serve-mon build-watch",
-        "start": "node ./build/index"
+        "start": "node ./build/src/index"
     },
     "dependencies": {
         "@iota/core": "^1.0.0-beta.16",
