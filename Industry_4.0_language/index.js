@@ -53,6 +53,7 @@ const checkType = (type, value) => {
         case 'string':
         case 'langString':
         case 'anyURI':
+        case 'time':
             return typeof value === 'string';
 
         case 'decimal':
@@ -81,7 +82,6 @@ const checkType = (type, value) => {
         case 'date':
         case 'dateTime':
         case 'dateTimeStamp':
-        case 'time':
             return typeof value === 'number' && typeof new Date(value) === 'object';
 
         case 'boolean':
