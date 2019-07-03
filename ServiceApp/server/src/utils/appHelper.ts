@@ -83,7 +83,7 @@ export class AppHelper {
             console.log('acceptProposal success');
             res.send({
                 success: true,
-                message: JSON.stringify(req.body),
+                message: JSON.stringify(req.body)
             });
           });
 
@@ -97,6 +97,14 @@ export class AppHelper {
 
         app.post('/informConfirm', (req, res) => {
             console.log('informConfirm success');
+            res.send({
+                success: true,
+                message: JSON.stringify(req.body)
+            });
+        });
+
+        app.post('/informPayment', (req, res) => {
+            console.log('informPayment success');
             res.send({
                 success: true,
                 message: JSON.stringify(req.body)
