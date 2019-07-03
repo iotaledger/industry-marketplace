@@ -1,12 +1,12 @@
 const uuid = require('uuid/v4');
 const sample_operations = require('./templates/operations.json');
 const eClass = require('./templates/eClass.json');
-const cfp = require('./templates/cfp.json');
+const callForProposal = require('./templates/callForProposal.json');
 const proposal = require('./templates/proposal.json');
 const acceptProposal = require('./templates/acceptProposal.json');
 const rejectProposal = require('./templates/rejectProposal.json');
 const informConfirm = require('./templates/informConfirm.json');
-
+const informPayment = require('./templates/informPayment.json');
 /**
  * GET /operations
  * 1. For CfP message type returns list of operations (plain text)
@@ -104,7 +104,18 @@ const checkType = (type, value) => {
  * 2. Fills placeholder JSON for selected message type with provided values, appends submodel  
  * 3. Returns generated message of the selected type (CfP, Proposal, etc.)  
  */
-const generate = ({ messageType, userId, irdi, submodelValues, replyTime, originalMessage, price }) => {
+const generate = ({ 
+    messageType, 
+    userId, 
+    irdi, 
+    submodelValues, 
+    replyTime, 
+    originalMessage = null, 
+    price = null,
+    location = null,
+    startTimestamp = null,
+    endTimestamp = null
+}) => {
     const message = getTemplate(messageType);
     if (!message) {
         return null;
@@ -114,16 +125,28 @@ const generate = ({ messageType, userId, irdi, submodelValues, replyTime, origin
     message.frame.sender.identification.id = userId;
     message.frame.replyBy = getReplyByTime(replyTime);
 
-    if (originalMessage && ['proposal', 'acceptProposal', 'rejectProposal', 'informConfirm'].includes(messageType)) {
+    if (originalMessage && messageType !== 'callForProposal') {
         message.frame.receiver.identification.id = originalMessage.frame.sender.identification.id;
         message.dataElements = originalMessage.dataElements;
-        
+        message.frame.location = originalMessage.frame.location;
+        message.frame.startTimestamp = originalMessage.frame.startTimestamp;
+        message.frame.endTimestamp = originalMessage.frame.endTimestamp;
+
         if (messageType === 'proposal' && price && irdi) {
             const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => idShort === 'preis');
             priceModel.value = price;
             message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
         }
-    } else if (messageType === 'cfp' && irdi) {
+    } else if (irdi && messageType === 'callForProposal') {
+        if (location) {
+            message.frame.location = originalMessage.frame.location;
+        }
+        
+        if (startTimestamp && endTimestamp) {
+            message.frame.startTimestamp = startTimestamp;
+            message.frame.endTimestamp = endTimestamp;
+        }
+
         if (evaluate(irdi, submodelValues) === 'success') {
             const submodelTemplate = submodel(irdi);
             const submodelElements = submodelTemplate.map(element => (
@@ -150,8 +173,8 @@ const getReplyByTime = (minutes = 10) => {
 
 const getTemplate = (type) => {
     switch (type) {
-        case 'cfp':
-            return cfp;
+        case 'callForProposal':
+            return callForProposal;
         case 'proposal':
             return proposal;
         case 'acceptProposal':
@@ -160,6 +183,8 @@ const getTemplate = (type) => {
             return rejectProposal;        
         case 'informConfirm':
             return informConfirm;
+        case 'informPayment':
+            return informPayment;
         default:
             return null;
     }
@@ -184,7 +209,7 @@ module.exports = {
 // console.log('=======================');
 
 // const generateValuesCFP = {
-//     messageType: 'cfp', 
+//     messageType: 'callForProposal', 
 //     userId: 'test-user1',
 //     irdi: '0173-1#02-BAF574#004', 
 //     submodelValues: values, 
