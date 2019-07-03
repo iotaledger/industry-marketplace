@@ -134,11 +134,13 @@ export class AppHelper {
 
         app.post('/informPayment', (req, res) => {
             /*
-                1. Retrieve MAM channel from DB
-                2. Attach message with payment confirmation payload
-                3. Update channel details in DB
-                4. Create Tag
-                5. Send transaction, no MAM payload needed
+                1. Retrieve wallet, check balance
+                2. Process payment
+                3. Retrieve MAM channel from DB
+                4. Attach message with payment confirmation payload
+                5. Update channel details in DB
+                6. Create Tag
+                7. Send transaction, include payment transaction hash
             */
             console.log('informPayment success');
             res.send({
