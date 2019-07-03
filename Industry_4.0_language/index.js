@@ -114,7 +114,8 @@ const generate = ({
     price = null,
     location = null,
     startTimestamp = null,
-    endTimestamp = null
+    endTimestamp = null,
+    creationDate = null
 }) => {
     const message = getTemplate(messageType);
     if (!message) {
@@ -131,6 +132,7 @@ const generate = ({
         message.frame.location = originalMessage.frame.location;
         message.frame.startTimestamp = originalMessage.frame.startTimestamp;
         message.frame.endTimestamp = originalMessage.frame.endTimestamp;
+        message.frame.creationDate = originalMessage.frame.creationDate;
 
         if (messageType === 'proposal' && price && irdi) {
             const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => idShort === 'preis');
@@ -139,12 +141,16 @@ const generate = ({
         }
     } else if (irdi && messageType === 'callForProposal') {
         if (location) {
-            message.frame.location = originalMessage.frame.location;
+            message.frame.location = location;
         }
         
         if (startTimestamp && endTimestamp) {
             message.frame.startTimestamp = startTimestamp;
             message.frame.endTimestamp = endTimestamp;
+        }
+
+        if (creationDate) {
+            message.frame.creationDate = creationDate;
         }
 
         if (evaluate(irdi, submodelValues) === 'success') {
