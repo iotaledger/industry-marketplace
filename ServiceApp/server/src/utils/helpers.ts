@@ -18,7 +18,8 @@ export const getCodeFromMessageType = message => {
         proposal: 'B',
         acceptProposal: 'C',
         rejectProposal: 'D',
-        informConfirm: 'E'
+        informConfirm: 'E',
+        informPayment: 'F'
     };
     return map[message] || null;
 };
@@ -29,7 +30,8 @@ export const getMessageTypeFromCode = code => {
         B: 'proposal',
         C: 'acceptProposal',
         D: 'rejectProposal',
-        E: 'informConfirm'
+        E: 'informConfirm',
+        F: 'informPayment'
     };
     return map[code] || null;
 };
