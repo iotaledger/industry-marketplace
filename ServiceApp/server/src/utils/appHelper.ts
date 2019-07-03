@@ -1,11 +1,10 @@
 import bodyParser from 'body-parser';
-import express from 'express';
 import cors from 'cors';
-// import uuid from 'uuid/v4';
-import { readData /*, removeData */ } from './databaseHelper';
-import { getBalance, processPayment } from './walletHelper';
-
-// import { fetchFromChannelId, publish } from './mamHelper';
+import express from 'express';
+import packageJson from '../../package.json';
+import config from '../config.json';
+import { readData } from './databaseHelper';
+import { getBalance } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -18,24 +17,21 @@ export class AppHelper {
      * @returns The express js application.
      */
     public static build(onComplete, customListener) {
-        const packageJson = require('../../package.json');
-        const config = require(`../config.json`);
-
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
         const app = express();
 
         // Set up a whitelist and check against it:
-        const whitelist = ['http://localhost', 'http://localhost:3000']
+        const whitelist = ['http://localhost', 'http://localhost:3000'];
         const corsOptions = {
-            origin: function (origin, callback) {
+            origin: (origin, callback) => {
                 if (whitelist.indexOf(origin) !== -1) {
-                    callback(null, true)
+                    callback(null, true);
                 } else {
-                    callback(new Error('Not allowed by CORS'))
+                    callback(new Error('Not allowed by CORS'));
                 }
             }
-        }
+        };
 
         app.use(cors(corsOptions));
         app.use(bodyParser.json({ limit: '30mb' }));
@@ -68,51 +64,42 @@ export class AppHelper {
         });
 
         app.post('/cfp', async (req, res) => {
-            const user = await readData('user');
-            const wallet = await readData('wallet');
-            console.log(req.body);
-            console.log(user);
-            console.log(wallet);
             console.log('CfP success');
             res.send({
                 success: true,
-                message: JSON.stringify(req.body),
-                user,
-                wallet
+                message: JSON.stringify(req.body)
             });
         });
 
         app.post('/proposal', async (req, res) => {
-            const address = 'AKDNWKHUEBXMKZPOLFPQJQOSXDEWLB9LZPCQKCLHPETEDBWORBWHOIGB9YLYIYIUU9ZWRIUNGGVQBZIEC9BWYFZGRW';
-            const transactions = await processPayment(address, 5);
-
-            if (transactions.length > 0) {
-                console.log('Success');
-            }
-            
+            console.log('Proposal success');
             res.send({
+                success: true,
                 message: JSON.stringify(req.body)
             });
         });
 
         app.post('/acceptProposal', (req, res) => {
-            console.log(req.body);
+            console.log('acceptProposal success');
             res.send({
-              message: JSON.stringify(req.body),
+                success: true,
+                message: JSON.stringify(req.body),
             });
           });
-          
+
         app.post('/rejectProposal', (req, res) => {
-            console.log(req.body);
+            console.log('rejectProposal success');
             res.send({
-                message: JSON.stringify(req.body),
+                success: true,
+                message: JSON.stringify(req.body)
             });
         });
-          
+
         app.post('/informConfirm', (req, res) => {
-            console.log(req.body);
+            console.log('informConfirm success');
             res.send({
-                message: JSON.stringify(req.body),
+                success: true,
+                message: JSON.stringify(req.body)
             });
         });
 
