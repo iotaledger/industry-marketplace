@@ -5,26 +5,18 @@ import { Link } from 'react-router-dom';
 import { AssetContext } from '../../pages/dashboard';
 import Card from './index.js';
 
-const Heading = ({ assetId, active, assetName, category }) => {
-  const { deleteAsset } = useContext(AssetContext);
+const Heading = ({ assetId, assetName, category }) => {
   return (
     <Full>
       <AssetCategory>{category.replace(/s([^s]*)$/,'')}</AssetCategory>
       <Link to={`/order/${assetId}`}>
         <AssetId>{assetName.length > 20 ? `${assetName.substr(0, 20)}...` : assetName}</AssetId>
       </Link>
-      {
-        active && deleteAsset ? (
-          <Delete onClick={() => deleteAsset(assetId, category)}>
-            <IconButton src="/static/icons/icon-delete.svg" />
-          </Delete>
-        ) : null
-      }
     </Full>
   );
 }
 
-const Footer = ({ assetId, active, category }) => {
+const Footer = ({ assetId }) => {
   const { history } = useContext(AssetContext);
   if (!history) return null;
 

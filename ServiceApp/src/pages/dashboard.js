@@ -1,18 +1,12 @@
 import React from 'react';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
-import { generate, evaluate, operations, submodel } from 'SeMarket/Industry_4.0_language';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
 import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
-
-
-import ap from  '../sample_requests/acceptProposal.json';
-import cfp from '../sample_requests/cfp.json';
-import proposal from '../sample_requests/proposal.json';
 
 export const AssetContext = React.createContext({});
 
@@ -21,13 +15,11 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       assets: {
-        offers: [],
         requests: []
       },
       user: {},
       orders: [],
       loading: false,
-      displayNewOfferForm: false,
       displayNewRequestForm: false,
       showModal: false,
       notification: null,
@@ -35,16 +27,12 @@ class Dashboard extends React.Component {
       noAssets: true,
       assetDetails: {},
       assetToModify: {},
-      response: ''
+      response: '',
     };
 
     this.getUser = this.getUser.bind(this);
-    this.createOffer = this.createOffer.bind(this);
-    this.deleteAsset = this.deleteAsset.bind(this);
     this.createRequest = this.createRequest.bind(this);
     this.acceptProposal = this.acceptProposal.bind(this);
-    this.showNewOfferForm = this.showNewOfferForm.bind(this);
-    this.hideNewOfferForm = this.hideNewOfferForm.bind(this);
     this.showNewRequestForm = this.showNewRequestForm.bind(this);
     this.hideNewRequestForm = this.hideNewRequestForm.bind(this);
     this.notificationCallback = this.notificationCallback.bind(this);
@@ -52,26 +40,19 @@ class Dashboard extends React.Component {
 
   componentDidMount() {
     this.getUser();
-    const eClassOperations = operations();
-    console.log('operations', eClassOperations);
   }
 
   async getUser() {
     const user = await api.get('user');
-    console.log('getUser', user);
     this.setState({ user });
   };
 
-  createOffer() {
-    return this.create('proposal', proposal);
-  };
-
-  createRequest() {
-    return this.create('cfp', cfp);
+  createRequest(message) {
+    return this.create('cfp', message);
   };
 
   acceptProposal() {
-    return this.create('acceptProposal', ap);
+    // return this.create('acceptProposal', ap);
   };
 
   create(endpoint, packet) {
@@ -80,9 +61,7 @@ class Dashboard extends React.Component {
       const data = await api.post(endpoint, packet);
       // Check success
       if (data.success) {
-        this.findAssets();
         this.setState({
-          displayNewOfferForm: false,
           displayNewRequestForm: false
         });
       } else if (data.error) {
@@ -98,24 +77,6 @@ class Dashboard extends React.Component {
       resolve(data);
     });
   };
-
-  async deleteAsset(assetId, category) {
-    this.setState({ loading: true });
-    const assets = this.state.assets;
-    assets[category] = [...assets[category].filter(asset => asset.assetId !== assetId)];
-    this.setState({
-      loading: false,
-      assets,
-    });
-  };
-
-  showNewOfferForm() {
-    this.setState({ displayNewOfferForm: true });
-  }
-
-  hideNewOfferForm() {
-    this.setState({ displayNewOfferForm: false });
-  }
 
   showNewRequestForm() {
     this.setState({ displayNewRequestForm: true });
@@ -135,13 +96,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { assets, noAssets, loading, displayNewOfferForm, displayNewRequestForm } = this.state;
-
-    const activeOffers = assets.offers && !isEmpty(assets.offers)
-      ? assets.offers.filter(asset => asset.active) : [];
-
-    const inactiveOffers = assets.offers && !isEmpty(assets.offers)
-      ? assets.offers.filter(asset => !asset.active) : [];
+    const { assets, noAssets, user, loading, displayNewRequestForm } = this.state;
 
     const activeRequests = assets.requests && !isEmpty(assets.requests)
       ? assets.requests.filter(asset => asset.active) : [];
@@ -152,7 +107,6 @@ class Dashboard extends React.Component {
     return (
       <Main>
         <AssetNav
-          createOffer={this.showNewOfferForm}
           createRequest={this.showNewRequestForm}
           acceptProposal={this.acceptProposal}
         />
@@ -164,8 +118,7 @@ class Dashboard extends React.Component {
               </LoadingBox>
             ) : (
               <AssetContext.Provider
-                value={{
-                  deleteAsset: this.deleteAsset,
+                value = {{
                   history: this.showHistory,
                 }}
               >
@@ -174,17 +127,11 @@ class Dashboard extends React.Component {
                   noAssets ? (
                     <NoAssetsOuterWrapper>
                       <NoAssetsInnerWrapper>
-                        <Heading>You have no active offers or requests</Heading>
+                        <Heading>You have no active requests</Heading>
                         <Text>Why not create a new one?</Text>
                         <ButtonWrapper>
-                          <Button onClick={this.showNewOfferForm}>
-                            Create offer
-                          </Button>
                           <Button onClick={this.showNewRequestForm}>
                             Create request
-                          </Button>
-                          <Button onClick={this.acceptProposal}>
-                            Accept proposal
                           </Button>
                         </ButtonWrapper>
                       </NoAssetsInnerWrapper>
@@ -193,43 +140,11 @@ class Dashboard extends React.Component {
                 }
                 <AssetsWrapper>
                   {
-                    displayNewOfferForm &&
-                    <AddCard
-                      createAsset={this.createOffer}
-                      cancel={this.hideNewOfferForm}
-                      category="offers"
-                    />
-                  }
-                  {
-                    activeOffers.length > 0 ? (
-                      <React.Fragment>
-                        <Heading>Active Offers</Heading>
-                        <ActiveAssets>
-                          <AssetList
-                            assets={activeOffers}
-                          />
-                        </ActiveAssets>
-                      </React.Fragment>
-                    ) : null
-                  }
-                  {
-                    inactiveOffers.length > 0 ? (
-                      <React.Fragment>
-                        <Heading>Inactive Offers</Heading>
-                        <InactiveAssets>
-                          <AssetList
-                            assets={inactiveOffers}
-                          />
-                        </InactiveAssets>
-                      </React.Fragment>
-                    ) : null
-                  }
-                  {
                     displayNewRequestForm &&
                     <AddCard
-                      createAsset={this.createRequest}
+                      createRequest={this.createRequest}
                       cancel={this.hideNewRequestForm}
-                      category="requests"
+                      userId={user && user.id}
                     />
                   }
                   {
