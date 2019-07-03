@@ -147,7 +147,7 @@ export class ZmqService {
 
                 const bundle = messageParams[8];
                 const transactions = await IotaHelper.findTransactions(bundle);
-                if (!transactions.length || !transactions[0].signatureMessageFragment) {
+                if (!transactions.length || !transactions[0].signatureMessageFragment) {
                     return null;
                 }
                 const trytes = transactions[0].signatureMessageFragment;
