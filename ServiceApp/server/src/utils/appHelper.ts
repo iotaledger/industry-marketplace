@@ -64,6 +64,13 @@ export class AppHelper {
         });
 
         app.post('/cfp', async (req, res) => {
+            /*
+                1. Create Tag
+                2. Send transaction
+                3. Create new MAM channel
+                4. Publish first message with payload
+                5. Save channel details to DB
+            */
             console.log('CfP success');
             res.send({
                 success: true,
@@ -72,6 +79,10 @@ export class AppHelper {
         });
 
         app.post('/proposal', async (req, res) => {
+            /*
+                1. Create Tag
+                2. Send transaction
+            */
             console.log('Proposal success');
             res.send({
                 success: true,
@@ -80,6 +91,13 @@ export class AppHelper {
         });
 
         app.post('/acceptProposal', (req, res) => {
+            /*
+                1. Retrieve MAM channel from DB
+                2. Attach message with confirmation payload
+                3. Update channel details in DB
+                4. Create Tag
+                5. Send transaction, include MAM channel info
+            */
             console.log('acceptProposal success');
             res.send({
                 success: true,
@@ -88,6 +106,10 @@ export class AppHelper {
           });
 
         app.post('/rejectProposal', (req, res) => {
+            /*
+                1. Create Tag
+                2. Send transaction
+            */
             console.log('rejectProposal success');
             res.send({
                 success: true,
@@ -96,6 +118,13 @@ export class AppHelper {
         });
 
         app.post('/informConfirm', (req, res) => {
+            /*
+                1. Retrieve MAM channel from DB
+                2. Attach message with confirmation payload
+                3. Update channel details in DB
+                4. Create Tag
+                5. Send transaction, include MAM channel info
+            */
             console.log('informConfirm success');
             res.send({
                 success: true,
@@ -104,6 +133,13 @@ export class AppHelper {
         });
 
         app.post('/informPayment', (req, res) => {
+            /*
+                1. Retrieve MAM channel from DB
+                2. Attach message with payment confirmation payload
+                3. Update channel details in DB
+                4. Create Tag
+                5. Send transaction, no MAM payload needed
+            */
             console.log('informPayment success');
             res.send({
                 success: true,
