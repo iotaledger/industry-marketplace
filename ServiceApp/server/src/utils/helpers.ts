@@ -12,30 +12,6 @@ export const decodeMessage = transaction => {
     return trytesToAscii(trytes);
 };
 
-export const getCodeFromMessageType = message => {
-    const map = {
-        callForProposal: 'A',
-        proposal: 'B',
-        acceptProposal: 'C',
-        rejectProposal: 'D',
-        informConfirm: 'E',
-        informPayment: 'F'
-    };
-    return map[message] || null;
-};
-
-export const getMessageTypeFromCode = code => {
-    const map = {
-        A: 'callForProposal',
-        B: 'proposal',
-        C: 'acceptProposal',
-        D: 'rejectProposal',
-        E: 'informConfirm',
-        F: 'informPayment'
-    };
-    return map[code] || null;
-};
-
 export const getNumberFromLetter = letter => {
     return letter.charCodeAt(0) - 65;
 };

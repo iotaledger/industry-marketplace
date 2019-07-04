@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { EClassHelper } from '../utils/eclassHelper';
+import { extractMessageType } from '../utils/eclassHelper';
 import { IotaHelper } from '../utils/iotaHelper';
 import { TrytesHelper } from '../utils/trytesHelper';
 
@@ -142,7 +142,7 @@ export class ZmqService {
         const tag = messageParams[12];
 
         if (event === 'tx' && this._subscriptions[event]) {
-            const messageType = EClassHelper.extractMessageType(tag);
+            const messageType = extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
 
                 /*

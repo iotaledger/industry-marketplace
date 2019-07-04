@@ -8,5 +8,6 @@
         "existing": "./market_manager"
     },
     "faucet": "https://api.marketplace.tangle.works/semarket",
-    "provider": "https://nodes.devnet.iota.org:443"
+    "provider": "https://nodes.devnet.iota.org:443",
+    "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD"
 }
