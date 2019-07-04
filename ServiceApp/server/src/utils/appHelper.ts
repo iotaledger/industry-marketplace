@@ -102,7 +102,8 @@ export class AppHelper {
         app.post('/proposal', async (req, res) => {
             /*
                 1. Create Tag
-                2. Send transaction
+                2. Retrieve Wallet address from DB
+                3. Send transaction, include wallet address
             */
             console.log('Proposal success');
             res.send({
