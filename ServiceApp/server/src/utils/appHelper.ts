@@ -4,7 +4,11 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData } from './databaseHelper';
-import { getBalance } from './walletHelper';
+import { getLocationFromMessage } from './locationHelper';
+import { publish } from './mamHelper';
+import { buildTag } from './tagHelper';
+import { sendMessage } from './transactionHelper';
+import { getBalance, processPayment } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -65,18 +69,34 @@ export class AppHelper {
         });
 
         app.post('/cfp', async (req, res) => {
-            /*
-                1. Create Tag
-                2. Send transaction
-                3. Create new MAM channel
-                4. Publish first message with payload
-                5. Save channel details to DB
-            */
-            console.log('CfP success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
+            try {
+                // 1. Create Tag
+                const location = getLocationFromMessage(req.body);
+                const tag = buildTag('callForProposal', location);
+
+                // 2. Send transaction
+                const hash = await sendMessage(req.body, tag);
+
+                // 3. Create new MAM channel
+                // 4. Publish first message with payload
+                // 5. Save channel details to DB
+                const channelId = req.body.frame.conversationId;
+                const mamRoot = await publish(channelId, req.body);
+
+                console.log('CfP success');
+                res.send({
+                    success: true,
+                    tag,
+                    hash,
+                    mamRoot
+                });
+            } catch (error) {
+                console.log('CfP Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
         });
 
         app.post('/proposal', async (req, res) => {
