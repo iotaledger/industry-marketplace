@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { composeAPI } from '@iota/core';
+import axios from 'axios';
+import crypto from 'crypto';
 import { provider } from '../config.json';
 
 const iota = composeAPI({ provider });
@@ -62,4 +63,16 @@ export class IotaHelper {
 
         return hasConnectivity;
     }
+
+    public static generateSeed(length = 81) {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
+        let seed = '';
+        while (seed.length < length) {
+            const byte = crypto.randomBytes(1)
+            if (byte[0] < 243) {
+                seed += charset.charAt(byte[0] % 27);
+            }
+        }
+        return seed;
+    };
 }

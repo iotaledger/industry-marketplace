@@ -68,7 +68,6 @@ await publish(channelId, { message: 'Message from Bob' });
 Example read operation:
 
 import { fetchFromChannelId } from './mamHelper';
-import { readData } from './databaseHelper';
 
 const fetchData = async channelId => {
     const messages = await fetchFromChannelId(channelId);
