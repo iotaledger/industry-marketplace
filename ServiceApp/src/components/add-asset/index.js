@@ -73,6 +73,7 @@ export default class extends React.Component {
       submodel: [],
     };
 
+    this.cancel = this.cancel.bind(this);
     this.change = this.change.bind(this);
     this.changeSubmodelValue = this.changeSubmodelValue.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
@@ -82,6 +83,28 @@ export default class extends React.Component {
   async componentDidMount() {
     const eClassOperations = await operations();
     this.setState({ operations: eClassOperations });
+  }
+
+  componentWillUnmount() {
+    this.setState({
+      loading: false,
+      assetStart: new Date(),
+      assetEnd: new Date(),
+      operation: '',
+      operations: [],
+      submodel: [],
+    });
+  }
+
+  cancel() {
+    this.setState({
+      loading: false,
+      assetStart: new Date(),
+      assetEnd: new Date(),
+      operation: '',
+      operations: [],
+      submodel: [],
+    }, () => this.props.cancel());
   }
 
   async change({ target: { name, value } }) {
@@ -158,19 +181,12 @@ export default class extends React.Component {
       this.setState({ loading: false });
       return alert(createRequestResult.error);
     }
-
-    // this.setState({
-    //   loading: false,
-    //   submodel: [],
-    //   operation: '',
-    //   assetStart: '',
-    //   assetEnd: ''
-    // });
-
   };
 
   render() {
     const { loading, operation, operations, submodel } = this.state;
+    console.log('render', submodel);
+    
     
     return (
       <React.Fragment>
@@ -258,7 +274,7 @@ export default class extends React.Component {
                 )
               }
               <FootRow>
-                <FooterButton secondary onClick={() => this.props.cancel()}>
+                <FooterButton secondary onClick={this.cancel}>
                   Cancel
                 </FooterButton>
                 <FooterButton onClick={this.submit}>
