@@ -184,25 +184,6 @@ const Full = styled.div`
   width: 100%;
 `;
 
-const Delete = styled.span`
-  position: absolute;
-  display: flex;
-  align-items: center;
-  top: 10px;
-  right: 30px;
-`;
-
-const IconButton = styled.img`
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
-  opacity: 1;
-  transition: all 0.3s ease;
-  &:hover {
-    opacity: 0.4;
-  }
-`;
-
 const FootRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -235,26 +216,3 @@ const FooterButton = styled.button`
   }
 `;
 
-const ButtonSelect = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font: 16px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 12px 21px;
-  border-radius: 100px;
-  color: ${props => (props.selected ? '#009fff' : '#ffffff')};
-  background-color: ${props => (props.selected ? '#ffffff' : '#009fff')};
-  border: ${props => (props.selected ? '1px solid #009fff' : 'none')};
-  font-size: 16px;
-  font-weight: normal;
-  letter-spacing: 0.38px;
-  width: 400px;
-  height: 45px;
-
-  &:hover {
-    color: ${props => (props.selected ? '#ffffff' : '#009fff')};
-    background-color: ${props => (props.selected ? '#009fff' : '#ffffff')};
-    border: 1px solid #009fff;
-  }
-`;
