@@ -132,6 +132,29 @@ export class ZmqService {
     }
 
     /**
+     * Build payload for the socket packet
+     */
+    private buildPayload(data, messageType, messageParams) {
+        return {
+            data,
+            messageType,
+            tag: messageParams[12],
+            hash: messageParams[1],
+            address: messageParams[2],
+            timestamp: parseInt(messageParams[5], 10)
+        };
+    }
+
+    /**
+     * Send out an event
+     */
+    private sendEvent(data, messageType, messageParams) {
+        const event = messageParams[0];
+        const payload = this.buildPayload(data, messageType, messageParams);
+        this._subscriptions[event][0].callback(event, payload);
+    }
+
+    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
@@ -147,16 +170,7 @@ export class ZmqService {
             if (tag.startsWith(this._config.prefix) && messageType) {
                 const bundle = messageParams[8];
                 const data = getPayload(bundle);
-                const payload = {
-                    tag,
-                    data,
-                    messageType,
-                    hash: messageParams[1],
-                    address: messageParams[2],
-                    timestamp: parseInt(messageParams[5], 10)
-                };
-
-                this._subscriptions[event][0].callback(event, payload);
+                this.sendEvent(data, messageType, messageParams);
 
                 /*
                     1. Check user role (SR, SP, YP)
