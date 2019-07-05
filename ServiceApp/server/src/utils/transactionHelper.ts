@@ -1,12 +1,12 @@
 import { asciiToTrytes } from '@iota/converter';
 import { composeAPI } from '@iota/core';
 import { defaultAddress, provider } from '../config.json';
-import { IotaHelper } from './iotaHelper';
+import { generateSeed } from './iotaHelper';
 
 const iota = composeAPI({ provider });
 
 export const sendMessage = (payload, tag) => {
-    const seed = IotaHelper.generateSeed();
+    const seed = generateSeed();
     const message = asciiToTrytes(JSON.stringify(payload));
 
     const transfers = [{
