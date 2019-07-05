@@ -169,7 +169,7 @@ export class ZmqService {
             const messageType = extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
                 const bundle = messageParams[8];
-                const data = getPayload(bundle);
+                const data = await getPayload(bundle);
                 this.sendEvent(data, messageType, messageParams);
 
                 /*

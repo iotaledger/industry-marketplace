@@ -4,8 +4,8 @@ import { faucet } from '../config.json';
 import { writeData } from './databaseHelper';
 
 const createUser = async () => {
-    const { id, role } = argv;
-    if (!id || !role || !['SR', 'SP'].includes(role)) {
+    const { id, role = '' } = argv;
+    if (!id || !role || role !== 'SR' || role !== 'SP') {
         console.log('Params are missing or wrong');
         return;
     }
