@@ -7,6 +7,7 @@ import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
+import Zmq from '../components/zmq';
 
 export const AssetContext = React.createContext({});
 
@@ -86,6 +87,10 @@ class Dashboard extends React.Component {
     this.setState({ displayNewRequestForm: false });
   }
 
+  newMessage(message) {
+    console.log(message);
+  }
+
   notificationCallback() {
     this.setState({
       showModal: false,
@@ -110,6 +115,7 @@ class Dashboard extends React.Component {
           createRequest={this.showNewRequestForm}
           acceptProposal={this.acceptProposal}
         />
+        <Zmq callback={this.newMessage} />
         <Data>
           {
             loading ? (

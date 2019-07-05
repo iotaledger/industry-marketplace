@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import WebFontLoader from 'webfontloader';
-import { HashRouter, Switch, Route } from 'react-router-dom';
 import './assets/scss/index.scss';
-import DashboardPage from './pages/dashboard';
+import App from './App';
 
 WebFontLoader.load({
   google: {
@@ -11,13 +10,4 @@ WebFontLoader.load({
   },
 });
 
-const renderApp = () => (
-  <HashRouter>
-    <Switch>
-      <Route path="/" component={DashboardPage} exact />
-      <Route component={DashboardPage} />
-    </Switch>
-  </HashRouter>
-);
-
-ReactDOM.render(renderApp(), document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
