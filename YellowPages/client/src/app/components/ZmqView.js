@@ -1,4 +1,5 @@
-import { Button, ButtonContainer, Form, FormActions, Heading } from 'iota-react-components';
+// import { Button, ButtonContainer, Form, FormActions } from 'iota-react-components';
+import { Heading } from 'iota-react-components';
 import React, { Component } from 'react';
 import { ServiceFactory } from '../../factories/serviceFactory';
 import './ZmqView.scss';
@@ -18,12 +19,13 @@ class ZmqView extends Component {
             events: []
         };
 
-        this.restart = this.restart.bind(this);
+        // this.restart = this.restart.bind(this);
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
+        this.start()
         window.addEventListener('beforeunload', this.stop);
     }
 
@@ -36,16 +38,6 @@ class ZmqView extends Component {
         return (
             <React.Fragment>
                 <Heading level={1}>ZMQ Events</Heading>
-                <Form>
-                    <FormActions>
-                        <ButtonContainer>
-                            <Button color='primary' onClick={() => this.start()} disabled={this.state.isRunning}>Start</Button>
-                            <Button color='primary' onClick={() => this.stop()} disabled={!this.state.isRunning}>Stop</Button>
-                            <Button color='primary' onClick={() => this.setState({ events: [], totalEvents: 0 })}>Clear</Button>
-                        </ButtonContainer>
-                    </FormActions>
-                </Form>
-
                 {!this.state.isRunning && this.state.totalEvents === 0 && (
                     <p>There are not yet any events to show.</p>
                 )}
@@ -75,16 +67,6 @@ class ZmqView extends Component {
                 ))}
             </React.Fragment>
         );
-    }
-
-    /**
-     * Resart the subscription running.
-     */
-    async restart() {
-        if (this.state.isRunning) {
-            await this.stop();
-            await this.start();
-        }
     }
 
     /**

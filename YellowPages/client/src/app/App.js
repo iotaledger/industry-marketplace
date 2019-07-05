@@ -6,8 +6,8 @@ import logo from '../assets/logo.svg';
 import contentHomePage from '../content/contentHomePage.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { ApiClient } from '../services/apiClient';
-import { ConfigurationService } from '../services/configurationService';
 import ZmqView from './components/ZmqView';
+import config from '../config.json';
 
 class App extends Component {
     constructor(props) {
@@ -24,10 +24,6 @@ class App extends Component {
 
     async componentDidMount() {
         try {
-            const configService = new ConfigurationService();
-            const config = await configService.load(`/data/config.json`);
-
-            ServiceFactory.register('configuration', () => configService);
             ServiceFactory.register('api', () => new ApiClient(config.apiEndpoint));
 
             this._configuration = config;

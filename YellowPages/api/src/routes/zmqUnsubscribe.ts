@@ -18,7 +18,7 @@ export function zmqUnsubscribe(config, socket, request) {
             for (let i = 0; i < request.subscriptionIds.length; i++) {
                 zmqService.unsubscribe(request.subscriptionIds[i]);
             }
-            console.log('zmqUnsubscribe', request.subscriptionIds)
+            console.log('zmqUnsubscribe', request.subscriptionIds);
         }
 
         response = {
