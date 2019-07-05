@@ -1,8 +1,9 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
+import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
-import { IotaHelper } from '../utils/iotaHelper';
-import { TrytesHelper } from '../utils/trytesHelper';
+import { getPayload } from '../utils/iotaHelper';
+// import { getLocationFromMessage } from '../utils/locationHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -144,35 +145,8 @@ export class ZmqService {
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
-
-                /*
-                    1. Check user role (SR, SP, YP)
-
-                    2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                        2.1 Decode every such message of type B, E and retrieve receiver ID
-                        2.2 Compare receiver ID with user ID. Only if match, send message to UI
-
-                    3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                        2.1 Decode every message of type A, retrieve location.
-                        2.2 If NO own location and NO accepted range are set, send message to UI
-                        2.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                            2.2.1 If distance within accepted range, send message to UI
-
-                        2.4 Decode every message of type C, D, F and retrieve receiver ID
-                        2.5 Compare receiver ID with user ID. Only if match, send message to UI
-
-                    4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                        2.1 Send every such message to UI
-                */
-
                 const bundle = messageParams[8];
-                const transactions = await IotaHelper.findTransactions(bundle);
-                if (!transactions.length || !transactions[0].signatureMessageFragment) {
-                    return null;
-                }
-                const trytes = transactions[0].signatureMessageFragment;
-                const data = TrytesHelper.fromTrytes(trytes);
-
+                const data = getPayload(bundle);
                 const payload = {
                     tag,
                     data,
@@ -183,6 +157,28 @@ export class ZmqService {
                 };
 
                 this._subscriptions[event][0].callback(event, payload);
+
+                /*
+                    1. Check user role (SR, SP, YP)
+
+                    2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                        2.1 Decode every such message of type B, E and retrieve receiver ID
+                        2.2 Compare receiver ID with user ID. Only if match, send message to UI
+
+                    3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                        3.1 Decode every message of type A, retrieve location.
+                        3.2 If NO own location and NO accepted range are set, send message to UI
+                        3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                            3.3.1 If distance within accepted range, send message to UI
+
+                        3.4 Decode every message of type C, D, F and retrieve receiver ID
+                        3.5 Compare receiver ID with user ID. Only if match, send message to UI
+
+                    4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                        4.1 Send every such message to UI
+                */
+
+                }
             }
         }
     }
