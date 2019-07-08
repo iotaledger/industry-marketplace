@@ -1,63 +1,86 @@
-import leveldown from 'leveldown';
-import levelup from 'levelup';
+import path from 'path';
+import sqlite3 from 'sqlite3';
 import { database } from '../config.json';
 
-export const writeData = async (data, table = 'wallet', location = 'existing') => {
-    return new Promise(async (resolve, reject) => {
-        const db = levelup(leveldown(database[location]));
-        console.log('writeData', table, database[location], data);
-        db.put(table, JSON.stringify(data), async (err) => {
-            if (err || data === undefined) {
-                await db.close();
-                return reject(err); // some kind of I/O error
-            }
-            await db.close();
-            return resolve();
-        });
+sqlite3.verbose();
+const db = new sqlite3.Database(
+    path.resolve(__dirname, database), error => {
+        if (error) {
+            return console.error(error.message);
+        }
+        db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
+        db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        db.run('CREATE TABLE IF NOT EXISTS mam (id INTEGER PRIMARY KEY, root TEXT, seed TEXT, next TEXT, secretKey TEXT, start INTEGER');
+    }
+);
+
+export const close = async () => {
+    db.close(error => {
+        if (error) {
+            return console.error(error.message);
+        }
     });
 };
 
-export const readData = async (table = 'wallet') => {
-    return new Promise(async (resolve, reject) => {
-        const db = levelup(leveldown('./market_manager'));
-        try {
-            db.get(table, async (err, value) => {
-                if (err === null) {
-                    const result = JSON.parse(value.toString());
-                    await db.close();
-                    return resolve(result);
-                }
+export const createUser = async ({ id, role }) => {
+    await db.run('REPLACE INTO user (id, role) VALUES (?, ?)', [id, role]);
+};
 
-                console.log(err);
-                // likely the key was not found
-                await db.close();
-                return resolve(null);
+export const createWallet = async ({ seed, address, balance, keyIndex }) => {
+    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
+};
+
+export const createMAMChannel = async ({ id, root, seed, next, secretKey, start }) => {
+    const insert = `
+        INSERT INTO mam (
+        id, root, seed, next, secretKey, start)
+        VALUES (?, ?, ?, ?, ?, ?)`;
+    await db.run(insert, [id, root, seed, next, secretKey, start]);
+};
+
+export const writeData = async (table, data) => {
+    try {
+        console.log('writeData', table, data);
+        switch (table) {
+            case 'user':
+                await createUser(data);
+                return;
+            case 'wallet':
+                await createWallet(data);
+                return;
+            case 'mam':
+            default:
+                await createWallet(data);
+                return;
+        }
+    } catch (error) {
+        console.log('writeData', error);
+        return null;
+    }
+};
+
+export const readData = async (table, searchField = null) => {
+    return new Promise((resolve, reject) => {
+        try {
+            console.log('Read data from', table);
+            let query = `SELECT * FROM ${table} LIMIT 1`;
+            if (searchField) {
+                query = `SELECT * FROM ${table} WHERE id = ${searchField} ORDER BY rowid DESC LIMIT 1`;
+            }
+            db.all(query, (err, rows) => {
+                err ? reject(err) : resolve(rows[0]);
             });
         } catch (error) {
             console.log('readData', error);
-            await db.close();
-            return reject(null);
+            reject();
         }
     });
 };
 
-export const removeData = async (table) => {
-    return new Promise(async (resolve, reject) => {
-        const db = levelup(leveldown('./market_manager'));
-        try {
-            db.del(table, async (err) => {
-                if (err) {
-                    console.log('removeData', err);
-                }
-                console.log('removeData OK');
-                await db.close();
-                return resolve(null);
-            });
-        } catch (error) {
-            console.log('removeData', error);
-            await db.close();
-            return reject(null);
-        }
+export const removeData = (table) => {
+    return new Promise(async resolve => {
+        await db.run(`DROP TABLE IF EXISTS ${table}`);
+        resolve();
     });
 };
 
@@ -72,7 +95,7 @@ const data = {
     amount: 555
 };
 
-await writeData(data, entry);
+await writeData('wallet', data);
 */
 
 /*

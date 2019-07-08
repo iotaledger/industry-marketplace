@@ -1,23 +1,24 @@
 import axios from 'axios';
 import yargs from 'yargs';
 import { faucet } from '../config.json';
-import { writeData } from './databaseHelper';
+import { createUser, createWallet } from './databaseHelper';
 
-const createUser = async () => {
+const createNewUser = async () => {
     const { id, role = '' } = argv;
-    if (!id || !role || role !== 'SR' || role !== 'SP') {
+    if (id && (role === 'SR' || role === 'SP')) {
+        return await createUser({ id, role });
+    } else {
         console.log('Params are missing or wrong');
         return;
     }
-    await writeData({ id, role }, 'user', 'new');
 };
 
-const createWallet = async () => {
+const createNewWallet = async () => {
     console.log('Creating wallet...');
     const response = await axios.get(faucet);
     const data = response.data;
     if (data.success) {
-        await writeData(data.wallet, 'wallet', 'new');
+        await createWallet(data.wallet);
     }
 };
 
@@ -31,9 +32,9 @@ const argv = yargs
     .argv;
 
 if (argv.create === 'user') {
-    createUser();
+    createNewUser();
 } else if (argv.create === 'wallet') {
-    createWallet();
+    createNewWallet();
 } else {
     console.log('Wrong mode. Possible modes: ["user", "wallet"]');
 }
