@@ -26,9 +26,8 @@
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "leveldown": "^5.1.1",
-        "levelup": "^4.1.0",
         "socket.io": "^2.2.0",
+        "sqlite3": "^4.0.9",
         "uuid": "^3.3.2",
         "yargs": "^13.2.4",
         "zeromq": "^5.1.0"
