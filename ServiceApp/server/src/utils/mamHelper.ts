@@ -15,7 +15,7 @@ interface IMamState {
 // Publish to tangle
 export const publish = async (channelId, packet, tag = 'SEMARKETMAM') => {
     let mamState;
-    const mamStateFromDB: IMamState = await readData(`mam-${channelId}`);
+    const mamStateFromDB: IMamState = await readData('mam', channelId);
     if (mamStateFromDB) {
         mamState = mamStateFromDB;
     } else {
@@ -29,7 +29,7 @@ export const publish = async (channelId, packet, tag = 'SEMARKETMAM') => {
     const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
 
     // Save new mamState
-    await writeData({ ...message.state, root }, `mam-${channelId}`);
+    // await writeData('mam', { ...message.state, root, id: channelId });
 
     // Attach the payload
     await Mam.attach(message.payload, message.address, 3, 9, tag);
@@ -44,7 +44,7 @@ export const fetchFromRoot = async root => {
 };
 
 export const fetchFromChannelId = async channelId => {
-    const channelData: IMamState = await readData(`mam-${channelId}`);
+    const channelData: IMamState = await readData('mam', channelId);
     if (channelData) {
         return await fetchFromRoot(channelData.root);
     }

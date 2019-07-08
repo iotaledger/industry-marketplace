@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { readData } from '../utils/databaseHelper';
+// import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 // import { getLocationFromMessage } from '../utils/locationHelper';
@@ -192,7 +192,7 @@ export class ZmqService {
                         4.1 Send every such message to UI
                 */
 
-                }
+                // }
             }
         }
     }
