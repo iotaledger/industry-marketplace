@@ -1,7 +1,7 @@
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import Mam from '@iota/mam';
 import { provider } from '../config.json';
-import { readData, writeData } from './databaseHelper';
+import { readData/*, writeData */ } from './databaseHelper';
 
 const mode = 'public';
 
