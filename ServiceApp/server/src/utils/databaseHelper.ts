@@ -10,7 +10,7 @@ const db = new sqlite3.Database(
         }
         db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
         db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        db.run('CREATE TABLE IF NOT EXISTS mam (id INTEGER PRIMARY KEY, root TEXT, seed TEXT, next TEXT, secretKey TEXT, start INTEGER');
+        db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next TEXT, secretKey TEXT, start INTEGER)');
     }
 );
 
