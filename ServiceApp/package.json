@@ -36,8 +36,8 @@
     "dev": "yarn install-all && yarn server-build && concurrently --kill-others-on-fail \"yarn client\" \"cd server && yarn start-dev\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "new-wallet": "cd server/build/utils/ && node userHelper.js --create wallet",
-    "new-user": "f(){ cd server/build/utils/ && node userHelper.js --create user --role $1 --id $2 ;};f"
+    "new-wallet": "cd server/build/src/utils/ && node userHelper.js --create wallet",
+    "new-user": "f(){ cd server/build/src/utils/ && node userHelper.js --create user --role $1 --id $2 ;};f"
   },
   "eslintConfig": {
     "extends": "react-app"
