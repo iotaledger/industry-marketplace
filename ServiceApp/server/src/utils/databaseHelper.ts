@@ -10,7 +10,7 @@ const db = new sqlite3.Database(
         }
         db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
         db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next TEXT, secretKey TEXT, start INTEGER)');
+        db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
     }
 );
 
@@ -30,12 +30,12 @@ export const createWallet = async ({ seed, address, balance, keyIndex }) => {
     await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
 };
 
-export const createMAMChannel = async ({ id, root, seed, next, secretKey, start }) => {
+export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
     const insert = `
         INSERT INTO mam (
-        id, root, seed, next, secretKey, start)
+        id, root, seed, next_root, side_key, start)
         VALUES (?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [id, root, seed, next, secretKey, start]);
+    await db.run(insert, [id, root, seed, next_root, side_key, start]);
 };
 
 export const writeData = async (table, data) => {
@@ -50,7 +50,7 @@ export const writeData = async (table, data) => {
                 return;
             case 'mam':
             default:
-                await createWallet(data);
+                await createMAMChannel(data);
                 return;
         }
     } catch (error) {
@@ -62,17 +62,37 @@ export const writeData = async (table, data) => {
 export const readData = async (table, searchField = null) => {
     return new Promise((resolve, reject) => {
         try {
-            console.log('Read data from', table);
             let query = `SELECT * FROM ${table} LIMIT 1`;
             if (searchField) {
-                query = `SELECT * FROM ${table} WHERE id = ${searchField} ORDER BY rowid DESC LIMIT 1`;
+                query = `SELECT * FROM ${table} WHERE id = '${searchField}' ORDER BY rowid DESC LIMIT 1`;
             }
-            db.all(query, (err, rows) => {
-                err ? reject(err) : resolve(rows[0]);
+            db.get(query, (err, row) => {
+                if (err) {
+                    return resolve(null);
+                } else {
+                    return resolve(row || null);
+                }
             });
         } catch (error) {
             console.log('readData', error);
-            reject();
+            return reject(null);
+        }
+    });
+};
+
+export const readAllData = async (table) => {
+    return new Promise((resolve, reject) => {
+        try {
+            db.all(`SELECT * FROM ${table}`, (err, rows) => {
+                if (err) {
+                    return resolve(null);
+                } else {
+                    return resolve(rows);
+                }
+            });
+        } catch (error) {
+            console.log('readAllData', error);
+            return reject(null);
         }
     });
 };
