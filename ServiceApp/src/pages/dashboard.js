@@ -1,4 +1,5 @@
 import React from 'react';
+import get from 'lodash-es/get';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
 import api from '../utils/api';
@@ -7,40 +8,40 @@ import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
+import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
+import { getByType, writeToStorage } from '../utils/storage';
+import { prepareData } from '../utils/card';
 
 export const AssetContext = React.createContext({});
+export const UserContext = React.createContext({});
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      assets: {
-        requests: []
-      },
+      assets: [],
       user: {},
-      orders: [],
+      activeSection: 'callForProposal',
       loading: false,
       displayNewRequestForm: false,
-      showModal: false,
-      notification: null,
       error: false,
-      noAssets: true,
-      assetDetails: {},
-      assetToModify: {},
-      response: '',
     };
 
     this.getUser = this.getUser.bind(this);
-    this.createRequest = this.createRequest.bind(this);
-    this.acceptProposal = this.acceptProposal.bind(this);
+    this.newMessage = this.newMessage.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
+    this.showHistory = this.showHistory.bind(this);
     this.showNewRequestForm = this.showNewRequestForm.bind(this);
     this.hideNewRequestForm = this.hideNewRequestForm.bind(this);
     this.notificationCallback = this.notificationCallback.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.getUser();
+    const assets = await getByType(this.state.activeSection);
+    console.log('componentDidMount', assets);
+    this.setState({ assets });
   }
 
   async getUser() {
@@ -48,36 +49,43 @@ class Dashboard extends React.Component {
     this.setState({ user });
   };
 
-  createRequest(message) {
-    return this.create('cfp', message);
+    // console.log('message', message);
+    // const card = await prepareData(get(this.state, 'user.role'), message);
+    // console.log('card', card);
+    // await writeToStorage(card.id, card);
+    // const byType = getByType('callForProposal');
+    // console.log('byType', byType);
+
+  async createRequest(message) {
+    return this.sendMessage('cfp', message);
   };
 
-  acceptProposal() {
-    // return this.create('acceptProposal', ap);
-  };
-
-  create(endpoint, packet) {
+  async sendMessage(endpoint, packet) {
     return new Promise(async (resolve) => {
       // Call server
       const data = await api.post(endpoint, packet);
       // Check success
       if (data.success) {
         this.setState({
-          displayNewRequestForm: false
+          displayNewRequestForm: false,
+          error: false,
+          loading: false,
         });
+        await this.newMessage(packet);
       } else if (data.error) {
         this.setState({
-          showModal: true,
           error: data.error,
-          notification: 'generalError',
           loading: false,
-          assetDetails: {}
         });
       }
 
       resolve(data);
     });
   };
+
+  showHistory(assetId) {
+    this.props.history.push(`/history/${assetId}`);
+  }
 
   showNewRequestForm() {
     this.setState({ displayNewRequestForm: true });
@@ -87,64 +95,66 @@ class Dashboard extends React.Component {
     this.setState({ displayNewRequestForm: false });
   }
 
-  newMessage(message) {
-    console.log(message);
+  async newMessage(message) {
+    console.log('message', message);
+    const card = await prepareData(
+      get(this.state, 'user.role'), 
+      get(message, 'data')
+    );
+    console.log('card', card);
+    await writeToStorage(card.id, card);
+    const assets = await getByType(this.state.activeSection);
+    console.log('byType', assets);
+    this.setState({ assets });
   }
 
   notificationCallback() {
-    this.setState({
-      showModal: false,
-      notification: null,
-      error: false,
-      assetDetails: {},
-    });
+    this.setState({ error: false });
   }
 
   render() {
-    const { assets, noAssets, user, loading, displayNewRequestForm } = this.state;
-
-    const activeRequests = assets.requests && !isEmpty(assets.requests)
-      ? assets.requests.filter(asset => asset.active) : [];
-
-    const inactiveRequests = assets.requests && !isEmpty(assets.requests)
-      ? assets.requests.filter(asset => !asset.active) : [];
+    const { activeSection, assets, user, loading, displayNewRequestForm } = this.state;
 
     return (
       <Main>
-        <AssetNav
-          createRequest={this.showNewRequestForm}
-          acceptProposal={this.acceptProposal}
-        />
-        <Zmq callback={this.newMessage} />
-        <Data>
-          {
-            loading ? (
-              <LoadingBox>
-                <Loading />
-              </LoadingBox>
-            ) : (
-              <AssetContext.Provider
-                value = {{
-                  history: this.showHistory,
-                }}
-              >
-                <p>{this.state.response}</p>
-                {
-                  noAssets ? (
-                    <NoAssetsOuterWrapper>
-                      <NoAssetsInnerWrapper>
-                        <Heading>You have no active requests</Heading>
-                        <Text>Why not create a new one?</Text>
-                        <ButtonWrapper>
-                          <Button onClick={this.showNewRequestForm}>
-                            Create request
-                          </Button>
-                        </ButtonWrapper>
-                      </NoAssetsInnerWrapper>
-                    </NoAssetsOuterWrapper>
-                  ) : null
-                }
-                <AssetsWrapper>
+        <UserContext.Provider value={{ user }}>
+          <AssetNav
+            createRequest={this.showNewRequestForm}
+            acceptProposal={this.acceptProposal}
+          />
+          <Zmq callback={this.newMessage} />
+          <Data>
+            <Sidebar
+              showMenu 
+              currentPage={activeSection} 
+              callback={this.changeSection} 
+            />
+            {
+              loading ? (
+                <LoadingBox>
+                  <Loading />
+                </LoadingBox>
+              ) : (
+                <AssetContext.Provider
+                  value = {{
+                    history: this.showHistory,
+                  }}
+                >
+                  {
+                    assets.length === 0 ? (
+                      <NoAssetsOuterWrapper>
+                        <NoAssetsInnerWrapper>
+                          <Heading>You have no active requests</Heading>
+                          <Text>Why not create a new one?</Text>
+                          <ButtonWrapper>
+                            <Button onClick={this.showNewRequestForm}>
+                              Create request
+                            </Button>
+                          </ButtonWrapper>
+                        </NoAssetsInnerWrapper>
+                      </NoAssetsOuterWrapper>
+                    ) : null
+                  }
                   {
                     displayNewRequestForm &&
                     <AddCard
@@ -153,43 +163,19 @@ class Dashboard extends React.Component {
                       userId={user && user.id}
                     />
                   }
-                  {
-                    activeRequests.length > 0 ? (
-                      <React.Fragment>
-                        <Heading>Active Requests</Heading>
-                        <ActiveAssets>
-                          <AssetList
-                            assets={activeRequests}
-                          />
-                        </ActiveAssets>
-                      </React.Fragment>
-                    ) : null
-                  }
-                  {
-                    inactiveRequests.length > 0 ? (
-                      <React.Fragment>
-                        <Heading>Inactive Requests</Heading>
-                        <InactiveAssets>
-                          <AssetList
-                            assets={inactiveRequests}
-                          />
-                        </InactiveAssets>
-                      </React.Fragment>
-                    ) : null
-                  }
-                </AssetsWrapper>
-              </AssetContext.Provider>
-            )
-          }
-        </Data>
-        <Modal
-          show={this.state.showModal || !isEmpty(this.state.error)}
-          notification={this.state.notification}
-          error={this.state.error}
-          category={this.state.assetDetails.category}
-          assetId={this.state.assetDetails.assetId}
-          callback={this.state.notification === 'generalError' ? this.notificationCallback : null}
-        />
+                  <AssetsWrapper>
+                    <AssetList assets={assets} />
+                  </AssetsWrapper>
+                </AssetContext.Provider>
+              )
+            }
+          </Data>
+          <Modal
+            show={!isEmpty(this.state.error)}
+            error={this.state.error}
+            callback={this.notificationCallback}
+          />
+        </UserContext.Provider>
       </Main>
     );
   }
@@ -207,27 +193,22 @@ const AssetsWrapper = styled.div`
 `
 
 const NoAssetsOuterWrapper = styled.div`
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 `
 
 const NoAssetsInnerWrapper = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 30% 50%;
-  text-align: center;
+  align-items: center;
+  margin-top: 10%;
 `
 
 const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-`
-
-const ActiveAssets = styled.div``
-
-const InactiveAssets = styled.div`
-  opacity: 0.7;
 `
 
 const Data = styled.section`

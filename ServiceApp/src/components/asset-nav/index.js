@@ -1,19 +1,31 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { UserContext } from '../../pages/dashboard';
 
-const HeaderWrapper = ({ createRequest }) => (
-  <Main>
-    <RightHeader>
-      {
-        createRequest ? (
-          <ButtonWrapper>
-            <Button onClick={createRequest}>Create request</Button>
-          </ButtonWrapper>
-        ) : null
-      }
-    </RightHeader>
-  </Main>
-);
+const HeaderWrapper = ({ createRequest }) => {
+  const { user } = useContext(UserContext);
+  if (!user.role) return null;
+
+  return (
+    <Main>
+      <Header>
+        <Block>
+          <Desc>{user.role === 'SR' ? 'Service requester' : 'Service provider'}</Desc>
+          <UserID>{user.id}</UserID>
+        </Block>
+      </Header>
+      <RightHeader>
+        <Block>
+          <Desc>Wallet balance</Desc>
+          <UserID>{user.balance}</UserID>
+        </Block>
+        <ButtonWrapper>
+          <Button onClick={createRequest}>Create request</Button>
+        </ButtonWrapper>
+      </RightHeader>
+    </Main>
+  )
+}
 
 export default HeaderWrapper;
 
@@ -23,7 +35,7 @@ const Main = styled.nav`
   align-items: center;
   position: relative;
   z-index: 1000;
-  height: 100px;
+  height: 10vh;
   background-color: #fff;
   @media (max-width: 1195px) {
     height: 90px;
@@ -33,14 +45,42 @@ const Main = styled.nav`
   }
 `;
 
+const Header = styled.header`
+  margin: 10px auto 0 30px;
+  display: flex;
+`;
+
+const Desc = styled.span`
+  font: 12px/16px 'Nunito Sans', sans-serif;
+  color: #808b92;
+`;
+
+const Block = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const UserID = styled.span`
+  font-size: 24px;
+  line-height: 42px;
+  position: relative;
+  top: -4px;
+  color: #009fff;
+  @media (max-width: 760px) {
+    font-size: 15px;
+    top: -4px;
+  }
+`;
+
 const RightHeader = styled.div`
-  margin: 0 30px;
+  margin: 10px 10px 0;
   display: block;
-  width: ${props => (props.createOffer ? '500px' : '150px')};
+  width: 330px;
   text-align: right;
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   @media (max-width: 760px) {
     margin: 10px 20px 0 30px;
     width: 120px;
