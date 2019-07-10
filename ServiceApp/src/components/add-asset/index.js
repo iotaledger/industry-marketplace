@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
-import { generate, evaluate, operations, submodel } from 'SeMarket/Industry_4.0_language';
+import { generate, evaluate, operations, submodel } from '../../Industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
 import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
@@ -185,8 +185,6 @@ export default class extends React.Component {
 
   render() {
     const { loading, operation, operations, submodel } = this.state;
-    console.log('render', submodel);
-    
     
     return (
       <React.Fragment>
