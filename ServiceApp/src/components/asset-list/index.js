@@ -6,7 +6,7 @@ export default props => (
   <InfoCol>
     <CardWrapper>
       {props.assets && props.assets.map(asset => (
-        <AssetCard key={asset.assetId} asset={asset} />
+        <AssetCard key={asset.id} asset={asset} />
       ))}
     </CardWrapper>
   </InfoCol>

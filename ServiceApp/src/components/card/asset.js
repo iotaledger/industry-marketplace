@@ -1,16 +1,17 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import format from 'date-fns/format';
+import upperFirst from 'lodash-es/upperFirst'; 
+// import format from 'date-fns/format';
 import { Link } from 'react-router-dom';
 import { AssetContext } from '../../pages/dashboard';
 import Card from './index.js';
 
-const Heading = ({ assetId, assetName, category }) => {
+const Heading = ({ id, operation }) => {
   return (
     <Full>
-      <AssetCategory>{category.replace(/s([^s]*)$/,'')}</AssetCategory>
-      <Link to={`/order/${assetId}`}>
-        <AssetId>{assetName.length > 20 ? `${assetName.substr(0, 20)}...` : assetName}</AssetId>
+      <AssetCategory>{operation}</AssetCategory>
+      <Link to={`/history/${id}`}>
+        <AssetId>{operation}</AssetId>
       </Link>
     </Full>
   );
@@ -37,82 +38,61 @@ const Footer = ({ assetId }) => {
 
 const Asset = props => {
   const { asset, disableMargin } = props;
-
+  console.log('Asset', asset);
+  
   return (
     <Card
-      header={Heading(asset, props.delete)}
+      header={Heading(asset, props.cancel)}
       footer={Footer(asset)}
       asset={asset}
       disableMargin={disableMargin}
     >
-      <Row>
-        <RowHalf>
-          <RowDesc>Asset Type:</RowDesc>
-          <Data>{asset.type}</Data>
-        </RowHalf>
-        <RowHalf>
-          <RowDesc>
-            {asset.category === 'offers' ? 'Asset' : 'Service'} Provider:
-          </RowDesc>
-          <Data>{asset.company}</Data>
-        </RowHalf>
-      </Row>
       {
-        asset.startTimestamp && asset.endTimestamp ? (
-          <Row>
-            <RowHalf>
-              <RowDesc>Begin Time:</RowDesc>
-              <Data>{format(Number(asset.startTimestamp), 'HH:mm - DD.MM.YY')}</Data>
-            </RowHalf>
-            <RowHalf>
-              <RowDesc>End Time:</RowDesc>
-              <Data>{format(Number(asset.endTimestamp), 'HH:mm - DD.MM.YY')}</Data>
-            </RowHalf>
-          </Row>
-        ) : null
-      }
-      <Row>
-        <RowHalf>
-          <RowDesc>Location</RowDesc>
-          <Data>
-            {asset.location.city && asset.location.country
-              ? `${asset.location.city}, ${asset.location.country}`
-              : '--'}
-          </Data>
-        </RowHalf>
-        <RowHalf>
-          <RowDesc>Price:</RowDesc>
-          <Data>{asset.price}</Data>
-        </RowHalf>
-      </Row>
-      {
-        asset.dataTypes && asset.dataTypes.length > 0 ? (
+        asset.params && asset.params.length > 0 ? (
           <Row>
           {
-            asset.dataTypes.map(({ name, value }) => (
-              <RowHalf key={name}>
-                <RowDesc>{name}:</RowDesc>
+            asset.params.map(({ idShort, value }) => (
+              <RowThird key={idShort}>
+                <RowDesc>{upperFirst(idShort)}:</RowDesc>
                 <Data>{value}</Data>
-              </RowHalf>
+              </RowThird>
             ))
           }
           </Row>
         ) : null
       }
-      {
-        asset.assetDescription ? (
-          <RowFull>
-            <RowDesc>Asset Description:</RowDesc>
-            <Data>
-              {
-                asset.assetDescription.length > 120
-                ? `${asset.assetDescription.substr(0, 120)}...`
-                : asset.assetDescription
-              }
-            </Data>
-          </RowFull>
-        ) : null
-      }
+      <Row>
+        <RowThird>
+          <RowDesc>Coordinates</RowDesc>
+          <Data>
+            {asset.location || '--'}
+          </Data>
+        </RowThird>
+        <RowThird>
+          <RowDesc>Location</RowDesc>
+          <Data>
+            {asset.location || '--'}
+          </Data>
+        </RowThird>
+        <RowThird>
+          <RowDesc>Partner ID:</RowDesc>
+          <Data>{asset.partner}</Data>
+        </RowThird>
+      </Row>
+      <Row>
+        <RowThird>
+          <RowDesc>Begin Time:</RowDesc>
+          <Data>{asset.startTime}</Data>
+        </RowThird>
+        <RowThird>
+          <RowDesc>End Time:</RowDesc>
+          <Data>{asset.endTime}</Data>
+        </RowThird>
+        <RowThird>
+          <RowDesc>Price:</RowDesc>
+          <Data>{asset.price}</Data>
+        </RowThird>
+      </Row>
     </Card>
   );
 };
@@ -121,36 +101,18 @@ export default Asset;
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
   &:not(:last-of-type) {
     margin-bottom: 5px;
   }
 `;
 
-const RowFull = styled.div`
+const RowThird = styled.div`
+  width: 33.3%;
   padding: 5px 30px;
   display: inline-block;
   text-align: left;
-  width: 100%;
-
-  @media (max-width: 400px) {
-    border: none;
-    padding-left: 20px;
-    padding-right: 0;
-  }
-`;
-
-const RowHalf = styled.div`
-  width: 50%;
-  padding: 5px 30px;
-  display: inline-block;
-  :nth-child(even) {
-    text-align: right;
-  }
-  :nth-child(odd) {
-    text-align: left;
-  }
 `;
 
 const Data = styled.p`

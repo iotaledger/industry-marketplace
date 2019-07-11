@@ -21,12 +21,12 @@ export const getByType = async type => {
     return itemsOfType;
 }
 
-export const removeExpired = async () => {
-    const allItems = await Object.entries(localStorage);
+export const removeExpired = async type => {
+    const allItems = await getByType(type);
     const timeInThePast = new Date().getTime() - (waitingTime * 60 * 1000);
     const expiredItems = allItems.filter(({ replyBy }) => replyBy < timeInThePast);
     console.log('expiredItems', expiredItems);
-    expiredItems.forEach(async item => await localStorage.removeItem(item));
+    expiredItems.forEach(async item => await localStorage.removeItem(item.id));
     console.log('after cleanup', localStorage);
 }
 
