@@ -15,6 +15,12 @@ export class ZmqService {
     private readonly _config;
 
     /**
+     * The User ID.
+     */
+    private userID;
+
+
+    /**
      * The connected socket.
      */
     private _socket;
@@ -159,11 +165,15 @@ export class ZmqService {
      * @param message The message to handle.
      */
     private async handleMessage(message) {
+        console.log("*****************ZMQSERVICE*****************")
+
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
         const tag = messageParams[12];
+
+        console.log(tag)
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
@@ -178,7 +188,9 @@ export class ZmqService {
                     2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                         2.1 Decode every such message of type B, E and retrieve receiver ID
                         2.2 Compare receiver ID with user ID. Only if match, send message to UI
+                    */
 
+                    /*
                     3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         3.1 Decode every message of type A, retrieve location.
                         3.2 If NO own location and NO accepted range are set, send message to UI
@@ -195,5 +207,6 @@ export class ZmqService {
                 // }
             }
         }
+  
     }
 }
