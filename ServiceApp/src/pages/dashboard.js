@@ -37,6 +37,7 @@ class Dashboard extends React.Component {
     this.hideNewRequestForm = this.hideNewRequestForm.bind(this);
     this.notificationCallback = this.notificationCallback.bind(this);
     this.checkExpired = this.checkExpired.bind(this);
+    this.changeSection = this.changeSection.bind(this);
     this.timer = null;
   }
 
@@ -52,12 +53,17 @@ class Dashboard extends React.Component {
     this.setState({ user });
   };
 
+  async changeSection(activeSection) {
+    this.setState({ activeSection });
+    await this.checkExpired();
+  }
+
   async checkExpired() {
     const { activeSection } = this.state;
-    console.log('checkExpired', activeSection);
+    // console.log('checkExpired', activeSection);
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
-    console.log('checkExpired active', assets);
+    // console.log('checkExpired active', assets);
     this.setState({ assets });
     clearInterval(this.timer);
   }
@@ -129,10 +135,7 @@ class Dashboard extends React.Component {
     return (
       <Main>
         <UserContext.Provider value={{ user }}>
-          <AssetNav
-            createRequest={this.showNewRequestForm}
-            acceptProposal={this.acceptProposal}
-          />
+          <AssetNav createRequest={this.showNewRequestForm} />
           <Zmq callback={this.newMessage} />
           <Data>
             <Sidebar
@@ -152,7 +155,7 @@ class Dashboard extends React.Component {
                   }}
                 >
                   {
-                    assets.length === 0 ? (
+                    assets.length === 0 && activeSection === 'callForProposal' ? (
                       <NoAssetsOuterWrapper>
                         <NoAssetsInnerWrapper>
                           <Heading>You have no active requests</Heading>
