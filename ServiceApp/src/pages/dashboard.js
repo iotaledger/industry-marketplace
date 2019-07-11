@@ -10,7 +10,7 @@ import Loading from '../components/loading';
 import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
-import { getByType, writeToStorage } from '../utils/storage';
+import { getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
 
 export const AssetContext = React.createContext({});
@@ -28,6 +28,7 @@ class Dashboard extends React.Component {
       error: false,
     };
 
+    this.createRequest = this.createRequest.bind(this);
     this.getUser = this.getUser.bind(this);
     this.newMessage = this.newMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -35,19 +36,31 @@ class Dashboard extends React.Component {
     this.showNewRequestForm = this.showNewRequestForm.bind(this);
     this.hideNewRequestForm = this.hideNewRequestForm.bind(this);
     this.notificationCallback = this.notificationCallback.bind(this);
+    this.checkExpired = this.checkExpired.bind(this);
+    this.timer = null;
   }
 
   async componentDidMount() {
     this.getUser();
-    const assets = await getByType(this.state.activeSection);
-    console.log('componentDidMount', assets);
-    this.setState({ assets });
+    this.checkExpired();
+    this.timer = setTimeout(() => this.checkExpired(), 600000);
+
   }
 
   async getUser() {
     const user = await api.get('user');
     this.setState({ user });
   };
+
+  async checkExpired() {
+    const { activeSection } = this.state;
+    console.log('checkExpired', activeSection);
+    await removeExpired(activeSection);
+    const assets = await getByType(activeSection);
+    console.log('checkExpired active', assets);
+    this.setState({ assets });
+    clearInterval(this.timer);
+  }
 
     // console.log('message', message);
     // const card = await prepareData(get(this.state, 'user.role'), message);
@@ -71,7 +84,7 @@ class Dashboard extends React.Component {
           error: false,
           loading: false,
         });
-        await this.newMessage(packet);
+        await this.newMessage({ data: packet });
       } else if (data.error) {
         this.setState({
           error: data.error,
@@ -103,9 +116,7 @@ class Dashboard extends React.Component {
     );
     console.log('card', card);
     await writeToStorage(card.id, card);
-    const assets = await getByType(this.state.activeSection);
-    console.log('byType', assets);
-    this.setState({ assets });
+    this.checkExpired();
   }
 
   notificationCallback() {

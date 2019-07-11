@@ -7,7 +7,7 @@ export default props => {
       data-component="AssetCard"
       disableMargin={props.disableMargin}
     >
-      {props.header ? <CardHeader>{props.header}</CardHeader> : null}
+      {props.header ? <CardHeader>{props.asset.operation}</CardHeader> : null}
       {props.children}
       {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
     </Card>
@@ -25,7 +25,7 @@ const Card = styled.div`
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
-  width: 400px;
+  width: 800px;
   height: 100%;
   border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
   @media (max-width: 1120px) {
