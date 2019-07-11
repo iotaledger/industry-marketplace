@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-// import { readData } from '../utils/databaseHelper';
+import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 // import { getLocationFromMessage } from '../utils/locationHelper';
@@ -169,30 +169,60 @@ export class ZmqService {
             const messageType = extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
                 const bundle = messageParams[8];
-                const data = await getPayload(bundle);
-                this.sendEvent(data, messageType, messageParams);
 
-                /*
-                    1. Check user role (SR, SP, YP)
+                interface IUser {
+                    id?: string;
+                    role?: string;
+                }
+                const { id, role }: IUser = await readData('user');
 
-                    2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                        2.1 Decode every such message of type B, E and retrieve receiver ID
-                        2.2 Compare receiver ID with user ID. Only if match, send message to UI
+                // 1. Check user role (SR, SP, YP)
+                switch (role) {
+                    case 'SR':
+                        // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                        if (['proposal', 'informConfirm'].includes(messageType)) {
+                            // 2.1 Decode every such message and retrieve receiver ID
+                            const data = await getPayload(bundle);
+                            const receiverID = data.frame.receiver.identification.id;
 
-                    3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                        3.1 Decode every message of type A, retrieve location.
-                        3.2 If NO own location and NO accepted range are set, send message to UI
-                        3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                            3.3.1 If distance within accepted range, send message to UI
+                            // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
+                            if (id === receiverID) {
+                                this.sendEvent(data, messageType, messageParams);
+                            }
+                        }
+                        break;
+                    case 'SP':
+                        // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
+                            const data = await getPayload(bundle);
+                            // 3.1 Decode every message of type A, retrieve location.
+                            if (messageType === 'callForProposal') {
+                                // const location = getLocationFromMessage(data);
+                                // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                // 3.3.1 If distance within accepted range, send message to UI
+                                this.sendEvent(data, messageType, messageParams);
+                            } else {
+                                // 3.4 Decode every message of type C, D, F and retrieve receiver ID
+                                const receiverID = data.frame.receiver.identification.id;
 
-                        3.4 Decode every message of type C, D, F and retrieve receiver ID
-                        3.5 Compare receiver ID with user ID. Only if match, send message to UI
+                                // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
+                                if (id === receiverID) {
+                                    this.sendEvent(data, messageType, messageParams);
+                                }
+                            }
+                        }
+                        break;
+                    case 'YP':
+                    default:
+                        // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                        if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                            const data = await getPayload(bundle);
 
-                    4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                        4.1 Send every such message to UI
-                */
-
-                // }
+                            // 4.1 Send every such message to UI
+                            this.sendEvent(data, messageType, messageParams);
+                        }
+                }
             }
         }
     }
