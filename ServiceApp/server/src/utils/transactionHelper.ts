@@ -21,7 +21,7 @@ export const sendMessage = (payload, tag) => {
             .then(trytes => {
                 iota.sendTrytes(trytes, 3, 9)
                     .then(bundle => {
-                        console.log("Send to tangle")
+                        console.log("Send to tangle with bundle hash:",bundle[0].hash)
                         // console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
                         // console.log(`Bundle: ${JSON.stringify(bundle, null, 1)}`);
                         resolve(bundle[0].hash);

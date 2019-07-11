@@ -8,7 +8,6 @@ import { AppHelper } from './utils/appHelper';
 
 AppHelper.build(
     (app, config, port) => {
-        console.log("ZMQSERVICEINIT")
         ServiceFactory.register('zmq', () => new ZmqService(config.zmq));
 
         const server = new Server(app);
