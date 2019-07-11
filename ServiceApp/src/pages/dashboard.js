@@ -167,7 +167,11 @@ class Dashboard extends React.Component {
                           </ButtonWrapper>
                         </NoAssetsInnerWrapper>
                       </NoAssetsOuterWrapper>
-                    ) : null
+                    ) : (
+                      <AssetsWrapper>
+                        <AssetList assets={assets} />
+                      </AssetsWrapper>
+                    )
                   }
                   {
                     displayNewRequestForm &&
@@ -177,9 +181,6 @@ class Dashboard extends React.Component {
                       userId={user && user.id}
                     />
                   }
-                  <AssetsWrapper>
-                    <AssetList assets={assets} />
-                  </AssetsWrapper>
                 </AssetContext.Provider>
               )
             }
