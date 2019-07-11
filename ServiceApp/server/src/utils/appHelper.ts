@@ -5,6 +5,12 @@ import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData } from './databaseHelper';
 import { getBalance } from './walletHelper';
+import { buildTag } from './tagHelper';
+import {sendMessage } from './transactionHelper';
+import { publish } from './mamHelper';
+import uuid from 'uuid/v4';
+import { fetchFromChannelId } from './mamHelper';
+
 
 /**
  * Class to help with expressjs routing.
@@ -65,13 +71,23 @@ export class AppHelper {
         });
 
         app.post('/cfp', async (req, res) => {
-            /*
-                1. Create Tag
-                2. Send transaction
-                3. Create new MAM channel
-                4. Publish first message with payload
-                5. Save channel details to DB
-            */
+           
+
+            console.log("CFP:", req.body)
+          
+          // 1. Create Tag       
+           const tag = await buildTag('callForProposal');
+         // 2. Send transaction
+           await sendMessage(req.body, tag);  
+       
+            
+         // 3. Create new MAM channel
+        //  4. Publish first message with payload
+       //   5. Save channel details to DB
+             const channelId = uuid();
+             await publish(channelId, req.body)
+
+
             console.log('CfP success');
             res.send({
                 success: true,
@@ -80,11 +96,22 @@ export class AppHelper {
         });
 
         app.post('/proposal', async (req, res) => {
-            /*
-                1. Create Tag
-                2. Retrieve Wallet address from DB
-                3. Send transaction, include wallet address
-            */
+             //  1. Create Tag
+
+             const tag = await buildTag('proposal');
+
+             //2. Retrieve Wallet address from DB
+          //   const  address = await readData('wallet', 'address');
+             
+             interface IWallet {
+                address?: string;
+            }
+            const wallet: IWallet = await readData('wallet');
+            const { address } = wallet;
+
+           //  3. Send transaction, include wallet address
+           req.body.WalletAddress = address
+           await sendMessage(req.body, tag);   
             console.log('Proposal success');
             res.send({
                 success: true,
@@ -92,14 +119,31 @@ export class AppHelper {
             });
         });
 
-        app.post('/acceptProposal', (req, res) => {
-            /*
-                1. Retrieve MAM channel from DB
-                2. Attach message with confirmation payload
-                3. Update channel details in DB
-                4. Create Tag
-                5. Send transaction, include MAM channel info
-            */
+        app.post('/acceptProposal', async (req, res) => {
+
+            // 1. Retrieve MAM channel from DB
+            const fetchData = async channelId => {
+               const messages = await fetchFromChannelId(channelId);
+               messages.forEach(message => console.log(message));
+            }
+
+                const channelId = '0d2b37e5-640f-4515-b300-73717f4243c1'
+               await fetchData(channelId);
+
+              //  2. Attach message with confirmation payload
+               //   3. Update channel details in DB
+              const mam = await publish(channelId, req.body)
+            
+              //  4. Create Tag
+              const tag = await buildTag('acceptProposal');
+
+              //  5. Send transaction, include MAM channel info
+              req.body.mam = mam
+              console.log( "MESSAGESEND:", req.body)
+              await sendMessage(req.body, tag);   
+
+
+           
             console.log('acceptProposal success');
             res.send({
                 success: true,

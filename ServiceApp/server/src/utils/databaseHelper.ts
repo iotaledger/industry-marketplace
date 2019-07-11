@@ -64,13 +64,15 @@ export const readData = async (table, searchField = null) => {
         try {
             let query = `SELECT * FROM ${table} LIMIT 1`;
             if (searchField) {
-                query = `SELECT * FROM ${table} WHERE id = '${searchField}' ORDER BY rowid DESC LIMIT 1`;
+               query = `SELECT * FROM ${table} WHERE id = '${searchField}' ORDER BY rowid DESC LIMIT 1`;
+            // query = `SELECT ${searchField} FROM ${table} ORDER BY rowid DESC LIMIT 1`;
             }
             db.get(query, (err, row) => {
+                //console.log(row.address)
                 if (err) {
                     return resolve(null);
                 } else {
-                    return resolve(row || null);
+                    return resolve( row  || null);
                 }
             });
         } catch (error) {
