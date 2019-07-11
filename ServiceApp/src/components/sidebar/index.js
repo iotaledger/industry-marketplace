@@ -24,7 +24,7 @@ const Sidebar = ({ currentPage, showMenu, callback }) => {
 
   function switchMenu(nextPage) {
     if (nextPage === currentPage) return;
-    this.props.callback(nextPage);
+    callback(nextPage);
   }
 
   if (!user.role) return null;
@@ -39,10 +39,10 @@ const Sidebar = ({ currentPage, showMenu, callback }) => {
                 <Menu
                   key={id}
                   role="button"
-                  onClick={() => switchMenu(`/${id}`)}
-                  active={currentPage === `/${id}`}
+                  onClick={() => switchMenu(id)}
+                  active={currentPage === id}
                 >
-                  { label }
+                  <span>{ label }</span>
                 </Menu>
               ))
             }
@@ -60,25 +60,28 @@ const SidebarWrapper = styled.aside`
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
-  min-width: 350px;
-  width: 350px;
+  min-width: 400px;
+  width: 400px;
   padding: 40px 0 0 0;
   z-index: 1;
 `;
 
-const MenuWrapper = styled.div`
-  margin-left: 30px;
-  width: 320px;
+const MenuWrapper = styled.ul`
+  margin-left: 150px;
+  width: 400px;
   position: relative;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
 `;
 
-const Menu = styled.h5`
-  font-size: 20px;
-  font-weight: 300;
-  padding: 20px 20px 20px 30px;
+const Menu = styled.li`
+  font-size: 46px;
+  font-weight: 600;
+  padding: 0 10px;
   cursor: pointer;
-  color: ${props => (props.active ? '#ffffff' : '#595959')};
-  background-color: ${props => (props.active ? '#061b70' : '#f0f0f0')};
+  color: ${props => (props.active ? '#529FF8' : '#595959')};
+
+  & > span {
+    font-size: 26px;
+    line-height: 68px;
+    vertical-align: text-bottom;
+  }
 `;
