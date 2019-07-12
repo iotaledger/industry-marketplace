@@ -7,7 +7,7 @@ export default props => {
       data-component="AssetCard"
       disableMargin={props.disableMargin}
     >
-      {props.header ? <CardHeader>{props.asset.operation}</CardHeader> : null}
+      {props.header ? <CardHeader>{props.header}</CardHeader> : null}
       {props.children}
       {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
     </Card>
@@ -18,7 +18,6 @@ const Card = styled.div`
   color: inherit;
   text-decoration: none;
   position: relative;
-  padding-top: 20px;
   margin-right: ${props => (props.disableMargin ? 0 : '50px')};
   border-radius: 6px;
   margin-bottom: ${props => (props.disableMargin ? 0 : '40px')};
@@ -44,7 +43,7 @@ const Card = styled.div`
 
 const CardHeader = styled.header`
   position: relative;
-  padding: 0 30px 8px 30px;
+  padding: 20px 30px;
   border-bottom: 1px solid #eaecee;
 `;
 

@@ -47,6 +47,8 @@ export const prepareData = async (role, payload) => {
         replyBy,
         location,
         params,
+        irdi,
+        originalMessage: JSON.stringify(data),
         id: conversationId,
         coordinates: await getCoordinates(location),
         price: price || 'Pending',
