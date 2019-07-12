@@ -10,7 +10,14 @@ import Loading from '../components/loading';
 import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
-import { getByType, removeExpired, writeToStorage } from '../utils/storage';
+import { generate } from '../Industry_4.0_language';
+import { 
+  getByType, 
+  readFromStorage, 
+  removeExpired, 
+  removeFromStorage, 
+  writeToStorage 
+} from '../utils/storage';
 import { prepareData } from '../utils/card';
 
 export const AssetContext = React.createContext({});
@@ -38,12 +45,14 @@ class Dashboard extends React.Component {
     this.notificationCallback = this.notificationCallback.bind(this);
     this.checkExpired = this.checkExpired.bind(this);
     this.changeSection = this.changeSection.bind(this);
+    this.rejectAction = this.rejectAction.bind(this);
+    this.confirmAction = this.confirmAction.bind(this);
     this.timer = null;
   }
 
   async componentDidMount() {
-    this.getUser();
-    this.checkExpired();
+    await this.getUser();
+    await this.checkExpired();
     this.timer = setTimeout(() => this.checkExpired(), 600000);
 
   }
@@ -54,26 +63,17 @@ class Dashboard extends React.Component {
   };
 
   async changeSection(activeSection) {
-    this.setState({ activeSection });
-    await this.checkExpired();
+    this.setState({ activeSection }, async () => await this.checkExpired());
   }
 
   async checkExpired() {
     const { activeSection } = this.state;
-    // console.log('checkExpired', activeSection);
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
-    // console.log('checkExpired active', assets);
+    // console.log('checkExpired active', activeSection, assets);
     this.setState({ assets });
     clearInterval(this.timer);
   }
-
-    // console.log('message', message);
-    // const card = await prepareData(get(this.state, 'user.role'), message);
-    // console.log('card', card);
-    // await writeToStorage(card.id, card);
-    // const byType = getByType('callForProposal');
-    // console.log('byType', byType);
 
   async createRequest(message) {
     return this.sendMessage('cfp', message);
@@ -122,7 +122,88 @@ class Dashboard extends React.Component {
     );
     console.log('card', card);
     await writeToStorage(card.id, card);
-    this.checkExpired();
+    await this.checkExpired();
+  }
+
+  async generateRequest(type, id, price = null) {
+    const { user } = this.state;
+    const { irdi, originalMessage, replyBy, } = readFromStorage(id);
+    const request = generate({
+      messageType: type,
+      userId: user.id,
+      replyTime: replyBy,
+      originalMessage,
+      irdi,
+      price
+    }); 
+    console.log('generateRequest', request);
+    return request;
+  }
+
+  async removeAsset(id) {
+    await removeFromStorage(id);
+    await this.checkExpired();
+  }
+
+  async confirmAction(id, price = null) {
+    const { activeSection, user: { role } } = this.state;
+    let message;
+    if (role === 'SR') {
+      switch (activeSection) {
+        case 'proposal':
+          // send acceptProposal
+          message = this.generateRequest('acceptProposal', id);
+          return this.sendMessage('acceptProposal', message);
+        case 'informConfirm':
+          // send informPayment
+          message = this.generateRequest('informPayment', id);
+          return this.sendMessage('informPayment', message);
+        default:
+          return null;
+      }
+    } else if (role === 'SP') {
+      switch (activeSection) {
+        case 'callForProposal':
+          // send proposal
+          message = this.generateRequest('proposal', id, 10);
+          return this.sendMessage('proposal', message);
+        case 'acceptProposal':
+          // send informConfirm  
+          message = this.generateRequest('informConfirm', id);
+          return this.sendMessage('informConfirm', message);  
+        default:
+          return null;
+      }
+    }
+  }
+
+  async rejectAction(id) {
+    const { activeSection, user: { role } } = this.state;
+    if (role === 'SR') {
+      switch (activeSection) {
+        case 'callForProposal':
+          await removeFromStorage(id);
+          await this.checkExpired();
+          return null;
+        case 'proposal':
+          // send rejectProposal
+          const message = this.generateRequest('rejectProposal', id);
+          return this.sendMessage('rejectProposal', message);  
+        default:
+          return null;
+      }
+    } else if (role === 'SP') {
+      switch (activeSection) {
+        case 'callForProposal':
+        case 'acceptProposal':
+        case 'rejectProposal':
+          await removeFromStorage(id);  
+          await this.checkExpired();
+          return null;
+        default:
+          return null;
+      }
+    }
   }
 
   notificationCallback() {
@@ -152,6 +233,9 @@ class Dashboard extends React.Component {
                 <AssetContext.Provider
                   value = {{
                     history: this.showHistory,
+                    onCancel: this.removeAsset,
+                    onConfirm: this.confirmAction,
+                    onReject: this.rejectAction,
                   }}
                 >
                   {

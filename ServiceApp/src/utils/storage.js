@@ -9,6 +9,10 @@ export const writeToStorage = async (id, item) => {
     await localStorage.setItem(id, JSON.stringify(item));
 };
 
+export const removeFromStorage = async item => {
+    await localStorage.removeItem(item);
+};
+
 export const getByType = async type => {
     const allItems = await Object.values(localStorage);
     const itemsOfType = allItems.reduce((accumulator, item) => {
@@ -27,7 +31,7 @@ export const removeExpired = async type => {
         const timeInThePast = new Date().getTime() - (waitingTime * 60 * 1000);
         const expiredItems = allItems.filter(({ replyBy }) => replyBy < timeInThePast);
         console.log('expiredItems', expiredItems);
-        expiredItems.forEach(async item => await localStorage.removeItem(item.id));
+        expiredItems.forEach(async item => await removeFromStorage(item.id));
         console.log('after cleanup', localStorage);
     }
 }
