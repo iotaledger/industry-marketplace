@@ -25,7 +25,6 @@ const generateRandomKey = length => {
 // Publish to tangle
 export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
 
-    console.log(id)
     try {
         let mamState;
         let secretKey;

@@ -4,7 +4,7 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData } from './databaseHelper';
-import { getBalance, processPayment } from './walletHelper';
+import { getBalance, processPayment} from './walletHelper';
 import { buildTag } from './tagHelper';
 import {sendMessage } from './transactionHelper';
 import { publish } from './mamHelper';
@@ -72,18 +72,18 @@ export class AppHelper {
 
         app.post('/cfp', async (req, res) => {
 
-          //1. Create Tag       
-           const tag = await buildTag('callForProposal');
+            //1. Create Tag       
+            const tag = await buildTag('callForProposal');
 
-         // 2. Send transaction
-           await sendMessage(req.body, tag);  
+            //2. Send transaction
+            await sendMessage(req.body, tag);  
        
             
-         // 3. Create new MAM channel
-        //  4. Publish first message with payload
-       //   5. Save channel details to DB
-             const channelId = await req.body.frame.conversationId
-             publish(channelId, req.body)
+            // 3. Create new MAM channel
+            // 4. Publish first message with payload
+            // 5. Save channel details to DB
+            const channelId = await req.body.frame.conversationId
+            publish(channelId, req.body)
 
 
             console.log('CfP success');
@@ -95,20 +95,19 @@ export class AppHelper {
 
         app.post('/proposal', async (req, res) => {
 
-             //  1. Create Tag
-             const tag = await buildTag('proposal');
+            //  1. Create Tag
+            const tag = await buildTag('proposal');
 
-             //2. Retrieve Wallet address from DB
+            //2. Retrieve Wallet address from DB
 
-             interface IWallet {
+            interface IWallet {
                 address?: string;
             }
             const wallet: IWallet = await readData('wallet');
             const { address } = wallet;
-            console.log(address)
-
+            
            //  3. Send transaction, include wallet address
-           req.body.WalletAddress = address
+           req.body.frame.sender.walletAddress = address
            await sendMessage(req.body, tag);   
             console.log('Proposal success');
             res.send({
@@ -130,14 +129,14 @@ export class AppHelper {
             await fetchData(channelId);
 
               //  2. Attach message with confirmation payload
-               //   3. Update channel details in DB
+              //  3. Update channel details in DB
               const mamInfo = await publish(channelId, req.body)
             
               //  4. Create Tag
               const tag = await buildTag('acceptProposal');
 
               //  5. Send transaction, include MAM channel info
-              req.body.mam = mamInfo
+              req.body.frame.mamInfo = mamInfo
               await sendMessage(req.body, tag);   
 
 
@@ -151,10 +150,11 @@ export class AppHelper {
 
           app.post('/rejectProposal', async (req, res) => {
             
-               // 1. Create Tag
-                 const tag = await buildTag('rejectProposal');
-              //  2. Send transaction
-              await sendMessage(req.body, tag);   
+            // 1. Create Tag
+            const tag = await buildTag('rejectProposal');
+
+            //  2. Send transaction
+            await sendMessage(req.body, tag);   
 
            
             console.log('rejectProposal success');
@@ -166,25 +166,25 @@ export class AppHelper {
 
         app.post('/informConfirm', async (req, res) => {
             // 1. Retrieve MAM channel from DB
-            const channelId = req.body.frame.conversationId
+            const channelId = await req.body.frame.conversationId
 
             const fetchData = async channelId => {
                 const messages = await fetchFromChannelId(channelId);
                 messages.forEach(message => console.log(message));
              }
  
-                await fetchData(channelId);
+            await fetchData(channelId);
  
-               //  2. Attach message with confirmation payload
-                //   3. Update channel details in DB
-               const mamInfo = await publish(channelId, req.body)
+            //  2. Attach message with confirmation payload
+            //   3. Update channel details in DB
+            const mamInfo = await publish(channelId, req.body)
              
-               //  4. Create Tag
-               const tag = await buildTag('informConfirm');
+            //  4. Create Tag
+            const tag = await buildTag('informConfirm');
  
-               //  5. Send transaction, include MAM channel info
-               req.body.mam = mamInfo
-               await sendMessage(req.body, tag);   
+            //  5. Send transaction, include MAM channel info
+            req.body.frame.mamInfo = mamInfo
+            await sendMessage(req.body, tag);   
  
            
             console.log('informConfirm success');
@@ -203,29 +203,30 @@ export class AppHelper {
             //  1. Retrieve wallet, check balance
             //  2. Process payment
             const paymentHash = await processPayment(address, value)
-                console.log("PAYMENTHASH",paymentHash)
 
-             //   3. Retrieve MAM channel from DB
-             const channelId = req.body.frame.conversationId
+            console.log("Paymenthash:", paymentHash)
 
-             const fetchData = async channelId => {
+             
+            // 3. Retrieve MAM channel from DB
+            const channelId = await req.body.frame.conversationId
+
+            const fetchData = async channelId => {
                  const messages = await fetchFromChannelId(channelId);
                  messages.forEach(message => console.log(message));
               }
-                 await fetchData(channelId);
+
+            await fetchData(channelId);
      
+            //   4. Attach message with payment confirmation payload
+            //   5. Update channel details in DB
+            await publish(channelId, req.body)
 
-
-             //   4. Attach message with payment confirmation payload
-             //   5. Update channel details in DB
-             await publish(channelId, req.body)
-
-             //  4. Create Tag
-             const tag = await buildTag('informPayment');
+            //  4. Create Tag
+            const tag = await buildTag('informPayment');
  
-             //  5. Send transaction, include payment transaction has 
-             req.body.paymentHash = paymentHash
-             await sendMessage(req.body, tag); 
+            //  5. Send transaction, include payment transaction has 
+            req.body.frame.paymentHash = await paymentHash
+            await sendMessage(req.body, tag); 
 
 
           
