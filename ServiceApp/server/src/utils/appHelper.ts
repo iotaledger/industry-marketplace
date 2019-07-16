@@ -21,19 +21,6 @@ export class AppHelper {
 
         const app = express();
 
-        // Set up a whitelist and check against it:
-        // const whitelist = ['http://localhost', 'http://localhost:3000'];
-        // const corsOptions = {
-        //     origin: (origin, callback) => {
-        //         if (whitelist.indexOf(origin) !== -1) {
-        //             callback(null, true);
-        //         } else {
-        //             callback(new Error('Not allowed by CORS'));
-        //         }
-        //     }
-        // };
-
-        // app.use(cors(corsOptions));
         app.use(cors());
         app.use(bodyParser.json({ limit: '30mb' }));
         app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
@@ -45,6 +32,22 @@ export class AppHelper {
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
 
             next();
+        });
+
+        app.post('/config', async (req, res) => {
+            try {
+                // save to DB
+                console.log('config success');
+                res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('config Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
         });
 
         app.get('/user', async (req, res) => {

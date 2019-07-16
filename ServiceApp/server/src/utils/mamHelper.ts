@@ -76,7 +76,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
 export const fetchFromRoot = async (root, secretKey) => {
     // Output syncronously once fetch is completed
     const result = await Mam.fetch(root, mode, secretKey);
-    return result.messages.map(message => JSON.parse(trytesToAscii(message)));
+    return result && result.messages.map(message => JSON.parse(trytesToAscii(message)));
 };
 
 export const fetchFromChannelId = async channelId => {
