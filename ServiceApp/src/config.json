@@ -2,6 +2,5 @@
   "domain": "http://localhost:4000",
   "waitingTime": 10,
   "areaCode": "NPHTQORL9XK",
-  "apiEndpoint": "http://localhost:4000",
   "googleAnalyticsId": "UA-143368819-1"
 }
