@@ -19,7 +19,7 @@ class App extends Component {
 
     async componentDidMount() {
         try {
-            ServiceFactory.register('api', () => new ApiClient(config.apiEndpoint));
+            ServiceFactory.register('api', () => new ApiClient(config.domain));
 
             this._configuration = config;
 
