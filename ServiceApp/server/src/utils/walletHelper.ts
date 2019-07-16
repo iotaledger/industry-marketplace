@@ -5,7 +5,7 @@ import { readData, writeData } from './databaseHelper';
 export const getBalance = async address => {
     try {
         const { getBalances } = composeAPI({ provider });
-        const { balances } = await getBalances([ address ], 100);
+        const { balances } = await getBalances([address], 100);
         return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
         console.error('getBalance error', error);
@@ -49,32 +49,32 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
             prepareTransfers(seed, transfers, options)
                 .then(async trytes => {
                     sendTrytes(trytes, depth, minWeightMagnitude)
-                    .then(async transactions => {
-                        // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
-                        await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
+                        .then(async transactions => {
+                            // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
+                            await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
 
-                        const hashes = transactions.map(transaction => transaction.hash);
+                            const hashes = transactions.map(transaction => transaction.hash);
 
-                        let retries = 0;
-                        while (retries++ < 40) {
-                            const statuses = await getLatestInclusion(hashes);
-                            if (statuses.filter(status => status).length === 4) {
-                                break;
+                            let retries = 0;
+                            while (retries++ < 40) {
+                                const statuses = await getLatestInclusion(hashes);
+                                if (statuses.filter(status => status).length === 4) {
+                                    break;
+                                }
+                                await new Promise(resolved => setTimeout(resolved, 5000));
                             }
-                            await new Promise(resolved => setTimeout(resolved, 5000));
-                        }
 
-                        // Once the payment is confirmed fetch the real wallet balance and update the wallet again
-                        const newBalance = await getBalance(remainderAddress);
-                        await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
+                            // Once the payment is confirmed fetch the real wallet balance and update the wallet again
+                            const newBalance = await getBalance(remainderAddress);
+                            await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
 
-                       // resolve(transactions);
-                       resolve(hashes[0])
-                    })
-                    .catch(error => {
-                        console.error('transferFunds sendTrytes error', error);
-                        reject(error);
-                    });
+                            // resolve(transactions);
+                            resolve(hashes[0])
+                        })
+                        .catch(error => {
+                            console.error('transferFunds sendTrytes error', error);
+                            reject(error);
+                        });
                 })
                 .catch(error => {
                     console.error('transferFunds prepareTransfers error', error);
@@ -102,8 +102,7 @@ export const processPayment = async (receiveAddress, paymentValue) => {
     const wallet: IWallet = await readData('wallet');
     const { address, balance, keyIndex, seed } = await wallet;
     if (balance < paymentValue) {
-        console.error(`Insufficient balance: ${balance}. Needed: ${paymentValue}`);
-       // return [];
+        throw new Error(`Insufficient balance: ${balance}. Needed: ${paymentValue}`);
     }
     return await transferFunds(
         receiveAddress,
