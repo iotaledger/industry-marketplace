@@ -6,7 +6,7 @@ sqlite3.verbose();
 const db = new sqlite3.Database(
     path.resolve(__dirname, database), error => {
         if (error) {
-            return console.error(error.message);
+            return console.error('New database Error', error.message);
         }
         db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
         db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
