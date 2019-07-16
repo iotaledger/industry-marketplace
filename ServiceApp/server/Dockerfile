@@ -1,4 +1,4 @@
-FROM node:10.13.0-alpine
+FROM node:8.16.0-alpine
 RUN apk --no-cache add git python make g++
 
 # Working DIR
@@ -7,13 +7,10 @@ WORKDIR /usr/src/app
 # Copy everything from current Folder
 COPY . ./
 
-# Set the env variables
-ARG CONFIG_ID
-RUN echo "CONFIG_ID=$CONFIG_ID"
-
 # Running required steps to prepare the api prod build
 RUN npm install
 RUN npm run build
+RUN cd build/src/utils/ && node userHelper.js --create user --role SP --id user-SP-cloud && node userHelper.js --create wallet
 
 # Remove unneccesary so the docker image doesn't exceeds max size
 RUN apk del git python make g++

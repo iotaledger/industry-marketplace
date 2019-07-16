@@ -3,7 +3,6 @@
 
 # build artifacts
 /build
-/db/marketmanager.sqlite3
 .DS_Store
 *.log
 
