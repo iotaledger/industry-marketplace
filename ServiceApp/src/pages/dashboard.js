@@ -115,13 +115,14 @@ class Dashboard extends React.Component {
   }
 
   async newMessage(message) {
+    const { user: { role } } = this.state;
     console.log('message', message);
     const card = await prepareData(
       get(this.state, 'user.role'), 
       get(message, 'data')
     );
-    console.log('card', card);
-    await writeToStorage(card.id, card);
+    console.log('card', card, role);
+    await writeToStorage(card, role);
     await this.checkExpired();
   }
 

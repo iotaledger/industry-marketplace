@@ -5,8 +5,23 @@ export const readFromStorage = async id => {
     return JSON.parse(await localStorage.getItem(id));
 };
 
-export const writeToStorage = async (id, item) => {
-    await localStorage.setItem(id, JSON.stringify(item));
+export const writeToStorage = async (item, role) => {
+    if (item.type === 'proposal' && role === 'SR') {
+        await removeFromStorage(item.id);
+        await localStorage.setItem(`${item.id}#${item.partner}`, JSON.stringify(item));
+    } else {
+        await localStorage.setItem(item.id, JSON.stringify(item));
+    }
+};
+
+export const removeProposals = async id => {
+    const requestId = id.split('#')[0];
+    const allKeys = await Object.keys(localStorage);
+    allKeys.forEach(async key => {
+        if (key.split('#')[0] === requestId) {
+            await removeFromStorage(key);
+        }
+    });
 };
 
 export const removeFromStorage = async item => {
