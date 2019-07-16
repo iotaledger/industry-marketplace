@@ -69,8 +69,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
         }
         return null;
     } catch (error) {
-        console.log('MAM publish Error', error);
-        return null;
+       throw new Error(error);
     }
 };
 

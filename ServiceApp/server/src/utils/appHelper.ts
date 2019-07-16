@@ -4,12 +4,10 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData } from './databaseHelper';
-import { getBalance, processPayment} from './walletHelper';
+import { getBalance, processPayment } from './walletHelper';
 import { buildTag } from './tagHelper';
-import {sendMessage } from './transactionHelper';
+import { sendMessage } from './transactionHelper';
 import { publish } from './mamHelper';
-//import uuid from 'uuid/v4';
-import { fetchFromChannelId } from './mamHelper';
 
 
 /**
@@ -49,7 +47,6 @@ export class AppHelper {
             res.setHeader('Access-Control-Allow-Origin', `*`);
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
-
             next();
         });
 
@@ -72,169 +69,228 @@ export class AppHelper {
 
         app.post('/cfp', async (req, res) => {
 
-            //1. Create Tag       
-            const tag = await buildTag('callForProposal');
+            try {
+                //0. Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
 
-            //2. Send transaction
-            await sendMessage(req.body, tag);  
-       
-            
-            // 3. Create new MAM channel
-            // 4. Publish first message with payload
-            // 5. Save channel details to DB
-            const channelId = await req.body.frame.conversationId
-            publish(channelId, req.body)
+                //2. Create Tag     
+                const tag = await buildTag('callForProposal', location, submodelId);
 
+                //2. Send transaction
+                // Try purchase
+                await sendMessage(req.body, tag);
 
-            console.log('CfP success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
+                // 3. Create new MAM channel
+                // 4. Publish first message with payload
+                // 5. Save channel details to DB
+                const channelId = req.body.frame.conversationId
+
+                await publish(channelId, req.body);
+
+                console.log('CFP success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+
+            } catch (error) {
+                console.log('CFP fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
+            }
+
         });
 
         app.post('/proposal', async (req, res) => {
 
-            //  1. Create Tag
-            const tag = await buildTag('proposal');
+            try {
+                //0. Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
 
-            //2. Retrieve Wallet address from DB
+                //  1. Create Tag
+                const tag = await buildTag('proposal', location, submodelId);
 
-            interface IWallet {
-                address?: string;
+                //2. Retrieve Wallet address from DB
+
+                interface IWallet {
+                    address?: string;
+                }
+                const wallet: IWallet = await readData('wallet');
+                const { address } = wallet;
+
+                //  3. Send transaction, include wallet address
+                req.body.frame.sender.walletAddress = address
+                await sendMessage(req.body, tag);
+
+                console.log('Proposal success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+            } catch (error) {
+                console.log('Proposal fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
             }
-            const wallet: IWallet = await readData('wallet');
-            const { address } = wallet;
-            
-           //  3. Send transaction, include wallet address
-           req.body.frame.sender.walletAddress = address
-           await sendMessage(req.body, tag);   
-            console.log('Proposal success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
+
         });
 
         app.post('/acceptProposal', async (req, res) => {
 
-            // 1. Retrieve MAM channel from DB
-            const channelId = req.body.frame.conversationId
+            try {
+                //4.Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
 
-            const fetchData = async channelId => {
-               const messages = await fetchFromChannelId(channelId);
-               messages.forEach(message => console.log(message));
+                //  5. Create Tag
+                const tag = await buildTag('acceptProposal', location, submodelId);
+
+                // 1. Retrieve MAM channel from DB
+                const channelId = req.body.frame.conversationId
+
+                //  2. Attach message with confirmation payload
+                //  3. Update channel details in DB
+                const mamInfo = await publish(channelId, req.body)
+
+                //  6. Send transaction, include MAM channel info
+                req.body.mamInfo = mamInfo
+                await sendMessage(req.body, tag);
+
+                console.log('acceptProposal success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+
+            } catch (error) {
+                console.log('acceptProposal fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
             }
 
-            await fetchData(channelId);
-
-              //  2. Attach message with confirmation payload
-              //  3. Update channel details in DB
-              const mamInfo = await publish(channelId, req.body)
-            
-              //  4. Create Tag
-              const tag = await buildTag('acceptProposal');
-
-              //  5. Send transaction, include MAM channel info
-              req.body.frame.mamInfo = mamInfo
-              await sendMessage(req.body, tag);   
-
-
-           
-            console.log('acceptProposal success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
-          });
-
-          app.post('/rejectProposal', async (req, res) => {
-            
-            // 1. Create Tag
-            const tag = await buildTag('rejectProposal');
-
-            //  2. Send transaction
-            await sendMessage(req.body, tag);   
-
-           
-            console.log('rejectProposal success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
         });
 
-        app.post('/informConfirm', async (req, res) => {
-            // 1. Retrieve MAM channel from DB
-            const channelId = await req.body.frame.conversationId
+        app.post('/rejectProposal', async (req, res) => {
+            try {
+                //0. Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
 
-            const fetchData = async channelId => {
-                const messages = await fetchFromChannelId(channelId);
-                messages.forEach(message => console.log(message));
-             }
- 
-            await fetchData(channelId);
- 
-            //  2. Attach message with confirmation payload
-            //   3. Update channel details in DB
-            const mamInfo = await publish(channelId, req.body)
-             
-            //  4. Create Tag
-            const tag = await buildTag('informConfirm');
- 
-            //  5. Send transaction, include MAM channel info
-            req.body.frame.mamInfo = mamInfo
-            await sendMessage(req.body, tag);   
- 
-           
-            console.log('informConfirm success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
+                // 1. Create Tag
+                const tag = await buildTag('rejectProposal', location, submodelId);
+
+                //  2. Send transaction
+                await sendMessage(req.body, tag);
+
+
+                console.log('rejectProposal success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+
+            } catch (error) {
+                console.log('rejectProposal fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
+            }
+
+        });
+        app.post('/informConfirm', async (req, res) => {
+
+            try {
+                //0. Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
+
+                // 1. Retrieve MAM channel from DB
+                const channelId = await req.body.frame.conversationId
+
+                //  2. Attach message with confirmation payload
+                //   3. Update channel details in DB
+                const mamInfo = await publish(channelId, req.body)
+
+                //  4. Create Tag
+                const tag = await buildTag('informConfirm', location, submodelId);
+
+                //  5. Send transaction, include MAM channel info
+                req.body.mamInfo = mamInfo
+                await sendMessage(req.body, tag);
+
+
+                console.log('informConfirm success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+
+            } catch (error) {
+                console.log('informConfirm fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
+            }
+
         });
 
         app.post('/informPayment', async (req, res) => {
 
-            //Get address from req.body, here just for testing 
-            const address ='HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD'
-            const value = 3
+            try {
+                //Get address from req.body, here just for testing 
+                const address = 'HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD'
+                const value = 3
 
-            //  1. Retrieve wallet, check balance
-            //  2. Process payment
-            const paymentHash = await processPayment(address, value)
+                //  1. Retrieve wallet, check balance
+                //  2. Process payment
+                const paymentHash = await processPayment(address, value)
 
-            console.log("Paymenthash:", paymentHash)
-
-             
-            // 3. Retrieve MAM channel from DB
-            const channelId = await req.body.frame.conversationId
-
-            const fetchData = async channelId => {
-                 const messages = await fetchFromChannelId(channelId);
-                 messages.forEach(message => console.log(message));
-              }
-
-            await fetchData(channelId);
-     
-            //   4. Attach message with payment confirmation payload
-            //   5. Update channel details in DB
-            await publish(channelId, req.body)
-
-            //  4. Create Tag
-            const tag = await buildTag('informPayment');
- 
-            //  5. Send transaction, include payment transaction has 
-            req.body.frame.paymentHash = await paymentHash
-            await sendMessage(req.body, tag); 
+                console.log("Paymenthash:", paymentHash)
 
 
-          
-            console.log('informPayment success');
-            res.send({
-                success: true,
-                message: JSON.stringify(req.body)
-            });
+                // 3. Retrieve MAM channel from DB
+                const channelId = await req.body.frame.conversationId
+
+                //   4. Attach message with payment confirmation payload
+                //   5. Update channel details in DB
+                await publish(channelId, req.body)
+
+                //0. Get location 
+                const location = req.body.location
+                const submodelId = req.body.dataElements.submodels[0].identification.id
+
+                //  4. Create Tag
+                const tag = await buildTag('informPayment', location, submodelId);
+
+                //  5. Send transaction, include payment transaction has 
+                req.body.paymentHash = await paymentHash
+                await sendMessage(req.body, tag);
+
+
+                console.log('informPayment success');
+                res.send({
+                    success: true,
+                    message: JSON.stringify(req.body)
+                });
+
+            } catch (error) {
+                console.log('informPayment fail', error)
+                res.send({
+                    success: false,
+                    message: JSON.stringify(req.body)
+                });
+            }
+
         });
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
