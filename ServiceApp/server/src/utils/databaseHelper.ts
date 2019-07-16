@@ -4,13 +4,13 @@ import { database } from '../config.json';
 
 sqlite3.verbose();
 const db = new sqlite3.Database(
-    path.resolve(__dirname, database), error => {
+    path.resolve(__dirname, database), async error => {
         if (error) {
-            return console.error('New database Error', error.message);
+            return console.error('New database Error', error);
         }
-        db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
-        db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
     }
 );
 
@@ -62,7 +62,7 @@ export const writeData = async (table, data) => {
 export const readData = async (table, searchField = null) => {
     return new Promise((resolve, reject) => {
         try {
-            let query = `SELECT * FROM ${table} LIMIT 1`;
+            let query = `SELECT * FROM ${table} ORDER BY rowid DESC LIMIT 1`;
             if (searchField) {
                 query = `SELECT * FROM ${table} WHERE id = '${searchField}' ORDER BY rowid DESC LIMIT 1`;
             }
