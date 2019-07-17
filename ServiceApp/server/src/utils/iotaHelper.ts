@@ -80,9 +80,11 @@ export const getPayload = async (bundle) => {
             return null;
         }
         let message = '';
-        transactions.forEach(({ signatureMessageFragment }) => {
-            message += signatureMessageFragment;
-        });
+        transactions
+            .sort((a, b) => a.currentIndex - b.currentIndex)
+            .forEach(({ signatureMessageFragment }) => {
+                message += signatureMessageFragment;
+            });
         return JSON.parse(fromTrytes(message));
     } catch (error) {
         console.error('getPayload catch', error);
