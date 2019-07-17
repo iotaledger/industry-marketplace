@@ -9,7 +9,6 @@ import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
-import LocationModal from '../components/modal/locationModal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
