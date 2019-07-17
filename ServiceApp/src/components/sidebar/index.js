@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../../pages/dashboard';
+import configIcon from './../../assets/img/config.svg';
 
 const menu = {
   SR: [
@@ -19,7 +20,7 @@ const menu = {
   ]
 }
 
-const Sidebar = ({ currentPage, showMenu, callback }) => {
+const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
   const { user } = useContext(UserContext);
 
   function switchMenu(nextPage) {
@@ -49,11 +50,36 @@ const Sidebar = ({ currentPage, showMenu, callback }) => {
           </MenuWrapper>
         ) : null
       }
+
+      <ModifyConfiguration onClick={(e) => handleLocationModal(true)}>
+        <ConfigIcon src={configIcon} />
+        <ConfigText>MODIFY CONFIGURATION</ConfigText>
+      </ModifyConfiguration>
     </SidebarWrapper>
   );
 }
 
 export default Sidebar;
+
+const ModifyConfiguration = styled.div`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+  left: 52px;
+  bottom: 50px;
+  cursor: pointer;
+  z-index: 2;
+`;
+
+const ConfigIcon = styled.img`
+`
+const ConfigText = styled.div`
+  margin-left: 25px;
+  font-size: 18px;
+  color: #15286D;
+`
 
 const SidebarWrapper = styled.aside`
   background: rgba(240, 240, 240, 1);

@@ -38,7 +38,7 @@ const getInputType = (type) => {
       case 'negativeInteger':
       case 'dateTimeStamp':
           return 'number';
-  
+
       case 'date':
           return 'date';
 
@@ -47,7 +47,7 @@ const getInputType = (type) => {
 
       case 'boolean':
           return 'checkbox';
-      
+
       case 'string':
       case 'langString':
       case 'anyURI':
@@ -59,7 +59,7 @@ const getInputType = (type) => {
       default:
         return 'text';
   }
-} 
+}
 
 export default class extends React.Component {
   constructor(props) {
@@ -162,8 +162,8 @@ export default class extends React.Component {
 
     const messageParameters = {
       submodelValues,
-      irdi: operation, 
-      messageType: 'callForProposal', 
+      irdi: operation,
+      messageType: 'callForProposal',
       userId: this.props.userId,
       creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
       startTimestamp: Date.parse(assetStart),
@@ -185,7 +185,7 @@ export default class extends React.Component {
 
   render() {
     const { loading, operation, operations, submodel } = this.state;
-    
+
     return (
       <React.Fragment>
         <Modal className="access-modal-wrapper" show={true}>
@@ -202,12 +202,12 @@ export default class extends React.Component {
                         value={operation}
                         onChange={this.change}
                       >
-                        <option value=""></option> 
+                        <option value=""></option>
                         {
-                          operations.map(({ id, name }) => 
+                          operations.map(({ id, name }) =>
                             <option key={id} value={id}>{name}</option>
                           )
-                        }    
+                        }
                       </select>
                     </Column>
                     {
