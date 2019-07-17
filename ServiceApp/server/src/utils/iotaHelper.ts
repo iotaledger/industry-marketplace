@@ -83,7 +83,7 @@ export const getPayload = async (bundle) => {
         transactions.forEach(({ signatureMessageFragment }) => {
             message += signatureMessageFragment;
         });
-        return fromTrytes(message);
+        return JSON.parse(fromTrytes(message));
     } catch (error) {
         console.error('getPayload catch', error);
         return error;
