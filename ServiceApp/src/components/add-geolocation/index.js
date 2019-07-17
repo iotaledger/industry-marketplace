@@ -1,13 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import { generate, evaluate, submodel } from '../../Industry_4.0_language';
-import compareDesc from 'date-fns/compare_desc';
-import isFuture from 'date-fns/is_future';
-import isValid from 'date-fns/is_valid';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import Loading from '../loading';
 import { areaCode, waitingTime } from '../../config.json';
 import locationFormats from './location.formats'
