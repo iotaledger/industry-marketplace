@@ -12,13 +12,13 @@ import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
 import { waitingTime } from '../config.json';
-import { 
-  getByType, 
-  readFromStorage, 
-  removeExpired, 
+import {
+  getByType,
+  readFromStorage,
+  removeExpired,
   removeFromStorage,
   removeProposals,
-  writeToStorage 
+  writeToStorage
 } from '../utils/storage';
 import { prepareData } from '../utils/card';
 
@@ -49,6 +49,7 @@ class Dashboard extends React.Component {
     this.changeSection = this.changeSection.bind(this);
     this.rejectAction = this.rejectAction.bind(this);
     this.confirmAction = this.confirmAction.bind(this);
+    this.removeAsset = this.removeAsset.bind(this);
     this.timer = null;
   }
 
@@ -120,7 +121,7 @@ class Dashboard extends React.Component {
     const { user: { role } } = this.state;
     console.log('message', message);
     const card = await prepareData(
-      get(this.state, 'user.role'), 
+      get(this.state, 'user.role'),
       get(message, 'data')
     );
     console.log('card', card, role);
@@ -130,7 +131,7 @@ class Dashboard extends React.Component {
 
   async generateRequest(type, id, partner = null, price = null) {
     const { user } = this.state;
-    const { irdi, originalMessage } = await readFromStorage(partner ? `${id}#${partner}` : id);
+    const { irdi, originalMessage, walletAddress } = await readFromStorage(partner ? `${id}#${partner}` : id);
     const request = generate({
       messageType: type,
       userId: user.id,
@@ -138,14 +139,17 @@ class Dashboard extends React.Component {
       originalMessage: await JSON.parse(originalMessage),
       irdi,
       price
-    }); 
+    });
+    if (walletAddress) {
+      request.walletAddress = walletAddress;
+    }
     console.log('generateRequest', request);
     return request;
   }
 
   async removeAsset(id) {
     await removeFromStorage(id);
-    await this.checkExpired();
+    // await this.checkExpired();
   }
 
   async confirmAction(id, partner, price = null) {
@@ -172,9 +176,9 @@ class Dashboard extends React.Component {
           message = await this.generateRequest('proposal', id, partner, 10);
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
-          // send informConfirm  
+          // send informConfirm
           message = await this.generateRequest('informConfirm', id);
-          return this.sendMessage('informConfirm', message);  
+          return this.sendMessage('informConfirm', message);
         default:
           return null;
       }
@@ -192,7 +196,7 @@ class Dashboard extends React.Component {
         case 'proposal':
           // send rejectProposal
           const message = await this.generateRequest('rejectProposal', id, partner);
-          return this.sendMessage('rejectProposal', message);  
+          return this.sendMessage('rejectProposal', message);
         default:
           return null;
       }
@@ -201,7 +205,7 @@ class Dashboard extends React.Component {
         case 'callForProposal':
         case 'acceptProposal':
         case 'rejectProposal':
-          await removeFromStorage(id);  
+          await removeFromStorage(id);
           await this.checkExpired();
           return null;
         default:
@@ -224,9 +228,9 @@ class Dashboard extends React.Component {
           <Zmq callback={this.newMessage} />
           <Data>
             <Sidebar
-              showMenu 
-              currentPage={activeSection} 
-              callback={this.changeSection} 
+              showMenu
+              currentPage={activeSection}
+              callback={this.changeSection}
             />
             {
               loading ? (

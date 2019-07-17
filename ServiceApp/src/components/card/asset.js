@@ -19,7 +19,7 @@ const Heading = ({ id, operation, type }) => {
         {
           onCancel && (
             <CancelHeaderButton onClick={() => onCancel(id)}>
-              Cancel Request
+              Remove
             </CancelHeaderButton>
           )
         }
