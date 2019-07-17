@@ -165,6 +165,7 @@ class Dashboard extends React.Component {
         case 'informConfirm':
           // send informPayment
           message = await this.generateRequest('informPayment', id);
+          this.setState({ loading: true });
           return this.sendMessage('informPayment', message);
         default:
           return null;

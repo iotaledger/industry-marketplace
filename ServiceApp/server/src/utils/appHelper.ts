@@ -229,16 +229,9 @@ export class AppHelper {
 
         app.post('/informPayment', async (req, res) => {
             try {
-                // 1. Retrieve wallet, check balance
-                interface IWallet {
-                    address?: string;
-                }
-                const wallet: IWallet = await readData('wallet');
-                const { address } = wallet;
-                const balance = await getBalance(address);
+                // 1. Retrieve wallet
                 const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => idShort === 'preis');
-
-                if (priceObject && priceObject.value && Number(priceObject.value) <= balance) {
+                if (priceObject && priceObject.value) {
                     // 2. Process payment
                     const recepientAddress = req.body.walletAddress;
                     const transactions = await processPayment(recepientAddress, Number(priceObject.value));
@@ -272,8 +265,7 @@ export class AppHelper {
                     console.log('informPayment insufficient balance');
                     res.send({
                         success: false,
-                        price: priceObject.value,
-                        balance
+                        price: priceObject.value
                     });
                 }
             } catch (error) {
