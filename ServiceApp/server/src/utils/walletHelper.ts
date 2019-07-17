@@ -68,7 +68,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
 
-                            resolve(hashes[0]);
+                            resolve(transactions);
                         })
                         .catch(error => {
                             console.error('transferFunds sendTrytes error', error);
