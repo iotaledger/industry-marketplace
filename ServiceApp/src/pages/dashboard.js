@@ -11,11 +11,13 @@ import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
+import { waitingTime } from '../config.json';
 import { 
   getByType, 
   readFromStorage, 
   removeExpired, 
-  removeFromStorage, 
+  removeFromStorage,
+  removeProposals,
   writeToStorage 
 } from '../utils/storage';
 import { prepareData } from '../utils/card';
@@ -128,12 +130,12 @@ class Dashboard extends React.Component {
 
   async generateRequest(type, id, price = null) {
     const { user } = this.state;
-    const { irdi, originalMessage, replyBy, } = readFromStorage(id);
+    const { irdi, originalMessage } = await readFromStorage(id);
     const request = generate({
       messageType: type,
       userId: user.id,
-      replyTime: replyBy,
-      originalMessage,
+      replyTime: waitingTime,
+      originalMessage: await JSON.parse(originalMessage),
       irdi,
       price
     }); 
@@ -153,11 +155,12 @@ class Dashboard extends React.Component {
       switch (activeSection) {
         case 'proposal':
           // send acceptProposal
-          message = this.generateRequest('acceptProposal', id);
+          message = await this.generateRequest('acceptProposal', id);
+          await removeProposals(id);
           return this.sendMessage('acceptProposal', message);
         case 'informConfirm':
           // send informPayment
-          message = this.generateRequest('informPayment', id);
+          message = await this.generateRequest('informPayment', id);
           return this.sendMessage('informPayment', message);
         default:
           return null;
@@ -166,11 +169,11 @@ class Dashboard extends React.Component {
       switch (activeSection) {
         case 'callForProposal':
           // send proposal
-          message = this.generateRequest('proposal', id, 10);
+          message = await this.generateRequest('proposal', id, 10);
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
           // send informConfirm  
-          message = this.generateRequest('informConfirm', id);
+          message = await this.generateRequest('informConfirm', id);
           return this.sendMessage('informConfirm', message);  
         default:
           return null;
@@ -188,7 +191,7 @@ class Dashboard extends React.Component {
           return null;
         case 'proposal':
           // send rejectProposal
-          const message = this.generateRequest('rejectProposal', id);
+          const message = await this.generateRequest('rejectProposal', id);
           return this.sendMessage('rejectProposal', message);  
         default:
           return null;
@@ -240,7 +243,7 @@ class Dashboard extends React.Component {
                   }}
                 >
                   {
-                    assets.length === 0 && activeSection === 'callForProposal' ? (
+                    user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
                       <NoAssetsOuterWrapper>
                         <NoAssetsInnerWrapper>
                           <Heading>You have no active requests</Heading>

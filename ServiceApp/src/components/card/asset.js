@@ -84,6 +84,8 @@ const Footer = ({ id, type }) => {
   const rejectButton = getRejectButtonText(user.role, type);
   const confirmButton = getConfirmButtonText(user.role, type);
 
+  if (!rejectButton && !confirmButton) return null;
+  
   console.log('Footer', rejectButton, confirmButton);
   return (
     <React.Fragment>
