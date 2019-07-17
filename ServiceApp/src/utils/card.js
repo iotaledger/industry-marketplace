@@ -48,6 +48,7 @@ export const prepareData = async (role, payload) => {
         location,
         params,
         irdi,
+        walletAddress: get(data, 'walletAddress') || null,
         originalMessage: JSON.stringify(data),
         id: conversationId,
         coordinates: await getCoordinates(location),
