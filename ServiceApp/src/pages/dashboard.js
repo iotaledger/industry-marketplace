@@ -4,19 +4,21 @@ import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
+import AddGeolocation from '../components/add-geolocation';
 import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import Modal from '../components/modal';
+import LocationModal from '../components/modal/locationModal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
-import { 
-  getByType, 
-  readFromStorage, 
-  removeExpired, 
-  removeFromStorage, 
-  writeToStorage 
+import {
+  getByType,
+  readFromStorage,
+  removeExpired,
+  removeFromStorage,
+  writeToStorage
 } from '../utils/storage';
 import { prepareData } from '../utils/card';
 
@@ -33,6 +35,7 @@ class Dashboard extends React.Component {
       loading: false,
       displayNewRequestForm: false,
       error: false,
+      isLocationModal: false
     };
 
     this.createRequest = this.createRequest.bind(this);
@@ -47,9 +50,12 @@ class Dashboard extends React.Component {
     this.changeSection = this.changeSection.bind(this);
     this.rejectAction = this.rejectAction.bind(this);
     this.confirmAction = this.confirmAction.bind(this);
+    this.handleLocationModal = this.handleLocationModal.bind(this);
     this.timer = null;
   }
-
+  handleLocationModal(state) {
+    this.setState({ isLocationModal: state })
+  }
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
@@ -118,7 +124,7 @@ class Dashboard extends React.Component {
     const { user: { role } } = this.state;
     console.log('message', message);
     const card = await prepareData(
-      get(this.state, 'user.role'), 
+      get(this.state, 'user.role'),
       get(message, 'data')
     );
     console.log('card', card, role);
@@ -136,7 +142,7 @@ class Dashboard extends React.Component {
       originalMessage,
       irdi,
       price
-    }); 
+    });
     console.log('generateRequest', request);
     return request;
   }
@@ -169,9 +175,9 @@ class Dashboard extends React.Component {
           message = this.generateRequest('proposal', id, 10);
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
-          // send informConfirm  
+          // send informConfirm
           message = this.generateRequest('informConfirm', id);
-          return this.sendMessage('informConfirm', message);  
+          return this.sendMessage('informConfirm', message);
         default:
           return null;
       }
@@ -189,7 +195,7 @@ class Dashboard extends React.Component {
         case 'proposal':
           // send rejectProposal
           const message = this.generateRequest('rejectProposal', id);
-          return this.sendMessage('rejectProposal', message);  
+          return this.sendMessage('rejectProposal', message);
         default:
           return null;
       }
@@ -198,7 +204,7 @@ class Dashboard extends React.Component {
         case 'callForProposal':
         case 'acceptProposal':
         case 'rejectProposal':
-          await removeFromStorage(id);  
+          await removeFromStorage(id);
           await this.checkExpired();
           return null;
         default:
@@ -221,9 +227,10 @@ class Dashboard extends React.Component {
           <Zmq callback={this.newMessage} />
           <Data>
             <Sidebar
-              showMenu 
-              currentPage={activeSection} 
-              callback={this.changeSection} 
+              showMenu
+              currentPage={activeSection}
+              callback={this.changeSection}
+              handleLocationModal={this.handleLocationModal}
             />
             {
               loading ? (
@@ -263,6 +270,14 @@ class Dashboard extends React.Component {
                     <AddCard
                       createRequest={this.createRequest}
                       cancel={this.hideNewRequestForm}
+                      userId={user && user.id}
+                    />
+                  }
+                  {
+                    this.state.isLocationModal &&
+                    <AddGeolocation
+                      createRequest={this.createRequest}
+                      handleLocationModal={this.handleLocationModal}
                       userId={user && user.id}
                     />
                   }
