@@ -275,7 +275,7 @@ class Dashboard extends React.Component {
                   {
                     this.state.isLocationModal &&
                     <AddGeolocation
-                      createRequest={this.createRequest}
+                      sendMessage={this.sendMessage}
                       handleLocationModal={this.handleLocationModal}
                       userId={user && user.id}
                     />
