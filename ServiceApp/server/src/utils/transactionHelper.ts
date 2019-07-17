@@ -17,8 +17,7 @@ export const sendMessage = (payload, tag) => {
     }];
 
     return new Promise((resolve, reject) => {
-     //   iota.prepareTransfers(seed, transfers)
-     iota.prepareTransfers(seed, transfers)
+        iota.prepareTransfers(seed, transfers)
             .then(trytes => {
                 iota.sendTrytes(trytes, 3, 9)
                     .then(bundle => {

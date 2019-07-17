@@ -68,8 +68,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
 
-                            // resolve(transactions);
-                            resolve(hashes[0])
+                            resolve(hashes[0]);
                         })
                         .catch(error => {
                             console.error('transferFunds sendTrytes error', error);
@@ -100,7 +99,7 @@ export const processPayment = async (receiveAddress, paymentValue) => {
     }
 
     const wallet: IWallet = await readData('wallet');
-    const { address, balance, keyIndex, seed } = await wallet;
+    const { address, balance, keyIndex, seed } = wallet;
     if (balance < paymentValue) {
         throw new Error(`Insufficient balance: ${balance}. Needed: ${paymentValue}`);
     }
