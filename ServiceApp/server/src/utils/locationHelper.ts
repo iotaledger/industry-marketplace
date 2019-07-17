@@ -7,8 +7,7 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
     if ((lat1 === lat2) && (lon1 === lon2)) {
         return 0;
-    }
-    else {
+    } else {
         var R = 6371;
         var dLat = (lat2 - lat1) * Math.PI / 180;
         var dLon = (lon2 - lon1) * Math.PI / 180;
@@ -19,8 +18,6 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
         var d = R * c;
         if (d > 1) {
             return Math.round(d) + "km";
-        }
-        else if (d <= 1) { return Math.round(d * 1000) + "m"; }
+        } else if (d <= 1) { return Math.round(d * 1000) + "m"; }
     }
-
 }
