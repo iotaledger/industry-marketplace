@@ -51,7 +51,7 @@ export const prepareData = async (role, payload) => {
         originalMessage: JSON.stringify(data),
         id: conversationId,
         coordinates: await getCoordinates(location),
-        price: price || 'Pending',
+        price: get(price, 'value') || 'Pending',
         partner: await getPartner(role, data.frame),
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
         endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
