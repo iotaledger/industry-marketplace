@@ -128,9 +128,9 @@ class Dashboard extends React.Component {
     await this.checkExpired();
   }
 
-  async generateRequest(type, id, price = null) {
+  async generateRequest(type, id, partner = null, price = null) {
     const { user } = this.state;
-    const { irdi, originalMessage } = await readFromStorage(id);
+    const { irdi, originalMessage } = await readFromStorage(partner ? `${id}#${partner}` : id);
     const request = generate({
       messageType: type,
       userId: user.id,
@@ -148,14 +148,14 @@ class Dashboard extends React.Component {
     await this.checkExpired();
   }
 
-  async confirmAction(id, price = null) {
+  async confirmAction(id, partner, price = null) {
     const { activeSection, user: { role } } = this.state;
     let message;
     if (role === 'SR') {
       switch (activeSection) {
         case 'proposal':
           // send acceptProposal
-          message = await this.generateRequest('acceptProposal', id);
+          message = await this.generateRequest('acceptProposal', id, partner);
           await removeProposals(id);
           return this.sendMessage('acceptProposal', message);
         case 'informConfirm':
@@ -169,7 +169,7 @@ class Dashboard extends React.Component {
       switch (activeSection) {
         case 'callForProposal':
           // send proposal
-          message = await this.generateRequest('proposal', id, 10);
+          message = await this.generateRequest('proposal', id, partner, 10);
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
           // send informConfirm  
@@ -181,7 +181,7 @@ class Dashboard extends React.Component {
     }
   }
 
-  async rejectAction(id) {
+  async rejectAction(id, partner) {
     const { activeSection, user: { role } } = this.state;
     if (role === 'SR') {
       switch (activeSection) {
@@ -191,7 +191,7 @@ class Dashboard extends React.Component {
           return null;
         case 'proposal':
           // send rejectProposal
-          const message = await this.generateRequest('rejectProposal', id);
+          const message = await this.generateRequest('rejectProposal', id, partner);
           return this.sendMessage('rejectProposal', message);  
         default:
           return null;

@@ -75,7 +75,7 @@ const getConfirmButtonText = (role, type) => {
   return null;
 }
 
-const Footer = ({ id, type }) => {
+const Footer = ({ id, partner, type }) => {
   const { user } = useContext(UserContext);
   const { onConfirm, onReject } = useContext(AssetContext);
   console.log('Footer', id, type, onConfirm);
@@ -92,14 +92,14 @@ const Footer = ({ id, type }) => {
       <FootRow>
         {
           rejectButton && (
-            <FooterButton onClick={() => onReject(id)}>
+            <FooterButton onClick={() => onReject(id, partner)}>
               {rejectButton}
             </FooterButton>
           )
         }
         {
           confirmButton && (
-            <FooterButton onClick={() => onConfirm(id)}>
+            <FooterButton onClick={() => onConfirm(id, partner)}>
               {confirmButton}
             </FooterButton>
           )
