@@ -13,6 +13,7 @@ const Card = props => (
 );
 
 const initState = {
+  inputText: '',
   loading: false,
   selectedIndex: 0
 }
@@ -20,7 +21,9 @@ const initState = {
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {...initState}
+    this.state = {
+      ...initState
+    }
 
     this.cancel = this.cancel.bind(this);
     this.change = this.change.bind(this);
@@ -37,15 +40,27 @@ export default class extends React.Component {
     }, () => this.props.handleLocationModal(false));
   }
 
-  async change({ target: { value } }) {
-    const indx = value
-    // locationFormats[indx].name
-    this.setState({ selectedIndex : indx })
-  };
+   change({ target: { value, name } }) {
+     if(name === 'inputText') {
+       this.setState({ inputText: value })
+     } else if (name === 'operation') {
+       const indx = value
+       this.setState({ selectedIndex : indx })
+     }
+  }
 
   async submit() {
-    locationFormats[this.state.selectedIndex].action()
-  };
+    // actions are defined in ./location.formats.js
+    const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
+      this.props.sendMessage,
+      this.state.inputText
+    )
+
+    if (sendMessagetResult.error) {
+      this.setState({ loading: false });
+      return alert(sendMessagetResult.error);
+    }
+  }
 
   render() {
     const { loading, operation, submodel } = this.state;
@@ -80,7 +95,12 @@ export default class extends React.Component {
                       </Select>
                     </Column>
                     <InputWrapper>
-                      <Input type="text" />
+                      <Input
+                        type="text"
+                        onChange={this.change}
+                        name="inputText"
+                        value={this.state.inputText}
+                       />
                     </InputWrapper>
                   </Form>
                 )}
