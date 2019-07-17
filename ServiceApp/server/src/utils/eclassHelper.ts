@@ -35,4 +35,4 @@ export const getCodeFromMessageType = message => {
 
 export const getLetterFromNumber = number => {
     return String.fromCharCode(65 + number);
-}
+};
