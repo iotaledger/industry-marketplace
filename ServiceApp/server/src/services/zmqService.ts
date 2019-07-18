@@ -1,9 +1,10 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
+import { decode } from '@iota/area-codes'
 import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
-// import { getLocationFromMessage } from '../utils/locationHelper';
+import { getLocationFromMessage, calculateDistance } from '../utils/locationHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -153,17 +154,27 @@ export class ZmqService {
         const payload = this.buildPayload(data, messageType, messageParams);
         this._subscriptions[event][0].callback(event, payload);
     }
+        /**
+     * Send out an event
+     */
+    private sendError(error, messageParams) {
+        const event = messageParams[0];
+        const payload = error
+        this._subscriptions[event][0].callback(event, payload);
+    }
 
     /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
     private async handleMessage(message) {
+
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
         const tag = messageParams[12];
+
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
@@ -178,7 +189,7 @@ export class ZmqService {
 
                 // 1. Check user role (SR, SP, YP)
                 switch (role) {
-                    case 'SR':
+                    case 'SP':
                         // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                         if (['proposal', 'informConfirm'].includes(messageType)) {
                             // 2.1 Decode every such message and retrieve receiver ID
@@ -191,17 +202,41 @@ export class ZmqService {
                             }
                         }
                         break;
-                    case 'SP':
+                    case 'SR':
                         // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                             const data = await getPayload(bundle);
+                            const areaCode = 'NPHTPOYO9JQ'
+                            const maxDistance = 2
                             // 3.1 Decode every message of type A, retrieve location.
                             if (messageType === 'callForProposal') {
-                                // const location = getLocationFromMessage(data);
+                                const location = await getLocationFromMessage(data);
+                           
+
                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                if (!areaCode || !maxDistance) {
+                                    const error = "Please include your location and the accepted distance in km"
+                                    this.sendError(error, messageParams)
+                                }
+
                                 // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                // 3.3.1 If distance within accepted range, send message to UI
-                                this.sendEvent(data, messageType, messageParams);
+                                if (areaCode && maxDistance) {
+
+                                    try {
+                                        const ownLocObj = decode(areaCode)
+                                        const locObj = decode(location)
+
+                                        const distance = await calculateDistance(locObj.latitude, locObj.longitude, ownLocObj.latitude, ownLocObj.longitude)
+                                  
+                                        // 3.3.1 If distance within accepted range, send message to UI
+                                        if (distance <= maxDistance) {
+                                            this.sendEvent(data, messageType, messageParams);
+                                         
+                                        }
+                                    } catch (error) {
+                                        console.error(error)
+                                    }
+                                }
                             } else {
                                 // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                 const receiverID = data.frame.receiver.identification.id;
@@ -217,6 +252,7 @@ export class ZmqService {
                     default:
                         // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
                         if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                            console.log('NO ICKE')
                             const data = await getPayload(bundle);
 
                             // 4.1 Send every such message to UI
