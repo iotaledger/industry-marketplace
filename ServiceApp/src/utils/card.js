@@ -1,6 +1,5 @@
 import get from 'lodash-es/get';
 import { operations } from '../Industry_4.0_language';
-import { addressApi } from '../config.json';
 
 const iotaAreaCodes = require('@iota/area-codes');
 
