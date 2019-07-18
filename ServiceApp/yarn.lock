@@ -931,6 +931,13 @@
   resolved "https://registry.yarnpkg.com/@emotion/unitless/-/unitless-0.7.4.tgz#a87b4b04e5ae14a88d48ebef15015f6b7d1f5677"
   integrity sha512-kBa+cDHOR9jpRJ+kcGMsysrls0leukrm68DmFQoMIWQcXdr2cZvyvypWuGYT7U+9kAExUE7+T7r6G3C3A6L8MQ==
 
+"@iota/area-codes@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@iota/area-codes/-/area-codes-0.1.0.tgz#587c9737a742d78306e65c2af555823c2db8b8db"
+  integrity sha512-riWkf9/3w7N+VF+nVXWVCS2HouhizCYtrFbDp75fxwK/sHEKro0jUUAyGno24R7Co2IruGokeyJToKiQRpos4w==
+  dependencies:
+    open-location-code-typescript "^1.4.0"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -7332,6 +7339,11 @@ onetime@^2.0.0:
   integrity sha1-BnQoIw/WdEOyeUsiu6UotoZ5YtQ=
   dependencies:
     mimic-fn "^1.0.0"
+
+open-location-code-typescript@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/open-location-code-typescript/-/open-location-code-typescript-1.4.0.tgz#509f51e7e02799b954ffb00be6f425167f5b0c66"
+  integrity sha512-k5qeLR3NiEXHCy8BjqazbfvOJbIlnTiBN+JkHAJHROuSVTD4c1I+wFRw3aZet1FxksoWuo7z6MXb6Ei21NLY8g==
 
 opn@5.4.0:
   version "5.4.0"
