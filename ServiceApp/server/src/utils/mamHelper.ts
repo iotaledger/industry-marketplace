@@ -1,10 +1,10 @@
-import { asciiToTrytes, trytesToAscii } from '@iota/converter';
+import { asciiToTrytes } from '@iota/converter';
 import Mam from '@iota/mam';
 import crypto from 'crypto';
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
-const mode = 'restricted';
+// const mode = 'restricted';
 
 interface IMamState {
     id?: string;
@@ -24,7 +24,6 @@ const generateRandomKey = length => {
 
 // Publish to tangle
 export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
-
     try {
         let mamState;
         let secretKey;
@@ -69,23 +68,24 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
         }
         return null;
     } catch (error) {
-       throw new Error(error);
+        console.log('MAM publish Error', error);
+        throw new Error(error);
     }
 };
 
-export const fetchFromRoot = async (root, secretKey) => {
-    // Output syncronously once fetch is completed
-    const result = await Mam.fetch(root, mode, secretKey);
-    return result && result.messages.map(message => JSON.parse(trytesToAscii(message)));
-};
+// export const fetchFromRoot = async (root, secretKey) => {
+//     // Output syncronously once fetch is completed
+//     const result = await Mam.fetch(root, mode, secretKey);
+//     return result && result.messages.map(message => JSON.parse(trytesToAscii(message)));
+// };
 
-export const fetchFromChannelId = async channelId => {
-    const channelData: IMamState = await readData('mam', channelId);
-    if (channelData) {
-        return await fetchFromRoot(channelData.root, channelData.side_key);
-    }
-    return [];
-};
+// export const fetchFromChannelId = async channelId => {
+//     const channelData: IMamState = await readData('mam', channelId);
+//     if (channelData) {
+//         return await fetchFromRoot(channelData.root, channelData.side_key);
+//     }
+//     return [];
+// };
 
 /*
 Example write operation:
