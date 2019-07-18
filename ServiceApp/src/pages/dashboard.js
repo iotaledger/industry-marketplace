@@ -77,7 +77,6 @@ class Dashboard extends React.Component {
     const { activeSection } = this.state;
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
-    // console.log('checkExpired active', activeSection, assets);
     this.setState({ assets });
     clearInterval(this.timer);
   }
