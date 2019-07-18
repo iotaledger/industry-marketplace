@@ -4,7 +4,9 @@ import { readData, writeData } from './databaseHelper';
 
 export const getBalance = async address => {
     try {
-        if (!address) return 0;
+        if (!address) {
+            return 0;
+        }
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
         return balances && balances.length > 0 ? balances[0] : 0;
