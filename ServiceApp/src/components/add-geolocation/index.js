@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Loading from '../loading';
-import { areaCode, waitingTime } from '../../config.json';
 import locationFormats from './location.formats'
 
 const Card = props => (
@@ -31,7 +30,7 @@ export default class extends React.Component {
   }
 
   componentWillUnmount() {
-    this.setState({...initState});
+    this.setState({ ...initState });
   }
 
   cancel() {
@@ -42,10 +41,10 @@ export default class extends React.Component {
 
    change({ target: { value, name } }) {
      if(name === 'inputText') {
-       this.setState({ inputText: value })
+       this.setState({ inputText: value });
      } else if (name === 'operation') {
-       const indx = value
-       this.setState({ selectedIndex : indx })
+       const index = value
+       this.setState({ selectedIndex : index });
      }
   }
 
@@ -54,16 +53,15 @@ export default class extends React.Component {
     const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
       this.props.sendMessage,
       this.state.inputText
-    )
+    );
 
     if (sendMessagetResult.error) {
-      this.setState({ loading: false });
       return alert(sendMessagetResult.error);
     }
   }
 
   render() {
-    const { loading, operation, submodel } = this.state;
+    const { loading, operation } = this.state;
 
     return (
       <React.Fragment>
@@ -82,14 +80,8 @@ export default class extends React.Component {
                       >
                         <option value=""></option>
                         {
-                          locationFormats.map(({ name }, indx) =>
-                            <option
-                              key={indx}
-                              selected={indx===0}
-                              value={indx}
-                            >
-                              {name}
-                            </option>
+                          locationFormats.map(({ name }, index) =>
+                            <option key={index} value={index}>{name}</option>
                           )
                         }
                       </Select>
@@ -104,7 +96,13 @@ export default class extends React.Component {
                     </InputWrapper>
                   </Form>
                 )}
-
+                {
+                  loading && (
+                    <LoadingBox>
+                      <Loading color="#e2e2e2" size="130" />
+                    </LoadingBox>
+                  )
+                }
                 <FootRow>
                   <FooterButton secondary onClick={this.cancel}>
                     Cancel
@@ -114,9 +112,6 @@ export default class extends React.Component {
                   </FooterButton>
                 </FootRow>
             </Card>
-
-
-
           </AddAsset>
         </Modal>
       </React.Fragment>
@@ -124,6 +119,14 @@ export default class extends React.Component {
   }
 }
 
+const LoadingBox = styled.div`
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+`;
 
 const Input = styled.input`
   border: none;
@@ -134,12 +137,13 @@ const Input = styled.input`
   border-bottom: 2px solid #eee;
   background: transparent;
 `;
+
 const InputWrapper = styled.div`
 `
+
 const Select = styled.select`
   margin-bottom: 10px;
 `
-
 
 const Form = styled.form`
   transition: all 0.5s ease;
@@ -171,16 +175,6 @@ const Column = styled.div`
   width: 100%;
 `;
 
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  @media (max-width: 760px) {
-    flex-direction: column;
-  }
-`;
-
 const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -204,8 +198,6 @@ const FooterButton = styled.button`
     border: 1px solid #009fff;
   }
 `;
-
-
 
 const Modal = styled.div`
   position: fixed;

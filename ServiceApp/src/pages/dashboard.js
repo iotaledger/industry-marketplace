@@ -53,11 +53,10 @@ class Dashboard extends React.Component {
     this.confirmAction = this.confirmAction.bind(this);
     this.handleLocationModal = this.handleLocationModal.bind(this);
     this.removeAsset = this.removeAsset.bind(this);
+    this.updateConfig = this.updateConfig.bind(this);
     this.timer = null;
   }
-  handleLocationModal(state) {
-    this.setState({ isLocationModal: state })
-  }
+  
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
@@ -109,6 +108,35 @@ class Dashboard extends React.Component {
       resolve(data);
     });
   };
+
+  async updateConfig(packet) {
+    return new Promise(async (resolve) => {
+      if (!packet) {
+        return resolve({ error: 'Address convertion failed. Please use only latin letters' });
+      }
+      // Call server
+      const data = await api.post('config', packet);
+      // Check success
+      if (data.success) {
+        this.setState({
+          isLocationModal: false,
+          error: false,
+          loading: false,
+        });
+      } else if (data.error) {
+        this.setState({
+          error: data.error,
+          loading: false,
+        });
+      }
+
+      resolve(data);
+    });
+  };
+
+  handleLocationModal(state) {
+    this.setState({ isLocationModal: state })
+  }
 
   showHistory(assetId) {
     this.props.history.push(`/history/${assetId}`);
@@ -283,9 +311,8 @@ class Dashboard extends React.Component {
                   {
                     this.state.isLocationModal &&
                     <AddGeolocation
-                      sendMessage={this.sendMessage}
+                      sendMessage={this.updateConfig}
                       handleLocationModal={this.handleLocationModal}
-                      userId={user && user.id}
                     />
                   }
                 </AssetContext.Provider>
