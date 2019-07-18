@@ -41,7 +41,7 @@ export class AppHelper {
         app.post('/config', async (req, res) => {
             try {
                 // save to DB
-                console.log('config success');
+                console.log('config success', req.body);
                 res.send({
                     success: true
                 });

@@ -51,7 +51,7 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
         ) : null
       }
 
-      <ModifyConfiguration onClick={(e) => handleLocationModal(true)}>
+      <ModifyConfiguration onClick={() => handleLocationModal(true)}>
         <ConfigIcon src={configIcon} />
         <ConfigText>MODIFY CONFIGURATION</ConfigText>
       </ModifyConfiguration>
