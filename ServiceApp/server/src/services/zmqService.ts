@@ -5,6 +5,8 @@ import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { getLocationFromMessage, calculateDistance } from '../utils/locationHelper';
+import { maxDistance } from '../config.json';
+
 
 /**
  * Class to handle ZMQ service.
@@ -154,9 +156,9 @@ export class ZmqService {
         const payload = this.buildPayload(data, messageType, messageParams);
         this._subscriptions[event][0].callback(event, payload);
     }
-        /**
-     * Send out an event
-     */
+    /**
+ * Send out an event
+ */
     private sendError(error, messageParams) {
         const event = messageParams[0];
         const payload = error
@@ -184,12 +186,13 @@ export class ZmqService {
                 interface IUser {
                     id?: string;
                     role?: string;
+                    areaCode?: string;
                 }
-                const { id, role }: IUser = await readData('user');
+                const { id, role, areaCode }: IUser = await readData('user');
 
                 // 1. Check user role (SR, SP, YP)
                 switch (role) {
-                    case 'SP':
+                    case 'SR':
                         // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                         if (['proposal', 'informConfirm'].includes(messageType)) {
                             // 2.1 Decode every such message and retrieve receiver ID
@@ -202,16 +205,14 @@ export class ZmqService {
                             }
                         }
                         break;
-                    case 'SR':
+                    case 'SP':
                         // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                             const data = await getPayload(bundle);
-                            const areaCode = 'NPHTPOYO9JQ'
-                            const maxDistance = 2
+
                             // 3.1 Decode every message of type A, retrieve location.
                             if (messageType === 'callForProposal') {
                                 const location = await getLocationFromMessage(data);
-                           
 
                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
                                 if (!areaCode || !maxDistance) {
@@ -225,13 +226,11 @@ export class ZmqService {
                                     try {
                                         const ownLocObj = decode(areaCode)
                                         const locObj = decode(location)
-
                                         const distance = await calculateDistance(locObj.latitude, locObj.longitude, ownLocObj.latitude, ownLocObj.longitude)
-                                  
+
                                         // 3.3.1 If distance within accepted range, send message to UI
                                         if (distance <= maxDistance) {
                                             this.sendEvent(data, messageType, messageParams);
-                                         
                                         }
                                     } catch (error) {
                                         console.error(error)
@@ -252,9 +251,7 @@ export class ZmqService {
                     default:
                         // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
                         if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                            console.log('NO ICKE')
                             const data = await getPayload(bundle);
-
                             // 4.1 Send every such message to UI
                             this.sendEvent(data, messageType, messageParams);
                         }
