@@ -1,9 +1,11 @@
+// tslint:disable-next-line:no-require-imports
+const iotaAreaCodes = require('@iota/area-codes');
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData } from './databaseHelper';
+import { readData, writeData } from './databaseHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish } from './mamHelper';
 import { buildTag } from './tagHelper';
@@ -40,8 +42,15 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                // save to DB
-                console.log('config success', req.body);
+                let areaCode = '';
+                if (req.body.areaCode) {
+                    areaCode = req.body.areaCode;
+                } else if (req.body.gps) {
+                    const coordinates = req.body.gps.split(',');
+                    areaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                }
+                const user = await readData('user');
+                await writeData('user', { ...user, areaCode });
                 res.send({
                     success: true
                 });
@@ -65,8 +74,7 @@ export class AppHelper {
                 address?: string;
             }
             const wallet: IWallet = await readData('wallet');
-            const { address } = wallet;
-            const balance = await getBalance(address);
+            const balance = await getBalance((wallet && wallet.address) || null);
 
             res.json({ ...user, balance });
         });
