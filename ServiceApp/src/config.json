@@ -1,5 +1,6 @@
 {
   "domain": "http://localhost:4000",
+  "addressApi": "https://api.marketplace.tangle.works/location",
   "waitingTime": 10,
   "areaCode": "NPHTQORL9XK",
   "googleAnalyticsId": "UA-143368819-1"
