@@ -32,3 +32,7 @@ export const getCodeFromMessageType = message => {
     };
     return map[message] || null;
 };
+
+export const getLetterFromNumber = number => {
+    return String.fromCharCode(65 + number);
+};
