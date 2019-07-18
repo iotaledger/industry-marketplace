@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import Loading from '../loading';
 
 export default ({
-  notification, 
-  show, 
-  error = null, 
-  purchasePrice = null, 
-  callback = null, 
+  notification,
+  show,
+  error = null,
+  purchasePrice = null,
+  callback = null,
   category = null,
   assetId = null
 }) => {

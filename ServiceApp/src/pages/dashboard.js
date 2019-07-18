@@ -4,6 +4,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
+import AddGeolocation from '../components/add-geolocation';
 import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
@@ -35,6 +36,7 @@ class Dashboard extends React.Component {
       loading: false,
       displayNewRequestForm: false,
       error: false,
+      isLocationModal: false
     };
 
     this.createRequest = this.createRequest.bind(this);
@@ -49,10 +51,13 @@ class Dashboard extends React.Component {
     this.changeSection = this.changeSection.bind(this);
     this.rejectAction = this.rejectAction.bind(this);
     this.confirmAction = this.confirmAction.bind(this);
+    this.handleLocationModal = this.handleLocationModal.bind(this);
     this.removeAsset = this.removeAsset.bind(this);
     this.timer = null;
   }
-
+  handleLocationModal(state) {
+    this.setState({ isLocationModal: state })
+  }
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
@@ -232,6 +237,7 @@ class Dashboard extends React.Component {
               showMenu
               currentPage={activeSection}
               callback={this.changeSection}
+              handleLocationModal={this.handleLocationModal}
             />
             {
               loading ? (
@@ -271,6 +277,14 @@ class Dashboard extends React.Component {
                     <AddCard
                       createRequest={this.createRequest}
                       cancel={this.hideNewRequestForm}
+                      userId={user && user.id}
+                    />
+                  }
+                  {
+                    this.state.isLocationModal &&
+                    <AddGeolocation
+                      sendMessage={this.sendMessage}
+                      handleLocationModal={this.handleLocationModal}
                       userId={user && user.id}
                     />
                   }
