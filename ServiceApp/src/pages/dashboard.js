@@ -182,7 +182,7 @@ class Dashboard extends React.Component {
 
   async removeAsset(id) {
     await removeFromStorage(id);
-    // await this.checkExpired();
+    await this.checkExpired();
   }
 
   async confirmAction(id, partner, price = null) {
@@ -305,7 +305,7 @@ class Dashboard extends React.Component {
                     <AddCard
                       createRequest={this.createRequest}
                       cancel={this.hideNewRequestForm}
-                      userId={user && user.id}
+                      user={user}
                     />
                   }
                   {
