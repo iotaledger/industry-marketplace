@@ -4,6 +4,7 @@ import { readData, writeData } from './databaseHelper';
 
 export const getBalance = async address => {
     try {
+        if (!address) return 0;
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
         return balances && balances.length > 0 ? balances[0] : 0;
@@ -70,7 +71,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-
+                            
                             resolve(transactions);
                         })
                         .catch(error => {
