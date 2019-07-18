@@ -15,7 +15,3 @@ export const decodeMessage = transaction => {
 export const getNumberFromLetter = letter => {
     return letter.charCodeAt(0) - 65;
 };
-
-export const getLetterFromNumber = number => {
-    return String.fromCharCode(65 + number);
-};

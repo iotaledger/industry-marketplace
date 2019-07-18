@@ -19,9 +19,13 @@ const HeaderWrapper = ({ createRequest }) => {
           <Desc>Wallet balance</Desc>
           <UserID>{user.balance}</UserID>
         </Block>
-        <ButtonWrapper>
-          <Button onClick={createRequest}>Create request</Button>
-        </ButtonWrapper>
+        {
+          user.role === 'SR' ? (
+            <ButtonWrapper>
+              <Button onClick={createRequest}>Create request</Button>
+            </ButtonWrapper>
+          ) : null
+        }
       </RightHeader>
     </Main>
   )
@@ -80,7 +84,7 @@ const RightHeader = styled.div`
   text-align: right;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   @media (max-width: 760px) {
     margin: 10px 20px 0 30px;
     width: 120px;

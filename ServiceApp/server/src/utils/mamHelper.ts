@@ -24,6 +24,7 @@ const generateRandomKey = length => {
 
 // Publish to tangle
 export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
+
     try {
         let mamState;
         let secretKey;
@@ -58,7 +59,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
         const message = Mam.create(mamState, trytes);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         const { channel: { next_root, side_key, start }, seed } = message.state;
-        
+      
         // Attach the payload
         const bundle = await Mam.attach(message.payload, message.address, 3, 9, tag);
         if (bundle && bundle.length && bundle[0].hash) {
@@ -68,8 +69,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
         }
         return null;
     } catch (error) {
-        console.log('MAM publish Error', error);
-        return null;
+       throw new Error(error);
     }
 };
 
