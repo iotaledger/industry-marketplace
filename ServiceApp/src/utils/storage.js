@@ -45,9 +45,7 @@ export const removeExpired = async type => {
         const allItems = await getByType(type);
         const timeInThePast = new Date().getTime() - (waitingTime * 60 * 1000);
         const expiredItems = allItems.filter(({ replyBy }) => replyBy < timeInThePast);
-        console.log('expiredItems', expiredItems);
         expiredItems.forEach(async item => await removeFromStorage(item.id));
-        console.log('after cleanup', localStorage);
     }
 }
 

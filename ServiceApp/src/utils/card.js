@@ -6,9 +6,7 @@ const iotaAreaCodes = require('@iota/area-codes');
 
 export const prepareData = async (role, payload) => {
     let data = payload;
-    console.log('card', typeof payload, data);
     if (typeof payload === 'string') {
-        console.log('card convert', JSON.parse(payload));
         data = JSON.parse(payload);
     }
 
@@ -24,23 +22,16 @@ export const prepareData = async (role, payload) => {
 
     // Get params/submodelElements
     const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
-    console.log(11111, submodelElements);
     const params = submodelElements.map(({ idShort, value }) => ({ idShort, value }));
-    console.log(22222, params);
 
     // Get price
     const price = submodelElements.find(({ idShort }) => idShort === 'preis');
-    console.log(33333, price);
 
     // Get operation
     const irdi = get(data, 'dataElements.submodels[0].identification.id');
-    console.log(44444, irdi);
     const eClassOperations = await operations();
-    console.log(55555, eClassOperations);
     const operationObject = eClassOperations.find(({ id }) => id === irdi);
-    console.log(66666, operationObject);
     const operation = get(operationObject, 'name');
-    console.log(77777, operation);
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     
@@ -60,7 +51,6 @@ export const prepareData = async (role, payload) => {
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
         endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
     };
-    console.log(88888, card);
     
     return card;
 };

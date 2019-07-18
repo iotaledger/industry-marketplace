@@ -78,7 +78,6 @@ const getConfirmButtonText = (role, type) => {
 const Footer = ({ id, partner, type }) => {
   const { user } = useContext(UserContext);
   const { onConfirm, onReject } = useContext(AssetContext);
-  console.log('Footer', id, type, onConfirm);
   if (!onConfirm) return null;
 
   const rejectButton = getRejectButtonText(user.role, type);
@@ -86,7 +85,6 @@ const Footer = ({ id, partner, type }) => {
 
   if (!rejectButton && !confirmButton) return null;
   
-  console.log('Footer', rejectButton, confirmButton);
   return (
     <React.Fragment>
       <FootRow>
@@ -111,7 +109,6 @@ const Footer = ({ id, partner, type }) => {
 
 const Asset = props => {
   const { asset, disableMargin } = props;
-  console.log('Asset', asset);
   
   return (
     <Card
