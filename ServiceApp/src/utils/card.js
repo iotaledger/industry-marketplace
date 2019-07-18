@@ -1,5 +1,8 @@
 import get from 'lodash-es/get';
 import { operations } from '../Industry_4.0_language';
+import { addressApi } from '../config.json';
+
+const iotaAreaCodes = require('@iota/area-codes');
 
 export const prepareData = async (role, payload) => {
     let data = payload;
@@ -63,7 +66,8 @@ export const prepareData = async (role, payload) => {
 };
 
 const getCoordinates = async areaCode => {
-    return areaCode;
+    const { latitude, longitude } = iotaAreaCodes.decode(areaCode);
+    return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
 }
 
 const getPartner = async (role, data) => {

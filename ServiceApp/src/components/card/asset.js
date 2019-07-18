@@ -139,7 +139,7 @@ const Asset = props => {
           <RowThird>
             <RowDesc>Coordinates</RowDesc>
             <Data>
-              {asset.location || '--'}
+              {asset.coordinates || '--'}
             </Data>
           </RowThird>
           <RowThird>

@@ -9,7 +9,7 @@ import isValid from 'date-fns/is_valid';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loading from '../loading';
-import { areaCode, waitingTime } from '../../config.json';
+import { waitingTime } from '../../config.json';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -164,12 +164,12 @@ export default class extends React.Component {
       submodelValues,
       irdi: operation,
       messageType: 'callForProposal',
-      userId: this.props.userId,
+      userId: this.props.user.id,
       creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
       startTimestamp: Date.parse(assetStart),
       endTimestamp: Date.parse(assetEnd),
       replyTime: waitingTime,
-      location: areaCode
+      location: this.props.user.areaCode
     };
 
     this.setState({ loading: true });
