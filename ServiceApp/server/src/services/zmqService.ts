@@ -89,6 +89,7 @@ export class ZmqService {
         try {
             if (!this._socket) {
                 this._socket = zmq.socket('sub');
+                console.log(this._socket)
                 this._socket.connect(this._config.endpoint);
 
                 this._socket.on('message', (msg) => this.handleMessage(msg));
@@ -156,14 +157,6 @@ export class ZmqService {
         const payload = this.buildPayload(data, messageType, messageParams);
         this._subscriptions[event][0].callback(event, payload);
     }
-    /**
- * Send out an event
- */
-    private sendError(error, messageParams) {
-        const event = messageParams[0];
-        const payload = error
-        this._subscriptions[event][0].callback(event, payload);
-    }
 
     /**
      * Handle a message and send to any callbacks.
@@ -186,13 +179,13 @@ export class ZmqService {
                 interface IUser {
                     id?: string;
                     role?: string;
-                    areaCode?: string;
+                    //areaCode?: string;
                 }
-                const { id, role, areaCode }: IUser = await readData('user');
-
+                const { id, role }: IUser = await readData('user');
+                const areaCode = 'NPHTQORL9XK'
                 // 1. Check user role (SR, SP, YP)
                 switch (role) {
-                    case 'SR':
+                    case 'SP':
                         // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                         if (['proposal', 'informConfirm'].includes(messageType)) {
                             // 2.1 Decode every such message and retrieve receiver ID
@@ -205,10 +198,11 @@ export class ZmqService {
                             }
                         }
                         break;
-                    case 'SP':
+                    case 'SR':
                         // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                             const data = await getPayload(bundle);
+
 
                             // 3.1 Decode every message of type A, retrieve location.
                             if (messageType === 'callForProposal') {
@@ -216,18 +210,21 @@ export class ZmqService {
 
                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
                                 if (!areaCode || !maxDistance) {
-                                    const error = "Please include your location and the accepted distance in km"
-                                    this.sendError(error, messageParams)
+
+                                    this.sendEvent(data, messageType, messageParams);
                                 }
 
                                 // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
                                 if (areaCode && maxDistance) {
 
                                     try {
-                                        const ownLocObj = decode(areaCode)
-                                        const locObj = decode(location)
-                                        const distance = await calculateDistance(locObj.latitude, locObj.longitude, ownLocObj.latitude, ownLocObj.longitude)
 
+
+                                        const ownLocObj = await decode(areaCode)
+                                        const locObj = await decode(location)
+
+                                        const distance = await calculateDistance(ownLocObj, locObj)
+                                        console.log("DISTANCE", distance)
                                         // 3.3.1 If distance within accepted range, send message to UI
                                         if (distance <= maxDistance) {
                                             this.sendEvent(data, messageType, messageParams);
