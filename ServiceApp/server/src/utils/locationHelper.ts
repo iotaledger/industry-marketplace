@@ -1,8 +1,15 @@
 export const getLocationFromMessage = message => {
+
     return message.frame && message.frame.location ? message.frame.location : null;
 };
 
-export const calculateDistance = (lat1, lon1, lat2, lon2) => {
+export const calculateDistance = (locObj1, locObj2) => {
+
+    const lat1 = locObj1.latitude
+    const lat2 = locObj2.latitude
+    const lon1 = locObj1.longitude
+    const lon2 = locObj2.longitude
+
     if ((lat1 === lat2) && (lon1 === lon2)) {
         return 0;
     } else {
@@ -15,9 +22,9 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const d = R * c;
         if (d > 1) {
-            return `${Math.round(d)}km`;
-        } else if (d <= 1) { 
-            return `${Math.round(d * 1000)}m`; 
+            return `${Math.round(d)}`;
+       // } else if (d <= 1) { 
+         //   return `${Math.round(d * 1000)}m`; 
         }
     }
 };
