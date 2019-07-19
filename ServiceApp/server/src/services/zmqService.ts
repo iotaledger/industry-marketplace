@@ -89,7 +89,6 @@ export class ZmqService {
         try {
             if (!this._socket) {
                 this._socket = zmq.socket('sub');
-                console.log(this._socket)
                 this._socket.connect(this._config.endpoint);
 
                 this._socket.on('message', (msg) => this.handleMessage(msg));
@@ -179,13 +178,13 @@ export class ZmqService {
                 interface IUser {
                     id?: string;
                     role?: string;
-                    //areaCode?: string;
+                    areaCode?: string;
                 }
-                const { id, role }: IUser = await readData('user');
-                const areaCode = 'NPHTQORL9XK'
+                const { id, role, areaCode }: IUser = await readData('user');
+
                 // 1. Check user role (SR, SP, YP)
                 switch (role) {
-                    case 'SP':
+                    case 'SR':
                         // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                         if (['proposal', 'informConfirm'].includes(messageType)) {
                             // 2.1 Decode every such message and retrieve receiver ID
@@ -198,11 +197,10 @@ export class ZmqService {
                             }
                         }
                         break;
-                    case 'SR':
+                    case 'SP':
                         // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                             const data = await getPayload(bundle);
-
 
                             // 3.1 Decode every message of type A, retrieve location.
                             if (messageType === 'callForProposal') {
@@ -210,7 +208,6 @@ export class ZmqService {
 
                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
                                 if (!areaCode || !maxDistance) {
-
                                     this.sendEvent(data, messageType, messageParams);
                                 }
 
@@ -218,13 +215,10 @@ export class ZmqService {
                                 if (areaCode && maxDistance) {
 
                                     try {
-
-
                                         const ownLocObj = await decode(areaCode)
                                         const locObj = await decode(location)
-
                                         const distance = await calculateDistance(ownLocObj, locObj)
-                                        console.log("DISTANCE", distance)
+
                                         // 3.3.1 If distance within accepted range, send message to UI
                                         if (distance <= maxDistance) {
                                             this.sendEvent(data, messageType, messageParams);
