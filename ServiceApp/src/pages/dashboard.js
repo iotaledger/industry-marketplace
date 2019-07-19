@@ -101,7 +101,9 @@ class Dashboard extends React.Component {
           error: false,
           loading: false,
         });
-        await this.newMessage({ data: packet });
+        if (endpoint !== 'rejectProposal') {
+          await this.newMessage({ data: packet });
+        }        
       } else if (data.error) {
         this.setState({
           error: data.error,
@@ -162,7 +164,13 @@ class Dashboard extends React.Component {
       get(message, 'data')
     );
     console.log('card', card, role);
-    await writeToStorage(card, role);
+
+    if (card.type !== 'rejectProposal') {
+      await writeToStorage(card, role);
+    }
+    if (card.type === 'informPayment') {
+      await this.getUser();
+    }
     await this.checkExpired();
   }
 
@@ -211,7 +219,7 @@ class Dashboard extends React.Component {
       switch (activeSection) {
         case 'callForProposal':
           // send proposal
-          message = await this.generateRequest('proposal', id, partner, 10);
+          message = await this.generateRequest('proposal', id, null, 10);
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
           // send informConfirm
@@ -234,6 +242,8 @@ class Dashboard extends React.Component {
         case 'proposal':
           // send rejectProposal
           const message = await this.generateRequest('rejectProposal', id, partner);
+          await removeFromStorage(`${id}#${partner}`);
+          await this.checkExpired();
           return this.sendMessage('rejectProposal', message);
         default:
           return null;

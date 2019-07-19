@@ -33,7 +33,8 @@ export const prepareData = async (role, payload) => {
     const operation = get(operationObject, 'name');
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    
+    const partner = await getPartner(role, data.frame);
+
     const card = {
         operation,
         type,
@@ -41,12 +42,13 @@ export const prepareData = async (role, payload) => {
         location,
         params,
         irdi,
+        partner,
+        id: conversationId,
         walletAddress: get(data, 'walletAddress') || null,
         originalMessage: JSON.stringify(data),
-        id: conversationId,
+        storageId: type === 'proposal' && role === 'SR' ? `${conversationId}#${partner}` : conversationId,
         coordinates: await getCoordinates(location),
         price: get(price, 'value') || 'Pending',
-        partner: await getPartner(role, data.frame),
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
         endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
     };
