@@ -4,6 +4,7 @@
         "prefix": "SEMARKET"
     },
     "database": "../../../db/marketmanager.sqlite3",
+    "maxDistance": 6,
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443",
     "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD"

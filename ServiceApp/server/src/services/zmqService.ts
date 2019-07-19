@@ -1,9 +1,12 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
+import { decode } from '@iota/area-codes'
 import { readData } from '../utils/databaseHelper';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
-// import { getLocationFromMessage } from '../utils/locationHelper';
+import { getLocationFromMessage, calculateDistance } from '../utils/locationHelper';
+import { maxDistance } from '../config.json';
+
 
 /**
  * Class to handle ZMQ service.
@@ -159,11 +162,13 @@ export class ZmqService {
      * @param message The message to handle.
      */
     private async handleMessage(message) {
+
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
         const tag = messageParams[12];
+
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
@@ -173,8 +178,9 @@ export class ZmqService {
                 interface IUser {
                     id?: string;
                     role?: string;
+                    areaCode?: string;
                 }
-                const { id, role }: IUser = await readData('user');
+                const { id, role, areaCode }: IUser = await readData('user');
 
                 // 1. Check user role (SR, SP, YP)
                 switch (role) {
@@ -195,13 +201,32 @@ export class ZmqService {
                         // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                         if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                             const data = await getPayload(bundle);
+
                             // 3.1 Decode every message of type A, retrieve location.
                             if (messageType === 'callForProposal') {
-                                // const location = getLocationFromMessage(data);
+                                const location = await getLocationFromMessage(data);
+
                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                if (!areaCode || !maxDistance) {
+                                    this.sendEvent(data, messageType, messageParams);
+                                }
+
                                 // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                // 3.3.1 If distance within accepted range, send message to UI
-                                this.sendEvent(data, messageType, messageParams);
+                                if (areaCode && maxDistance) {
+
+                                    try {
+                                        const ownLocObj = await decode(areaCode)
+                                        const locObj = await decode(location)
+                                        const distance = await calculateDistance(ownLocObj, locObj)
+
+                                        // 3.3.1 If distance within accepted range, send message to UI
+                                        if (distance <= maxDistance) {
+                                            this.sendEvent(data, messageType, messageParams);
+                                        }
+                                    } catch (error) {
+                                        console.error(error)
+                                    }
+                                }
                             } else {
                                 // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                 const receiverID = data.frame.receiver.identification.id;
@@ -218,7 +243,6 @@ export class ZmqService {
                         // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
                         if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
                             const data = await getPayload(bundle);
-
                             // 4.1 Send every such message to UI
                             this.sendEvent(data, messageType, messageParams);
                         }
