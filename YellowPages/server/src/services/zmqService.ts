@@ -1,8 +1,8 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { EClassHelper } from '../utils/eclassHelper';
-import { TrytesHelper } from '../utils/trytesHelper';
-import { IotaHelper } from '../utils/iotaHelper';
+import { extractMessageType } from '../utils/eclassHelper';
+import { getPayload } from '../utils/iotaHelper';
+
 
 /**
  * Class to handle ZMQ service.
@@ -131,10 +131,34 @@ export class ZmqService {
     }
 
     /**
+     * Build payload for the socket packet
+     */
+    private buildPayload(data, messageType, messageParams) {
+        return {
+            data,
+            messageType,
+            tag: messageParams[12],
+            hash: messageParams[1],
+            address: messageParams[2],
+            timestamp: parseInt(messageParams[5], 10)
+        };
+    }
+
+    /**
+     * Send out an event
+     */
+    private sendEvent(data, messageType, messageParams) {
+        const event = messageParams[0];
+        const payload = this.buildPayload(data, messageType, messageParams);
+        this._subscriptions[event][0].callback(event, payload);
+    }
+
+    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
     private async handleMessage(message) {
+
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
@@ -142,27 +166,15 @@ export class ZmqService {
         const tag = messageParams[12];
 
         if (event === 'tx' && this._subscriptions[event]) {
-            const messageType = EClassHelper.extractMessageType(tag);
+            const messageType = extractMessageType(tag);
             if (tag.startsWith(this._config.prefix) && messageType) {
-
                 const bundle = messageParams[8];
-                const transactions = await IotaHelper.findTransactions(bundle);
-                if (!transactions.length || !transactions[0].signatureMessageFragment) {
-                    return null;
+
+                if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                    const data = await getPayload(bundle);
+                    // 4.1 Send every such message to UI
+                    this.sendEvent(data, messageType, messageParams);
                 }
-                const trytes = transactions[0].signatureMessageFragment;
-                const data = TrytesHelper.fromTrytes(trytes);
-
-                const payload = {
-                    tag,
-                    data,
-                    messageType,
-                    hash: messageParams[1],
-                    address: messageParams[2],
-                    timestamp: parseInt(messageParams[5], 10)
-                };
-
-                this._subscriptions[event][0].callback(event, payload);
             }
         }
     }
