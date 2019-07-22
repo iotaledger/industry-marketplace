@@ -65,7 +65,7 @@ const ModifyConfiguration = styled.div`
   position: absolute;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 400px;
   position: absolute;
   left: 52px;
   bottom: 50px;
