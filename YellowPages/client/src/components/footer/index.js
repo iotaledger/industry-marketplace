@@ -51,7 +51,6 @@ export default props => (
 
 const ContentOuterWrapper = styled.div`
   position: relative;
-  bottom: -35px;
   background-image: linear-gradient(-329deg, #1857eb 31%, #0d3497 65%);
 `;
 
@@ -99,7 +98,6 @@ const AIMG = styled(A)`
 `;
 
 const Footer = styled.footer`
-  padding: 10px 0;
   overflow: hidden;
 `;
 
@@ -112,7 +110,6 @@ const LinksOuterWrapper = styled.div`
 `;
 
 const Wrapper = styled.div`
-  margin-bottom: 20px;
   text-align: center;
 `;
 

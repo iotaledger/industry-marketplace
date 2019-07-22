@@ -5,8 +5,8 @@ export const readFromStorage = async id => {
     return JSON.parse(await localStorage.getItem(id));
 };
 
-export const writeToStorage = async (item, role) => {
-    if (item.type === 'proposal' && role === 'SR') {
+export const writeToStorage = async item => {
+    if (item.type === 'proposal') {
         await removeFromStorage(item.id);
         await localStorage.setItem(`${item.id}#${item.partner}`, JSON.stringify(item));
     } else {
@@ -31,11 +31,16 @@ export const removeFromStorage = async item => {
 export const getByType = async type => {
     const allItems = await Object.values(localStorage);
     const itemsOfType = allItems.reduce((accumulator, item) => {
-        const json = JSON.parse(item);
-        if (get(json, 'type') === type) {
-          accumulator.push(json);
+        try {
+            const json = JSON.parse(item);
+            const itemType = get(json, 'type');
+            if (itemType && itemType === type) {
+              accumulator.push(json);
+            }
+            return accumulator;
+        } catch (e) {
+            return accumulator;
         }
-        return accumulator
     }, []);
     return itemsOfType;
 }

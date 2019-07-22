@@ -30,9 +30,11 @@ export default class Sticky extends PureComponent {
       if (scrollTop >= top) {
         elem.style.position = 'fixed';
         elem.style.top = `${top}px`;
+        elem.style.right = '25px';
       } else {
         elem.style.position = 'relative';
         elem.style.top = 0;
+        elem.style.right = '25px';
       }
     });
   }
