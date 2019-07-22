@@ -1,7 +1,5 @@
 node_modules
 
-/api/src/data/config.local.json
-/api/src/data/config.dev.json
-/api/dist
+/server/build
 
 /client/build
