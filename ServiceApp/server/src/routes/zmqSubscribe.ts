@@ -1,4 +1,3 @@
-// import SocketIO from 'socket.io';
 import { ServiceFactory } from '../factories/serviceFactory';
 
 /**

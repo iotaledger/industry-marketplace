@@ -92,6 +92,10 @@ const ModifyConfiguration = styled.div`
   // code here
   }
   align-items: center;
+  width: 400px;
+  position: absolute;
+  left: 52px;
+  bottom: 50px;
   cursor: pointer;
   z-index: 2;
 `;
