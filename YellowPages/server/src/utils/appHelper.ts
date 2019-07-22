@@ -1,5 +1,9 @@
+// tslint:disable-next-line:no-require-imports
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import express from 'express';
+import packageJson from '../../package.json';
+import config from '../config.json';
 
 /**
  * Class to help with expressjs routing.
@@ -12,13 +16,11 @@ export class AppHelper {
      * @returns The express js application.
      */
     public static build(onComplete, customListener) {
-        const packageJson = require('../../package.json');
-        const config = require(`../data/config.json`);
-
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
         const app = express();
 
+        app.use(cors());
         app.use(bodyParser.json({ limit: '30mb' }));
         app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
         app.use(bodyParser.json());
@@ -31,7 +33,7 @@ export class AppHelper {
             next();
         });
 
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {

@@ -117,7 +117,7 @@
         "comment-format": [
             true
         ],
-        "completed-docs": true,
+        "completed-docs": false,
         "export-name": false,
         "function-name": [
             true,
@@ -170,6 +170,7 @@
         "no-relative-imports": false,
         "no-require-imports": true,
         "no-redundant-jsdoc": false,
+        "no-return-await": false,
         "no-shadowed-variable": true,
         "no-suspicious-comment": true,
         "no-typeof-undefined": false,
@@ -198,7 +199,7 @@
         "prefer-template": true,
         "return-undefined": false,
         "typedef": [
-            true,
+            false,
             "call-signature",
             "parameter",
             "property-declaration",
@@ -230,7 +231,7 @@
         "no-consecutive-blank-lines": true,
         "no-empty-line-after-opening-brace": false,
         "no-single-line-block-comment": false,
-        "no-trailing-whitespace": true,
+        "no-trailing-whitespace": false,
         "no-unnecessary-semicolons": true,
         "object-literal-key-quotes": [
             true,
@@ -322,7 +323,7 @@
         "no-dynamic-delete": false,
         "binary-expression-operand-order": false,
         "valid-jsdoc": [
-            true,
+            false,
             {
                 "requireParamType": false,
                 "prefer": {
