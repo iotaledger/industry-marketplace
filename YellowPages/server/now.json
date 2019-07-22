@@ -1,0 +1,10 @@
+{
+    "name": "market-manager",
+    "version": 1,
+    "features": {
+        "cloud": "v1"
+    },
+    "scale": {
+        "sfo": { "min": 1, "max": 1 }
+    }
+}
