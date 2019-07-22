@@ -20,7 +20,7 @@ const menu = {
   ]
 }
 
-const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
+const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideBarOpen, handleSidebar, createRequest }) => {
   const { user } = useContext(UserContext);
 
   function switchMenu(nextPage) {
@@ -31,7 +31,8 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
   if (!user.role) return null;
 
   return (
-    <SidebarWrapper>
+    <SidebarWrapper isSideBarOpen={isSideBarOpen}>
+    <SideBarTitle>Request Stage</SideBarTitle>
       {
         showMenu ? (
           <MenuWrapper>
@@ -51,24 +52,46 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
         ) : null
       }
 
-      <ModifyConfiguration onClick={() => handleLocationModal(true)}>
+      <ButtonWrapper style={{ }}>
+        <Button onClick={createRequest}>Create request</Button>
+      </ButtonWrapper>
+      <ModifyConfiguration style={{ }} onClick={(e) => {
+        handleLocationModal(true);
+        //handleSidebar();
+      }}>
         <ConfigIcon src={configIcon} />
         <ConfigText>MODIFY CONFIGURATION</ConfigText>
       </ModifyConfiguration>
+
     </SidebarWrapper>
   );
 }
 
 export default Sidebar;
 
-const ModifyConfiguration = styled.div`
-  position: absolute;
-  display: flex;
-  align-items: center;
+const SideBarTitle = styled.div`
+  font-weight: 600;
+  color: #15286D;
+  font-size: 24px;
   width: 100%;
-  position: absolute;
-  left: 52px;
-  bottom: 50px;
+  position: relative;
+  margin-bottom: 35px;
+  right: 36px;
+  @media (min-width: 769px) {
+    font-size: 32px;
+  }
+`
+const ModifyConfiguration = styled.div`
+  display: flex;
+  position: static;
+  position: relative;
+  right: 40px;
+  margin-bottom: 93px;
+  margin-top: 40px;
+  @media (min-width: 769px) {
+  // code here
+  }
+  align-items: center;
   cursor: pointer;
   z-index: 2;
 `;
@@ -82,32 +105,97 @@ const ConfigText = styled.div`
 `
 
 const SidebarWrapper = styled.aside`
+  position: fixed;
+  min-height: 540px;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  transition: transform 0.5s;
+  transform: ${(p) => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
+  padding: 51px 70px 51px 70px;
   background: rgba(240, 240, 240, 1);
   display: flex;
   flex-flow: column nowrap;
-  align-items: center;
-  min-width: 400px;
-  width: 400px;
-  padding: 40px 0 0 0;
-  z-index: 1;
+  z-index: 3;
+  @media (min-width: 769px) {
+    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    position: relative;
+    left: -100%;
+    width: 420px;
+  }
 `;
 
 const MenuWrapper = styled.ul`
-  margin-left: 150px;
-  width: 400px;
   position: relative;
 `;
 
 const Menu = styled.li`
+  white-space: nowrap;
   font-size: 46px;
   font-weight: 600;
   padding: 0 10px;
   cursor: pointer;
-  color: ${props => (props.active ? '#529FF8' : '#595959')};
-
+  color: ${props => (props.active ? '#529FF8' : '#C4C4C4')};
+  position: relative;
+  :before {
+    content: '';
+    position: absolute;
+    background-color: #C4C4C4;
+    width: 1px;
+    height: 68px;
+    left: -30px;
+    top: -27px;
+    z-index: -1;
+  }
+  :first-child:before{
+    display: none;
+  }
   & > span {
-    font-size: 26px;
+    font-size: 20px;
     line-height: 68px;
     vertical-align: text-bottom;
+  }
+  @media (min-width: 769px) {
+    & > span {
+      font-size: 26px;
+    }
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  /* position: absolute; */
+  width: calc(100vw - 70px);
+  position: relative;
+  left: -55px;
+  /* left: -50px;
+  bottom: -60px; */
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
+const Button = styled.button`
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font: 15px 'Nunito Sans', sans-serif;
+  letter-spacing: 0.47px;
+  padding: 20px 38px;
+  border-radius: 100px;
+  color: #fff;
+  font-size: 16px;
+  letter-spacing: 0.38px;
+  padding: 12px 21px;
+  margin: 1px 13px 0;
+  font-weight: 700;
+  background-color: #009fff;
+  width: 100%;
+
+  &:hover {
+    color: #009fff;
+    background-color: #ffffff;
+    border: 1px solid #009fff;
   }
 `;

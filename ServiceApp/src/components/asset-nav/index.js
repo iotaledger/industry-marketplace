@@ -1,8 +1,11 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../../pages/dashboard';
+import burgerIcon from './../../assets/img/burger.svg';
+import closeIcon from './../../assets/img/close.svg';
 
-const HeaderWrapper = ({ createRequest }) => {
+
+const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
   if (!user.role) return null;
 
@@ -14,18 +17,25 @@ const HeaderWrapper = ({ createRequest }) => {
           <UserID>{user.id}</UserID>
         </Block>
       </Header>
+      <BurgerIconWrap>
+        <BurgerIcon
+          src={isSideBarOpen ? closeIcon : burgerIcon}
+          style={isSideBarOpen ? { width: '45px', position: 'relative', left: '6px' } : {}}
+          onClick={handleSidebar}
+        />
+      </BurgerIconWrap>
       <RightHeader>
-        <Block>
-          <Desc>Wallet balance</Desc>
-          <UserID>{user.balance}</UserID>
-        </Block>
-        {
-          user.role === 'SR' ? (
-            <ButtonWrapper>
-              <Button onClick={createRequest}>Create request</Button>
-            </ButtonWrapper>
-          ) : null
-        }
+          <Block>
+            <Desc>Wallet balance</Desc>
+            <UserID>{user.balance}</UserID>
+          </Block>
+          {
+            user.role === 'SR' ? (
+              <ButtonWrapper>
+                <Button onClick={createRequest}>Create request</Button>
+              </ButtonWrapper>
+            ) : null
+          }
       </RightHeader>
     </Main>
   )
@@ -33,68 +43,49 @@ const HeaderWrapper = ({ createRequest }) => {
 
 export default HeaderWrapper;
 
-const Main = styled.nav`
+const BurgerIconWrap = styled.div`
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  z-index: 1000;
-  height: 10vh;
-  background-color: #fff;
-  @media (max-width: 1195px) {
-    height: 90px;
+  justify-content: flex-end;
+`
+const BurgerIcon = styled.img`
+  @media (min-width: 769px) {
+    display: none;
   }
-  @media (max-width: 760px) {
-    height: 66px;
-  }
+`
+const Main = styled.nav`
+  padding: 17px;
+  display: flex;
 `;
 
 const Header = styled.header`
-  margin: 10px auto 0 30px;
   display: flex;
+  width: 100%;
 `;
 
-const Desc = styled.span`
-  font: 12px/16px 'Nunito Sans', sans-serif;
+const Desc = styled.div`
+  font: 15px 'Nunito Sans', sans-serif;
   color: #808b92;
 `;
 
 const Block = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: block;
 `;
 
 const UserID = styled.span`
-  font-size: 24px;
-  line-height: 42px;
-  position: relative;
-  top: -4px;
-  color: #009fff;
-  @media (max-width: 760px) {
-    font-size: 15px;
-    top: -4px;
-  }
+  color: #529FF8;
+  font-size: 28px;
 `;
 
 const RightHeader = styled.div`
-  margin: 10px 10px 0;
-  display: block;
-  width: 330px;
-  text-align: right;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  @media (max-width: 760px) {
-    margin: 10px 20px 0 30px;
-    width: 120px;
+  display: none;
+  @media (min-width: 769px) {
+    display: flex;
   }
 `;
 
 const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+
 `;
 
 const Button = styled.button`

@@ -107,7 +107,10 @@ export default class extends React.Component {
                   <FooterButton secondary onClick={this.cancel}>
                     Cancel
                   </FooterButton>
-                  <FooterButton onClick={this.submit}>
+                  <FooterButton
+                    onClick={this.submit}
+                    style={{ marginLeft: '10px' }}
+                  >
                     Submit
                   </FooterButton>
                 </FootRow>
@@ -203,8 +206,8 @@ const Modal = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   visibility: visible;
   opacity: 1;
   transition: all 0.5s ease;
@@ -218,7 +221,11 @@ const AddAsset = styled.div`
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 50%;
+  top: 50vh;
+  margin: 20% 0 0 0;
+  @media (min-width: 760px) {
+    margin: 0;
+  }
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 30px;
@@ -235,8 +242,11 @@ const CardWrapper = styled.div`
   border-radius: 6px;
   background-color: #fff;
   cursor: default;
+  width: 260px;
   transition: box-shadow 0.19s ease-out;
-  width: 400px;
+  @media (min-width: 426px) {
+    width: 400px;
+  }
   &:hover {
     box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
   }
