@@ -1,30 +1,36 @@
 import React from 'react';
 import ReactGA from 'react-ga';
 import styled from 'styled-components';
+import get from 'lodash-es/get';
 import { Link } from 'react-router-dom';
 import BurgerMenu from '../components//header/burger';
 import MiniHeader from '../components/header/mini-header';
-import SensorList from '../components/sensor-list';
 import Footer from '../components/footer';
 import Map from '../components/map';
 import ScrollToTop from '../components/scroll-to-top';
 import Loading from '../components/loading';
 import Cookie from '../components/cookie';
-// import { allDevices } from '../utils/firebase';
+import AssetList from '../components/assets-list';
+import Zmq from '../components/zmq';
+import { getByType, removeExpired } from '../utils/storage';
+import { prepareData } from '../utils/card';
 
-const Header = ({ onAnchorClick }) => {
+const Header = ({ changeSection }) => {
   return (
     <Container>
       <Shapes>
         <Shape1 src="/static/shapes/demo/shape-5.svg" alt="Background shape" />
-        <Tagline>Try the Data Marketplace</Tagline>
+        <Tagline>Yellow Pages</Tagline>
       </Shapes>
       <Info>
-        <Link to={'/demo/#map'} onClick={() => onAnchorClick('map')}>
-          <SubLink>{'Sensors on the Map'.toUpperCase()}</SubLink>
+        <Link to={'/demo/#list'} onClick={() => changeSection('callForProposal')}>
+          <SubLink>{'Calls for proposal'.toUpperCase()}</SubLink>
         </Link>
-        <Link to={'/demo/#list'} onClick={() => onAnchorClick('list')}>
-          <SubLink>{'Marketplace Sensors'.toUpperCase()}</SubLink>
+        <Link to={'/demo/#list'} onClick={() => changeSection('proposal')}>
+          <SubLink>{'Proposals'.toUpperCase()}</SubLink>
+        </Link>
+        <Link to={'/demo/#list'} onClick={() => changeSection('acceptProposal')}>
+          <SubLink>{'Accepted proposals'.toUpperCase()}</SubLink>
         </Link>
       </Info>
     </Container>
@@ -36,21 +42,40 @@ export default class extends React.Component {
     super(props);
     this.state = {
       anchor: null,
-      devices: [],
-      loading: true,
+      assets: [],
+      activeSection: 'callForProposal',
     };
 
-    this.onAnchorClick = this.onAnchorClick.bind(this);
+    this.newMessage = this.newMessage.bind(this);
+    this.checkExpired = this.checkExpired.bind(this);
+    this.changeSection = this.changeSection.bind(this);
+    this.timer = null;
   }
 
   async componentDidMount() {
     ReactGA.pageview('/demo');
-    // const devices = await allDevices();
-    // this.setState({ devices, loading: false });
+    await this.checkExpired();
+    this.timer = setTimeout(() => this.checkExpired(), 600000);
   }
 
-  onAnchorClick(anchor) {
-    this.setState({ anchor });
+  async changeSection(activeSection) {
+    this.setState({ activeSection, anchor: 'list' }, async () => await this.checkExpired());
+  }
+
+  async checkExpired() {
+    const { activeSection } = this.state;
+    await removeExpired(activeSection);
+    const assets = await getByType(activeSection);
+    this.setState({ assets });
+    clearInterval(this.timer);
+  }
+
+  async newMessage(message) {
+    console.log('message', message);
+    const card = await prepareData(get(message, 'data'));
+    console.log('card', card);
+
+    await this.checkExpired();
   }
 
   onScrollToTop() {
@@ -59,23 +84,26 @@ export default class extends React.Component {
   }
 
   render() {
+    const { assets } = this.state;
+
     return (
       <Main id="main">
+        <Zmq callback={this.newMessage} />
         <Cookie />
         <BurgerMenu />
         <MiniHeader />
-        <Header onAnchorClick={this.onAnchorClick} />
+        <Header changeSection={this.changeSection} />
         {
-          this.state.loading ? (
+          assets.length === 0 ? (
             <LoadingBox>
               <Loading color="#009fff" size="130" />
             </LoadingBox>
           ) : (
             <React.Fragment>
-              <Map {...this.state} />
-              <SensorList {...this.state} />
+              <AssetList assets={assets} />
+              <Map assets={assets} />
               {
-                this.state.devices.length > 0 ? <ScrollToTop onClick={this.onScrollToTop} /> : null
+                assets.length > 0 ? <ScrollToTop onClick={this.onScrollToTop} /> : null
               }
             </React.Fragment>
           )

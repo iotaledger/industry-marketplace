@@ -1,50 +1,60 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Marker } from 'react-map-gl';
+import { decode } from '@iota/area-codes';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { devices: [] };
+    this.state = { assets: [] };
 
     this.sanitiseCoordinates = this.sanitiseCoordinates.bind(this);
-    this.sanatiseDevice = this.sanatiseDevice.bind(this);
+    this.sanatiseAsset = this.sanatiseAsset.bind(this);
+  }
+
+  componentDidMount() {
+    const assets = [];
+    this.props.assets.forEach(async asset => {
+      const { latitude, longitude } = await decode(asset.location);
+      assets.push({ ...asset, latitude, longitude });
+    });
+    this.setState({ assets });
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.devices.length > 0) return;
-    const devices =
-      nextProps.devices.length > 0
+    if (this.state.assets.length > 0) return;
+    const assets =
+      nextProps.assets.length > 0
         ? [
-            ...nextProps.devices.filter(device => this.sanatiseDevice(device)).map(device => {
-              device.lat = this.sanitiseCoordinates(device.lat);
-              device.lon = this.sanitiseCoordinates(device.lon);
-              return device;
+            ...nextProps.assets.filter(asset => this.sanatiseAsset(asset)).map(asset => {
+              asset.latitude = this.sanitiseCoordinates(asset.latitude);
+              asset.longitude = this.sanitiseCoordinates(asset.longitude);
+              return asset;
             }),
           ]
         : [];
-    this.setState({ devices });
+    this.setState({ assets });
   }
 
   sanitiseCoordinates(coordinate) {
     return typeof coordinate === 'number' ? coordinate : Number(coordinate.replace(/[^0-9.]/g, ''));
   }
 
-  sanatiseDevice(device) {
-    if (!device.lon || !device.lat || device.inactive) return false;
-    if (device.lat >= 90 || device.lat <= -90) return false;
-    if (device.lon >= 180 || device.lon <= -180) return false;
+  sanatiseAsset(asset) {
+    if (!asset.longitude || !asset.latitude) return false;
+    if (asset.latitude >= 90 || asset.latitude <= -90) return false;
+    if (asset.longitude >= 180 || asset.longitude <= -180) return false;
     return true;
   };
 
   render() {
-    const { devices } = this.state;
+    const { assets } = this.state;
     return (
       <div>
-        {devices &&
-          devices.map((device, i) => (
-            <Marker latitude={device.lat} longitude={device.lon} key={`marker-${i}`}>
-              <Pin onClick={() => this.props.openPopup(device)} />
+        {assets &&
+          assets.map((asset, i) => (
+            <Marker latitude={asset.latitude} longitude={asset.longitude} key={`marker-${i}`}>
+              <Pin onClick={() => this.props.openPopup(asset)} />
             </Marker>
           ))}
       </div>

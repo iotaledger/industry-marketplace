@@ -3,7 +3,7 @@ import { operations } from '../Industry_4.0_language';
 
 const iotaAreaCodes = require('@iota/area-codes');
 
-export const prepareData = async (role, payload) => {
+export const prepareData = async (payload) => {
     let data = payload;
     if (typeof payload === 'string') {
         data = JSON.parse(payload);
@@ -33,7 +33,7 @@ export const prepareData = async (role, payload) => {
     const operation = get(operationObject, 'name');
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    const partner = await getPartner(role, data.frame);
+    const partner = get(data, 'frame.sender.identification.id');
 
     const card = {
         operation,
@@ -46,7 +46,7 @@ export const prepareData = async (role, payload) => {
         id: conversationId,
         walletAddress: get(data, 'walletAddress') || null,
         originalMessage: JSON.stringify(data),
-        storageId: type === 'proposal' && role === 'SR' ? `${conversationId}#${partner}` : conversationId,
+        storageId: type === 'proposal' ? `${conversationId}#${partner}` : conversationId,
         coordinates: await getCoordinates(location),
         price: get(price, 'value') || 'Pending',
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
@@ -61,20 +61,3 @@ const getCoordinates = async areaCode => {
     return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
 }
 
-const getPartner = async (role, data) => {
-    if (role === 'SP') {
-        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
-            return get(data, 'sender.identification.id');
-        } else if (['proposal', 'informConfirm'].includes(data.type)) {
-            return get(data, 'receiver.identification.id');
-        }
-    } else if (role === 'SR') {
-        if (data.type === 'callForProposal') {
-            return 'Pending';
-        } else if (['acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
-            return get(data, 'receiver.identification.id');
-        } else if (['proposal', 'informConfirm'].includes(data.type)) {
-            return get(data, 'sender.identification.id');
-        }
-    }
-}

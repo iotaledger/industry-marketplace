@@ -78,6 +78,7 @@ class Map extends React.Component {
 
   renderPopup() {
     const { popupInfo } = this.state;
+    console.log('renderPopup', popupInfo);
     return (
       popupInfo && (
         <Popup
@@ -86,15 +87,12 @@ class Map extends React.Component {
           offsetTop={-5}
           offsetLeft={5}
           closeButton={true}
-          longitude={Number(popupInfo.lon)}
-          latitude={Number(popupInfo.lat)}
+          longitude={Number(popupInfo.longitude)}
+          latitude={Number(popupInfo.latitude)}
           closeOnClick={false}
           onClose={() => this.setState({ popupInfo: null })}
         >
-          <SensorCard
-            to={`/sensor/${popupInfo.sensorId}`}
-            onClick={() => this.trackRedirect(popupInfo.sensorId)}
-          >
+          <SensorCard>
             <CardHeader>
               <SensorType>
                 {popupInfo.type}{' '}
@@ -102,26 +100,24 @@ class Map extends React.Component {
                   src="/static/icons/icon-small-location-dark.svg"
                   alt="Icon location pin"
                 />{' '}
-                <span>{popupInfo.location.city}</span>
+                <span>{popupInfo.location}</span>
               </SensorType>
               <SensorId>
-                {popupInfo.sensorId.length > 12
-                  ? `${popupInfo.sensorId.substring(0, 13)}...`
-                  : popupInfo.sensorId}
+                {popupInfo.operation}
               </SensorId>
             </CardHeader>
             <CardFooter>
               <FootRow>
                 <InfoKey>Owner:</InfoKey>
-                <InfoValue>{popupInfo.company}</InfoValue>
+                <InfoValue>{popupInfo.partner}</InfoValue>
               </FootRow>
               <FootRow>
-                <InfoKey>Sensor Streams:</InfoKey>
-                <InfoValue>{popupInfo.dataTypes.length}</InfoValue>
+                <InfoKey>Irdi:</InfoKey>
+                <InfoValue>{popupInfo.irdi}</InfoValue>
               </FootRow>
               <FootRow>
                 <InfoKey>Price:</InfoKey>
-                <InfoValue>{popupInfo.price || popupInfo.value}i</InfoValue>
+                <InfoValue>{popupInfo.price}i</InfoValue>
               </FootRow>
             </CardFooter>
           </SensorCard>
@@ -130,8 +126,8 @@ class Map extends React.Component {
     );
   }
 
-  openPopup(device) {
-    this.setState({ popupInfo: device });
+  openPopup(asset) {
+    this.setState({ popupInfo: asset });
   }
 
   render() {
@@ -158,7 +154,7 @@ class Map extends React.Component {
           <div style={{ position: 'absolute', right: 20, top: 10 }}>
             <NavigationControl onViewportChange={this.updateViewport} />
           </div>
-          <Markers devices={this.props.devices} openPopup={this.openPopup} />
+          <Markers assets={this.props.assets} openPopup={this.openPopup} />
           {this.renderPopup()}
         </MapGL>
 
@@ -283,7 +279,7 @@ const HeaderBgMobile = styled.img`
   }
 `;
 
-const SensorCard = styled(Link)`
+const SensorCard = styled.span`
   display: block;
   border-radius: 6px;
   transition: box-shadow 0.19s ease-out;
