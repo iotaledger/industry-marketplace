@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Drilling",
+        "name_de": "Bohren",
+        "id":"0173-1#02-BAF577#004"
+    },
+    {
+        "name": "Sawing",
+        "name_de": "Sägen",
+        "id":"0173-1#02-BAF576#004"
+    },
+    {
+        "name": "Cutting",
+        "name_de": "Schneiden",
+        "id":"0173-1#02-BAF575#004"
+    },
+    {
+        "name": "Hammering",
+        "name_de": "Hämmern",
+        "id":"0173-1#02-BAF574#004"
+    },
+    {
+        "name": "Grinding",
+        "name_de": "Schleifen",
+        "id":"0173-1#02-BAF573#004"
+    }
+]

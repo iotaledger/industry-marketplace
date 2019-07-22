@@ -1,16 +1,18 @@
-import { RouterScrollTop } from 'iota-react-components';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import App from './app/App';
-import './index.scss';
+import ReactGA from 'react-ga';
+import WebFontLoader from 'webfontloader';
+import './assets/scss/index.scss';
+import App from './App';
+import { googleAnalyticsId } from './config.json';
 
-ReactDOM.render(
-    <BrowserRouter>
-        <React.Fragment>
-            <RouterScrollTop />
-            <App />
-        </React.Fragment>
-    </BrowserRouter>,
-    document.getElementById('root')
-);
+WebFontLoader.load({
+  google: {
+    families: ['Nunito Sans:300,400,600,700', 'Material Icons'],
+  },
+});
+
+ReactGA.initialize(googleAnalyticsId);
+ReactGA.set({ anonymizeIp: true });
+
+ReactDOM.render(<App />, document.getElementById('root'));
