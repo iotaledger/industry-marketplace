@@ -34,6 +34,7 @@ export const prepareData = async (payload) => {
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     const partner = get(data, 'frame.sender.identification.id');
+    const coordinates = await iotaAreaCodes.decode(location);
 
     const card = {
         operation,
@@ -44,10 +45,11 @@ export const prepareData = async (payload) => {
         irdi,
         partner,
         id: conversationId,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
         walletAddress: get(data, 'walletAddress') || null,
         originalMessage: JSON.stringify(data),
         storageId: type === 'proposal' ? `${conversationId}#${partner}` : conversationId,
-        coordinates: await getCoordinates(location),
         price: get(price, 'value') || 'Pending',
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
         endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
@@ -55,9 +57,3 @@ export const prepareData = async (payload) => {
     
     return card;
 };
-
-const getCoordinates = async areaCode => {
-    const { latitude, longitude } = iotaAreaCodes.decode(areaCode);
-    return [latitude, longitude];
-}
-
