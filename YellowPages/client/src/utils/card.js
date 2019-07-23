@@ -58,6 +58,6 @@ export const prepareData = async (payload) => {
 
 const getCoordinates = async areaCode => {
     const { latitude, longitude } = iotaAreaCodes.decode(areaCode);
-    return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+    return [latitude, longitude];
 }
 
