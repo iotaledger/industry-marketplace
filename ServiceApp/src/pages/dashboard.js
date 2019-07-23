@@ -116,7 +116,7 @@ class Dashboard extends React.Component {
   };
 
   async updateConfig(packet) {
-    return new Promise(async (resolve) => {
+    return new Promise(async resolve => {
       if (!packet) {
         return resolve({ error: 'Address convertion failed. Please use only latin letters' });
       }
@@ -136,6 +136,7 @@ class Dashboard extends React.Component {
         });
       }
 
+      await this.getUser();
       resolve(data);
     });
   };
