@@ -2,10 +2,10 @@ import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { decode } from '@iota/area-codes'
 import { readData } from '../utils/databaseHelper';
-import { extractMessageType } from '../utils/eclassHelper';
+import { extractMessageType, convertOperationsList } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { getLocationFromMessage, calculateDistance } from '../utils/locationHelper';
-import { maxDistance } from '../config.json';
+import { maxDistance, operations } from '../config.json';
 
 
 /**
@@ -154,7 +154,9 @@ export class ZmqService {
     private sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
-        this._subscriptions[event][0].callback(event, payload);
+        for (let i = 0; i < this._subscriptions[event].length; i++) {
+            this._subscriptions[event][i].callback(event, payload);
+        }
     }
 
     /**
@@ -169,12 +171,14 @@ export class ZmqService {
         const event = messageParams[0];
         const tag = messageParams[12];
 
-
+        const operationList = await convertOperationsList(operations)
+    
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-            if (tag.startsWith(this._config.prefix) && messageType) {
+        
+            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9,15)) == true) {
                 const bundle = messageParams[8];
-
+                
                 interface IUser {
                     id?: string;
                     role?: string;
