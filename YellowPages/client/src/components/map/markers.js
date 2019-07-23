@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Marker } from 'react-map-gl';
-import { decode } from '@iota/area-codes';
 
 export default class extends React.Component {
   constructor(props) {
@@ -15,8 +14,8 @@ export default class extends React.Component {
   componentDidMount() {
     const assets = [];
     this.props.assets.forEach(async asset => {
-      const { latitude, longitude } = await decode(asset.location);
-      assets.push({ ...asset, latitude, longitude });
+      const coordinates = asset.coordinates;
+      assets.push({ ...asset, latitude: coordinates[0], longitude: coordinates[1] });
     });
     this.setState({ assets });
   }

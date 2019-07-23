@@ -2,7 +2,6 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
-import { Link } from 'react-router-dom';
 import BurgerMenu from '../components//header/burger';
 import MiniHeader from '../components/header/mini-header';
 import Footer from '../components/footer';
@@ -12,7 +11,7 @@ import Loading from '../components/loading';
 import Cookie from '../components/cookie';
 import AssetList from '../components/assets-list';
 import Zmq from '../components/zmq';
-import { getByType, removeExpired } from '../utils/storage';
+import { getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
 
 const Header = ({ changeSection }) => {
@@ -23,15 +22,24 @@ const Header = ({ changeSection }) => {
         <Tagline>Yellow Pages</Tagline>
       </Shapes>
       <Info>
-        <Link to={'/demo/#list'} onClick={() => changeSection('callForProposal')}>
-          <SubLink>{'Calls for proposal'.toUpperCase()}</SubLink>
-        </Link>
-        <Link to={'/demo/#list'} onClick={() => changeSection('proposal')}>
-          <SubLink>{'Proposals'.toUpperCase()}</SubLink>
-        </Link>
-        <Link to={'/demo/#list'} onClick={() => changeSection('acceptProposal')}>
-          <SubLink>{'Accepted proposals'.toUpperCase()}</SubLink>
-        </Link>
+        <SubLink
+          role="button"
+          onClick={() => changeSection('callForProposal')}
+        >
+          {'Calls for proposal'.toUpperCase()}
+        </SubLink>
+        <SubLink
+          role="button"
+          onClick={() => changeSection('proposal')}
+        >
+          {'Proposals'.toUpperCase()}
+        </SubLink>
+        <SubLink
+          role="button"
+          onClick={() => changeSection('acceptProposal')}
+        >
+          {'Accepted proposals'.toUpperCase()}
+        </SubLink>
       </Info>
     </Container>
   );
@@ -74,7 +82,7 @@ export default class extends React.Component {
     console.log('message', message);
     const card = await prepareData(get(message, 'data'));
     console.log('card', card);
-
+    await writeToStorage(card);
     await this.checkExpired();
   }
 
