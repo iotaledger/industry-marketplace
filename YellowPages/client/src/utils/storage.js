@@ -49,7 +49,7 @@ export const removeExpired = async type => {
     if (type === 'callForProposal' || type === 'proposal') {
         const allItems = await getByType(type);
         const timeInThePast = new Date().getTime() - (waitingTime * 60 * 1000);
-        const expiredItems = allItems.filter(({ replyBy }) => replyBy < timeInThePast);
+        const expiredItems = allItems.filter(({ replyBy }) => Number(replyBy) < timeInThePast);
         expiredItems.forEach(async item => {
             if (item.storageId) {
                 await removeFromStorage(item.storageId);

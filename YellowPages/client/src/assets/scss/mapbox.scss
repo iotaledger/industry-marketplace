@@ -209,8 +209,9 @@ a.mapboxgl-ctrl-logo {
 .mapboxgl-popup-tip {
     width: 0;
     height: 0;
-    border: 10px solid transparent;
+    border: 0px solid transparent !important;
     z-index: 1;
+
 }
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
     -webkit-align-self: center;
