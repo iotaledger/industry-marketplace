@@ -79,7 +79,6 @@ export default class extends React.Component {
   }
 
   async newMessage(message) {
-    console.log('message', message);
     const card = await prepareData(get(message, 'data'));
     console.log('card', card);
     await writeToStorage(card);

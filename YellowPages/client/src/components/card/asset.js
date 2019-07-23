@@ -43,7 +43,7 @@ const Asset = props => {
           <RowThird>
             <RowDesc>Coordinates</RowDesc>
             <Data>
-              {asset.coordinates.join(', ') || '--'}
+              {asset.latitude.toFixed(5)}, {asset.longitude.toFixed(5)}
             </Data>
           </RowThird>
           <RowThird>

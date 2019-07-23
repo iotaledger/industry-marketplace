@@ -5,49 +5,18 @@ import { Marker } from 'react-map-gl';
 export default class extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { assets: [] };
-
-    this.sanitiseCoordinates = this.sanitiseCoordinates.bind(this);
-    this.sanatiseAsset = this.sanatiseAsset.bind(this);
-  }
-
-  componentDidMount() {
-    const assets = [];
-    this.props.assets.forEach(async asset => {
-      const coordinates = asset.coordinates;
-      assets.push({ ...asset, latitude: coordinates[0], longitude: coordinates[1] });
-    });
-    this.setState({ assets });
+    this.state = { assets: props.assets };
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.assets.length > 0) return;
-    const assets =
-      nextProps.assets.length > 0
-        ? [
-            ...nextProps.assets.filter(asset => this.sanatiseAsset(asset)).map(asset => {
-              asset.latitude = this.sanitiseCoordinates(asset.latitude);
-              asset.longitude = this.sanitiseCoordinates(asset.longitude);
-              return asset;
-            }),
-          ]
-        : [];
-    this.setState({ assets });
+    if (nextProps.assets.length > 0) {
+      this.setState({ assets: nextProps.assets });
+    }
   }
-
-  sanitiseCoordinates(coordinate) {
-    return typeof coordinate === 'number' ? coordinate : Number(coordinate.replace(/[^0-9.]/g, ''));
-  }
-
-  sanatiseAsset(asset) {
-    if (!asset.longitude || !asset.latitude) return false;
-    if (asset.latitude >= 90 || asset.latitude <= -90) return false;
-    if (asset.longitude >= 180 || asset.longitude <= -180) return false;
-    return true;
-  };
 
   render() {
     const { assets } = this.state;
+
     return (
       <div>
         {assets &&
