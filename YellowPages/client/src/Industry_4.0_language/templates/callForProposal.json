@@ -1,0 +1,17 @@
+{
+   "frame":{
+      "semanticProtocol":"http://www.vdi.de/gma720/vdi2193_2/bidding",
+      "type":"callForProposal",
+      "conversationId":"",
+      "messageId":"1",
+      "sender":{
+         "identification":{
+            "id":""
+         }
+      },
+      "replyBy":""
+   },
+   "dataElements":{
+      "submodels":[]
+   }
+}
