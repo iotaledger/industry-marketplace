@@ -43,7 +43,7 @@ const Asset = props => {
           <RowThird>
             <RowDesc>Coordinates</RowDesc>
             <Data>
-              {asset.coordinates || '--'}
+              {asset.coordinates.join(', ') || '--'}
             </Data>
           </RowThird>
           <RowThird>

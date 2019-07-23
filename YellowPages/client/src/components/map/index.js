@@ -2,7 +2,6 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import MapGL, { Popup, NavigationControl } from 'react-map-gl';
-import { Link } from 'react-router-dom';
 import '../../assets/scss/mapbox.scss';
 import Controls from './controls';
 import Markers from './markers';
@@ -78,52 +77,51 @@ class Map extends React.Component {
 
   renderPopup() {
     const { popupInfo } = this.state;
-    console.log('renderPopup', popupInfo);
+    if (!popupInfo) return null;
+    
     return (
-      popupInfo && (
-        <Popup
-          tipSize={10}
-          anchor="bottom-left"
-          offsetTop={-5}
-          offsetLeft={5}
-          closeButton={true}
-          longitude={Number(popupInfo.longitude)}
-          latitude={Number(popupInfo.latitude)}
-          closeOnClick={false}
-          onClose={() => this.setState({ popupInfo: null })}
-        >
-          <SensorCard>
-            <CardHeader>
-              <SensorType>
-                {popupInfo.type}{' '}
-                <LocationIcon
-                  src="/static/icons/icon-small-location-dark.svg"
-                  alt="Icon location pin"
-                />{' '}
-                <span>{popupInfo.location}</span>
-              </SensorType>
-              <SensorId>
-                {popupInfo.operation}
-              </SensorId>
-            </CardHeader>
-            <CardFooter>
-              <FootRow>
-                <InfoKey>Owner:</InfoKey>
-                <InfoValue>{popupInfo.partner}</InfoValue>
-              </FootRow>
-              <FootRow>
-                <InfoKey>Irdi:</InfoKey>
-                <InfoValue>{popupInfo.irdi}</InfoValue>
-              </FootRow>
-              <FootRow>
-                <InfoKey>Price:</InfoKey>
-                <InfoValue>{popupInfo.price}i</InfoValue>
-              </FootRow>
-            </CardFooter>
-          </SensorCard>
-        </Popup>
-      )
-    );
+      <Popup
+        tipSize={10}
+        anchor="bottom-left"
+        offsetTop={-5}
+        offsetLeft={5}
+        closeButton={true}
+        longitude={Number(popupInfo.longitude)}
+        latitude={Number(popupInfo.latitude)}
+        closeOnClick={false}
+        onClose={() => this.setState({ popupInfo: null })}
+      >
+        <SensorCard>
+          <CardHeader>
+            <SensorType>
+              {popupInfo.type}{' '}
+              <LocationIcon
+                src="/static/icons/icon-small-location-dark.svg"
+                alt="Icon location pin"
+              />{' '}
+              <span>{popupInfo.location}</span>
+            </SensorType>
+            <SensorId>
+              {popupInfo.operation}
+            </SensorId>
+          </CardHeader>
+          <CardFooter>
+            <FootRow>
+              <InfoKey>Owner:</InfoKey>
+              <InfoValue>{popupInfo.partner}</InfoValue>
+            </FootRow>
+            <FootRow>
+              <InfoKey>Irdi:</InfoKey>
+              <InfoValue>{popupInfo.irdi}</InfoValue>
+            </FootRow>
+            <FootRow>
+              <InfoKey>Price:</InfoKey>
+              <InfoValue>{popupInfo.price}</InfoValue>
+            </FootRow>
+          </CardFooter>
+        </SensorCard>
+      </Popup>
+    )
   }
 
   openPopup(asset) {
