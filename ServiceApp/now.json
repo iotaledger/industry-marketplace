@@ -1,13 +1,4 @@
 {
-    "version": 1,
-    "name": "market-manager-ui",
-    "features": {
-      "cloud": "v1"
-    },
-    "scale": {
-      "sfo": {
-        "min": 1,
-        "max": 1
-      }
-    }
-  }
+    "version": 2,
+    "name": "market-manager-ui"
+}
