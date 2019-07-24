@@ -154,7 +154,10 @@ export class ZmqService {
     private sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
-        this._subscriptions[event][0].callback(event, payload);
+
+        for (let i = 0; i < this._subscriptions[event].length; i++) {
+            this._subscriptions[event][i].callback(event, payload);
+        }
     }
 
     /**
