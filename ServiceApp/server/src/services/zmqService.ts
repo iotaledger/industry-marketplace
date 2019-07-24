@@ -160,6 +160,13 @@ export class ZmqService {
     }
 
     /**
+     * Bundlehashes that were already send to not send twice 
+     *
+     */  
+    public sentBundles = []
+
+
+    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
@@ -172,84 +179,94 @@ export class ZmqService {
         const tag = messageParams[12];
 
         const operationList = await convertOperationsList(operations)
-    
+
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-        
+            
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9,15)) == true) {
                 const bundle = messageParams[8];
-                
-                interface IUser {
-                    id?: string;
-                    role?: string;
-                    areaCode?: string;
+
+                if (this.sentBundles.includes(bundle) == true) {
+                    this.sentBundles = []
                 }
-                const { id, role, areaCode }: IUser = await readData('user');
+                else {
+                    this.sentBundles.push(bundle)
 
-                // 1. Check user role (SR, SP, YP)
-                switch (role) {
-                    case 'SR':
-                        // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                        if (['proposal', 'informConfirm'].includes(messageType)) {
-                            // 2.1 Decode every such message and retrieve receiver ID
-                            const data = await getPayload(bundle);
-                            const receiverID = data.frame.receiver.identification.id;
+                    const data = await getPayload(bundle);
+                    this.sendEvent(data, messageType, messageParams);
 
-                            // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
-                            if (id === receiverID) {
-                                this.sendEvent(data, messageType, messageParams);
-                            }
-                        }
-                        break;
-                    case 'SP':
-                        // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
-                            const data = await getPayload(bundle);
+                    interface IUser {
+                        id?: string;
+                        role?: string;
+                        areaCode?: string;
+                    }
+                    const { id, role, areaCode }: IUser = await readData('user');
 
-                            // 3.1 Decode every message of type A, retrieve location.
-                            if (messageType === 'callForProposal') {
-                                const location = await getLocationFromMessage(data);
-
-                                // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                if (!areaCode || !maxDistance) {
-                                    this.sendEvent(data, messageType, messageParams);
-                                }
-
-                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                if (areaCode && maxDistance) {
-
-                                    try {
-                                        const ownLocObj = await decode(areaCode)
-                                        const locObj = await decode(location)
-                                        const distance = await calculateDistance(ownLocObj, locObj)
-
-                                        // 3.3.1 If distance within accepted range, send message to UI
-                                        if (distance <= maxDistance) {
-                                            this.sendEvent(data, messageType, messageParams);
-                                        }
-                                    } catch (error) {
-                                        console.error(error)
-                                    }
-                                }
-                            } else {
-                                // 3.4 Decode every message of type C, D, F and retrieve receiver ID
+                    // 1. Check user role (SR, SP, YP)
+                    switch (role) {
+                        case 'SR':
+                            // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                            if (['proposal', 'informConfirm'].includes(messageType)) {
+                                // 2.1 Decode every such message and retrieve receiver ID
+                                const data = await getPayload(bundle);
                                 const receiverID = data.frame.receiver.identification.id;
 
-                                // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
+                                // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
                                     this.sendEvent(data, messageType, messageParams);
                                 }
                             }
-                        }
-                        break;
-                    case 'YP':
-                    default:
-                        // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                        if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                            const data = await getPayload(bundle);
-                            // 4.1 Send every such message to UI
-                            this.sendEvent(data, messageType, messageParams);
-                        }
+                            break;
+                        case 'SP':
+                            // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                            if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
+                                const data = await getPayload(bundle);
+
+                                // 3.1 Decode every message of type A, retrieve location.
+                                if (messageType === 'callForProposal') {
+                                    const location = await getLocationFromMessage(data);
+
+                                    // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                    if (!areaCode || !maxDistance) {
+                                        this.sendEvent(data, messageType, messageParams);
+                                    }
+
+                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                    if (areaCode && maxDistance) {
+
+                                        try {
+                                            const ownLocObj = await decode(areaCode)
+                                            const locObj = await decode(location)
+                                            const distance = await calculateDistance(ownLocObj, locObj)
+
+                                            // 3.3.1 If distance within accepted range, send message to UI
+                                            if (distance <= maxDistance) {
+                                                this.sendEvent(data, messageType, messageParams);
+                                            }
+                                        } catch (error) {
+                                            console.error(error)
+                                        }
+                                    }
+                                } else {
+                                    // 3.4 Decode every message of type C, D, F and retrieve receiver ID
+                                    const receiverID = data.frame.receiver.identification.id;
+
+                                    // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
+                                    if (id === receiverID) {
+                                        this.sendEvent(data, messageType, messageParams);
+                                    }
+                                }
+                            }
+                            break;
+                        case 'YP':
+                        default:
+                            // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                            if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                                const data = await getPayload(bundle);
+                                // 4.1 Send every such message to UI
+                                this.sendEvent(data, messageType, messageParams);
+                            }
+                    }
                 }
             }
         }
