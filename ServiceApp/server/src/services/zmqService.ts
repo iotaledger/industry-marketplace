@@ -241,7 +241,6 @@ export class ZmqService {
                             }
                         }
                         break;
-                    case 'YP':
                     default:
                         // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
                         if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
