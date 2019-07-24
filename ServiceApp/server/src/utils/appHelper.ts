@@ -1,11 +1,12 @@
 // tslint:disable-next-line:no-require-imports
 const iotaAreaCodes = require('@iota/area-codes');
+import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData } from './databaseHelper';
+import { createUser, createWallet, readData, writeData } from './databaseHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish } from './mamHelper';
 import { buildTag } from './tagHelper';
@@ -42,17 +43,38 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                let areaCode = '';
-                if (req.body.areaCode) {
-                    areaCode = req.body.areaCode;
-                } else if (req.body.gps) {
-                    const coordinates = req.body.gps.split(',');
-                    areaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                let user = await readData('user');
+                const { areaCode, gps, userId, role, wallet } = req.body;
+
+                if (areaCode) {
+                    await writeData('user', { ...user, areaCode });
+                } else if (gps) {
+                    const coordinates = gps.split(',');
+                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                    await writeData('user', { ...user, areaCode: newAreaCode });
                 }
-                const user = await readData('user');
-                await writeData('user', { ...user, areaCode });
+
+                if (role) {
+                    await writeData('user', { ...user, role });
+                }
+
+                if (userId) {
+                    await writeData('user', { ...user, id: userId });
+                }
+
+                if (wallet) {
+                    const response = await axios.get(config.faucet);
+                    const data = response.data;
+                    if (data.success) {
+                        await createWallet(data.wallet);
+                    }
+                }
+
+                user = await readData('user');
+
                 res.send({
-                    success: true
+                    success: true,
+                    ...user
                 });
             } catch (error) {
                 console.log('config Error', error);
