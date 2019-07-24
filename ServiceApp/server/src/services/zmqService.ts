@@ -1,17 +1,22 @@
+import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { decode } from '@iota/area-codes'
-import { readData } from '../utils/databaseHelper';
-import { extractMessageType, convertOperationsList } from '../utils/eclassHelper';
-import { getPayload } from '../utils/iotaHelper';
-import { getLocationFromMessage, calculateDistance } from '../utils/locationHelper';
 import { maxDistance, operations } from '../config.json';
-
+import { readData } from '../utils/databaseHelper';
+import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
+import { getPayload } from '../utils/iotaHelper';
+import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 
 /**
  * Class to handle ZMQ service.
  */
 export class ZmqService {
+
+    /**
+     * Bundlehashes that were already send to not send twice 
+     *
+     */  
+    public sentBundles = [];
     /**
      * The configuration for the service.
      */
@@ -154,17 +159,11 @@ export class ZmqService {
     private sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
+        
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
         }
     }
-
-    /**
-     * Bundlehashes that were already send to not send twice 
-     *
-     */  
-    public sentBundles = []
-
 
     /**
      * Handle a message and send to any callbacks.
@@ -178,7 +177,7 @@ export class ZmqService {
         const event = messageParams[0];
         const tag = messageParams[12];
 
-        const operationList = await convertOperationsList(operations)
+        const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
@@ -186,11 +185,10 @@ export class ZmqService {
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9,15)) == true) {
                 const bundle = messageParams[8];
 
-                if (this.sentBundles.includes(bundle) == true) {
-                    this.sentBundles = []
-                }
-                else {
-                    this.sentBundles.push(bundle)
+                if (this.sentBundles.includes(bundle)) {
+                    this.sentBundles = [];
+                } else {
+                    this.sentBundles.push(bundle);
 
                     const data = await getPayload(bundle);
                     this.sendEvent(data, messageType, messageParams);
