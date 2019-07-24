@@ -17,6 +17,12 @@ export class ZmqService {
      *
      */  
     public sentBundles = [];
+
+    /**
+     * The interval to frequently delete sentBundle array.
+     */
+
+    public _interval;
     /**
      * The configuration for the service.
      */
@@ -39,6 +45,14 @@ export class ZmqService {
     constructor(config) {
         this._config = config;
         this._subscriptions = {};
+        this._interval = setInterval(this.emptyBundleArray.bind(this), 10000);
+    }
+
+    /**
+     * Clear sentBundles array
+     */
+    public emptyBundleArray() {
+        this.sentBundles = [];
     }
 
     /**
