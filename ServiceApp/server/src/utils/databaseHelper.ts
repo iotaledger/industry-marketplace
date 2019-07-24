@@ -11,6 +11,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT, areaCode TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS data (conversationId TEXT, deviceId TEXT, userId TEXT)');
     }
 );
 
@@ -30,6 +31,10 @@ export const createWallet = async ({ seed, address, balance, keyIndex }) => {
     await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
 };
 
+export const createSensorData = async ({ conversationId, deviceId, userId }) => {
+    await db.run('REPLACE INTO wallet (conversationId, deviceId, userId) VALUES (?, ?, ?)', [conversationId, deviceId, userId]);
+};
+
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
     const insert = `
         INSERT INTO mam (
@@ -47,6 +52,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'wallet':
                 await createWallet(data);
+                return;
+            case 'data':
+                await createSensorData(data);
                 return;
             case 'mam':
             default:
