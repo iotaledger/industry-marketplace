@@ -6,7 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { createUser, createWallet, readData, writeData } from './databaseHelper';
+import { readData, writeData } from './databaseHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish } from './mamHelper';
 import { buildTag } from './tagHelper';
@@ -66,7 +66,7 @@ export class AppHelper {
                     const response = await axios.get(config.faucet);
                     const data = response.data;
                     if (data.success) {
-                        await createWallet(data.wallet);
+                        await writeData('wallet', data.wallet);
                     }
                 }
 
