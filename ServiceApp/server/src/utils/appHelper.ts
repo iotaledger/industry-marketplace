@@ -43,26 +43,32 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                let user = await readData('user');
+                console.log('config', req.body);
                 const { areaCode, gps, userId, role, wallet } = req.body;
+                const user = await readData('user');
 
                 if (areaCode) {
+                    console.log('config areaCode', areaCode);
                     await writeData('user', { ...user, areaCode });
                 } else if (gps) {
+                    console.log('config gps', gps);
                     const coordinates = gps.split(',');
                     const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
                     await writeData('user', { ...user, areaCode: newAreaCode });
                 }
 
                 if (role) {
+                    console.log('config role', role);
                     await writeData('user', { ...user, role });
                 }
 
                 if (userId) {
+                    console.log('config userId', userId);
                     await writeData('user', { ...user, id: userId });
                 }
 
                 if (wallet) {
+                    console.log('config wallet', wallet);
                     const response = await axios.get(config.faucet);
                     const data = response.data;
                     if (data.success) {
@@ -70,11 +76,8 @@ export class AppHelper {
                     }
                 }
 
-                user = await readData('user');
-
-                res.send({
-                    success: true,
-                    ...user
+                await res.send({
+                    success: true
                 });
             } catch (error) {
                 console.log('config Error', error);
