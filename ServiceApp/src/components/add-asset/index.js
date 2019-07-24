@@ -277,7 +277,6 @@ export default class extends React.Component {
                 </FooterButton>
                 <FooterButton
                   onClick={this.submit}
-                  style={{ marginLeft: '10px' }}
                 >
                   Submit
                 </FooterButton>
@@ -349,6 +348,7 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  margin-left: 10px;
   font: 16px 'Nunito Sans', sans-serif;
   letter-spacing: 0.47px;
   padding: 12px 21px;

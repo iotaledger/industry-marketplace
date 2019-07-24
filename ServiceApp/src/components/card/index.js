@@ -15,9 +15,9 @@ export default props => {
 }
 
 const Card = styled.div`
+  max-width: 1030px;
   color: inherit;
   text-decoration: none;
-  position: relative;
   margin-bottom: 54px;
   border-radius: 6px;
   background-color: #fff;

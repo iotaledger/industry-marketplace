@@ -96,7 +96,7 @@ const Footer = ({ id, partner, type }) => {
           )
         }
         {
-          confirmButton && (
+           confirmButton && (
             <FooterButton onClick={() => onConfirm(id, partner)}>
               {confirmButton}
             </FooterButton>
@@ -191,7 +191,10 @@ const RowThird = styled.div`
   padding: 10px 30px;
   display: inline-block;
   text-align: left;
-  @media (min-width: 540px) {
+  @media (min-width: 426px) {
+    width: 50%;
+  }
+  @media (min-width: 950px) {
     width: 33.3%;
   }
 `;
@@ -233,6 +236,7 @@ const Full = styled.div`
 const FootRow = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   cursor: default;
   &:not(:last-of-type) {
     margin-bottom: 5px;
@@ -243,6 +247,10 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  margin: 5px;
+  @media (min-width: 920px) {
+    width: 200px;
+  }
   font: 16px 'Nunito Sans', sans-serif;
   line-height: 16px;
   letter-spacing: 0.47px;
@@ -254,7 +262,7 @@ const FooterButton = styled.button`
   font-size: 16px;
   font-weight: normal;
   letter-spacing: 0.38px;
-  width: 200px;
+  width: 100%;
   height: 45px;
 
   &:hover {

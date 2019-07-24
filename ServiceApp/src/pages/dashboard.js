@@ -103,7 +103,7 @@ class Dashboard extends React.Component {
         });
         if (endpoint !== 'rejectProposal') {
           await this.newMessage({ data: packet });
-        }        
+        }
       } else if (data.error) {
         this.setState({
           error: data.error,
@@ -269,9 +269,8 @@ class Dashboard extends React.Component {
 
   render() {
     const { activeSection, assets, user, loading, displayNewRequestForm, isSideBarOpen } = this.state;
-
     return (
-      <Main style={isSideBarOpen ? {overflow: 'hidden'} : {}}>
+      <Main>
         <UserContext.Provider value={{ user }}>
           <AssetNav
             createRequest={this.showNewRequestForm}
@@ -281,7 +280,7 @@ class Dashboard extends React.Component {
           <Zmq callback={this.newMessage} />
           <ColumnWrap>
             <Sidebar
-              isSideBarOpen={this.state.isSideBarOpen}
+              isSideBarOpen={isSideBarOpen}
               handleSidebar={this.handleSidebar}
               createRequest={this.showNewRequestForm}
               showMenu
@@ -290,44 +289,44 @@ class Dashboard extends React.Component {
               handleLocationModal={this.handleLocationModal}
             />
             <Data>
-                <AnimationWrapper isSideBarOpen={isSideBarOpen}>
-                  {
-                    loading ? (
-                      <LoadingBox>
-                        <Loading />
-                      </LoadingBox>
-                    ) : (
-                      <AssetContext.Provider
-                        value = {{
-                          history: this.showHistory,
-                          onCancel: this.removeAsset,
-                          onConfirm: this.confirmAction,
-                          onReject: this.rejectAction,
-                        }}
-                      >
-                        {
-                          user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                            <NoAssetsOuterWrapper>
-                              <NoAssetsInnerWrapper>
-                                <Heading>You have no active requests</Heading>
-                                <Text>Why not create a new one?</Text>
-                                <ButtonWrapper>
-                                  <Button onClick={this.showNewRequestForm}>
-                                    Create request
-                                  </Button>
-                                </ButtonWrapper>
-                              </NoAssetsInnerWrapper>
-                            </NoAssetsOuterWrapper>
-                          ) : (
-                            <AssetsWrapper>
-                              <AssetList assets={assets} />
-                            </AssetsWrapper>
-                          )
-                        }
-                      </AssetContext.Provider>
-                    )
-                  }
-                </AnimationWrapper>
+              <AnimationWrapper isSideBarOpen={isSideBarOpen}>
+                {
+                  loading ? (
+                    <LoadingBox>
+                      <Loading />
+                    </LoadingBox>
+                  ) : (
+                    <AssetContext.Provider
+                      value = {{
+                        history: this.showHistory,
+                        onCancel: this.removeAsset,
+                        onConfirm: this.confirmAction,
+                        onReject: this.rejectAction,
+                      }}
+                    >
+                      {
+                        user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
+                          <NoAssetsOuterWrapper>
+                            <NoAssetsInnerWrapper>
+                              <Heading>You have no active requests</Heading>
+                              <Text>Why not create a new one?</Text>
+                              <ButtonWrapper>
+                                <Button onClick={this.showNewRequestForm}>
+                                  Create request
+                                </Button>
+                              </ButtonWrapper>
+                            </NoAssetsInnerWrapper>
+                          </NoAssetsOuterWrapper>
+                        ) : (
+                          <AssetsWrapper>
+                            <AssetList assets={assets} />
+                          </AssetsWrapper>
+                        )
+                      }
+                    </AssetContext.Provider>
+                  )
+                }
+              </AnimationWrapper>
             </Data>
             {
               displayNewRequestForm &&
@@ -371,7 +370,7 @@ const AnimationWrapper = styled.div`
   height: 100%;
   position: relative;
   transition: transform 0.5s;
-  transform: ${(s) => s.isSideBarOpen ? 'translateX(-100%)' : 'translateX(0px)'};
+  transform: ${(p) => p.isSideBarOpen ? 'translateX(-100%)' : 'translateX(0px)'};
 `
 const Main = styled.main`
   height: 100vh;

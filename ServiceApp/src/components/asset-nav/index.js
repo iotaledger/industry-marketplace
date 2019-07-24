@@ -4,6 +4,7 @@ import { UserContext } from '../../pages/dashboard';
 import burgerIcon from './../../assets/img/burger.svg';
 import closeIcon from './../../assets/img/close.svg';
 
+const styleBurger = { width: '45px', position: 'relative', left: '6px' }
 
 const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
@@ -20,7 +21,7 @@ const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
       <BurgerIconWrap>
         <BurgerIcon
           src={isSideBarOpen ? closeIcon : burgerIcon}
-          style={isSideBarOpen ? { width: '45px', position: 'relative', left: '6px' } : {}}
+          style={isSideBarOpen ? styleBurger : {}}
           onClick={handleSidebar}
         />
       </BurgerIconWrap>
@@ -70,6 +71,8 @@ const Desc = styled.div`
 
 const Block = styled.div`
   display: block;
+  white-space: nowrap;
+  margin-right: 20px;
 `;
 
 const UserID = styled.span`

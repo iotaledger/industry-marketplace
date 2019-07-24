@@ -2,6 +2,9 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { UserContext } from '../../pages/dashboard';
 import configIcon from './../../assets/img/config.svg';
+import cActive from './../../assets/img/cercleActive.svg';
+import cNormal from './../../assets/img/cercleNormal.svg';
+
 
 const menu = {
   SR: [
@@ -27,69 +30,90 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
     if (nextPage === currentPage) return;
     callback(nextPage);
   }
+  function handleAndClose(handle, closeCallback) {
+    handle()
+    if(window.innerWidth < '769') {
+      closeCallback()
+    }
+  }
 
   if (!user.role) return null;
 
   return (
     <SidebarWrapper isSideBarOpen={isSideBarOpen}>
-    <SideBarTitle>Request Stage</SideBarTitle>
-      {
-        showMenu ? (
-          <MenuWrapper>
-            {
-              menu[user.role].map(({ id, label }) => (
-                <Menu
-                  key={id}
-                  role="button"
-                  onClick={() => switchMenu(id)}
-                  active={currentPage === id}
-                >
-                  <span>{ label }</span>
-                </Menu>
-              ))
-            }
-          </MenuWrapper>
-        ) : null
-      }
+      <Upper>
+        <SideBarTitle>Request Stage</SideBarTitle>
+          {
+            showMenu ? (
+              <MenuFix><MenuWrapper>
+                {
+                  menu[user.role].map(({ id, label }, index) => (
+                    <Item>
+                      <img src={currentPage === id ? cActive : cNormal} />
+                      <ItemText
+                        index={index}
+                        key={id}
+                        role="button"
+                        onClick={(e) => handleAndClose(e => switchMenu(id), handleSidebar)}
+                        active={currentPage === id}
+                      >
+                        <span>{ label }</span>
+                      </ItemText>
+                    </Item>
+                  ))
+                }
+              </MenuWrapper></MenuFix>
+            ) : null
+          }
 
-      <ButtonWrapper style={{ }}>
-        <Button onClick={createRequest}>Create request</Button>
-      </ButtonWrapper>
-      <ModifyConfiguration style={{ }} onClick={(e) => {
-        handleLocationModal(true);
-        //handleSidebar();
-      }}>
-        <ConfigIcon src={configIcon} />
-        <ConfigText>MODIFY CONFIGURATION</ConfigText>
-      </ModifyConfiguration>
-
+        <ButtonWrapper>
+          <Button
+            onClick={(e) => handleAndClose(createRequest, handleSidebar)}
+          >Create request</Button>
+        </ButtonWrapper>
+      </Upper>
+      <Lower>
+        <ModifyConfiguration
+          onClick={(e) => handleAndClose(e => handleLocationModal(true), handleSidebar)}
+        >
+          <ConfigIcon src={configIcon} />
+          <ConfigText>MODIFY CONFIGURATION</ConfigText>
+        </ModifyConfiguration>
+      </Lower>
     </SidebarWrapper>
   );
 }
 
 export default Sidebar;
 
+const Item = styled.div`
+  display: flex;
+`
+const Upper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`
+const Lower = styled.div``
+
 const SideBarTitle = styled.div`
   font-weight: 600;
   color: #15286D;
   font-size: 24px;
   width: 100%;
-  position: relative;
-  margin-bottom: 35px;
-  right: 36px;
   @media (min-width: 769px) {
-    font-size: 32px;
+    position: relative;
+    left: 27px;
+    font-size: 28px;
+  }
+  @media (min-width: 1440px) {
+    font-size: 31px;
   }
 `
 const ModifyConfiguration = styled.div`
   display: flex;
-  position: static;
-  position: relative;
-  right: 40px;
-  margin-bottom: 93px;
-  margin-top: 40px;
+  justify-content: start;
   @media (min-width: 769px) {
-  // code here
   }
   align-items: center;
   width: 400px;
@@ -97,7 +121,6 @@ const ModifyConfiguration = styled.div`
   left: 52px;
   bottom: 50px;
   cursor: pointer;
-  z-index: 2;
 `;
 
 const ConfigIcon = styled.img`
@@ -109,17 +132,18 @@ const ConfigText = styled.div`
 `
 
 const SidebarWrapper = styled.aside`
-  position: fixed;
+  position: absolute;
   min-height: 540px;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow-y: scroll;
+  padding: 20px;
   transition: transform 0.5s;
   transform: ${(p) => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
-  padding: 51px 70px 51px 70px;
+  display: ${(p) =>  p.isSideBarOpen ? 'flex' : 'none'};
   background: rgba(240, 240, 240, 1);
-  display: flex;
-  flex-flow: column nowrap;
+  flex-direction: column;
+  justify-content: space-between;
   z-index: 3;
   @media (min-width: 769px) {
     min-height: 100vh;
@@ -131,11 +155,16 @@ const SidebarWrapper = styled.aside`
   }
 `;
 
-const MenuWrapper = styled.ul`
-  position: relative;
+const MenuWrapper = styled.div`
+
 `;
 
-const Menu = styled.li`
+const MenuFix = styled.div`
+  width: 100%;
+  margin-top: 20px;
+`;
+
+const ItemText = styled.div`
   white-space: nowrap;
   font-size: 46px;
   font-weight: 600;
@@ -149,12 +178,10 @@ const Menu = styled.li`
     background-color: #C4C4C4;
     width: 1px;
     height: 68px;
-    left: -30px;
-    top: -27px;
+    left: -9px;
+    top: -30px;
     z-index: -1;
-  }
-  :first-child:before{
-    display: none;
+    display: ${(p) => p.index === 0 ? 'none': 'block'}
   }
   & > span {
     font-size: 20px;
@@ -163,18 +190,15 @@ const Menu = styled.li`
   }
   @media (min-width: 769px) {
     & > span {
-      font-size: 26px;
+      font-size: 22px;
     }
   }
 `;
 
 const ButtonWrapper = styled.div`
-  /* position: absolute; */
-  width: calc(100vw - 70px);
-  position: relative;
-  left: -55px;
-  /* left: -50px;
-  bottom: -60px; */
+  width: 100%;
+  display: flex;
+  margin-top: 15px;
   @media (min-width: 769px) {
     display: none;
   }
@@ -192,7 +216,7 @@ const Button = styled.button`
   font-size: 16px;
   letter-spacing: 0.38px;
   padding: 12px 21px;
-  margin: 1px 13px 0;
+  margin: 1px 0px 0;
   font-weight: 700;
   background-color: #009fff;
   width: 100%;
