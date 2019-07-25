@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../../pages/dashboard';
+import UserContext from '../../context/user-context';
 import configIcon from './../../assets/img/config.svg';
 
 const menu = {

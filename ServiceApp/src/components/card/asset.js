@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { AssetContext } from '../../pages/dashboard';
-import { UserContext } from '../../pages/dashboard';
+import UserContext from '../../context/user-context';
 import Card from './index.js';
 
 const Heading = ({ id, operation, type }) => {

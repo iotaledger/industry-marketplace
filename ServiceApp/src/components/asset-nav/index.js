@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../../pages/dashboard';
+import { Link, withRouter } from 'react-router-dom';
+import UserContext from '../../context/user-context';
 
 const HeaderWrapper = ({ createRequest }) => {
   const { user } = useContext(UserContext);
