@@ -15,7 +15,6 @@ class Details extends React.Component {
 
   async componentDidMount() {
     const { match: { params: { conversationId } } } = this.props;
-    console.log('componentDidMount', conversationId);
   }
 
 
