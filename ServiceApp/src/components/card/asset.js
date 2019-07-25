@@ -9,7 +9,7 @@ const Heading = ({ id, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
   return (
     <Full>
-      <Link to={`/history/${id}`}>
+      <Link to={`/conversation/${id}`}>
         <Header>{operation}</Header>
       </Link>
       <StatusWrapper>
