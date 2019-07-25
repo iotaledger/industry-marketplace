@@ -4,7 +4,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
-import AddGeolocation from '../components/add-geolocation';
+import Config from '../components/config';
 import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
@@ -320,7 +320,7 @@ class Dashboard extends React.Component {
                   }
                   {
                     this.state.isLocationModal &&
-                    <AddGeolocation
+                    <Config
                       sendMessage={this.updateConfig}
                       handleLocationModal={this.handleLocationModal}
                     />
