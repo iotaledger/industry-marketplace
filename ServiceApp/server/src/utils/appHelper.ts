@@ -224,28 +224,19 @@ export class AppHelper {
 
         app.post('/informConfirm', async (req, res) => {
             try {
-                /*
-                // 1. Retrieve MAM channel from DB
-                // 2. Attach message with confirmation payload
-                // 3. Update channel details in DB
-                const channelId = req.body.frame.conversationId;
-                const mam = await publish(channelId, req.body);
-                */
-
-                // 4. Create Tag
+                // 1. Create Tag
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('informConfirm', location, submodelId);
 
-                // 5. Retrieve Wallet address from DB
+                // 2. Retrieve Wallet address from DB
                 interface IWallet {
                     address?: string;
                 }
                 const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
-                // 6. Send transaction, include MAM channel info
-                // const hash = await sendMessage({ ...req.body, ...mam }, tag);
+                // 3. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, walletAddress: address }, tag);
 
                 console.log('informConfirm success');
@@ -253,7 +244,6 @@ export class AppHelper {
                     success: true,
                     tag,
                     hash
-                    // mam
                 });
             } catch (error) {
                 console.log('informConfirm Error', error);

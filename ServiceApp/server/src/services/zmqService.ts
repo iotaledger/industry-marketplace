@@ -6,6 +6,7 @@ import { readData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
+import { publish } from '../utils/mamHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -223,6 +224,11 @@ export class ZmqService {
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
                                     this.sendEvent(data, messageType, messageParams);
+
+                                    if (messageType === 'informConfirm') {
+                                        const channelId = data.frame.conversationId;
+                                        await publish(channelId, data);
+                                    }
                                 }
                             }
                             break;
