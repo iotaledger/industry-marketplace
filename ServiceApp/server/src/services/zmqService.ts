@@ -196,7 +196,7 @@ export class ZmqService {
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
             
-            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9,15)) === true) {
+            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15)) === true) {
                 const bundle = messageParams[8];
 
                 if (this.sentBundles.includes(bundle)) {
@@ -244,16 +244,16 @@ export class ZmqService {
                                     if (areaCode && maxDistance) {
 
                                         try {
-                                            const ownLocObj = await decode(areaCode)
-                                            const locObj = await decode(location)
-                                            const distance = await calculateDistance(ownLocObj, locObj)
+                                            const ownLocObj = await decode(areaCode);
+                                            const locObj = await decode(location);
+                                            const distance = await calculateDistance(ownLocObj, locObj);
 
                                             // 3.3.1 If distance within accepted range, send message to UI
                                             if (distance <= maxDistance) {
                                                 this.sendEvent(data, messageType, messageParams);
                                             }
                                         } catch (error) {
-                                            console.error(error)
+                                            console.error(error);
                                         }
                                     }
                                 } else {
