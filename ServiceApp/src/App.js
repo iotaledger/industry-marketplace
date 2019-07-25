@@ -46,7 +46,7 @@ class App extends Component {
                     {!this.state.status && (
                         <Switch>
                             <Route path="/" component={DashboardPage} exact />
-                            <Route path="/conversation/:conversationId" component={DetailsPage} exact />
+                            <Route path="/conversation/:conversationId" component={DetailsPage} />
                             <Route component={DashboardPage} />
                         </Switch>
                     )}
