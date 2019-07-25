@@ -173,7 +173,7 @@ export class ZmqService {
     private sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
-        
+
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
         }
@@ -266,16 +266,15 @@ export class ZmqService {
                                     }
                                 }
                             }
-                            break;
-                        case 'YP':
-                        default:
-                            // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                            if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                                const data = await getPayload(bundle);
-                                // 4.1 Send every such message to UI
-                                this.sendEvent(data, messageType, messageParams);
-                            }
-                    }
+                        }
+                        break;
+                    default:
+                        // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                        if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                            const data = await getPayload(bundle);
+                            // 4.1 Send every such message to UI
+                            this.sendEvent(data, messageType, messageParams);
+                        }
                 }
             }
         }
