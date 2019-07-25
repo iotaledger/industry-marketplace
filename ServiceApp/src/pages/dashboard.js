@@ -62,7 +62,7 @@ class Dashboard extends React.Component {
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
-    this.timer = setTimeout(() => this.checkExpired(), 600000);
+    this.timer = setInterval(() => this.checkExpired(), 600000);
 
   }
 
@@ -80,7 +80,6 @@ class Dashboard extends React.Component {
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
     this.setState({ assets });
-    clearInterval(this.timer);
   }
 
   async createRequest(message) {
