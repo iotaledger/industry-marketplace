@@ -65,8 +65,8 @@ export default class extends React.Component {
       { role, userId, wallet }
     );
 
-    this.setState({ loading: false });
     if (sendMessagetResult.error) {
+      this.setState({ loading: false });
       return alert(sendMessagetResult.error);
     }
   }
