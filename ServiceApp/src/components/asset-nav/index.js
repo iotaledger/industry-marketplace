@@ -3,12 +3,19 @@ import styled from 'styled-components';
 import { Link, withRouter } from 'react-router-dom';
 import UserContext from '../../context/user-context';
 
-const HeaderWrapper = ({ createRequest }) => {
+const HeaderWrapper = ({ back, createRequest, history }) => {
   const { user } = useContext(UserContext);
   if (!user.role) return null;
 
   return (
     <Main>
+      {
+        back && (
+          <Back to={'/'} onClick={history.goBack}>
+            <img src="/static/icons/icon-arrow-back-dark.svg" alt="Icon arrow" />
+          </Back>
+        )
+      }
       <Header>
         <Block>
           <Desc>{user.role === 'SR' ? 'Service requester' : 'Service provider'}</Desc>
@@ -21,7 +28,7 @@ const HeaderWrapper = ({ createRequest }) => {
           <UserID>{user.balance}</UserID>
         </Block>
         {
-          user.role === 'SR' ? (
+          user.role === 'SR' && !back ? (
             <ButtonWrapper>
               <Button onClick={createRequest}>Create request</Button>
             </ButtonWrapper>
@@ -32,7 +39,7 @@ const HeaderWrapper = ({ createRequest }) => {
   )
 }
 
-export default HeaderWrapper;
+export default withRouter(HeaderWrapper);
 
 const Main = styled.nav`
   display: flex;
@@ -119,5 +126,18 @@ const Button = styled.button`
     color: #009fff;
     background-color: #ffffff;
     border: 1px solid #009fff;
+  }
+`;
+
+const Back = styled(Link)`
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 90px;
+  cursor: pointer;
+  border-right: 1px solid #eaecee;
+  @media (max-width: 760px) {
+    width: 46px;
+    border: none;
   }
 `;
