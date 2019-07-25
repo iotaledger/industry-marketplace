@@ -12,9 +12,7 @@ class GlobalState extends Component {
   }
 
   getUser = async () => {
-    console.log('global getUser 1');
     const user = await api.get('user');
-    console.log('global getUser 2', user);
     this.setState({ user });
     return user;
   };
