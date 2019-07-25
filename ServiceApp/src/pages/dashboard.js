@@ -12,6 +12,7 @@ import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
+import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
 import {
   getByType,
@@ -24,9 +25,10 @@ import {
 import { prepareData } from '../utils/card';
 
 export const AssetContext = React.createContext({});
-export const UserContext = React.createContext({});
 
 class Dashboard extends React.Component {
+  static contextType = UserContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -65,7 +67,7 @@ class Dashboard extends React.Component {
   }
 
   async getUser() {
-    const user = await api.get('user');
+    const user = await this.context.getUser();
     this.setState({ user });
   };
 
@@ -267,74 +269,72 @@ class Dashboard extends React.Component {
 
     return (
       <Main>
-        <UserContext.Provider value={{ user }}>
-          <AssetNav createRequest={this.showNewRequestForm} />
-          <Zmq callback={this.newMessage} />
-          <Data>
-            <Sidebar
-              showMenu
-              currentPage={activeSection}
-              callback={this.changeSection}
-              handleLocationModal={this.handleLocationModal}
-            />
-            {
-              loading ? (
-                <LoadingBox>
-                  <Loading />
-                </LoadingBox>
-              ) : (
-                <AssetContext.Provider
-                  value = {{
-                    history: this.showHistory,
-                    onCancel: this.removeAsset,
-                    onConfirm: this.confirmAction,
-                    onReject: this.rejectAction,
-                  }}
-                >
-                  {
-                    user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                      <NoAssetsOuterWrapper>
-                        <NoAssetsInnerWrapper>
-                          <Heading>You have no active requests</Heading>
-                          <Text>Why not create a new one?</Text>
-                          <ButtonWrapper>
-                            <Button onClick={this.showNewRequestForm}>
-                              Create request
-                            </Button>
-                          </ButtonWrapper>
-                        </NoAssetsInnerWrapper>
-                      </NoAssetsOuterWrapper>
-                    ) : (
-                      <AssetsWrapper>
-                        <AssetList assets={assets} />
-                      </AssetsWrapper>
-                    )
-                  }
-                  {
-                    displayNewRequestForm &&
-                    <AddCard
-                      createRequest={this.createRequest}
-                      cancel={this.hideNewRequestForm}
-                      user={user}
-                    />
-                  }
-                  {
-                    this.state.isLocationModal &&
-                    <Config
-                      sendMessage={this.updateConfig}
-                      handleLocationModal={this.handleLocationModal}
-                    />
-                  }
-                </AssetContext.Provider>
-              )
-            }
-          </Data>
-          <Modal
-            show={!isEmpty(this.state.error)}
-            error={this.state.error}
-            callback={this.notificationCallback}
+        <AssetNav createRequest={this.showNewRequestForm} />
+        <Zmq callback={this.newMessage} />
+        <Data>
+          <Sidebar
+            showMenu
+            currentPage={activeSection}
+            callback={this.changeSection}
+            handleLocationModal={this.handleLocationModal}
           />
-        </UserContext.Provider>
+          {
+            loading ? (
+              <LoadingBox>
+                <Loading />
+              </LoadingBox>
+            ) : (
+              <AssetContext.Provider
+                value = {{
+                  history: this.showHistory,
+                  onCancel: this.removeAsset,
+                  onConfirm: this.confirmAction,
+                  onReject: this.rejectAction,
+                }}
+              >
+                {
+                  user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
+                    <NoAssetsOuterWrapper>
+                      <NoAssetsInnerWrapper>
+                        <Heading>You have no active requests</Heading>
+                        <Text>Why not create a new one?</Text>
+                        <ButtonWrapper>
+                          <Button onClick={this.showNewRequestForm}>
+                            Create request
+                          </Button>
+                        </ButtonWrapper>
+                      </NoAssetsInnerWrapper>
+                    </NoAssetsOuterWrapper>
+                  ) : (
+                    <AssetsWrapper>
+                      <AssetList assets={assets} />
+                    </AssetsWrapper>
+                  )
+                }
+                {
+                  displayNewRequestForm &&
+                  <AddCard
+                    createRequest={this.createRequest}
+                    cancel={this.hideNewRequestForm}
+                    user={user}
+                  />
+                }
+                {
+                  this.state.isLocationModal &&
+                  <Config
+                    sendMessage={this.updateConfig}
+                    handleLocationModal={this.handleLocationModal}
+                  />
+                }
+              </AssetContext.Provider>
+            )
+          }
+        </Data>
+        <Modal
+          show={!isEmpty(this.state.error)}
+          error={this.state.error}
+          callback={this.notificationCallback}
+        />
       </Main>
     );
   }
