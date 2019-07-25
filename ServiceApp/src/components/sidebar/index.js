@@ -28,15 +28,13 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal }) => {
     callback(nextPage);
   }
 
-  if (!user.role) return null;
-
   return (
     <SidebarWrapper>
       {
         showMenu ? (
           <MenuWrapper>
             {
-              menu[user.role].map(({ id, label }) => (
+              user.role && menu[user.role].map(({ id, label }) => (
                 <Menu
                   key={id}
                   role="button"
