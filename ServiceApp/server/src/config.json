@@ -5,6 +5,7 @@
     },
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 6,
+    "operations": ["0173-1#02-BAF577#004","0173-1#02-AAN521#005","0173-1#02-BAF634#008"] ,
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443",
     "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD"
