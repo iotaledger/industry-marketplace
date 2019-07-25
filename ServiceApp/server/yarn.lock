@@ -18,10 +18,10 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@iota/area-codes@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@iota/area-codes/-/area-codes-0.1.0.tgz#587c9737a742d78306e65c2af555823c2db8b8db"
-  integrity sha512-riWkf9/3w7N+VF+nVXWVCS2HouhizCYtrFbDp75fxwK/sHEKro0jUUAyGno24R7Co2IruGokeyJToKiQRpos4w==
+"@iota/area-codes@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@iota/area-codes/-/area-codes-0.1.1.tgz#be5138907bd858f34a3b8d3c48a0b0de055c034c"
+  integrity sha512-BXKml7bM59u2ATS1q3JaNT0ldWrsWCQDDNDcVnggLZUuMdXk7hN7tTNiGYN7lvPr07668RAY/llUEESz/l3sEQ==
   dependencies:
     open-location-code-typescript "^1.4.0"
 

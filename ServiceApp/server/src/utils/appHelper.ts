@@ -1,5 +1,6 @@
 // tslint:disable-next-line:no-require-imports
 const iotaAreaCodes = require('@iota/area-codes');
+import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
@@ -42,16 +43,34 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                let areaCode = '';
-                if (req.body.areaCode) {
-                    areaCode = req.body.areaCode;
-                } else if (req.body.gps) {
-                    const coordinates = req.body.gps.split(',');
-                    areaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
-                }
+                const { areaCode, gps, userId, role, wallet } = req.body;
                 const user = await readData('user');
-                await writeData('user', { ...user, areaCode });
-                res.send({
+
+                if (areaCode) {
+                    await writeData('user', { ...user, areaCode });
+                } else if (gps) {
+                    const coordinates = gps.split(',');
+                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                    await writeData('user', { ...user, areaCode: newAreaCode });
+                }
+
+                if (role) {
+                    await writeData('user', { ...user, role });
+                }
+
+                if (userId) {
+                    await writeData('user', { ...user, id: userId });
+                }
+
+                if (wallet) {
+                    const response = await axios.get(config.faucet);
+                    const data = response.data;
+                    if (data.success) {
+                        await writeData('wallet', data.wallet);
+                    }
+                }
+
+                await res.send({
                     success: true
                 });
             } catch (error) {
@@ -76,7 +95,7 @@ export class AppHelper {
             const wallet: IWallet = await readData('wallet');
             const balance = await getBalance((wallet && wallet.address) || null);
 
-            res.json({ ...user, balance });
+            res.json({ ...user, balance, wallet: wallet.address });
         });
 
         app.post('/cfp', async (req, res) => {
