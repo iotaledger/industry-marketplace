@@ -49,7 +49,8 @@ export class AppHelper {
                     id?: string;
                     role?: string;
                 }
-                const user: IUser = await readData('user');
+                const existingUser: IUser = await readData('user');
+                const user = { ...existingUser };
 
                 if (areaCode) {
                     user.areaCode = areaCode;
@@ -91,6 +92,7 @@ export class AppHelper {
 
         app.get('/user', async (req, res) => {
             interface IUser {
+                areaCode?: string;
                 id?: string;
                 role?: string;
             }
@@ -100,9 +102,10 @@ export class AppHelper {
                 address?: string;
             }
             const wallet: IWallet = await readData('wallet');
-            const balance = await getBalance((wallet && wallet.address) || null);
+            const address = (wallet && wallet.address) || null;
+            const balance = await getBalance(address);
 
-            res.json({ ...user, balance, wallet: wallet.address });
+            res.json({ ...user, balance, wallet: address });
         });
 
         app.post('/cfp', async (req, res) => {

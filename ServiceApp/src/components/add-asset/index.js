@@ -265,20 +265,21 @@ export default class extends React.Component {
                 ) : null
               }
               {
-                loading && (
+                loading ? (
                   <LoadingBox>
                     <Loading color="#e2e2e2" size="130" />
                   </LoadingBox>
+                ) : (
+                  <FootRow>
+                    <FooterButton secondary onClick={this.cancel}>
+                      Cancel
+                    </FooterButton>
+                    <FooterButton onClick={this.submit}>
+                      Submit
+                    </FooterButton>
+                  </FootRow>
                 )
               }
-              <FootRow>
-                <FooterButton secondary onClick={this.cancel}>
-                  Cancel
-                </FooterButton>
-                <FooterButton onClick={this.submit}>
-                  Submit
-                </FooterButton>
-              </FootRow>
             </Card>
           </AddAsset>
         </Modal>
