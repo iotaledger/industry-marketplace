@@ -4,7 +4,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
-import AddGeolocation from '../components/add-geolocation';
+import Config from '../components/config';
 import AssetList from '../components/asset-list';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
@@ -12,6 +12,7 @@ import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import { generate } from '../Industry_4.0_language';
+import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
 import {
   getByType,
@@ -24,9 +25,10 @@ import {
 import { prepareData } from '../utils/card';
 
 export const AssetContext = React.createContext({});
-export const UserContext = React.createContext({});
 
 class Dashboard extends React.Component {
+  static contextType = UserContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -62,7 +64,7 @@ class Dashboard extends React.Component {
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
-    this.timer = setTimeout(() => this.checkExpired(), 600000);
+    this.timer = setInterval(() => this.checkExpired(), 600000);
 
   }
 
@@ -73,7 +75,7 @@ class Dashboard extends React.Component {
   }
 
   async getUser() {
-    const user = await api.get('user');
+    const user = await this.context.getUser();
     this.setState({ user });
   };
 
@@ -86,7 +88,6 @@ class Dashboard extends React.Component {
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
     this.setState({ assets });
-    clearInterval(this.timer);
   }
 
   async createRequest(message) {
@@ -94,6 +95,7 @@ class Dashboard extends React.Component {
   };
 
   async sendMessage(endpoint, packet) {
+    this.setState({ loading: true });
     return new Promise(async (resolve) => {
       // Call server
       const data = await api.post(endpoint, packet);
@@ -106,7 +108,7 @@ class Dashboard extends React.Component {
         });
         if (endpoint !== 'rejectProposal') {
           await this.newMessage({ data: packet });
-        }
+        }        
       } else if (data.error) {
         this.setState({
           error: data.error,
@@ -274,85 +276,83 @@ class Dashboard extends React.Component {
     const { activeSection, assets, user, loading, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
       <Main>
-        <UserContext.Provider value={{ user }}>
-          <AssetNav
-            createRequest={this.showNewRequestForm}
-            handleSidebar={this.handleSidebar}
+        <AssetNav
+          createRequest={this.showNewRequestForm}
+          handleSidebar={this.handleSidebar}
+          isSideBarOpen={isSideBarOpen}
+        />
+        <Zmq callback={this.newMessage} />
+        <ColumnWrap>
+          <Sidebar
             isSideBarOpen={isSideBarOpen}
+            handleSidebar={this.handleSidebar}
+            createRequest={this.showNewRequestForm}
+            showMenu
+            currentPage={activeSection}
+            callback={this.changeSection}
+            handleLocationModal={this.handleLocationModal}
           />
-          <Zmq callback={this.newMessage} />
-          <ColumnWrap>
-            <Sidebar
-              isSideBarOpen={isSideBarOpen}
-              handleSidebar={this.handleSidebar}
-              createRequest={this.showNewRequestForm}
-              showMenu
-              currentPage={activeSection}
-              callback={this.changeSection}
+          <Data>
+            <AnimationWrapper isSideBarOpen={isSideBarOpen}>
+              {
+                loading ? (
+                  <LoadingBox>
+                    <Loading />
+                  </LoadingBox>
+                ) : (
+                  <AssetContext.Provider
+                    value = {{
+                      history: this.showHistory,
+                      onCancel: this.removeAsset,
+                      onConfirm: this.confirmAction,
+                      onReject: this.rejectAction,
+                    }}
+                  >
+                    {
+                      user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
+                        <NoAssetsOuterWrapper>
+                          <NoAssetsInnerWrapper>
+                            <Heading>You have no active requests</Heading>
+                            <Text>Why not create a new one?</Text>
+                            <ButtonWrapper>
+                              <Button onClick={this.showNewRequestForm}>
+                                Create request
+                              </Button>
+                            </ButtonWrapper>
+                          </NoAssetsInnerWrapper>
+                        </NoAssetsOuterWrapper>
+                      ) : (
+                        <AssetsWrapper>
+                          <AssetList assets={assets} />
+                        </AssetsWrapper>
+                      )
+                    }
+                  </AssetContext.Provider>
+                )
+              }
+            </AnimationWrapper>
+          </Data>
+          {
+            displayNewRequestForm &&
+            <AddCard
+              createRequest={this.createRequest}
+              cancel={this.hideNewRequestForm}
+              user={user}
+            />
+          }
+          {
+            this.state.isLocationModal &&
+            <Config
+              sendMessage={this.updateConfig}
               handleLocationModal={this.handleLocationModal}
             />
-            <Data>
-              <AnimationWrapper isSideBarOpen={isSideBarOpen}>
-                {
-                  loading ? (
-                    <LoadingBox>
-                      <Loading />
-                    </LoadingBox>
-                  ) : (
-                    <AssetContext.Provider
-                      value = {{
-                        history: this.showHistory,
-                        onCancel: this.removeAsset,
-                        onConfirm: this.confirmAction,
-                        onReject: this.rejectAction,
-                      }}
-                    >
-                      {
-                        user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                          <NoAssetsOuterWrapper>
-                            <NoAssetsInnerWrapper>
-                              <Heading>You have no active requests</Heading>
-                              <Text>Why not create a new one?</Text>
-                              <ButtonWrapper>
-                                <Button onClick={this.showNewRequestForm}>
-                                  Create request
-                                </Button>
-                              </ButtonWrapper>
-                            </NoAssetsInnerWrapper>
-                          </NoAssetsOuterWrapper>
-                        ) : (
-                          <AssetsWrapper>
-                            <AssetList assets={assets} />
-                          </AssetsWrapper>
-                        )
-                      }
-                    </AssetContext.Provider>
-                  )
-                }
-              </AnimationWrapper>
-            </Data>
-            {
-              displayNewRequestForm &&
-              <AddCard
-                createRequest={this.createRequest}
-                cancel={this.hideNewRequestForm}
-                user={user}
-              />
-            }
-            {
-              this.state.isLocationModal &&
-              <AddGeolocation
-                sendMessage={this.updateConfig}
-                handleLocationModal={this.handleLocationModal}
-              />
-            }
-          </ColumnWrap>
-          <Modal
-            show={!isEmpty(this.state.error)}
-            error={this.state.error}
-            callback={this.notificationCallback}
-          />
-        </UserContext.Provider>
+          }
+        </ColumnWrap>
+        <Modal
+          show={!isEmpty(this.state.error)}
+          error={this.state.error}
+          callback={this.notificationCallback}
+        />
       </Main>
     );
   }

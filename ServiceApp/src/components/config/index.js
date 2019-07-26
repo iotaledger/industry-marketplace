@@ -13,6 +13,9 @@ const Card = props => (
 
 const initState = {
   inputText: '',
+  userId: '',
+  role: '',
+  wallet: false,
   loading: false,
   selectedIndex: 0
 }
@@ -39,43 +42,73 @@ export default class extends React.Component {
     }, () => this.props.handleLocationModal(false));
   }
 
-   change({ target: { value, name } }) {
-     if(name === 'inputText') {
-       this.setState({ inputText: value });
-     } else if (name === 'operation') {
-       const index = value
-       this.setState({ selectedIndex : index });
-     }
+  change({ target }) {
+    const name = target.name;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+
+    if(name === 'inputText') {
+      this.setState({ inputText: value });
+    } else if (name === 'locationFormat') {
+      this.setState({ selectedIndex : value });
+    } else {
+      this.setState({ [name]: value });
+    }
   }
 
   async submit() {
+    const { inputText, role, userId, wallet } = this.state;
+    this.setState({ loading: true });
     // actions are defined in ./location.formats.js
     const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
       this.props.sendMessage,
-      this.state.inputText
+      inputText,
+      { role, userId, wallet }
     );
 
     if (sendMessagetResult.error) {
+      this.setState({ loading: false });
       return alert(sendMessagetResult.error);
     }
   }
 
   render() {
-    const { loading, operation } = this.state;
+    const { loading, locationFormat, userId, role, wallet } = this.state;
 
     return (
       <React.Fragment>
         <Modal className="access-modal-wrapper" show={true}>
           <AddAsset className="access-modal">
-            <Card header={<Header>Request Location Format</Header>}>
+            <Card header={<Header>Modify Configuration</Header>}>
               {!loading && (
                   <Form>
+                    <Column>
+                      <label>User ID:</label>
+                      <Input
+                        type="text"
+                        name="userId"
+                        value={userId}
+                        onChange={this.change}
+                      />
+                    </Column>
+                    <Column>
+                      <label>Select user role:</label>
+                      <Select
+                        type="text"
+                        name="role"
+                        value={role}
+                        onChange={this.change}
+                      >
+                        <option value=""></option>
+                        <option key="SR" value="SR">Service Requester</option>
+                        <option key="SP" value="SP">Service Provider</option>
+                      </Select>
+                    </Column>
                     <Column>
                       <label>Select Location format:</label>
                       <Select
                         type="text"
-                        name="operation"
-                        value={operation}
+                        name="locationFormat"
+                        value={locationFormat}
                         onChange={this.change}
                       >
                         <option value=""></option>
@@ -94,15 +127,36 @@ export default class extends React.Component {
                         value={this.state.inputText}
                        />
                     </InputWrapper>
+                    <Row>
+                      <Label>
+                        <input
+                          name="wallet"
+                          type="checkbox"
+                          checked={wallet}
+                          onChange={this.change}
+                        />
+                        Generate new wallet?
+                      </Label>
+                    </Row>
                   </Form>
                 )}
                 {
-                  loading && (
+                  loading ? (
                     <LoadingBox>
                       <Loading color="#e2e2e2" size="130" />
                     </LoadingBox>
+                  ) : (
+                    <FootRow>
+                      <FooterButton secondary onClick={this.cancel}>
+                        Cancel
+                      </FooterButton>
+                      <FooterButton onClick={this.submit}>
+                        Submit
+                      </FooterButton>
+                    </FootRow>
                   )
                 }
+<<<<<<< HEAD:ServiceApp/src/components/add-geolocation/index.js
                 <FootRow>
                   <FooterButton secondary onClick={this.cancel}>
                     Cancel
@@ -113,6 +167,8 @@ export default class extends React.Component {
                     Submit
                   </FooterButton>
                 </FootRow>
+=======
+>>>>>>> master:ServiceApp/src/components/config/index.js
             </Card>
           </AddAsset>
         </Modal>
@@ -175,6 +231,15 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+`;
+
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  @media (max-width: 760px) {
+    flex-direction: column;
+  }
 `;
 
 const FooterButton = styled.button`
@@ -263,4 +328,16 @@ const CardFooter = styled.footer`
   background-color: rgba(206, 218, 226, 0.2);
   border-top: 1px solid #eaecee;
   cursor: default;
+`;
+
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: normal;
+  font-style: italic;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: left;
+  color: rgba(78, 90, 97, 1);
+  margin-bottom: 5px;
 `;

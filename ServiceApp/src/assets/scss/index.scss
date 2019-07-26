@@ -178,28 +178,6 @@ button {
   }
 }
 
-.ReactTable {
-  .rt-thead.-header {
-    box-shadow: none !important;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(115,143,212,0.15);
-  }
-
-  .rt-thead .rt-th {
-    text-align: left;
-    color: #009fff;
-    background: rgba(240,240,240,1);
-  }
-
-  .rt-thead .rt-tr {
-    font-weight: bold;
-  }
-
-  .-pagination {
-    box-shadow: none !important;
-  }
-}
-
 @font-face {
   font-family: 'Nunito Sans';
   src: url('/static/fonts/NunitoSans-ExtraLight.ttf');
@@ -220,6 +198,3 @@ button {
   src: url('/static/fonts/NunitoSans-ExtraBold.ttf');
   font-weight: 800;
 }
-
-// @import '~slick-carousel/slick/slick.css';
-// @import '~slick-carousel/slick/slick-theme.css';

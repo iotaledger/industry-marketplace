@@ -265,22 +265,21 @@ export default class extends React.Component {
                 ) : null
               }
               {
-                loading && (
+                loading ? (
                   <LoadingBox>
                     <Loading color="#e2e2e2" size="130" />
                   </LoadingBox>
+                ) : (
+                  <FootRow>
+                    <FooterButton secondary onClick={this.cancel}>
+                      Cancel
+                    </FooterButton>
+                    <FooterButton onClick={this.submit}>
+                      Submit
+                    </FooterButton>
+                  </FootRow>
                 )
               }
-              <FootRow>
-                <FooterButton secondary onClick={this.cancel}>
-                  Cancel
-                </FooterButton>
-                <FooterButton
-                  onClick={this.submit}
-                >
-                  Submit
-                </FooterButton>
-              </FootRow>
             </Card>
           </AddAsset>
         </Modal>
@@ -348,7 +347,6 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  margin-left: 10px;
   font: 16px 'Nunito Sans', sans-serif;
   letter-spacing: 0.47px;
   padding: 12px 21px;
@@ -383,8 +381,8 @@ const Modal = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   visibility: visible;
   opacity: 1;
   transition: all 0.5s ease;
@@ -398,10 +396,7 @@ const AddAsset = styled.div`
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 50vh;
-  @media (min-width: 760px) {
-    margin: 0;
-  }
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 30px;
@@ -419,10 +414,7 @@ const CardWrapper = styled.div`
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
-  width: 260px;
-  @media (min-width: 425px) {
-    width: 400px;
-  }
+  width: 400px;
   &:hover {
     box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
   }

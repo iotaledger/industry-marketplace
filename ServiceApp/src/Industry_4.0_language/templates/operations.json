@@ -23,5 +23,10 @@
         "name": "Grinding",
         "name_de": "Schleifen",
         "id":"0173-1#02-BAF573#004"
+    },
+    {
+        "name": "Weather Data",
+        "name_de": "Wetterdated",
+        "id":"0173-1#02-BAF777#004"
     }
 ]

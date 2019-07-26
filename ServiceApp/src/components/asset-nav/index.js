@@ -1,15 +1,23 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../../pages/dashboard';
+import { Link, withRouter } from 'react-router-dom';
+import UserContext from '../../context/user-context';
 import burgerIcon from './../../assets/img/burger.svg';
 import closeIcon from './../../assets/img/close.svg';
 
-const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
+const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
   if (!user.role) return null;
 
   return (
     <Main>
+      {
+        back && (
+          <Back to={'/'} onClick={history.goBack}>
+            <img src="/static/icons/icon-arrow-back-dark.svg" alt="Icon arrow" />
+          </Back>
+        )
+      }
       <Header>
         <Block>
           <Desc>{user.role === 'SR' ? 'Service requester' : 'Service provider'}</Desc>
@@ -24,23 +32,23 @@ const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
         />
       </BurgerIconWrap>
       <RightHeader>
-          <Block>
-            <Desc>Wallet balance</Desc>
-            <UserID>{user.balance}</UserID>
-          </Block>
-          {
-            user.role === 'SR' ? (
-              <ButtonWrapper>
-                <Button onClick={createRequest}>Create request</Button>
-              </ButtonWrapper>
-            ) : null
-          }
+        <Block>
+          <Desc>Wallet balance</Desc>
+          <UserID>{user.balance}</UserID>
+        </Block>
+        {
+          user.role === 'SR' && !back ? (
+            <ButtonWrapper>
+              <Button onClick={createRequest}>Create request</Button>
+            </ButtonWrapper>
+          ) : null
+        }
       </RightHeader>
     </Main>
   )
 }
 
-export default HeaderWrapper;
+export default withRouter(HeaderWrapper);
 
 const BurgerIconWrap = styled.div`
   width: 100%;
@@ -114,5 +122,18 @@ const Button = styled.button`
     color: #009fff;
     background-color: #ffffff;
     border: 1px solid #009fff;
+  }
+`;
+
+const Back = styled(Link)`
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 90px;
+  cursor: pointer;
+  border-right: 1px solid #eaecee;
+  @media (max-width: 760px) {
+    width: 46px;
+    border: none;
   }
 `;

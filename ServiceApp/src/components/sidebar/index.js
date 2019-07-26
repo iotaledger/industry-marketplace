@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { UserContext } from '../../pages/dashboard';
+import UserContext from '../../context/user-context';
 import configIcon from './../../assets/img/config.svg';
 import cActive from './../../assets/img/cercleActive.svg';
 import cNormal from './../../assets/img/cercleNormal.svg';
-
 
 const menu = {
   SR: [
@@ -30,14 +29,13 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
     if (nextPage === currentPage) return;
     callback(nextPage);
   }
+
   function handleAndClose(handle, closeCallback) {
     handle()
     if(window.innerWidth < '769') {
       closeCallback()
     }
   }
-
-  if (!user.role) return null;
 
   return (
     <SidebarWrapper isSideBarOpen={isSideBarOpen}>
@@ -47,7 +45,7 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
             showMenu ? (
               <MenuFix><MenuWrapper>
                 {
-                  menu[user.role].map(({ id, label }, index) => (
+                  user.role && menu[user.role].map(({ id, label }, index) => (
                     <Item key={id}>
                       <img src={currentPage === id ? cActive : cNormal} alt="menu" />
                       <ItemText

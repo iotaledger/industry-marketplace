@@ -34,6 +34,7 @@ export const prepareData = async (role, payload) => {
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     const partner = await getPartner(role, data.frame);
+    const sensorData = get(data, 'sensorData') || null;
 
     const card = {
         operation,
@@ -43,6 +44,7 @@ export const prepareData = async (role, payload) => {
         params,
         irdi,
         partner,
+        sensorData,
         id: conversationId,
         walletAddress: get(data, 'walletAddress') || null,
         originalMessage: JSON.stringify(data),
