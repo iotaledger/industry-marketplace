@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'axios';
 import { addressApi } from '../../config.json';
 
 const locationFormats = [
@@ -17,10 +17,8 @@ const locationFormats = [
     },
   {
     name: 'GPS Coordinates',
-    action: async (sendMessage, gps, props) => {
-      return await sendMessage({ gps, ...props })
-    }
+    action: async (sendMessage, gps, props) => await sendMessage({ gps, ...props })
   }
 ]
 
-export default locationFormats
+export default locationFormats;
