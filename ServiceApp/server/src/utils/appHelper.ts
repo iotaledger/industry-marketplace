@@ -108,6 +108,13 @@ export class AppHelper {
             res.json({ ...user, balance, wallet: address });
         });
 
+        app.get('/mam', async (req, res) => {
+            const channelId = req.query.conversationId;
+            const mam = await readData('mam', channelId);
+
+            res.json({ success: true, ...mam });
+        });
+
         app.post('/cfp', async (req, res) => {
             try {
                 // 1. Create Tag
