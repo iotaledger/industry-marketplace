@@ -38,9 +38,11 @@ class Dashboard extends React.Component {
       loading: false,
       displayNewRequestForm: false,
       error: false,
-      isLocationModal: false
+      isConfigModal: false,
+      isSideBarOpen:  false//only useful on mobile screens
     };
 
+    this.handleSidebar =  this.handleSidebar.bind(this)
     this.createRequest = this.createRequest.bind(this);
     this.getUser = this.getUser.bind(this);
     this.newMessage = this.newMessage.bind(this);
@@ -53,17 +55,23 @@ class Dashboard extends React.Component {
     this.changeSection = this.changeSection.bind(this);
     this.rejectAction = this.rejectAction.bind(this);
     this.confirmAction = this.confirmAction.bind(this);
-    this.handleLocationModal = this.handleLocationModal.bind(this);
+    this.handleConfigModal = this.handleConfigModal.bind(this);
     this.removeAsset = this.removeAsset.bind(this);
     this.updateConfig = this.updateConfig.bind(this);
     this.timer = null;
   }
-  
+
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
     this.timer = setInterval(() => this.checkExpired(), 600000);
 
+  }
+
+  handleSidebar(e) {
+    this.setState(prevState => ({
+      isSideBarOpen: !prevState.isSideBarOpen
+    }));
   }
 
   async getUser() {
@@ -122,7 +130,7 @@ class Dashboard extends React.Component {
       // Check success
       if (data.success) {
         this.setState({
-          isLocationModal: false,
+          isConfigModal: false,
           error: false,
           loading: false,
         });
@@ -138,8 +146,8 @@ class Dashboard extends React.Component {
     });
   };
 
-  handleLocationModal(state) {
-    this.setState({ isLocationModal: state })
+  handleConfigModal(state) {
+    this.setState({ isConfigModal: state })
   }
 
   showHistory(assetId) {
@@ -265,71 +273,81 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { activeSection, assets, user, loading, displayNewRequestForm } = this.state;
-
+    const { activeSection, assets, user, loading, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
       <Main>
-        <AssetNav createRequest={this.showNewRequestForm} />
+        <AssetNav
+          createRequest={this.showNewRequestForm}
+          handleSidebar={this.handleSidebar}
+          isSideBarOpen={isSideBarOpen}
+        />
         <Zmq callback={this.newMessage} />
-        <Data>
+        <ColumnWrap>
           <Sidebar
+            isSideBarOpen={isSideBarOpen}
+            handleSidebar={this.handleSidebar}
+            createRequest={this.showNewRequestForm}
             showMenu
             currentPage={activeSection}
             callback={this.changeSection}
-            handleLocationModal={this.handleLocationModal}
+            handleConfigModal={this.handleConfigModal}
           />
+          <Data>
+            <AnimationWrapper isSideBarOpen={isSideBarOpen}>
+              {
+                loading ? (
+                  <LoadingBox>
+                    <Loading />
+                  </LoadingBox>
+                ) : (
+                  <AssetContext.Provider
+                    value = {{
+                      history: this.showHistory,
+                      onCancel: this.removeAsset,
+                      onConfirm: this.confirmAction,
+                      onReject: this.rejectAction,
+                    }}
+                  >
+                    {
+                      user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
+                        <NoAssetsOuterWrapper>
+                          <NoAssetsInnerWrapper>
+                            <Heading>You have no active requests</Heading>
+                            <Text>Why not create a new one?</Text>
+                            <ButtonWrapper>
+                              <Button onClick={this.showNewRequestForm}>
+                                Create request
+                              </Button>
+                            </ButtonWrapper>
+                          </NoAssetsInnerWrapper>
+                        </NoAssetsOuterWrapper>
+                      ) : (
+                        <AssetsWrapper>
+                          <AssetList assets={assets} />
+                        </AssetsWrapper>
+                      )
+                    }
+                  </AssetContext.Provider>
+                )
+              }
+            </AnimationWrapper>
+          </Data>
           {
-            loading ? (
-              <LoadingBox>
-                <Loading />
-              </LoadingBox>
-            ) : (
-              <AssetContext.Provider
-                value = {{
-                  history: this.showHistory,
-                  onCancel: this.removeAsset,
-                  onConfirm: this.confirmAction,
-                  onReject: this.rejectAction,
-                }}
-              >
-                {
-                  user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                    <NoAssetsOuterWrapper>
-                      <NoAssetsInnerWrapper>
-                        <Heading>You have no active requests</Heading>
-                        <Text>Why not create a new one?</Text>
-                        <ButtonWrapper>
-                          <Button onClick={this.showNewRequestForm}>
-                            Create request
-                          </Button>
-                        </ButtonWrapper>
-                      </NoAssetsInnerWrapper>
-                    </NoAssetsOuterWrapper>
-                  ) : (
-                    <AssetsWrapper>
-                      <AssetList assets={assets} />
-                    </AssetsWrapper>
-                  )
-                }
-                {
-                  displayNewRequestForm &&
-                  <AddCard
-                    createRequest={this.createRequest}
-                    cancel={this.hideNewRequestForm}
-                    user={user}
-                  />
-                }
-                {
-                  this.state.isLocationModal &&
-                  <Config
-                    sendMessage={this.updateConfig}
-                    handleLocationModal={this.handleLocationModal}
-                  />
-                }
-              </AssetContext.Provider>
-            )
+            displayNewRequestForm &&
+            <AddCard
+              createRequest={this.createRequest}
+              cancel={this.hideNewRequestForm}
+              user={user}
+            />
           }
-        </Data>
+          {
+            this.state.isConfigModal &&
+            <Config
+              sendMessage={this.updateConfig}
+              handleConfigModal={this.handleConfigModal}
+            />
+          }
+        </ColumnWrap>
         <Modal
           show={!isEmpty(this.state.error)}
           error={this.state.error}
@@ -342,6 +360,21 @@ class Dashboard extends React.Component {
 
 export default Dashboard;
 
+const ColumnWrap = styled.div`
+  display: flex;
+  min-height: calc(100% - 92px); 
+  height: calc(100% - 92px); 
+  @media (min-width: 769px) {
+  }
+`
+
+const AnimationWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.5s;
+  transform: ${(p) => p.isSideBarOpen ? 'translateX(-100%)' : 'translateX(0px)'};
+`
 const Main = styled.main`
   height: 100vh;
 `;
@@ -372,11 +405,11 @@ const ButtonWrapper = styled.div`
 
 const Data = styled.section`
   background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
-  min-height: 90vh;
-  position: relative;
+  width: 100%;
   display: flex;
-  @media (max-width: 760px) {
-    flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  @media (min-width: 769px) {
   }
 `;
 

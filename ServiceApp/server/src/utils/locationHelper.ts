@@ -1,14 +1,12 @@
 export const getLocationFromMessage = message => {
-
     return message.frame && message.frame.location ? message.frame.location : null;
 };
 
 export const calculateDistance = (locObj1, locObj2) => {
-
-    const lat1 = locObj1.latitude
-    const lat2 = locObj2.latitude
-    const lon1 = locObj1.longitude
-    const lon2 = locObj2.longitude
+    const lat1 = locObj1.latitude;
+    const lat2 = locObj2.latitude;
+    const lon1 = locObj1.longitude;
+    const lon2 = locObj2.longitude;
 
     if ((lat1 === lat2) && (lon1 === lon2)) {
         return 0;

@@ -44,7 +44,7 @@ const getRejectButtonText = (role, type) => {
       case 'acceptProposal':
         return 'Reject request';
       case 'rejectProposal':
-        return 'Remove';        
+        return 'Remove';
       default:
         return null;
     }
@@ -67,7 +67,7 @@ const getConfirmButtonText = (role, type) => {
       case 'callForProposal':
         return 'Send proposal';
       case 'acceptProposal':
-        return 'Request fulfilled';        
+        return 'Request fulfilled';
       default:
         return null;
     }
@@ -84,7 +84,7 @@ const Footer = ({ id, partner, type }) => {
   const confirmButton = getConfirmButtonText(user.role, type);
 
   if (!rejectButton && !confirmButton) return null;
-  
+
   return (
     <React.Fragment>
       <FootRow>
@@ -96,7 +96,7 @@ const Footer = ({ id, partner, type }) => {
           )
         }
         {
-          confirmButton && (
+           confirmButton && (
             <FooterButton onClick={() => onConfirm(id, partner)}>
               {confirmButton}
             </FooterButton>
@@ -109,7 +109,7 @@ const Footer = ({ id, partner, type }) => {
 
 const Asset = props => {
   const { asset, disableMargin } = props;
-  
+
   return (
     <Card
       header={Heading(asset)}
@@ -182,13 +182,21 @@ const Row = styled.div`
   &:not(:last-of-type) {
     margin-bottom: 5px;
   }
+  @media (min-width: 769px) {
+    flex-direction: row;
+  }
 `;
 
 const RowThird = styled.div`
-  width: 33.3%;
   padding: 10px 30px;
   display: inline-block;
   text-align: left;
+  @media (min-width: 426px) {
+    width: 50%;
+  }
+  @media (min-width: 950px) {
+    width: 33.3%;
+  }
 `;
 
 const Data = styled.p`
@@ -217,14 +225,18 @@ const Header = styled.h2`
 const Full = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  @media (min-width: 769px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const FootRow = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   cursor: default;
   &:not(:last-of-type) {
     margin-bottom: 5px;
@@ -235,6 +247,10 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  margin: 5px;
+  @media (min-width: 920px) {
+    width: 200px;
+  }
   font: 16px 'Nunito Sans', sans-serif;
   line-height: 16px;
   letter-spacing: 0.47px;
@@ -246,7 +262,7 @@ const FooterButton = styled.button`
   font-size: 16px;
   font-weight: normal;
   letter-spacing: 0.38px;
-  width: 200px;
+  width: 100%;
   height: 45px;
 
   &:hover {
@@ -264,17 +280,19 @@ const StatusWrapper = styled.div`
 const Status = styled.h3`
   color: #529FF8;
   font: 18px 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  text-align: right;
   text-transform: uppercase;
+  @media (min-width: 769px) {
+    text-align: right;
+  }
 `;
 
-const CancelHeaderButton = styled.button`
+const CancelHeaderButton = styled.a`
   font: 14px 'Nunito Sans', sans-serif;
   padding: 12px 21px;
   color: #313131;
-  font-size: 16px;
   text-decoration: underline;
   padding: 0;
-  text-align: right;
+  @media (min-width: 769px) {
+    text-align: right;
+  }
 `;
