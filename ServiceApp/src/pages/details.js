@@ -2,24 +2,36 @@ import React from 'react';
 import styled from 'styled-components';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
+import List from '../components/messages-list';
+import { fetch } from '../utils/mam';
+import api from '../utils/api';
 
 class Details extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      transactions: [],
-      user: {},
+      messages: [],
       loading: false,
     };
   }
 
   async componentDidMount() {
     const { match: { params: { conversationId } } } = this.props;
+    if (conversationId) {
+      const data = await api.get('mam', { conversationId });
+      if (data.success) {
+        this.setState({ loading: true });
+        fetch(data.root, data.side_key, this.appendToMessages, this.fetchComplete);
+      }
+    }
   }
 
+  appendToMessages = message => this.setState({ messages: [...this.state.messages, message] });
+
+  fetchComplete = () => this.setState({ loading: false });
 
   render() {
-    const { loading } = this.state;
+    const { loading, messages } = this.state;
 
     return (
       <Main>
@@ -32,7 +44,7 @@ class Details extends React.Component {
               </LoadingBox>
             ) : (
               <Wrapper>
-                Hello
+                {messages.length > 0 ? <List messages={messages} /> : null}
               </Wrapper>
             )
           }
@@ -51,8 +63,22 @@ const Main = styled.main`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  max-width: 1092px;
   width: 100%;
-  margin: 50px;
+  margin: 20px auto 50px;
+
+  @media (max-width: 1092px) {
+    .content {
+      padding: 0 20px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .content {
+      margin-top: 0;
+      padding: 0 10px;
+    }
+  }
 `;
 
 const Data = styled.section`

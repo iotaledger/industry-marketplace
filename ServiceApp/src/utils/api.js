@@ -1,3 +1,4 @@
+import { stringify } from 'query-string';
 import { domain } from '../config.json';
 
 const parseSettings = ({ method, data } = {}) => ({
@@ -6,9 +7,14 @@ const parseSettings = ({ method, data } = {}) => ({
   body: data ? JSON.stringify(data) : undefined,
 });
 
+const parseEndpoint = (endpoint, params) => {
+  const querystring = params ? `?${stringify(params)}` : '';
+  return `${endpoint}${querystring}`;
+};
+
 const request = async (endpoint, { params, ...settings } = {}) => {
   if (!endpoint) return null;
-  const response = await fetch(endpoint, parseSettings(settings));
+  const response = await fetch(parseEndpoint(endpoint, params), parseSettings(settings));
   const body = await response.json();
   if (response.status !== 200) throw Error(body.message);
   return body;

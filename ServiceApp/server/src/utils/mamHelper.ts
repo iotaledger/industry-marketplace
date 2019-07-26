@@ -4,8 +4,6 @@ import crypto from 'crypto';
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
-// const mode = 'restricted';
-
 interface IMamState {
     id?: string;
     root?: string;
@@ -75,6 +73,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
 
 // export const fetchFromRoot = async (root, secretKey) => {
 //     // Output syncronously once fetch is completed
+//     const mode = 'restricted';
 //     const result = await Mam.fetch(root, mode, secretKey);
 //     return result && result.messages.map(message => JSON.parse(trytesToAscii(message)));
 // };
