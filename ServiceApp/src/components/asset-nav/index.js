@@ -131,6 +131,8 @@ const Back = styled(Link)`
   justify-content: center;
   height: 100%;
   width: 90px;
+  margin-right: 30px;
+  padding-right: 15px;
   cursor: pointer;
   border-right: 1px solid #eaecee;
   @media (max-width: 760px) {
