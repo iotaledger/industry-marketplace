@@ -79,5 +79,7 @@ export default List;
 
 const Panel = styled.div`
   padding: 30px;
+  width: 80%;
+  margin-left: 30px;
   background: #fafafa;
 `;
