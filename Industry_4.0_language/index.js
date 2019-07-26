@@ -121,12 +121,11 @@ const generate = ({
     if (!message) {
         return null;
     }
-    const conversationId = uuid();
-    message.frame.conversationId = conversationId;
     message.frame.sender.identification.id = userId;
     message.frame.replyBy = getReplyByTime(replyTime);
 
     if (originalMessage && messageType !== 'callForProposal') {
+        message.frame.conversationId = originalMessage.frame.conversationId;
         message.frame.receiver.identification.id = originalMessage.frame.sender.identification.id;
         message.dataElements = originalMessage.dataElements;
         message.frame.location = originalMessage.frame.location;
@@ -140,6 +139,8 @@ const generate = ({
             message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
         }
     } else if (irdi && messageType === 'callForProposal') {
+        message.frame.conversationId = uuid();
+
         if (location) {
             message.frame.location = location;
         }
