@@ -88,9 +88,6 @@ const SensorCardWrapper = styled.div`
       right: auto;
       left: -12px;
     }
-    @media (max-width: 760px) {
-      visibility: hidden;
-    }
   }
   &:nth-child(2n)::before {
     right: auto;
@@ -108,9 +105,6 @@ const SensorCardWrapper = styled.div`
     box-shadow: 0 2px 10px 0 rgba(0, 159, 255, 0.4);
     @media (max-width: 1195px) {
       left: -36px;
-    }
-    @media (max-width: 760px) {
-      visibility: hidden;
     }
   }
   &:nth-child(2n)::after {

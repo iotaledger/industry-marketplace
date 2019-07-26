@@ -135,6 +135,7 @@ const Back = styled(Link)`
   padding-right: 15px;
   cursor: pointer;
   border-right: 1px solid #eaecee;
+  
   @media (max-width: 760px) {
     width: 46px;
     border: none;
