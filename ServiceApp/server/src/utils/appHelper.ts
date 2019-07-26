@@ -111,8 +111,7 @@ export class AppHelper {
         app.get('/mam', async (req, res) => {
             const channelId = req.query.conversationId;
             const mam = await readData('mam', channelId);
-
-            res.json({ success: true, ...mam });
+            res.json({ ...mam });
         });
 
         app.post('/cfp', async (req, res) => {

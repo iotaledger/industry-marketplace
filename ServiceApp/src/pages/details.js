@@ -19,7 +19,7 @@ class Details extends React.Component {
     const { match: { params: { conversationId } } } = this.props;
     if (conversationId) {
       const data = await api.get('mam', { conversationId });
-      if (data.success) {
+      if (data.root) {
         this.setState({ loading: true });
         fetch(data.root, data.side_key, this.appendToMessages, this.fetchComplete);
       }
