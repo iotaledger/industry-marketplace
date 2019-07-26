@@ -87,6 +87,7 @@ class Dashboard extends React.Component {
   };
 
   async sendMessage(endpoint, packet) {
+    this.setState({ loading: true });
     return new Promise(async (resolve) => {
       // Call server
       const data = await api.post(endpoint, packet);
