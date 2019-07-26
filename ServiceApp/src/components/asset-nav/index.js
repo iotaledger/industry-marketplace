@@ -67,6 +67,7 @@ const BurgerIcon = styled.img`
 const Main = styled.nav`
   padding: 17px;
   display: flex;
+  height: 92px;
 `;
 
 const Header = styled.header`
