@@ -110,7 +110,7 @@ const ModifyConfiguration = styled.div`
   display: flex;
   justify-content: flex-start;
   @media (min-width: 769px) {
-    left: 52px;
+    left: 35px;
   }
   align-items: center;
   width: auto;
