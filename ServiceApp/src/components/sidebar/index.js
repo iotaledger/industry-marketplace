@@ -22,7 +22,7 @@ const menu = {
   ]
 }
 
-const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideBarOpen, handleSidebar, createRequest }) => {
+const Sidebar = ({ currentPage, showMenu, callback, handleConfigModal, isSideBarOpen, handleSidebar, createRequest }) => {
   const { user } = useContext(UserContext);
 
   function switchMenu(nextPage) {
@@ -71,7 +71,7 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
       </Upper>
       <Lower>
         <ModifyConfiguration
-          onClick={() => handleAndClose(() => handleLocationModal(true), handleSidebar)}
+          onClick={() => handleAndClose(() => handleConfigModal(true), handleSidebar)}
         >
           <ConfigIcon src={configIcon} />
           <ConfigText>MODIFY CONFIGURATION</ConfigText>
@@ -108,7 +108,7 @@ const SideBarTitle = styled.div`
 `
 const ModifyConfiguration = styled.div`
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   @media (min-width: 769px) {
   }
   align-items: center;

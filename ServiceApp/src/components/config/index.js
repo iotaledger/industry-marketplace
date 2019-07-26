@@ -39,7 +39,7 @@ export default class extends React.Component {
   cancel() {
     this.setState({
       loading: false
-    }, () => this.props.handleLocationModal(false));
+    }, () => this.props.handleConfigModal(false));
   }
 
   change({ target }) {
@@ -156,19 +156,6 @@ export default class extends React.Component {
                     </FootRow>
                   )
                 }
-<<<<<<< HEAD:ServiceApp/src/components/add-geolocation/index.js
-                <FootRow>
-                  <FooterButton secondary onClick={this.cancel}>
-                    Cancel
-                  </FooterButton>
-                  <FooterButton
-                    onClick={this.submit}
-                  >
-                    Submit
-                  </FooterButton>
-                </FootRow>
-=======
->>>>>>> master:ServiceApp/src/components/config/index.js
             </Card>
           </AddAsset>
         </Modal>

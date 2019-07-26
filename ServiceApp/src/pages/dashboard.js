@@ -38,7 +38,7 @@ class Dashboard extends React.Component {
       loading: false,
       displayNewRequestForm: false,
       error: false,
-      isLocationModal: false,
+      isConfigModal: false,
       isSideBarOpen:  false//only useful on mobile screens
     };
 
@@ -55,7 +55,7 @@ class Dashboard extends React.Component {
     this.changeSection = this.changeSection.bind(this);
     this.rejectAction = this.rejectAction.bind(this);
     this.confirmAction = this.confirmAction.bind(this);
-    this.handleLocationModal = this.handleLocationModal.bind(this);
+    this.handleConfigModal = this.handleConfigModal.bind(this);
     this.removeAsset = this.removeAsset.bind(this);
     this.updateConfig = this.updateConfig.bind(this);
     this.timer = null;
@@ -130,7 +130,7 @@ class Dashboard extends React.Component {
       // Check success
       if (data.success) {
         this.setState({
-          isLocationModal: false,
+          isConfigModal: false,
           error: false,
           loading: false,
         });
@@ -146,8 +146,8 @@ class Dashboard extends React.Component {
     });
   };
 
-  handleLocationModal(state) {
-    this.setState({ isLocationModal: state })
+  handleConfigModal(state) {
+    this.setState({ isConfigModal: state })
   }
 
   showHistory(assetId) {
@@ -290,7 +290,7 @@ class Dashboard extends React.Component {
             showMenu
             currentPage={activeSection}
             callback={this.changeSection}
-            handleLocationModal={this.handleLocationModal}
+            handleConfigModal={this.handleConfigModal}
           />
           <Data>
             <AnimationWrapper isSideBarOpen={isSideBarOpen}>
@@ -341,10 +341,10 @@ class Dashboard extends React.Component {
             />
           }
           {
-            this.state.isLocationModal &&
+            this.state.isConfigModal &&
             <Config
               sendMessage={this.updateConfig}
-              handleLocationModal={this.handleLocationModal}
+              handleConfigModal={this.handleConfigModal}
             />
           }
         </ColumnWrap>
