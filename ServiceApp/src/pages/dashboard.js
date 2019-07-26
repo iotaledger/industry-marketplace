@@ -39,6 +39,7 @@ class Dashboard extends React.Component {
       isLocationModal: false,
       isSideBarOpen:  false//only useful on mobile screens
     };
+
     this.handleSidebar =  this.handleSidebar.bind(this)
     this.createRequest = this.createRequest.bind(this);
     this.getUser = this.getUser.bind(this);
@@ -57,16 +58,18 @@ class Dashboard extends React.Component {
     this.updateConfig = this.updateConfig.bind(this);
     this.timer = null;
   }
-  handleSidebar(e) {
-    this.setState(prevState => ({
-      isSideBarOpen: !prevState.isSideBarOpen
-    }))
-  }
+
   async componentDidMount() {
     await this.getUser();
     await this.checkExpired();
     this.timer = setTimeout(() => this.checkExpired(), 600000);
 
+  }
+
+  handleSidebar(e) {
+    this.setState(prevState => ({
+      isSideBarOpen: !prevState.isSideBarOpen
+    }));
   }
 
   async getUser() {
@@ -359,8 +362,8 @@ export default Dashboard;
 
 const ColumnWrap = styled.div`
   display: flex;
-  min-height: 100vh;
-  height: 100%;
+  min-height: calc(100% - 92px); 
+  height: calc(100% - 92px); 
   @media (min-width: 769px) {
   }
 `
@@ -403,10 +406,9 @@ const ButtonWrapper = styled.div`
 const Data = styled.section`
   background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
   width: 100%;
-  display: block;
-  min-height: 100vh;
+  display: flex;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   @media (min-width: 769px) {
   }
 `;

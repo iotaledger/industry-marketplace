@@ -26,7 +26,7 @@ const Card = styled.div`
 
   height: 100%;
   width: 100%;
-  border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
+  border: 1px solid #eaecee;
   @media (min-width: 769px) {
   }
   &:hover {

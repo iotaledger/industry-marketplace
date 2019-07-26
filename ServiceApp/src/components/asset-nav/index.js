@@ -4,8 +4,6 @@ import { UserContext } from '../../pages/dashboard';
 import burgerIcon from './../../assets/img/burger.svg';
 import closeIcon from './../../assets/img/close.svg';
 
-const styleBurger = { width: '45px', position: 'relative', left: '6px' }
-
 const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
   if (!user.role) return null;
@@ -21,8 +19,8 @@ const HeaderWrapper = ({ createRequest, handleSidebar, isSideBarOpen }) => {
       <BurgerIconWrap>
         <BurgerIcon
           src={isSideBarOpen ? closeIcon : burgerIcon}
-          style={isSideBarOpen ? styleBurger : {}}
           onClick={handleSidebar}
+          isSideBarOpen={isSideBarOpen}
         />
       </BurgerIconWrap>
       <RightHeader>
@@ -50,6 +48,10 @@ const BurgerIconWrap = styled.div`
   justify-content: flex-end;
 `
 const BurgerIcon = styled.img`
+  width: ${p => p.isSideBarOpen ? '45px' : 'unset'};
+  position: ${p => p.isSideBarOpen ? 'relative' : 'unset'};
+  left: ${p => p.isSideBarOpen ? '6px' : 'unset'};
+  
   @media (min-width: 769px) {
     display: none;
   }

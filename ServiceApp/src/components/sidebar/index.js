@@ -48,13 +48,12 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
               <MenuFix><MenuWrapper>
                 {
                   menu[user.role].map(({ id, label }, index) => (
-                    <Item>
-                      <img src={currentPage === id ? cActive : cNormal} />
+                    <Item key={id}>
+                      <img src={currentPage === id ? cActive : cNormal} alt="menu" />
                       <ItemText
                         index={index}
-                        key={id}
                         role="button"
-                        onClick={(e) => handleAndClose(e => switchMenu(id), handleSidebar)}
+                        onClick={() => handleAndClose(() => switchMenu(id), handleSidebar)}
                         active={currentPage === id}
                       >
                         <span>{ label }</span>
@@ -68,13 +67,13 @@ const Sidebar = ({ currentPage, showMenu, callback, handleLocationModal, isSideB
 
         <ButtonWrapper>
           <Button
-            onClick={(e) => handleAndClose(createRequest, handleSidebar)}
+            onClick={() => handleAndClose(createRequest, handleSidebar)}
           >Create request</Button>
         </ButtonWrapper>
       </Upper>
       <Lower>
         <ModifyConfiguration
-          onClick={(e) => handleAndClose(e => handleLocationModal(true), handleSidebar)}
+          onClick={() => handleAndClose(() => handleLocationModal(true), handleSidebar)}
         >
           <ConfigIcon src={configIcon} />
           <ConfigText>MODIFY CONFIGURATION</ConfigText>
@@ -103,7 +102,6 @@ const SideBarTitle = styled.div`
   width: 100%;
   @media (min-width: 769px) {
     position: relative;
-    left: 27px;
     font-size: 28px;
   }
   @media (min-width: 1440px) {
@@ -135,8 +133,8 @@ const SidebarWrapper = styled.aside`
   position: absolute;
   min-height: 540px;
   width: 100%;
-  height: 100%;
-  overflow-y: scroll;
+  height: calc(100% - 92px); 
+  overflow-y: auto;
   padding: 20px;
   transition: transform 0.5s;
   transform: ${(p) => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
@@ -146,12 +144,13 @@ const SidebarWrapper = styled.aside`
   justify-content: space-between;
   z-index: 3;
   @media (min-width: 769px) {
-    min-height: 100vh;
+    min-height: calc(100% - 92px); 
     height: 100%;
     display: flex;
     position: relative;
     left: -100%;
-    width: 420px;
+    width: 440px;
+    padding-left: 40px;
   }
 `;
 
