@@ -90,6 +90,25 @@ export class AppHelper {
             }
         });
 
+        app.post('/data', async (req, res) => {
+            try {
+                const { conversationId, deviceId, userId } = req.body;
+                if (conversationId && deviceId && userId) {
+                    await writeData('data', { id: conversationId, deviceId, userId });
+                }
+
+                await res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('data Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+
         app.get('/user', async (req, res) => {
             interface IUser {
                 areaCode?: string;
@@ -242,8 +261,16 @@ export class AppHelper {
                 const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
-                // 3. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, walletAddress: address }, tag);
+                const payload = { ...req.body, walletAddress: address };
+                
+                // 3. For data request include access credentials from DB
+                if (config.dataRequest && config.dataRequest.includes(submodelId)) {
+                    const conversationId = req.body.frame.conversationId;
+                    payload.sensorData = await readData('data', conversationId);
+                }
+
+                // 4. Send transaction, include MAM channel info
+                const hash = await sendMessage(payload, tag);
 
                 console.log('informConfirm success');
                 res.send({
