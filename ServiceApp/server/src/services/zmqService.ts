@@ -197,7 +197,7 @@ export class ZmqService {
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
             
-            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15)) === true) {
+            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
 
                 if (this.sentBundles.includes(bundle)) {
