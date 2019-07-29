@@ -1,55 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format'
+import { trytesToAscii } from '@iota/converter';
+import Mam from '@iota/mam';
+import { provider } from '../../config.json';
 
-const SensorCard = ({ packet }) => {
+Mam.init(provider);
+
+const SensorCard = ({ schema, packet }) => {
+  const [sensorData, setSensorData] = useState({});
   const [visible, toggleVisible] = useState(false);
   const [layoutArray, setLayoutArray] = useState([]);
 
-  const dataTypes = [{
-      id: 'temp',
-      name: 'Temperature',
-      unit: 'ºC'
-  }]
-
   useEffect(() => {
-    setTimeout(() => toggleVisible(true), 300);
+    (async () => {
+      // Organise data for layout
+      const layout = [];
+      schema.forEach((item, i) => {
+        if (!layout[Math.floor(i / 2)]) {
+          layout[Math.floor(i / 2)] = [];
+        }
+        layout[Math.floor(i / 2)].push(item);
+      });
+      setLayoutArray(layout);
 
-    // Organise data for layout
-    const layout = [];
-    dataTypes.forEach((item, i) => {
-      if (!layout[Math.floor(i / 2)]) {
-        layout[Math.floor(i / 2)] = [];
-      }
-      layout[Math.floor(i / 2)].push(item);
-    });
-    setLayoutArray(layout);
+      return new Promise(async (resolve, reject) => {
+        try {
+          const result = await Mam.fetchSingle(packet.root, 'restricted', packet.sidekey);
+          const newData = await JSON.parse(trytesToAscii(result.payload));
+          setSensorData(newData);
+          setTimeout(() => toggleVisible(true), 300);
+          return resolve();
+        } catch (error) {
+          console.log('MAM fetch error', error);
+          return reject();
+        }
+      });
+    })();
   }, []);
 
   return (
     <SensorCardWrapper visible={visible}>
-      <CardHeader>
-        <HeaderRow>
-          <HeaderAccent>{format(packet.time, 'dddd')}</HeaderAccent>{' '}
-          {format(packet.time, 'DD MMMM, YYYY H:mm a ')}
-        </HeaderRow>
-      </CardHeader>
-      {layoutArray.map((row, i) => (
-        <Row key={`sensor-${i}`}>
-          {row.map((item, i) => (
-            <RowHalf key={`item-${i}`}>
-              <RowDesc>{item && item.name}:</RowDesc>
-              <RowValue>
-                {(packet &&
-                  packet.data[item.id] !== typeof 'object' &&
-                  (packet.data[item.id] || packet.data[item.id.toLowerCase()])) ||
-                  JSON.stringify(packet.data, null, 2)}
-                <RowUnit>{item && item.unit}</RowUnit>
-              </RowValue>
-            </RowHalf>
-          ))}
-        </Row>
-      ))}
+      {
+        sensorData.time && (
+          <CardHeader>
+            <HeaderRow>
+              <HeaderAccent>{format(sensorData.time, 'dddd')}</HeaderAccent>{' '}
+              {format(sensorData.time, 'DD MMMM, YYYY H:mm a ')}
+            </HeaderRow>
+          </CardHeader>
+        )
+      }
+      {
+        sensorData.data && layoutArray.map((row, i) => (
+          <Row key={`sensor-${i}`}>
+            {row.map((item, i) => (
+              <RowHalf key={`item-${i}`}>
+                <RowDesc>{item && item.name}:</RowDesc>
+                <RowValue>
+                  {(sensorData.data[item.id] !== typeof 'object' &&
+                    (sensorData.data[item.id] || sensorData.data[item.id.toLowerCase()])) ||
+                    JSON.stringify(sensorData.data, null, 2)}
+                  <RowUnit>{item && item.unit}</RowUnit>
+                </RowValue>
+              </RowHalf>
+            ))}
+          </Row>
+        ))
+      }
     </SensorCardWrapper>
   );
 }

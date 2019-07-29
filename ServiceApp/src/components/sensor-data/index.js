@@ -2,17 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import SensorCard from './sensor-card.js';
 
-export default ({ sensorData }) => (
+export default ({ schema, sensorData }) => (
   <InfoCol>
     <CardWrapper>
       {
-        sensorData && sensorData.map((data, i) =>
-            <SensorCard index={i} key={i} packet={data} />
+        sensorData.length > 0 && sensorData.map((data, i) =>
+            <SensorCard index={i} key={i} packet={data} schema={schema} />
         )
       }
     </CardWrapper>
   </InfoCol>
-);
+)
 
 const InfoCol = styled.main`
   position: relative;
