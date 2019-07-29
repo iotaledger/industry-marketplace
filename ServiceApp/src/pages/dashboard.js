@@ -38,7 +38,14 @@ class Dashboard extends React.Component {
       displayNewRequestForm: false,
       error: false,
       isConfigModal: false,
-      isSideBarOpen:  false//only useful on mobile screens
+      isSideBarOpen: false,
+      badges: {
+        callForProposal: 0,
+        proposal: 0,
+        acceptProposal: 0,
+        informConfirm: 0,
+        informPayment: 0
+      }
     };
 
     this.handleSidebar =  this.handleSidebar.bind(this)
@@ -72,7 +79,9 @@ class Dashboard extends React.Component {
   }
 
   async changeSection(activeSection) {
-    this.setState({ activeSection }, async () => await this.checkExpired());
+    const badges = this.state.badges;
+    badges[activeSection] = 0;
+    this.setState({ activeSection, badges }, async () => await this.checkExpired());
   }
 
   async checkExpired() {
@@ -99,7 +108,7 @@ class Dashboard extends React.Component {
           loading: false,
         });
         if (endpoint !== 'rejectProposal') {
-          await this.newMessage({ data: packet });
+          await this.newMessage({ data: packet }, true);
         }        
       } else if (data.error) {
         this.setState({
@@ -162,6 +171,11 @@ class Dashboard extends React.Component {
 
     if (card.type !== 'rejectProposal') {
       await writeToStorage(card, role);
+      if (!ownMessage) {
+        const badges = this.state.badges;
+        badges[card.type] = badges[card.type] + 1;
+        this.setState({ badges });  
+      }
     }
     if (card.type === 'informPayment') {
       await this.context.getUser();
@@ -263,7 +277,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { activeSection, assets, loading, displayNewRequestForm, isSideBarOpen } = this.state;
+    const { activeSection, assets, badges, loading, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
       <Main>
         <AssetNav
@@ -278,6 +292,7 @@ class Dashboard extends React.Component {
             handleSidebar={this.handleSidebar}
             createRequest={this.showNewRequestForm}
             showMenu
+            badges={badges}
             currentPage={activeSection}
             callback={this.changeSection}
             handleConfigModal={this.handleConfigModal}

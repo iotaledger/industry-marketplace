@@ -22,7 +22,7 @@ const menu = {
   ]
 }
 
-const Sidebar = ({ currentPage, showMenu, callback, handleConfigModal, isSideBarOpen, handleSidebar, createRequest }) => {
+const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, isSideBarOpen, handleSidebar, createRequest }) => {
   const { user } = useContext(UserContext);
 
   function switchMenu(nextPage) {
@@ -55,6 +55,9 @@ const Sidebar = ({ currentPage, showMenu, callback, handleConfigModal, isSideBar
                         active={currentPage === id}
                       >
                         <span>{ label }</span>
+                        {
+                          currentPage !== id && badges[id] > 0 && <Badge>{ badges[id] } new</Badge>
+                        }
                       </ItemText>
                     </Item>
                   ))
@@ -223,4 +226,8 @@ const Button = styled.button`
     background-color: #ffffff;
     border: 1px solid #009fff;
   }
+`;
+
+const Badge = styled.span`
+  color: #009fff;
 `;
