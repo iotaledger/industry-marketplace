@@ -92,9 +92,9 @@ export class AppHelper {
 
         app.post('/data', async (req, res) => {
             try {
-                const { conversationId, deviceId, userId } = req.body;
-                if (conversationId && deviceId && userId) {
-                    await writeData('data', { id: conversationId, deviceId, userId });
+                const { conversationId, deviceId, userId, schema } = req.body;
+                if (conversationId && deviceId && userId && schema) {
+                    await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
                 }
 
                 await res.send({

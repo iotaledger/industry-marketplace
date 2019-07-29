@@ -17,6 +17,7 @@ class Details extends React.Component {
     this.state = {
       messages: [],
       sensorData: [],
+      schema: {},
       loading: false,
     };
   }
@@ -30,30 +31,21 @@ class Details extends React.Component {
         fetch(data.root, data.side_key, this.appendToMessages, this.fetchComplete);
       }
 
-      const { sensorData: { deviceId, userId }} = await readFromStorage(conversationId);
+      const { sensorData: { deviceId, userId, schema }} = await readFromStorage(conversationId);
       const querystring = `${stringify({ deviceId, userId })}`;
       const result = await axios.get(`${sensorDataDomain}${querystring}`);
-      const sensorDataSources = result.data;
-      if (sensorDataSources.length > 0) {
-        this.setState({ loading: true });
-        sensorDataSources.forEach(async ({ root, sidekey }) =>
-          await fetch(root, sidekey, this.appendToSensorData, this.fetchComplete)
-        );
+      if (result.data.length > 0) {
+        this.setState({ schema: JSON.parse(schema), sensorData: result.data });
       };
     }
   }
 
   appendToMessages = message => this.setState({ messages: [...this.state.messages, message] });
-  appendToSensorData = data => {
-    const sensorData = [...this.state.sensorData, data]
-      .sort((a, b) => b.time - a.time);
-    this.setState({ sensorData })
-  };
 
   fetchComplete = () => this.setState({ loading: false });
-
+  
   render() {
-    const { loading, messages, sensorData } = this.state;
+    const { loading, messages, schema, sensorData } = this.state;
 
     return (
       <Main>
@@ -67,10 +59,18 @@ class Details extends React.Component {
             ) : (
               <React.Fragment>
                 <Wrapper>
-                  {messages.length > 0 ? <List messages={messages} /> : null}
+                  { 
+                    messages.length > 0 
+                      ? <List messages={messages} /> 
+                      : null
+                  }
                 </Wrapper>
                 <Wrapper>
-                  {sensorData.length > 0 ? <SensorData sensorData={sensorData} /> : null}
+                  {
+                    sensorData.length > 0
+                      ? <SensorData sensorData={sensorData} schema={schema} /> 
+                      : null
+                  }
                 </Wrapper>
               </React.Fragment>
             )
