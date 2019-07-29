@@ -44,10 +44,8 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                console.log("config", req.body)
                 const { areaCode, gps, userId, role, wallet } = req.body;
                 const user = await readData('user');
-                console.log(user)
 
                 if (areaCode) {
                     await writeData('user', { ...user, areaCode });
