@@ -56,9 +56,11 @@ export class AppHelper {
                     const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
                     await writeData('user', { ...user, areaCode: newAreaCode });
                 }
+
                 if (role) {
                     await writeData('user', { ...user, role });
                 }
+
                 if (userId) {
                     await writeData('user', { ...user, id: userId });
                 }
@@ -105,6 +107,7 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
+               
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
