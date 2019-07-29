@@ -49,20 +49,19 @@ export class AppHelper {
                 const user = await readData('user');
                 console.log(user)
 
+                if (areaCode) {
+                    await writeData('user', { ...user, areaCode });
+                } else if (gps) {
+                    const coordinates = gps.split(',');
+                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                    await writeData('user', { ...user, areaCode: newAreaCode });
+                }
                 if (role) {
                     await writeData('user', { ...user, role });
                 }
                 if (userId) {
                     await writeData('user', { ...user, id: userId });
                 }
-                if (areaCode) {
-                    await writeData('user', { ...user, areaCode });
-                } else if (gps) {
-                    const coordinates = gps.split(',');
-                    const newAreaCode = await iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
-                    await writeData('user', { ...user, areaCode: newAreaCode });
-                }
-
 
                 if (wallet) {
                     const response = await axios.get(config.faucet);
@@ -106,7 +105,6 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
-
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
