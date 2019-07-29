@@ -1,15 +1,13 @@
-
-var mqtt = require('mqtt')
-
-//LATER FROM CONFIG
-var client = mqtt.connect('mqtt://test.mosquitto.org')
-var socket = require('socket.io-client')('http://localhost:4000');
+import mqtt from 'mqtt';
+import io from 'socket.io-client';
+import { mqttBroker, domain } from '../config.json';
 
 
 
+const client = mqtt.connect(mqttBroker)
+const socket = io(domain);
 
 export const createHelperClient = () => {
-
     socket.emit('subscribe', { events: ['tx'] })
 
     let subscriptionId = ''
@@ -20,21 +18,11 @@ export const createHelperClient = () => {
             resolve(subscriptionId);
         });
     });
-
 }
 
-export const zmqToMQTT = (topic) => {
-    socket.on('zmq', (data) => {
-        client.publish(topic, JSON.stringify(data));
-    });
-}
+export const zmqToMQTT = topic =>
+    socket.on('zmq', data => client.publish(topic, JSON.stringify(data)));
 
 
-export const unsubscribeHelperClient = (subscriptionId) => {
-
-    const unsubscribeRequest = {
-        subscriptionIds: [subscriptionId]
-    };
-
-    socket.emit('unsubscribe', unsubscribeRequest);
-}
+export const unsubscribeHelperClient = subscriptionId =>
+    socket.emit('unsubscribe', { subscriptionIds: [subscriptionId] });

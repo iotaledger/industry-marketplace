@@ -44,24 +44,25 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
+                console.log("config", req.body)
                 const { areaCode, gps, userId, role, wallet } = req.body;
                 const user = await readData('user');
-
-                if (areaCode) {
-                    await writeData('user', { ...user, areaCode });
-                } else if (gps) {
-                    const coordinates = gps.split(',');
-                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
-                    await writeData('user', { ...user, areaCode: newAreaCode });
-                }
+                console.log(user)
 
                 if (role) {
                     await writeData('user', { ...user, role });
                 }
-
                 if (userId) {
                     await writeData('user', { ...user, id: userId });
                 }
+                if (areaCode) {
+                    await writeData('user', { ...user, areaCode });
+                } else if (gps) {
+                    const coordinates = gps.split(',');
+                    const newAreaCode = await iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                    await writeData('user', { ...user, areaCode: newAreaCode });
+                }
+
 
                 if (wallet) {
                     const response = await axios.get(config.faucet);
@@ -308,8 +309,10 @@ export class AppHelper {
 
         app.post('/mqtt', async (req, res) => {
             try {
+                //1.create HelperClient 
+                //2.subscribe to zmq
+                //3.post data under mqtt topic
                 if (req.body.message === 'subscribe') {
-
                     const subscriptionId = await createHelperClient();
                     zmqToMQTT(subscriptionId)
 
@@ -319,7 +322,7 @@ export class AppHelper {
                     });
 
                 } else if (req.body.message === 'unsubscribe') {
-
+                    //4. unsubscribe from zmq with ID 
                     const subscriptionId = req.body.subscriptionId
                     unsubscribeHelperClient(subscriptionId);
 
