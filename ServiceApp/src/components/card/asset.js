@@ -97,7 +97,7 @@ const Footer = ({ id, partner, type }) => {
         }
         {
            confirmButton && (
-            <FooterButton onClick={() => onConfirm(id, partner)}>
+            <FooterButton isAccept={true} onClick={() => onConfirm(id, partner)}>
               {confirmButton}
             </FooterButton>
           )
@@ -256,18 +256,20 @@ const FooterButton = styled.button`
   letter-spacing: 0.47px;
   padding: 12px 21px;
   border-radius: 100px;
-  color: #009fff;
-  background-color: #ffffff;
-  border: 1px solid #009fff;
   font-size: 16px;
   font-weight: normal;
   letter-spacing: 0.38px;
   width: 100%;
   height: 45px;
 
+  color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
+  background-color: ${p => p.isAccept ? '#009fff' : '#ffffff'};
+  border: ${p => p.isAccept ? 'unset' : '1px solid #009fff'};
+
   &:hover {
-    color: #ffffff;
-    background-color: #009fff;
+    color: ${p => p.isAccept ? '#009fff' : '#ffffff'};
+    background-color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
+    border: ${p => p.isAccept ? '1px solid #009fff' : 'unset'};
   }
 `;
 
