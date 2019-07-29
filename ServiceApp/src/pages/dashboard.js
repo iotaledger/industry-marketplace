@@ -33,7 +33,6 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       assets: [],
-      user: {},
       activeSection: 'callForProposal',
       loading: false,
       displayNewRequestForm: false,
@@ -44,7 +43,6 @@ class Dashboard extends React.Component {
 
     this.handleSidebar =  this.handleSidebar.bind(this)
     this.createRequest = this.createRequest.bind(this);
-    this.getUser = this.getUser.bind(this);
     this.newMessage = this.newMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
     this.showHistory = this.showHistory.bind(this);
@@ -62,7 +60,6 @@ class Dashboard extends React.Component {
   }
 
   async componentDidMount() {
-    await this.getUser();
     await this.checkExpired();
     this.timer = setInterval(() => this.checkExpired(), 600000);
 
@@ -73,11 +70,6 @@ class Dashboard extends React.Component {
       isSideBarOpen: !prevState.isSideBarOpen
     }));
   }
-
-  async getUser() {
-    const user = await this.context.getUser();
-    this.setState({ user });
-  };
 
   async changeSection(activeSection) {
     this.setState({ activeSection }, async () => await this.checkExpired());
@@ -141,7 +133,7 @@ class Dashboard extends React.Component {
         });
       }
 
-      await this.getUser();
+      await this.context.getUser();
       resolve(data);
     });
   };
@@ -162,30 +154,26 @@ class Dashboard extends React.Component {
     this.setState({ displayNewRequestForm: false });
   }
 
-  async newMessage(message) {
-    const { user: { role } } = this.state;
+  async newMessage(message, ownMessage = false) {
+    const { role } = this.context.user;
     console.log('message', message);
-    const card = await prepareData(
-      get(this.state, 'user.role'),
-      get(message, 'data')
-    );
+    const card = await prepareData(role, get(message, 'data'));
     console.log('card', card, role);
 
     if (card.type !== 'rejectProposal') {
       await writeToStorage(card, role);
     }
     if (card.type === 'informPayment') {
-      await this.getUser();
+      await this.context.getUser();
     }
     await this.checkExpired();
   }
 
   async generateRequest(type, id, partner = null, price = null) {
-    const { user } = this.state;
     const { irdi, originalMessage, walletAddress } = await readFromStorage(partner ? `${id}#${partner}` : id);
     const request = generate({
       messageType: type,
-      userId: user.id,
+      userId: this.context.user.id,
       replyTime: waitingTime,
       originalMessage: await JSON.parse(originalMessage),
       irdi,
@@ -204,7 +192,8 @@ class Dashboard extends React.Component {
   }
 
   async confirmAction(id, partner, price = null) {
-    const { activeSection, user: { role } } = this.state;
+    const { role } = this.context.user;
+    const { activeSection } = this.state;
     let message;
     if (role === 'SR') {
       switch (activeSection) {
@@ -238,7 +227,8 @@ class Dashboard extends React.Component {
   }
 
   async rejectAction(id, partner) {
-    const { activeSection, user: { role } } = this.state;
+    const { role } = this.context.user;
+    const { activeSection } = this.state;
     if (role === 'SR') {
       switch (activeSection) {
         case 'callForProposal':
@@ -273,7 +263,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { activeSection, assets, user, loading, displayNewRequestForm, isSideBarOpen } = this.state;
+    const { activeSection, assets, loading, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
       <Main>
         <AssetNav
@@ -294,42 +284,40 @@ class Dashboard extends React.Component {
           />
           <Data>
             <AnimationWrapper isSideBarOpen={isSideBarOpen}>
-              {
-                loading ? (
-                  <LoadingBox>
-                    <Loading />
-                  </LoadingBox>
-                ) : (
-                  <AssetContext.Provider
-                    value = {{
-                      history: this.showHistory,
-                      onCancel: this.removeAsset,
-                      onConfirm: this.confirmAction,
-                      onReject: this.rejectAction,
-                    }}
-                  >
+              <AssetContext.Provider
+                value = {{
+                  history: this.showHistory,
+                  onCancel: this.removeAsset,
+                  onConfirm: this.confirmAction,
+                  onReject: this.rejectAction,
+                }}
+              >
+                {
+                  this.context.user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
+                    <NoAssetsOuterWrapper>
+                      <NoAssetsInnerWrapper>
+                        <Heading>You have no active requests</Heading>
+                        <Text>Why not create a new one?</Text>
+                        <ButtonWrapper>
+                          <Button onClick={this.showNewRequestForm}>
+                            Create request
+                          </Button>
+                        </ButtonWrapper>
+                      </NoAssetsInnerWrapper>
+                    </NoAssetsOuterWrapper>
+                  ) : (
+                    <AssetsWrapper>
                     {
-                      user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                        <NoAssetsOuterWrapper>
-                          <NoAssetsInnerWrapper>
-                            <Heading>You have no active requests</Heading>
-                            <Text>Why not create a new one?</Text>
-                            <ButtonWrapper>
-                              <Button onClick={this.showNewRequestForm}>
-                                Create request
-                              </Button>
-                            </ButtonWrapper>
-                          </NoAssetsInnerWrapper>
-                        </NoAssetsOuterWrapper>
-                      ) : (
-                        <AssetsWrapper>
-                          <AssetList assets={assets} />
-                        </AssetsWrapper>
-                      )
+                      loading ? (
+                        <LoadingBox>
+                          <Loading />
+                        </LoadingBox>
+                      ) : <AssetList assets={assets} />
                     }
-                  </AssetContext.Provider>
-                )
-              }
+                    </AssetsWrapper>
+                  )
+                }
+              </AssetContext.Provider>
             </AnimationWrapper>
           </Data>
           {
@@ -337,7 +325,7 @@ class Dashboard extends React.Component {
             <AddCard
               createRequest={this.createRequest}
               cancel={this.hideNewRequestForm}
-              user={user}
+              user={this.context.user}
             />
           }
           {
