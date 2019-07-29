@@ -1,15 +1,13 @@
 # SeMarket MQTT Interface 
 
-## MQTT Connection: 
-
 * Alternatively, the Market Manager can transmit incoming messages that are relevant to the user via MQTT
 * The Market Manager does not offer an own MQTT Broker, it is suggested to either use an open source MQTT broker such as ‘test.mosquitto.org’ or implement an own MQTT Broker
 * MQTT Option is enabled via the API 
 
 
-## POST /mqtt 
+### POST /mqtt 
 
-### Payload to subscribe: 
+#### Payload to subscribe: 
 
 ```sh
 {
@@ -25,7 +23,7 @@ Returns success or failure notification and subscriptionID
 
 
 
-### Payload to unsubscribe:
+#### Payload to unsubscribe:
 
  ```sh
 {
