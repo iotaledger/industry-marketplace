@@ -4,6 +4,7 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import isEmpty from 'lodash/isEmpty';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
@@ -267,6 +268,9 @@ export class AppHelper {
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
                     const conversationId = req.body.frame.conversationId;
                     payload.sensorData = await readData('data', conversationId);
+                    if (isEmpty(payload.sensorData)) {
+                        payload.sensorData = { ... config.demoSensorData, conversationId };
+                    }
                 }
 
                 // 4. Send transaction, include MAM channel info
