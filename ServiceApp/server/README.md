@@ -240,7 +240,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
         }
       }
     ]
@@ -276,7 +276,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
         }
       }
     ]
@@ -317,7 +317,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
         }
       }
     ]
@@ -358,7 +358,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
         }
       }
     ]
@@ -399,7 +399,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
         }
       }
     ]
@@ -440,7 +440,7 @@ Please complete with [submodelElements](#submodelelements)
       {
         "identification": {
           "id": "0173-1#02-BAF577#004",
-          "submodelElements": [INSERT SUBMODELELEMENTS HERE]
+          "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
   },
 "walletAddress": "SSMP99ECJBTITUDWHTHYZAYTYCIIIEMEWIPNEMWEKWBNXQJWTCVFHHXPQFMAHJJSLYPYTDIGPNIHPHJLZNGEPFI99D"
 }
