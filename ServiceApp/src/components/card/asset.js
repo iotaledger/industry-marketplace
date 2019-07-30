@@ -89,11 +89,11 @@ const Footer = ({ id, partner, type }) => {
     <React.Fragment>
       <FootRow>
         {
-          rejectButton && (
+          rejectButton ? (
             <FooterButton onClick={() => onReject(id, partner)}>
               {rejectButton}
             </FooterButton>
-          )
+          ) : <div />
         }
         {
            confirmButton && (
