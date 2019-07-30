@@ -188,6 +188,22 @@ socket.emit('unsubscribe', { subscriptionIds: ['subscriptionId'] } )
 ```
 
 
+### Filter Configuration 
+As mentioned above, the Market Manager filters only messages that are relevant to the client.
+To do so, there are several parameters within the [config.json](https://github.com/iotaledger/SeMarket/blob/master/ServiceApp/server/src/config.json) that can be altered in order to expand/minimize the messages that are received: 
+
+#### maxDistance
+Maximum distance, that a user accepts to a location of a sender of an incoming message. 
+Values are interpreted as kilometers. 
+
+#### operations 
+List of ecl@ss IRDIS, that the user is interested in either to provide a service or to receive a service. 
+Last 4 digits, that refer to the version identifier of the service are not relevant and can be ignored.
+
+#### dataRequest
+List of ecl@ss IRDIS, that the user wants to get sensor data from. 
+Last 4 digits, that refer to the version identifier of the service are not relevant and can be ignored.
+
 <!-- Industry-4.0-Semantic -->
 
 ### Industry 4.0 Semantic
