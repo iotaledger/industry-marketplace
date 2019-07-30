@@ -149,7 +149,7 @@ export class AppHelper {
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
 
-                console.log('CfP success');
+                console.log('CfP success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -175,7 +175,7 @@ export class AppHelper {
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
-                console.log('proposal success');
+                console.log('proposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -206,7 +206,7 @@ export class AppHelper {
                 // 5. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, ...mam }, tag);
 
-                console.log('acceptProposal success');
+                console.log('acceptProposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -232,7 +232,7 @@ export class AppHelper {
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
-                console.log('rejectProposal success');
+                console.log('rejectProposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -275,7 +275,7 @@ export class AppHelper {
                 // 4. Send transaction, include MAM channel info
                 const hash = await sendMessage(payload, tag);
 
-                console.log('informConfirm success');
+                console.log('informConfirm success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -317,7 +317,7 @@ export class AppHelper {
                     // 7. Send transaction, include MAM channel info
                     const hash = await sendMessage({ ...req.body, ...mam }, tag);
 
-                    console.log('informPayment success');
+                    console.log('informPayment success', hash);
                     res.send({
                         success: true,
                         tag,
