@@ -20,6 +20,7 @@
     "lodash-es": "^4.17.15",
     "query-string": "^6.8.1",
     "react": "16.8.6",
+    "react-cookie": "^4.0.1",
     "react-datepicker": "^2.8.0",
     "react-dom": "16.8.6",
     "react-md": "^1.12.2",
