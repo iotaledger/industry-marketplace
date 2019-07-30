@@ -161,25 +161,6 @@ button {
   &.cookie-bar-bottom-bar {
     bottom: 70px;
   }
-
-  a {
-    text-decoration: none;
-    color: #009fff;
-
-    &:visited {
-      color: #009fff;
-    }
-  }
-
-  #footer {
-    a {
-      color: #ffffff;
-
-      &:visited {
-        color: #ffffff;
-      }
-    }
-  }
 }
 
 .disclaimer {
