@@ -75,7 +75,7 @@ const getConfirmButtonText = (role, type) => {
   return null;
 }
 
-const Footer = ({ id, partner, type }, isPriceDefined, price) => {
+const Footer = ({ id, partner, type }, isConfirmButtonEnabled, price) => {
   const { user } = useContext(UserContext);
   const { onConfirm, onReject } = useContext(AssetContext);
   if (!onConfirm) return null;
@@ -98,7 +98,7 @@ const Footer = ({ id, partner, type }, isPriceDefined, price) => {
         {
            confirmButton && (
             <FooterButton 
-              disabled={!isPriceDefined}
+              disabled={!isConfirmButtonEnabled}
               isAccept={true} 
               onClick={() => onConfirm(id, partner, price)}
             >
@@ -115,13 +115,15 @@ const Asset = props => {
   const { user } = useContext(UserContext);
   const { asset } = props;
   const [price, setPrice] = useState('');
-  const [isPriceDefined, setPriceDefined] = useState(true);
+  const [isConfirmButtonEnabled, setConfirmButtonEnabled] = useState(true);
 
   useEffect(() => {
     if (user.role === 'SP' && asset.price === 'Pending') {
-      setPriceDefined(false);
+      setConfirmButtonEnabled(false);
+    } else if (user.balance <= 0) {
+      setConfirmButtonEnabled(false);
     } else {
-      setPriceDefined(true);
+      setConfirmButtonEnabled(true);
       setPrice(asset.price);
     }
   }, [user]);
@@ -129,16 +131,16 @@ const Asset = props => {
   function change({ target: { value } }) {
     setPrice(Number(value));
     if (Number(value) > 0) {
-      setPriceDefined(true);
+      setConfirmButtonEnabled(true);
     } else {
-      setPriceDefined(false);
+      setConfirmButtonEnabled(false);
     }
   };
 
   return (
     <Card
       header={Heading(asset)}
-      footer={Footer(asset, isPriceDefined, price)}
+      footer={Footer(asset, isConfirmButtonEnabled, price)}
       asset={asset}
     >
       <CardContent>
