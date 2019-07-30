@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-require-imports
-const iotaAreaCodes = require('@iota/area-codes');
+import { encode } from '@iota/area-codes';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -56,7 +56,7 @@ export class AppHelper {
                     user.areaCode = areaCode;
                 } else if (gps) {
                     const coordinates = gps.split(',');
-                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
+                    const newAreaCode = encode(Number(coordinates[0]), Number(coordinates[1]));
                     user.areaCode = newAreaCode;
                 }
 
