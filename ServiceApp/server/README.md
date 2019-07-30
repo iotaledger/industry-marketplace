@@ -32,7 +32,7 @@ yarn start-dev
 
 ### Usage 
 
-Please perform these operations from the project root folder
+Please perform these operations from the project root folder (/ServiceApp) 
 
 #### Create new user:
 
