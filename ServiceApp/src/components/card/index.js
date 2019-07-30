@@ -3,10 +3,7 @@ import styled from 'styled-components';
 
 export default props => {
   return (
-    <Card
-      data-component="AssetCard"
-      disableMargin={props.disableMargin}
-    >
+    <Card data-component="AssetCard">
       {props.header ? <CardHeader>{props.header}</CardHeader> : null}
       {props.children}
       {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
