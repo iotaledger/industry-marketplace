@@ -83,7 +83,7 @@ const Desc = styled.div`
 const Block = styled.div`
   display: block;
   white-space: nowrap;
-  margin-right: 20px;
+  margin: 0 20px 0 10px;
 `;
 
 const UserID = styled.span`
