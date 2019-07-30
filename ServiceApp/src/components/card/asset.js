@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { AssetContext } from '../../pages/dashboard';
@@ -75,7 +75,7 @@ const getConfirmButtonText = (role, type) => {
   return null;
 }
 
-const Footer = ({ id, partner, type }) => {
+const Footer = ({ id, partner, type }, isPriceDefined, price) => {
   const { user } = useContext(UserContext);
   const { onConfirm, onReject } = useContext(AssetContext);
   if (!onConfirm) return null;
@@ -97,7 +97,11 @@ const Footer = ({ id, partner, type }) => {
         }
         {
            confirmButton && (
-            <FooterButton isAccept={true} onClick={() => onConfirm(id, partner)}>
+            <FooterButton 
+              disabled={!isPriceDefined}
+              isAccept={true} 
+              onClick={() => onConfirm(id, partner, price)}
+            >
               {confirmButton}
             </FooterButton>
           )
@@ -108,14 +112,34 @@ const Footer = ({ id, partner, type }) => {
 }
 
 const Asset = props => {
-  const { asset, disableMargin } = props;
+  const { user } = useContext(UserContext);
+  const { asset } = props;
+  const [price, setPrice] = useState('');
+  const [isPriceDefined, setPriceDefined] = useState(true);
+
+  useEffect(() => {
+    if (user.role === 'SP' && asset.price === 'Pending') {
+      setPriceDefined(false);
+    } else {
+      setPriceDefined(true);
+      setPrice(asset.price);
+    }
+  }, [user]);
+
+  function change({ target: { value } }) {
+    setPrice(Number(value));
+    if (Number(value) > 0) {
+      setPriceDefined(true);
+    } else {
+      setPriceDefined(false);
+    }
+  };
 
   return (
     <Card
       header={Heading(asset)}
-      footer={Footer(asset)}
+      footer={Footer(asset, isPriceDefined, price)}
       asset={asset}
-      disableMargin={disableMargin}
     >
       <CardContent>
         {
@@ -159,10 +183,24 @@ const Asset = props => {
             <RowDesc>End Time:</RowDesc>
             <Data>{asset.endTime}</Data>
           </RowThird>
-          <RowThird>
-            <RowDesc>Price:</RowDesc>
-            <Data>{asset.price}</Data>
-          </RowThird>
+          {
+            user.role === 'SP' && asset.price === 'Pending' ? (
+              <RowThird>
+                <RowDesc>Price (IOTA):</RowDesc>
+                <Input
+                  type='number'
+                  name="price"
+                  value={price}
+                  onChange={change}
+                />
+              </RowThird>
+            ) : (
+              <RowThird>
+                <RowDesc>Price (IOTA):</RowDesc>
+                <Data>{asset.price}</Data>
+              </RowThird>
+            )
+          }
         </Row>
       </CardContent>
     </Card>
@@ -261,15 +299,16 @@ const FooterButton = styled.button`
   letter-spacing: 0.38px;
   width: 100%;
   height: 45px;
+  cursor: ${p => p.disabled ? 'default' : 'pointer'};
 
   color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
-  background-color: ${p => p.isAccept ? '#009fff' : '#ffffff'};
+  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#009fff') : '#ffffff'};
   border: ${p => p.isAccept ? 'unset' : '1px solid #009fff'};
 
   &:hover {
-    color: ${p => p.isAccept ? '#009fff' : '#ffffff'};
-    background-color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
-    border: ${p => p.isAccept ? '1px solid #009fff' : 'unset'};
+    color: ${p => p.isAccept && !p.disabled ? '#009fff' : '#ffffff'};
+    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#009fff'};
+    border: ${p => p.isAccept && !p.disabled ? '1px solid #009fff' : 'unset'};
   }
 `;
 
@@ -297,4 +336,15 @@ const CancelHeaderButton = styled.a`
   @media (min-width: 769px) {
     text-align: right;
   }
+`;
+
+const Input = styled.input`
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 3px 10px 3px 0;
+  margin: 0px 5px 10px 0;
+  border-bottom: 2px solid #eee;
+  background: transparent;
+  font-size: 18px;
 `;
