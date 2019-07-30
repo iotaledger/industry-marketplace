@@ -229,7 +229,7 @@ class Dashboard extends React.Component {
       switch (activeSection) {
         case 'callForProposal':
           // send proposal
-          message = await this.generateRequest('proposal', id, null, 10);
+          message = await this.generateRequest('proposal', id, null, price);  
           return this.sendMessage('proposal', message);
         case 'acceptProposal':
           // send informConfirm
