@@ -228,6 +228,14 @@ const Button = styled.button`
   }
 `;
 
-const Badge = styled.span`
-  color: #009fff;
+const Badge = styled.div`
+  color: #FFFFFF;
+  background: #529FF8;
+  border-radius: 35px;
+  width: 52px;
+  height: 25px;
+  font-weight: 600;
+  font-size: 16px !important;
+  padding: 3px 9px;
+  margin-left: 15px;
 `;
