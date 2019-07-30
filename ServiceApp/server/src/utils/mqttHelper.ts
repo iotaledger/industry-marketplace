@@ -1,22 +1,22 @@
 import mqtt from 'mqtt';
 import io from 'socket.io-client';
-import { mqttBroker, domain } from '../config.json';
+import { mqttConfig } from '../config.json';
 
 
-
-const client = mqtt.connect(mqttBroker)
-const socket = io(domain);
+const client = mqtt.connect(mqttConfig.broker)
+const socket = io(mqttConfig.domain);
 
 export const createHelperClient = () => {
-    socket.emit('subscribe', { events: ['tx'] })
-
-    let subscriptionId = ''
-
+ 
     return new Promise((resolve, reject) => {
-        socket.on('subscribe', (data) => {
-            subscriptionId = data.subscriptionIds[0];
-            resolve(subscriptionId);
-        });
+        try {
+            socket.emit('subscribe', { events: ['tx'] })
+            socket.on('subscribe', (data) => {
+                resolve(data.subscriptionIds[0]);
+            })
+        } catch (error) {
+            reject(error)
+        }
     });
 }
 
