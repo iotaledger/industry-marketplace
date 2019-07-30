@@ -138,8 +138,8 @@ const SidebarWrapper = styled.aside`
   overflow-y: auto;
   padding: 20px;
   transition: transform 0.5s;
-  transform: ${(p) => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
-  display: ${(p) =>  p.isSideBarOpen ? 'flex' : 'none'};
+  transform: ${p => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
+  display: ${p =>  p.isSideBarOpen ? 'flex' : 'none'};
   background: rgba(240, 240, 240, 1);
   flex-direction: column;
   justify-content: space-between;
@@ -150,8 +150,8 @@ const SidebarWrapper = styled.aside`
     display: flex;
     position: relative;
     left: -100%;
-    width: 440px;
-    padding-left: 40px;
+    width: 530px;
+    padding-left: 30px;
   }
 `;
 
@@ -228,7 +228,7 @@ const Button = styled.button`
   }
 `;
 
-const Badge = styled.div`
+const Badge = styled.span`
   color: #FFFFFF;
   background: #529FF8;
   border-radius: 35px;
