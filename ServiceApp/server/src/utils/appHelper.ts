@@ -12,6 +12,7 @@ import { publish } from './mamHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
+import { createHelperClient, zmqToMQTT, unsubscribeHelperClient } from './mqttHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -139,7 +140,7 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
-                
+               
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
@@ -339,6 +340,42 @@ export class AppHelper {
                 });
             }
         });
+
+
+        app.post('/mqtt', async (req, res) => {
+            try {
+                //1.create HelperClient 
+                //2.subscribe to zmq
+                //3.post data under mqtt topic
+                if (req.body.message === 'subscribe') {
+                    const subscriptionId = await createHelperClient();
+                    zmqToMQTT(subscriptionId)
+
+                    res.send({
+                        success: true,
+                        id: subscriptionId
+                    });
+
+                } else if (req.body.message === 'unsubscribe') {
+                    //4. unsubscribe from zmq with ID 
+                    const subscriptionId = req.body.subscriptionId
+                    unsubscribeHelperClient(subscriptionId);
+
+                    res.send({
+                        success: true,
+                        id: subscriptionId
+                    });
+                }
+
+            } catch (error) {
+                console.log('MQTT Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
         if (!customListener) {
