@@ -4,8 +4,17 @@
         "prefix": "SEMARKET"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "maxDistance": 6,
-    "operations": ["0173-1#02-BAF577#004","0173-1#02-AAN521#005","0173-1#02-BAF634#008", "0173-1#02-BAF777#004"] ,
+    "maxDistance": 10,
+    "operations": [
+        "0173-1#02-BAF577#004", 
+        "0173-1#02-BAF576#004", 
+        "0173-1#02-BAF575#004", 
+        "0173-1#02-BAF574#004", 
+        "0173-1#02-BAF573#004", 
+        "0173-1#02-AAN521#005",
+        "0173-1#02-BAF634#008", 
+        "0173-1#02-BAF777#004"
+    ],
     "dataRequest": ["0173-1#02-BAF777#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443",
