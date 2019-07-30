@@ -9,5 +9,15 @@
     "dataRequest": ["0173-1#02-BAF777#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443",
-    "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD"
+    "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD",
+    "demoSensorData": {
+        "conversationId": "",
+        "deviceId": "WeatherStation",
+        "userId": "bswJqRiy5ngfih3PyOmdGxC9a7u1",
+        "schema": [{
+            "id": "temp",
+            "name": "Temperature",
+            "unit": "C"
+        }]
+    }
 }
