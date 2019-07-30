@@ -131,7 +131,37 @@ returns userId, role, location, wallet address and wallet balance
 
 * returns MAM channel content 
 
+### Making API Requests 
+Axios is an open source library for making HTTP requests and can therefore be used to send messages to the Market Manager. 
 
+#### Pre-requisite
+
+```shell 
+npm install axios --save
+```
+
+#### Usage
+
+```shell 
+import axios from 'axios';
+
+const BASE_URL = 'http://localhost:5000';
+
+const params =
+{
+    "userId": "User1",
+    "role": "SR",
+    "areaCode": "NPHTQORL9XK",
+    "wallet": false
+}
+
+const configuration = async (params) => {
+    const response = await axios.post(`${BASE_URL}/config`, params);
+    console.log(response.data);
+}
+
+configuration(params);
+```
 
 ### Websocket connection 
 
