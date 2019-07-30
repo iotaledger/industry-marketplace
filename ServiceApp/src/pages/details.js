@@ -6,6 +6,7 @@ import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
 import List from '../components/messages-list';
 import SensorData from '../components/sensor-data';
+import Cookie from '../components/cookie';
 import { fetch } from '../utils/mam';
 import api from '../utils/api';
 import { readFromStorage } from '../utils/storage';
@@ -48,7 +49,7 @@ class Details extends React.Component {
     const { loading, messages, schema, sensorData } = this.state;
 
     return (
-      <Main>
+      <Main id="main">
         <AssetNav back />
         <Data>
           {
@@ -76,6 +77,7 @@ class Details extends React.Component {
             )
           }
         </Data>
+        <Cookie />
       </Main>
     );
   }

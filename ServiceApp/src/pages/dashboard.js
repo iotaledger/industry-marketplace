@@ -11,6 +11,7 @@ import Loading from '../components/loading';
 import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
+import Cookie from '../components/cookie';
 import { generate } from '../Industry_4.0_language';
 import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
@@ -279,7 +280,7 @@ class Dashboard extends React.Component {
   render() {
     const { activeSection, assets, badges, loading, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
-      <Main>
+      <Main id="main">
         <AssetNav
           createRequest={this.showNewRequestForm}
           handleSidebar={this.handleSidebar}
@@ -356,6 +357,7 @@ class Dashboard extends React.Component {
           error={this.state.error}
           callback={this.notificationCallback}
         />
+        <Cookie />
       </Main>
     );
   }
@@ -385,6 +387,7 @@ const Main = styled.main`
 const AssetsWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
 `
 
 const NoAssetsOuterWrapper = styled.div`

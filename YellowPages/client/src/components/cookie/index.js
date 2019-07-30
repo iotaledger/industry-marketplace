@@ -6,7 +6,7 @@ class Cookie extends React.Component {
   state = { ack: true }
 
   componentDidMount() {
-    const ack = this.props.cookies.get('dmp-ack');
+    const ack = this.props.cookies.get('yellowpages-ack');
     if (!ack) {
       document.body.classList.add('cookie-bar-top-bar');
       this.setState({ ack: false });
@@ -14,7 +14,7 @@ class Cookie extends React.Component {
   }
 
   dismiss = () => {
-    this.props.cookies.set('dmp-ack', true, { path: '/' });
+    this.props.cookies.set('yellowpages-ack', true, { path: '/' });
     document.body.classList.remove('cookie-bar-top-bar');
     this.setState({ ack: true })
   }
