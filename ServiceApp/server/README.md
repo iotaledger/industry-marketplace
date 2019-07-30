@@ -5,7 +5,6 @@
 * [About the Project](#about-the-project)
 * [Prerequisites](#pre-requisites)
 * [Development](#development)
-* [Usage](#usage)
 * [API Description](#api-description)
 * [Websocket Connection](#websocket-connection)
 * [Industry 4.0 Semantic](#industry-4.0-semantic)
@@ -30,29 +29,6 @@ This will run the api at <http://localhost:4000>
 yarn start-dev
 ```
 
-### Usage 
-
-Please perform these operations from the project root folder (/ServiceApp) 
-
-#### Create new user:
-
-*  Run `new-user` script
-* provide user role (SR or SP), unique user ID and [IOTA AreaCode](https://iota-poc-area-codes.dag.sh/conversion) 
-   
-```shell
-yarn new-user SR user-1234567 NPHTQORL9XK
-```
-
-#### Create and fund a new wallet:
-
-2. Run `new-wallet` script. No additional parameters are needed. This operation may take up to 3 minutes, please do not interrupt it. 
-  
-```shell 
-yarn new-wallet
-```
-
-
-
 <!-- API-Description -->
 ### API Description 
 
@@ -71,6 +47,10 @@ Receives userId, role and location in GPS coordinates or IOTA areaCode according
 Returns success or failure notification
 
 #### POST /data
+
+Receives conversationId, access credentials for sensor data and schema of sensor data according to [Industry 4.0 Semantic](#data)
+
+* writes access details to database 
 
 
 #### POST /cfp
@@ -124,6 +104,9 @@ Receives ‘informConfirm’ according to [Industry 4.0 Semantic](#informconfirm
 * Adds wallet address to payload of transaction
 * Sends transaction with custom tag to Tangle
 
+* in case of sensor data request, retrieves access credentials and appends them to the
+  payload before sending the transaction 
+
 Returns success or failure notification, tag and transaction hash
 
 
@@ -139,19 +122,19 @@ Receives ‘informPayment’ according to [Industry 4.0 Semantic](#informpayment
 Returns success or failure notification, tag and transaction hash and MAM information
 
 
-#### GET /user 
+#### GET /user
 
 returns userId, role, location, wallet address and wallet balance
 
 
-#### GET /mam
+#### GET /mam/{conversationId}
 
-payload conversationid?
-returns mam channel
+* returns MAM channel content 
 
 
 
 ### Websocket connection 
+
 Another major task of the Market Manager is to transmit relevant SeMarket Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistant connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistant connection, websockets are used to tackle this task. 
 After the Market Manager receives all incoming SeMarket transactions from the ZMQ, it filters only relevant ones for the client by matching its configuration with the content of the messages provided with the [Semantic I4.0 Language](#industry-4.0-language).
 The implemented websockets are based on socket-io and therefore a [socket-io-client](https://github.com/socketio/socket.io-client) is required from the client side. 
@@ -210,25 +193,41 @@ Last 4 digits, that refer to the version identifier of the service are not relev
 Payload according to the Industry 4.0 Language can be created with the [SeMarket Industry 4.0 Language Library](https://github.com/iotaledger/SeMarket/tree/master/Industry_4.0_language#get-operations)
 
 
-
 #### Config 
 ```json
 {
     "userId": "User1",
     "role": "SR",
-    "areaCode": "NPHTQORL9XK"
+    "areaCode": "NPHTQORL9XK",
+    "wallet": true
 }
 ```
 OR 
 
 ```json
 {
-    "userId": "User1",
-    "role": "SR",
-    "gps": "52.508,13.37789999999"
+    "userId": "User2",
+    "role": "SP",
+    "gps": "52.508,13.37789999999",
+    "wallet": true
 }
 ```
 
+
+#### Data 
+E.g. Data from DMP 
+
+```json
+{
+        "conversationId": "68175af8-8826-49f6-8953-5749fc0a45bd",
+        "deviceId": "WeatherStation",
+        "userId": "bswJqRiy5ngfih3PyOmdGxC9a7u1",
+        "schema": [{
+            "id": "temp",
+            "name": "Temperature",
+            "unit": "C"
+        }]
+```
 
 #### CallForProposal 
 Please complete with [submodelElements](#submodelelements)
