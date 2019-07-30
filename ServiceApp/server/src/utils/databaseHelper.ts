@@ -11,7 +11,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT, areaCode TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS data (conversationId TEXT, deviceId TEXT, userId TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
     }
 );
 
@@ -31,8 +31,8 @@ export const createWallet = async ({ seed, address, balance, keyIndex }) => {
     await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
 };
 
-export const createSensorData = async ({ conversationId, deviceId, userId }) => {
-    await db.run('REPLACE INTO wallet (conversationId, deviceId, userId) VALUES (?, ?, ?)', [conversationId, deviceId, userId]);
+export const createSensorData = async ({ id, deviceId, userId, schema }) => {
+    await db.run('REPLACE INTO data (id, deviceId, userId, schema) VALUES (?, ?, ?, ?)', [id, deviceId, userId, schema]);
 };
 
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {

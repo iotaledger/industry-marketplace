@@ -1,130 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import Loading from '../loading';
 
-export default ({
-  notification,
-  show,
-  error = null,
-  purchasePrice = null,
-  callback = null,
-  category = null,
-  assetId = null
-}) => {
-  const backButton = (
-    <Link to={'/dashboard'}>
-      <Button type="button" className="btn btn-accent txt-bold modal-trigger">
-        Go back
-      </Button>
-    </Link>
-  );
-
-  const ordersPageButton = (
-    <Link to={'/orders'}>
-      <Button type="button" className="btn btn-accent txt-bold modal-trigger">
-        Go to Orders
-      </Button>
-    </Link>
-  );
-
-  const purchaseButton = (
-    <Button type="button" className="btn btn-accent txt-bold modal-trigger" onClick={callback}>
-      Purchase Access for {purchasePrice} IOTA
-    </Button>
-  );
-
+export default ({ show, error = null, callback = null }) => {
   const closeButton = (
     <Button type="button" className="btn btn-accent txt-bold modal-trigger" onClick={callback}>
       Close
     </Button>
   );
 
-  const seeMatchButton = (
-    <Link to={`/order/${assetId}`}>
-    <Button type="button" className="btn btn-accent txt-bold modal-trigger">
-      See Match!
-    </Button>
-  </Link>
-  )
-
-  const icon = (
-    <img
-      src="/static/icons/icon-padlock.png"
-      srcSet="/static/icons/icon-padlock@2x.png 2x"
-      alt="Icon padlock"
-    />
-  );
-
-  const notifications = {
-    loading: {
-      heading: 'Loading Asset',
-      body: 'Fetching asset information and your purchase history.',
-      loading: true
-    },
-    purchasing: {
-      heading: 'Purchasing Asset',
-      body: 'You are doing Proof of Work to attach this purchase to the network.',
-      loading: true
-    },
-    fetching: {
-      heading: 'Success!',
-      body: 'Your purchase was successful',
-      loading: true
-    },
-    noAsset: {
-      heading: `Asset doesn't exist`,
-      body: `The asset you are looking for doesn't exist, check the asset ID and try again`,
-    },
-    noWallet: {
-      heading: 'Wallet does not exist',
-      body: 'Setup wallet by clicking the top right, to get a prefunded IOTA wallet.',
-    },
-    noBalance: {
-      heading: 'Not enough Balance',
-      body: 'You have run out of IOTA',
-    },
-    assetMatchFound: {
-      heading: 'Match Found!',
-      body: `We found a matching asset for the ${category} you just created`,
-      button: seeMatchButton,
-    },
-    dataReadingFailure: {
-      heading: 'Data reading error',
-      body: 'Asset data can not be fully retrieved.',
-      button: backButton
-    },
-    purchaseFailed: {
-      heading: 'Purchase Failed',
-    },
-    purchase: {
-      heading: 'Purchase asset',
-      body: `You can purchase this asset by clicking below.`,
-      button: purchaseButton,
-      icon
-    },
-    orderCompleted: {
-      heading: 'Order completed',
-      body: 'Asset was successfully purchased.',
-      button: ordersPageButton
-    },
-    generalError: {
-      heading: 'Error',
-      body: 'Error',
-      button: closeButton
-    }
+  const content = {
+    heading: 'Error',
+    body: 'Error',
+    button: closeButton
   };
-
-  const content = notification ? notifications[notification] : {};
 
   return (
     <Modal className="access-modal-wrapper" show={show}>
       <AccessBox className="access-modal">
         <Internal>
-          { content.icon || null }
-          <Heading>{content.heading || '--'}</Heading>
+          <Heading>{content.heading}</Heading>
           <Info>{(error && error.body) || content.body || '--'}</Info>
-          { content.loading && <Loading /> }
           { content.button || null }
         </Internal>
       </AccessBox>
@@ -151,7 +46,7 @@ const AccessBox = styled.div`
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 50%;
+  top: 50vh;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 360px;

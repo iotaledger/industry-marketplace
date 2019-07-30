@@ -73,14 +73,14 @@ const data = {
     amount: 555
 };
 
-await writeData(data, entry);
+await writeData(table_name, data);
 ```
 
 #### Example read operation
 ```
 import { readData } from './databaseHelper';
 
-const result = await readData(channelId);
+const result = await readData(table_name, [search_field]);
 if (result) {
     return result;
 }
@@ -90,7 +90,7 @@ if (result) {
 ```
 import { removeData } from './databaseHelper';
 
-await removeData(entry);
+await removeData(table_name);
 ```
 
 ### User Helper
@@ -105,7 +105,7 @@ Please perform these operations from the project root folder
 ```
 yarn server-build
 
-yarn new-user SR user-1234567
+yarn new-user SR user-1234567 NPHTQORL9XK
 ```
 
 #### Create and fund a new wallet:

@@ -3,10 +3,7 @@ import styled from 'styled-components';
 
 export default props => {
   return (
-    <Card
-      data-component="AssetCard"
-      disableMargin={props.disableMargin}
-    >
+    <Card data-component="AssetCard">
       {props.header ? <CardHeader>{props.header}</CardHeader> : null}
       {props.children}
       {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
@@ -15,26 +12,19 @@ export default props => {
 }
 
 const Card = styled.div`
+  max-width: 1030px;
   color: inherit;
   text-decoration: none;
-  position: relative;
-  margin-right: ${props => (props.disableMargin ? 0 : '50px')};
+  margin-bottom: 54px;
   border-radius: 6px;
-  margin-bottom: ${props => (props.disableMargin ? 0 : '40px')};
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
-  width: 800px;
+
   height: 100%;
-  border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
-  @media (max-width: 1120px) {
-    margin-bottom: ${props => (props.disableMargin ? 0 : '20px')};
-  }
-  @media (max-width: 890px) {
-    width: 100%;
-  }
-  @media (max-width: 400px) {
-    width: 280px;
+  width: 100%;
+  border: 1px solid #eaecee;
+  @media (min-width: 769px) {
   }
   &:hover {
     box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);

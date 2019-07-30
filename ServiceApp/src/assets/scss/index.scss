@@ -158,45 +158,79 @@ button {
 }
 
 #main {
-  a {
-    text-decoration: none;
-    color: #009fff;
-
-    &:visited {
-      color: #009fff;
-    }
-  }
-
-  #footer {
-    a {
-      color: #ffffff;
-
-      &:visited {
-        color: #ffffff;
-      }
-    }
+  &.cookie-bar-bottom-bar {
+    bottom: 70px;
   }
 }
 
-.ReactTable {
-  .rt-thead.-header {
-    box-shadow: none !important;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(115,143,212,0.15);
+.disclaimer {
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #eeeeee;
+  width: 100vw;
+  padding: 8px 20px;
+  height: 70px;
+  z-index: 99999;
+
+  .disclaimer-text {
+    font-weight: 600;
+    font-size: 18px;
+    color: #3f3f3f;
+    white-space: normal;
+    margin-right: 20px;
+
+    @media (max-width: 500px) {
+      font-size: 90% !important;
+    }
   }
 
-  .rt-thead .rt-th {
-    text-align: left;
-    color: #009fff;
-    background: rgba(240,240,240,1);
+  .disclaimer-link, .disclaimer-link:hover, .disclaimer-link:visited {
+    font-weight: 900;
+    font-size: 18px;
+    color: #603f98;
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    @media (max-width: 500px) {
+      font-size: 90% !important;
+    }
   }
 
-  .rt-thead .rt-tr {
-    font-weight: bold;
-  }
+  .button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font: 15px 'Nunito Sans', sans-serif;
+    letter-spacing: 0.47px;
+    padding: 20px 38px;
+    border-radius: 100px;
+    color: #fff;
+    font-size: 16px;
+    letter-spacing: 0.38px;
+    padding: 12px 21px;
+    margin: 1px 13px 0;
+    font-weight: 700;
+    background-color: #009fff;
+    width: 160px;
+  
+    &:hover {
+      color: #009fff;
+      background-color: #ffffff;
+      border: 1px solid #009fff;
+    }
 
-  .-pagination {
-    box-shadow: none !important;
+    @media (max-width: 500px) {
+      font-size: 15px;
+      width: 140px;
+    }
   }
 }
 
@@ -220,6 +254,3 @@ button {
   src: url('/static/fonts/NunitoSans-ExtraBold.ttf');
   font-weight: 800;
 }
-
-// @import '~slick-carousel/slick/slick.css';
-// @import '~slick-carousel/slick/slick-theme.css';

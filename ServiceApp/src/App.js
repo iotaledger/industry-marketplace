@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ServiceFactory } from './factories/serviceFactory';
 import { ApiClient } from './services/apiClient';
+import GlobalState from './context/globalState';
 import DashboardPage from './pages/dashboard';
+import DetailsPage from './pages/details';
 import config from './config.json';
 
 class App extends Component {
@@ -39,14 +41,17 @@ class App extends Component {
 
     render() {
         return (
-            <BrowserRouter>
-                {!this.state.status && (
-                    <Switch>
-                        <Route path="/" component={DashboardPage} exact />
-                        <Route component={DashboardPage} />
-                    </Switch>
-                )}
-            </BrowserRouter>
+            <GlobalState>
+                <BrowserRouter>
+                    {!this.state.status && (
+                        <Switch>
+                            <Route path="/" component={DashboardPage} exact />
+                            <Route path="/conversation/:conversationId" component={DetailsPage} />
+                            <Route component={DashboardPage} />
+                        </Switch>
+                    )}
+                </BrowserRouter>
+            </GlobalState>
         );
     }
 }

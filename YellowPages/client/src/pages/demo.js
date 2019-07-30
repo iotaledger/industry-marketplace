@@ -63,7 +63,7 @@ export default class extends React.Component {
   async componentDidMount() {
     ReactGA.pageview('/demo');
     await this.checkExpired();
-    this.timer = setTimeout(() => this.checkExpired(), 600000);
+    this.timer = setInterval(() => this.checkExpired(), 600000);
   }
 
   async changeSection(activeSection) {
@@ -75,7 +75,6 @@ export default class extends React.Component {
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
     this.setState({ assets });
-    clearInterval(this.timer);
   }
 
   async newMessage(message) {

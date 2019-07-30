@@ -12,7 +12,7 @@ export default props => (
   </InfoCol>
 );
 
-const InfoCol = styled.main`
+const InfoCol = styled.div`
   position: relative;
 
   @media (max-width: 760px) {

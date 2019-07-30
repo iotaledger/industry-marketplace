@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-require-imports
-const iotaAreaCodes = require('@iota/area-codes');
+import { encode } from '@iota/area-codes';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -45,23 +45,31 @@ export class AppHelper {
         app.post('/config', async (req, res) => {
             try {
                 const { areaCode, gps, userId, role, wallet } = req.body;
-                const user = await readData('user');
+                interface IUser {
+                    areaCode?: string;
+                    id?: string;
+                    role?: string;
+                }
+                const existingUser: IUser = await readData('user');
+                const user = { ...existingUser };
 
                 if (areaCode) {
-                    await writeData('user', { ...user, areaCode });
+                    user.areaCode = areaCode;
                 } else if (gps) {
                     const coordinates = gps.split(',');
-                    const newAreaCode = iotaAreaCodes.encode(Number(coordinates[0]), Number(coordinates[1]));
-                    await writeData('user', { ...user, areaCode: newAreaCode });
+                    const newAreaCode = encode(Number(coordinates[0]), Number(coordinates[1]));
+                    user.areaCode = newAreaCode;
                 }
 
                 if (role) {
-                    await writeData('user', { ...user, role });
+                    user.role = role;
                 }
 
                 if (userId) {
-                    await writeData('user', { ...user, id: userId });
+                    user.id = userId;
                 }
+
+                await writeData('user', user);
 
                 if (wallet) {
                     const response = await axios.get(config.faucet);
@@ -83,8 +91,28 @@ export class AppHelper {
             }
         });
 
+        app.post('/data', async (req, res) => {
+            try {
+                const { conversationId, deviceId, userId, schema } = req.body;
+                if (conversationId && deviceId && userId && schema) {
+                    await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
+                }
+
+                await res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('data Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+
         app.get('/user', async (req, res) => {
             interface IUser {
+                areaCode?: string;
                 id?: string;
                 role?: string;
             }
@@ -94,9 +122,16 @@ export class AppHelper {
                 address?: string;
             }
             const wallet: IWallet = await readData('wallet');
-            const balance = await getBalance((wallet && wallet.address) || null);
+            const address = (wallet && wallet.address) || null;
+            const balance = await getBalance(address);
 
-            res.json({ ...user, balance, wallet: wallet.address });
+            res.json({ ...user, balance, wallet: address });
+        });
+
+        app.get('/mam', async (req, res) => {
+            const channelId = req.query.conversationId;
+            const mam = await readData('mam', channelId);
+            res.json({ ...mam });
         });
 
         app.post('/cfp', async (req, res) => {
@@ -115,7 +150,7 @@ export class AppHelper {
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
 
-                console.log('CfP success');
+                console.log('CfP success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -141,7 +176,7 @@ export class AppHelper {
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
-                console.log('proposal success');
+                console.log('proposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -172,7 +207,7 @@ export class AppHelper {
                 // 5. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, ...mam }, tag);
 
-                console.log('acceptProposal success');
+                console.log('acceptProposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -198,7 +233,7 @@ export class AppHelper {
                 // 2. Send transaction
                 const hash = await sendMessage(req.body, tag);
 
-                console.log('rejectProposal success');
+                console.log('rejectProposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -215,36 +250,37 @@ export class AppHelper {
 
         app.post('/informConfirm', async (req, res) => {
             try {
-                /*
-                // 1. Retrieve MAM channel from DB
-                // 2. Attach message with confirmation payload
-                // 3. Update channel details in DB
-                const channelId = req.body.frame.conversationId;
-                const mam = await publish(channelId, req.body);
-                */
-
-                // 4. Create Tag
+                // 1. Create Tag
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('informConfirm', location, submodelId);
 
-                // 5. Retrieve Wallet address from DB
+                // 2. Retrieve Wallet address from DB
                 interface IWallet {
                     address?: string;
                 }
                 const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
-                // 6. Send transaction, include MAM channel info
-                // const hash = await sendMessage({ ...req.body, ...mam }, tag);
-                const hash = await sendMessage({ ...req.body, walletAddress: address }, tag);
+                const payload = { ...req.body, walletAddress: address };
+                
+                // 3. For data request include access credentials from DB
+                if (config.dataRequest && config.dataRequest.includes(submodelId)) {
+                    const conversationId = req.body.frame.conversationId;
+                    payload.sensorData = await readData('data', conversationId);
+                    if (!payload.sensorData) {
+                        payload.sensorData = { ... config.demoSensorData, conversationId };
+                    }
+                }
 
-                console.log('informConfirm success');
+                // 4. Send transaction, include MAM channel info
+                const hash = await sendMessage(payload, tag);
+
+                console.log('informConfirm success', hash);
                 res.send({
                     success: true,
                     tag,
                     hash
-                    // mam
                 });
             } catch (error) {
                 console.log('informConfirm Error', error);
@@ -282,7 +318,7 @@ export class AppHelper {
                     // 7. Send transaction, include MAM channel info
                     const hash = await sendMessage({ ...req.body, ...mam }, tag);
 
-                    console.log('informPayment success');
+                    console.log('informPayment success', hash);
                     res.send({
                         success: true,
                         tag,

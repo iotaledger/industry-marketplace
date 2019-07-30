@@ -1,15 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { AssetContext } from '../../pages/dashboard';
-import { UserContext } from '../../pages/dashboard';
+import UserContext from '../../context/user-context';
 import Card from './index.js';
 
 const Heading = ({ id, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
   return (
     <Full>
-      <Link to={`/history/${id}`}>
+      <Link to={`/conversation/${id}`}>
         <Header>{operation}</Header>
       </Link>
       <StatusWrapper>
@@ -44,7 +44,7 @@ const getRejectButtonText = (role, type) => {
       case 'acceptProposal':
         return 'Reject request';
       case 'rejectProposal':
-        return 'Remove';        
+        return 'Remove';
       default:
         return null;
     }
@@ -67,7 +67,7 @@ const getConfirmButtonText = (role, type) => {
       case 'callForProposal':
         return 'Send proposal';
       case 'acceptProposal':
-        return 'Request fulfilled';        
+        return 'Request fulfilled';
       default:
         return null;
     }
@@ -75,7 +75,7 @@ const getConfirmButtonText = (role, type) => {
   return null;
 }
 
-const Footer = ({ id, partner, type }) => {
+const Footer = ({ id, partner, type }, isConfirmButtonEnabled, price) => {
   const { user } = useContext(UserContext);
   const { onConfirm, onReject } = useContext(AssetContext);
   if (!onConfirm) return null;
@@ -84,20 +84,24 @@ const Footer = ({ id, partner, type }) => {
   const confirmButton = getConfirmButtonText(user.role, type);
 
   if (!rejectButton && !confirmButton) return null;
-  
+
   return (
     <React.Fragment>
       <FootRow>
         {
-          rejectButton && (
+          rejectButton ? (
             <FooterButton onClick={() => onReject(id, partner)}>
               {rejectButton}
             </FooterButton>
-          )
+          ) : <div />
         }
         {
-          confirmButton && (
-            <FooterButton onClick={() => onConfirm(id, partner)}>
+           confirmButton && (
+            <FooterButton 
+              disabled={!isConfirmButtonEnabled}
+              isAccept={true} 
+              onClick={() => onConfirm(id, partner, price)}
+            >
               {confirmButton}
             </FooterButton>
           )
@@ -108,14 +112,36 @@ const Footer = ({ id, partner, type }) => {
 }
 
 const Asset = props => {
-  const { asset, disableMargin } = props;
-  
+  const { user } = useContext(UserContext);
+  const { asset } = props;
+  const [price, setPrice] = useState('');
+  const [isConfirmButtonEnabled, setConfirmButtonEnabled] = useState(true);
+
+  useEffect(() => {
+    if (user.role === 'SP' && asset.price === 'Pending') {
+      setConfirmButtonEnabled(false);
+    } else if (user.balance <= 0) {
+      setConfirmButtonEnabled(false);
+    } else {
+      setConfirmButtonEnabled(true);
+      setPrice(asset.price);
+    }
+  }, [user]);
+
+  function change({ target: { value } }) {
+    setPrice(Number(value));
+    if (Number(value) > 0) {
+      setConfirmButtonEnabled(true);
+    } else {
+      setConfirmButtonEnabled(false);
+    }
+  };
+
   return (
     <Card
       header={Heading(asset)}
-      footer={Footer(asset)}
+      footer={Footer(asset, isConfirmButtonEnabled, price)}
       asset={asset}
-      disableMargin={disableMargin}
     >
       <CardContent>
         {
@@ -159,10 +185,24 @@ const Asset = props => {
             <RowDesc>End Time:</RowDesc>
             <Data>{asset.endTime}</Data>
           </RowThird>
-          <RowThird>
-            <RowDesc>Price:</RowDesc>
-            <Data>{asset.price}</Data>
-          </RowThird>
+          {
+            user.role === 'SP' && asset.price === 'Pending' ? (
+              <RowThird>
+                <RowDesc>Price (IOTA):</RowDesc>
+                <Input
+                  type='number'
+                  name="price"
+                  value={price}
+                  onChange={change}
+                />
+              </RowThird>
+            ) : (
+              <RowThird>
+                <RowDesc>Price (IOTA):</RowDesc>
+                <Data>{asset.price}</Data>
+              </RowThird>
+            )
+          }
         </Row>
       </CardContent>
     </Card>
@@ -182,13 +222,21 @@ const Row = styled.div`
   &:not(:last-of-type) {
     margin-bottom: 5px;
   }
+  @media (min-width: 769px) {
+    flex-direction: row;
+  }
 `;
 
 const RowThird = styled.div`
-  width: 33.3%;
   padding: 10px 30px;
   display: inline-block;
   text-align: left;
+  @media (min-width: 426px) {
+    width: 50%;
+  }
+  @media (min-width: 950px) {
+    width: 33.3%;
+  }
 `;
 
 const Data = styled.p`
@@ -217,14 +265,18 @@ const Header = styled.h2`
 const Full = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  @media (min-width: 769px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const FootRow = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   cursor: default;
   &:not(:last-of-type) {
     margin-bottom: 5px;
@@ -235,23 +287,30 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  margin: 5px;
+  @media (min-width: 920px) {
+    width: 200px;
+  }
   font: 16px 'Nunito Sans', sans-serif;
   line-height: 16px;
   letter-spacing: 0.47px;
   padding: 12px 21px;
   border-radius: 100px;
-  color: #009fff;
-  background-color: #ffffff;
-  border: 1px solid #009fff;
   font-size: 16px;
   font-weight: normal;
   letter-spacing: 0.38px;
-  width: 200px;
+  width: 100%;
   height: 45px;
+  cursor: ${p => p.disabled ? 'default' : 'pointer'};
+
+  color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
+  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#009fff') : '#ffffff'};
+  border: ${p => p.isAccept ? 'unset' : '1px solid #009fff'};
 
   &:hover {
-    color: #ffffff;
-    background-color: #009fff;
+    color: ${p => p.isAccept && !p.disabled ? '#009fff' : '#ffffff'};
+    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#009fff'};
+    border: ${p => p.isAccept && !p.disabled ? '1px solid #009fff' : 'unset'};
   }
 `;
 
@@ -264,17 +323,30 @@ const StatusWrapper = styled.div`
 const Status = styled.h3`
   color: #529FF8;
   font: 18px 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  text-align: right;
   text-transform: uppercase;
+  @media (min-width: 769px) {
+    text-align: right;
+  }
 `;
 
-const CancelHeaderButton = styled.button`
+const CancelHeaderButton = styled.a`
   font: 14px 'Nunito Sans', sans-serif;
   padding: 12px 21px;
   color: #313131;
-  font-size: 16px;
   text-decoration: underline;
   padding: 0;
-  text-align: right;
+  @media (min-width: 769px) {
+    text-align: right;
+  }
+`;
+
+const Input = styled.input`
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 3px 10px 3px 0;
+  margin: 0px 5px 10px 0;
+  border-bottom: 2px solid #eee;
+  background: transparent;
+  font-size: 18px;
 `;

@@ -36,3 +36,23 @@ export const getCodeFromMessageType = message => {
 export const getLetterFromNumber = number => {
     return String.fromCharCode(65 + number);
 };
+
+export const convertSubmodelId = submodelId => {
+    try {
+        const submodel = submodelId.substring(10, submodelId.length - 4);
+        let serviceId = '';
+        submodel.split('').forEach(element => {
+            const int = parseInt(element, 10);
+            if (Number.isInteger(int)) {
+                serviceId += getLetterFromNumber(int);
+            } else {
+                serviceId += element;
+            }
+        });
+        return serviceId;
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+export const convertOperationsList = operations => operations.map(convertSubmodelId);

@@ -44,6 +44,7 @@ export const evaluate = (irdi, values) => {
             status = `Type for ${element.idShort} (${element.semanticId}) is invalid`; 
             return null;
         }
+        return null;
     });
     return status || 'success';
 }
