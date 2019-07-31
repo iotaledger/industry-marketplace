@@ -34,7 +34,7 @@ export const prepareData = async (payload) => {
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     const sender = get(data, 'frame.sender.identification.id');
-    const receiver = get(data, 'frame.receiver.identification.id');
+    const receiver = get(data, 'frame.receiver.identification.id') || 'Pending';
     const coordinates = await iotaAreaCodes.decode(location);
 
     const card = {

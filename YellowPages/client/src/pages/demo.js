@@ -9,9 +9,10 @@ import Map from '../components/map';
 import ScrollToTop from '../components/scroll-to-top';
 import Loading from '../components/loading';
 import Cookie from '../components/cookie';
-import AssetList from '../components/assets-list';
+import AssetCards from '../components/asset-cards';
+import AssetList from '../components/asset-list';
 import Zmq from '../components/zmq';
-import { getByType, removeExpired, writeToStorage } from '../utils/storage';
+import { getAll, getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
 
 const Header = ({ changeSection }) => {
@@ -51,7 +52,9 @@ export default class extends React.Component {
     this.state = {
       anchor: null,
       assets: [],
+      allAssets: [],
       activeSection: 'callForProposal',
+      view: 'grid'
     };
 
     this.newMessage = this.newMessage.bind(this);
@@ -74,7 +77,8 @@ export default class extends React.Component {
     const { activeSection } = this.state;
     await removeExpired(activeSection);
     const assets = await getByType(activeSection);
-    this.setState({ assets });
+    const allAssets = await getAll();
+    this.setState({ assets, allAssets });
   }
 
   async newMessage(message) {
@@ -90,10 +94,10 @@ export default class extends React.Component {
   }
 
   render() {
-    const { assets } = this.state;
+    const { assets, allAssets } = this.state;
 
     return (
-      <Main id="main">
+      <Main id="main" noAssets={assets.length === 0}>
         <Zmq callback={this.newMessage} />
         <Cookie />
         <BurgerMenu />
@@ -106,7 +110,25 @@ export default class extends React.Component {
             </LoadingBox>
           ) : (
             <React.Fragment>
-              <AssetList assets={assets} />
+              <ButtonsWrapper>
+                <Button
+                  selected={this.state.view === 'grid'}
+                  onClick={() => this.setState({ view: 'grid' })}
+                >
+                  <i class="fas fa-th-large"></i>&nbsp;&nbsp;Grid
+                </Button> 
+                <Button 
+                  selected={this.state.view === 'list'}
+                  onClick={() => this.setState({ view: 'list' })}
+                >
+                  <i class="fas fa-bars"></i>&nbsp;&nbsp;List
+                </Button> 
+              </ButtonsWrapper>
+              {
+                this.state.view === 'grid'
+                  ? <AssetCards assets={assets} />
+                  : <AssetList assets={allAssets} />
+              }
               <Map assets={assets} />
               {
                 assets.length > 0 ? <ScrollToTop onClick={this.onScrollToTop} /> : null
@@ -122,6 +144,23 @@ export default class extends React.Component {
 
 const Main = styled.div`
   overflow-x: hidden;
+  height: ${props => (props.noAssets ? '100vh' : 'unset')};
+  display: ${props => (props.noAssets ? 'flex' : 'block')};
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+`;
+
+const Button = styled.button`
+  font-size: 20px;
+  margin: 20px;
+  background: transparent;
+  color: ${props => (props.selected ? '#009fff' : '#000000')};
 `;
 
 const Container = styled.div`

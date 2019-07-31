@@ -15,6 +15,7 @@
     "date-fns": "^1.30.1",
     "express": "^4.17.1",
     "lodash-es": "^4.17.15",
+    "match-sorter": "^4.0.1",
     "react": "16.8.6",
     "react-burger-menu": "^2.6.10",
     "react-cookie": "^4.0.1",
@@ -24,7 +25,7 @@
     "react-map-gl": "^5.0.7",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
-    "react-table": "^6.10.0",
+    "react-table": "next",
     "socket.io-client": "^2.2.0",
     "styled-components": "4.3.2",
     "webfontloader": "^1.6.28"
