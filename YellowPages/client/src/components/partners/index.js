@@ -7,6 +7,7 @@ const partners = [
   { src: 'hamburg.png', alt: 'Helmut Schmidt Universität Hamburg' },
   { src: 'ovgu.png', alt: 'Otto-von-Guericke-Universität Magdeburg' },
   { src: 'neoception.png', alt: 'neoception' },
+  { src: 'wewash.png', alt: 'WeWash' },
   { src: 'i40.png', alt: 'Industrie 4.0' }
 ];
 
