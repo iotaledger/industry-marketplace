@@ -9,10 +9,10 @@ import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish } from './mamHelper';
+import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
-import { createHelperClient, zmqToMQTT, unsubscribeHelperClient } from './mqttHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -341,15 +341,14 @@ export class AppHelper {
             }
         });
 
-
         app.post('/mqtt', async (req, res) => {
             try {
-                //1.create HelperClient 
-                //2.subscribe to zmq
-                //3.post data under mqtt topic
+                // 1. Create HelperClient 
+                // 2. Subscribe to zmq
+                // 3. Post data under mqtt topic
                 if (req.body.message === 'subscribe') {
                     const subscriptionId = await createHelperClient();
-                    zmqToMQTT(subscriptionId)
+                    zmqToMQTT(subscriptionId);
 
                     res.send({
                         success: true,
@@ -357,8 +356,8 @@ export class AppHelper {
                     });
 
                 } else if (req.body.message === 'unsubscribe') {
-                    //4. unsubscribe from zmq with ID 
-                    const subscriptionId = req.body.subscriptionId
+                    // 4. Unsubscribe from zmq with ID 
+                    const subscriptionId = req.body.subscriptionId;
                     unsubscribeHelperClient(subscriptionId);
 
                     res.send({
@@ -366,7 +365,6 @@ export class AppHelper {
                         id: subscriptionId
                     });
                 }
-
             } catch (error) {
                 console.log('MQTT Error', error);
                 res.send({
@@ -375,7 +373,6 @@ export class AppHelper {
                 });
             }
         });
-
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
         if (!customListener) {
