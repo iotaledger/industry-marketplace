@@ -49,8 +49,8 @@ const Asset = props => {
             </Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Partner ID:</RowDesc>
-            <Data>{asset.partner}</Data>
+            <RowDesc>Sender:</RowDesc>
+            <Data>{asset.sender}</Data>
           </RowThird>
         </Row>
         <Row>
@@ -63,8 +63,8 @@ const Asset = props => {
             <Data>{asset.endTime}</Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Price:</RowDesc>
-            <Data>{asset.price}</Data>
+            <RowDesc>Receiver:</RowDesc>
+            <Data>{asset.receiver}</Data>
           </RowThird>
         </Row>
       </CardContent>

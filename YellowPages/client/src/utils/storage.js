@@ -45,6 +45,22 @@ export const getByType = async type => {
     return itemsOfType;
 }
 
+export const getAll = async () => {
+    const allItems = await Object.values(localStorage);
+    return allItems.reduce((accumulator, item) => {
+        try {
+            const json = JSON.parse(item);
+            const itemType = get(json, 'type');
+            if (itemType) {
+              accumulator.push(json);
+            }
+            return accumulator;
+        } catch (e) {
+            return accumulator;
+        }
+    }, []);
+}
+
 export const removeExpired = async type => {
     if (type === 'callForProposal' || type === 'proposal') {
         const allItems = await getByType(type);
