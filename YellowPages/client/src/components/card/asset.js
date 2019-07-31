@@ -16,14 +16,10 @@ const Heading = ({ operation, type }) => {
 }
 
 const Asset = props => {
-  const { asset, disableMargin } = props;
+  const { asset } = props;
   
   return (
-    <Card
-      header={Heading(asset)}
-      asset={asset}
-      disableMargin={disableMargin}
-    >
+    <Card header={Heading(asset)} asset={asset}>
       <CardContent>
         {
           asset.params && asset.params.length > 0 ? (
