@@ -115,13 +115,13 @@ export default class extends React.Component {
                   selected={this.state.view === 'grid'}
                   onClick={() => this.setState({ view: 'grid' })}
                 >
-                  <i class="fas fa-th-large"></i>&nbsp;&nbsp;Grid
+                  <i className="fas fa-th-large"></i>&nbsp;&nbsp;Grid
                 </Button> 
                 <Button 
                   selected={this.state.view === 'list'}
                   onClick={() => this.setState({ view: 'list' })}
                 >
-                  <i class="fas fa-bars"></i>&nbsp;&nbsp;List
+                  <i className="fas fa-bars"></i>&nbsp;&nbsp;List
                 </Button> 
               </ButtonsWrapper>
               {
