@@ -3,10 +3,7 @@ import styled from 'styled-components';
 
 export default props => {
   return (
-    <Card
-      data-component="AssetCard"
-      disableMargin={props.disableMargin}
-    >
+    <Card data-component="AssetCard">
       {props.header ? <CardHeader>{props.header}</CardHeader> : null}
       {props.children}
       {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
@@ -18,9 +15,9 @@ const Card = styled.div`
   color: inherit;
   text-decoration: none;
   position: relative;
-  margin-right: ${props => (props.disableMargin ? 0 : '50px')};
+  margin-right: 50px;
   border-radius: 6px;
-  margin-bottom: ${props => (props.disableMargin ? 0 : '40px')};
+  margin-bottom: 40px;
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
@@ -28,7 +25,7 @@ const Card = styled.div`
   height: 100%;
   border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
   @media (max-width: 1120px) {
-    margin-bottom: ${props => (props.disableMargin ? 0 : '20px')};
+    margin-bottom: 20px;
   }
   @media (max-width: 890px) {
     width: 100%;
