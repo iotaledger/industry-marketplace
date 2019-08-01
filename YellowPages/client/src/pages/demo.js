@@ -7,13 +7,13 @@ import MiniHeader from '../components/header/mini-header';
 import Footer from '../components/footer';
 import Map from '../components/map';
 import ScrollToTop from '../components/scroll-to-top';
-import Loading from '../components/loading';
 import Cookie from '../components/cookie';
 import AssetCards from '../components/asset-cards';
 import AssetList from '../components/asset-list';
 import Zmq from '../components/zmq';
 import { getAll, getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
+import { serviceRequester, serviceProvider } from '../config.json';
 
 const Header = ({ changeSection }) => {
   return (
@@ -94,10 +94,11 @@ export default class extends React.Component {
   }
 
   render() {
-    const { assets, allAssets } = this.state;
+    const { assets, allAssets, activeSection } = this.state;
+    const externalService = activeSection === 'proposal' ? serviceProvider : serviceRequester;
 
     return (
-      <Main id="main" noAssets={assets.length === 0}>
+      <Main id="main">
         <Zmq callback={this.newMessage} />
         <Cookie />
         <BurgerMenu />
@@ -105,9 +106,16 @@ export default class extends React.Component {
         <Header changeSection={this.changeSection} />
         {
           assets.length === 0 ? (
-            <LoadingBox>
-              <Loading color="#009fff" size="130" />
-            </LoadingBox>
+            <NoProposals>
+              There are currently no <strong>&nbsp;{activeSection}</strong>s, create a new one
+              <a
+                href={externalService}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <strong>&nbsp;here</strong>
+              </a>
+            </NoProposals>
           ) : (
             <React.Fragment>
               <ButtonsWrapper>
@@ -129,13 +137,11 @@ export default class extends React.Component {
                   ? <AssetCards assets={assets} />
                   : <AssetList assets={allAssets} />
               }
-              <Map assets={assets} />
-              {
-                assets.length > 0 ? <ScrollToTop onClick={this.onScrollToTop} /> : null
-              }
             </React.Fragment>
           )
         }
+        <Map assets={allAssets} />
+        <ScrollToTop onClick={this.onScrollToTop} />
         <Footer />
       </Main>
     );
@@ -144,10 +150,7 @@ export default class extends React.Component {
 
 const Main = styled.div`
   overflow-x: hidden;
-  height: ${props => (props.noAssets ? '100vh' : 'unset')};
-  display: ${props => (props.noAssets ? 'flex' : 'block')};
-  flex-direction: column;
-  justify-content: space-between;
+  display: block;
 `;
 
 const ButtonsWrapper = styled.div`
@@ -170,7 +173,7 @@ const Container = styled.div`
   padding: 0 15px;
   margin-right: auto;
   margin-left: auto;
-  margin-bottom: 150px;
+  margin-bottom: 40px;
 
   @media (max-width: 820px) {
     margin-bottom: 80px;
@@ -197,13 +200,14 @@ const Container = styled.div`
   }
 `;
 
-const LoadingBox = styled.div`
-  min-height: 300px;
+const NoProposals = styled.div`
+  min-height: 100px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  font-size: 22px;
 `;
 
 const Info = styled.div`
