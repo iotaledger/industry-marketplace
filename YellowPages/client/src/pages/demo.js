@@ -20,7 +20,7 @@ const Header = ({ changeSection }) => {
     <Container>
       <Shapes>
         <Shape1 src="/static/shapes/demo/shape-5.svg" alt="Background shape" />
-        <Tagline>Yellow Pages</Tagline>
+        <Tagline>Blue Pages</Tagline>
       </Shapes>
       <Info>
         <SubLink
