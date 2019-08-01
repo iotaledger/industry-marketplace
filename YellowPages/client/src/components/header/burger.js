@@ -9,7 +9,7 @@ const Menu = BurgerMenu['slide'];
 
 const links = [
   { link: '', text: 'Home' },
-  { link: 'demo', text: 'Yellow Pages' }
+  { link: 'demo', text: 'Blue Pages' }
 ];
 
 const Burger = props => (

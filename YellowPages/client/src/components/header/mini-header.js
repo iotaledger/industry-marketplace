@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const links = [
-  { link: 'demo', text: 'Yellow Pages' }
+  { link: 'demo', text: 'Blue Pages' }
 ];
 
 const MiniHeader = props => (
