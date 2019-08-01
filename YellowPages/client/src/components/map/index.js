@@ -139,8 +139,8 @@ class Map extends React.Component {
       <Main id="map">
         <Header>
           <div>
-            <Heading>Sensor map</Heading>
-            <Subtitle>Click on a pin to view the sensor information.</Subtitle>
+            <Heading>Request map</Heading>
+            <Subtitle>Click on a pin to view the request information.</Subtitle>
           </div>
         </Header>
         <MapGL
