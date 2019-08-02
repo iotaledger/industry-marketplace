@@ -124,12 +124,12 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 
 #### GET /user
 
-returns userId, role, location, wallet address and wallet balance
+Returns userId, role, location, wallet address and wallet balance
 
 
 #### GET /mam/{conversationId}
 
-* returns MAM channel content 
+Returns MAM channel content 
 
 ### Making API Requests 
 Axios is an open source library for making HTTP requests and can therefore be used to send messages to the Market Manager. 
@@ -200,6 +200,40 @@ socket.on('zmq', (data) => {
 socket.emit('unsubscribe', { subscriptionIds: ['subscriptionId'] } )
 ```
 
+### MQTT Interface 
+
+As an alternative to the websocket connection, the Market Manager also offers a MQTT Interface. 
+For this, a HelperClient is created, which connects to the websockets and publishes the messages via MQTT.
+The MQTT Interface has to be activated via an API call. 
+
+
+#### POST /mqtt 
+
+#### Payload to subscribe: 
+
+```sh
+{
+    "message": "subscribe"
+}
+```
+This returns a success or failure notification and a subscriptionID
+The subscriptionID is used as a topic to publish all messages that belong to the client that received the subscriptionID.
+To unsubscribe to the messages another API call is required: 
+
+#### POST /mqtt 
+
+#### Payload to unsubscribe:
+
+ ```sh
+{
+    "message": "unsubscribe",
+    "subscriptionId": "5742a685-657b-4b94-a704-36e00bc46a5a"
+}
+```
+Returns success or failure notification 
+
+
+
 
 ### Filter Configuration 
 As mentioned above, the Market Manager filters only messages that are relevant to the client.
@@ -223,7 +257,7 @@ Last 4 digits, that refer to the version identifier of the service are not relev
 Payload according to the Industry 4.0 Language can be created with the [SeMarket Industry 4.0 Language Library](https://github.com/iotaledger/SeMarket/tree/master/Industry_4.0_language#get-operations)
 
 
-#### Config 
+#### config 
 ```json
 {
     "userId": "User1",
@@ -244,8 +278,8 @@ OR
 ```
 
 
-#### Data 
-E.g. Data from DMP 
+#### data 
+For example for Data from the [IOTA Data Marketplace](https://data.iota.org/#/)
 
 ```json
 {
@@ -259,7 +293,7 @@ E.g. Data from DMP
         }]
 ```
 
-#### CallForProposal 
+#### callForProposal 
 Please complete with [submodelElements](#submodelelements)
 
 ```json
@@ -294,7 +328,7 @@ Please complete with [submodelElements](#submodelelements)
 ```
 
 
-#### Proposal 
+#### proposal 
 
 Please complete with [submodelElements](#submodelelements)
 
@@ -371,7 +405,7 @@ Please complete with [submodelElements](#submodelelements)
 
 ```
 
-#### RejectProposal 
+#### rejectProposal 
 
 Please complete with [submodelElements](#submodelelements)
 
