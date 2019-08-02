@@ -6,7 +6,7 @@ const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 const generate = async () => {
     return new Promise((resolve, reject) => {
         crypto.generateKeyPair('rsa', {
-            modulusLength: 4096,
+            modulusLength: 2048,
             publicKeyEncoding: {
                 type: 'spki',
                 format: 'pem'
