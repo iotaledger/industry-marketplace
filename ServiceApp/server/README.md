@@ -5,7 +5,6 @@
 * [About the Project](#about-the-project)
 * [Prerequisites](#pre-requisites)
 * [Development](#development)
-* [Usage](#usage)
 * [API Description](#api-description)
 * [Websocket Connection](#websocket-connection)
 * [Industry 4.0 Semantic](#industry-4.0-semantic)
@@ -30,29 +29,6 @@ This will run the api at <http://localhost:4000>
 yarn start-dev
 ```
 
-### Usage 
-
-Please perform these operations from the project root folder (/ServiceApp) 
-
-#### Create new user:
-
-*  Run `new-user` script
-* provide user role (SR or SP), unique user ID and [IOTA AreaCode](https://iota-poc-area-codes.dag.sh/conversion) 
-   
-```shell
-yarn new-user SR user-1234567 NPHTQORL9XK
-```
-
-#### Create and fund a new wallet:
-
-2. Run `new-wallet` script. No additional parameters are needed. This operation may take up to 3 minutes, please do not interrupt it. 
-  
-```shell 
-yarn new-wallet
-```
-
-
-
 <!-- API-Description -->
 ### API Description 
 
@@ -71,6 +47,10 @@ Receives userId, role and location in GPS coordinates or IOTA areaCode according
 Returns success or failure notification
 
 #### POST /data
+
+Receives conversationId, access credentials for sensor data and schema of sensor data according to [Industry 4.0 Semantic](#data)
+
+* writes access details to database 
 
 
 #### POST /cfp
@@ -124,6 +104,9 @@ Receives ‘informConfirm’ according to [Industry 4.0 Semantic](#informconfirm
 * Adds wallet address to payload of transaction
 * Sends transaction with custom tag to Tangle
 
+* in case of sensor data request, retrieves access credentials and appends them to the
+  payload before sending the transaction 
+
 Returns success or failure notification, tag and transaction hash
 
 
@@ -139,19 +122,49 @@ Receives ‘informPayment’ according to [Industry 4.0 Semantic](#informpayment
 Returns success or failure notification, tag and transaction hash and MAM information
 
 
-#### GET /user 
+#### GET /user
 
-returns userId, role, location, wallet address and wallet balance
-
-
-#### GET /mam
-
-payload conversationid?
-returns mam channel
+Returns userId, role, location, wallet address and wallet balance
 
 
+#### GET /mam/{conversationId}
+
+Returns MAM channel content 
+
+### Making API Requests 
+Axios is an open source library for making HTTP requests and can therefore be used to send messages to the Market Manager. 
+
+#### Pre-requisite
+
+```shell 
+npm install axios --save
+```
+
+#### Usage
+
+```shell 
+import axios from 'axios';
+
+const BASE_URL = 'http://localhost:5000';
+
+const params =
+{
+    "userId": "User1",
+    "role": "SR",
+    "areaCode": "NPHTQORL9XK",
+    "wallet": false
+}
+
+const configuration = async (params) => {
+    const response = await axios.post(`${BASE_URL}/config`, params);
+    console.log(response.data);
+}
+
+configuration(params);
+```
 
 ### Websocket connection 
+
 Another major task of the Market Manager is to transmit relevant SeMarket Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistant connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistant connection, websockets are used to tackle this task. 
 After the Market Manager receives all incoming SeMarket transactions from the ZMQ, it filters only relevant ones for the client by matching its configuration with the content of the messages provided with the [Semantic I4.0 Language](#industry-4.0-language).
 The implemented websockets are based on socket-io and therefore a [socket-io-client](https://github.com/socketio/socket.io-client) is required from the client side. 
@@ -187,6 +200,56 @@ socket.on('zmq', (data) => {
 socket.emit('unsubscribe', { subscriptionIds: ['subscriptionId'] } )
 ```
 
+### MQTT Interface 
+
+As an alternative to the websocket connection, the Market Manager also offers a MQTT Interface. 
+For this, a HelperClient is created, which connects to the websockets and publishes the messages via MQTT.
+The MQTT Interface has to be activated via an API call. 
+
+
+#### POST /mqtt 
+
+#### Payload to subscribe: 
+
+```sh
+{
+    "message": "subscribe"
+}
+```
+This returns a success or failure notification and a subscriptionID
+The subscriptionID is used as a topic to publish all messages that belong to the client that received the subscriptionID.
+To unsubscribe to the messages another API call is required: 
+
+#### POST /mqtt 
+
+#### Payload to unsubscribe:
+
+ ```sh
+{
+    "message": "unsubscribe",
+    "subscriptionId": "5742a685-657b-4b94-a704-36e00bc46a5a"
+}
+```
+Returns success or failure notification 
+
+
+
+
+### Filter Configuration 
+As mentioned above, the Market Manager filters only messages that are relevant to the client.
+To do so, there are several parameters within the [config.json](https://github.com/iotaledger/SeMarket/blob/master/ServiceApp/server/src/config.json) that can be altered in order to expand/minimize the messages that are received: 
+
+#### maxDistance
+Maximum distance, that a user accepts to a location of a sender of an incoming message. 
+Values are interpreted as kilometers. 
+
+#### operations 
+List of ecl@ss IRDIS, that the user is interested in either to provide a service or to receive a service. 
+Last 4 digits, that refer to the version identifier of the service are not relevant and can be ignored.
+
+#### dataRequest
+List of ecl@ss IRDIS, that the user wants to get sensor data from. 
+Last 4 digits, that refer to the version identifier of the service are not relevant and can be ignored.
 
 <!-- Industry-4.0-Semantic -->
 
@@ -194,27 +257,43 @@ socket.emit('unsubscribe', { subscriptionIds: ['subscriptionId'] } )
 Payload according to the Industry 4.0 Language can be created with the [SeMarket Industry 4.0 Language Library](https://github.com/iotaledger/SeMarket/tree/master/Industry_4.0_language#get-operations)
 
 
-
-#### Config 
+#### config 
 ```json
 {
     "userId": "User1",
     "role": "SR",
-    "areaCode": "NPHTQORL9XK"
+    "areaCode": "NPHTQORL9XK",
+    "wallet": true
 }
 ```
 OR 
 
 ```json
 {
-    "userId": "User1",
-    "role": "SR",
-    "gps": "52.508,13.37789999999"
+    "userId": "User2",
+    "role": "SP",
+    "gps": "52.508,13.37789999999",
+    "wallet": true
 }
 ```
 
 
-#### CallForProposal 
+#### data 
+For example for Data from the [IOTA Data Marketplace](https://data.iota.org/#/)
+
+```json
+{
+        "conversationId": "68175af8-8826-49f6-8953-5749fc0a45bd",
+        "deviceId": "WeatherStation",
+        "userId": "bswJqRiy5ngfih3PyOmdGxC9a7u1",
+        "schema": [{
+            "id": "temp",
+            "name": "Temperature",
+            "unit": "C"
+        }]
+```
+
+#### callForProposal 
 Please complete with [submodelElements](#submodelelements)
 
 ```json
@@ -249,7 +328,7 @@ Please complete with [submodelElements](#submodelelements)
 ```
 
 
-#### Proposal 
+#### proposal 
 
 Please complete with [submodelElements](#submodelelements)
 
@@ -326,7 +405,7 @@ Please complete with [submodelElements](#submodelelements)
 
 ```
 
-#### RejectProposal 
+#### rejectProposal 
 
 Please complete with [submodelElements](#submodelelements)
 
