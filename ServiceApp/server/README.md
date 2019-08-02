@@ -12,7 +12,7 @@
  
 <!-- Pre-requisites -->
 ### About the Project
- ![Architecture](src/assets/Architecture.png?raw=true)
+ ![architecture](docs/architecture.png?raw=true)
 
 <!-- Pre-requisites -->
 ### Pre-requisites
