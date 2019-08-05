@@ -3,5 +3,6 @@
         "endpoint": "tcp://zmq.devnet.iota.org:5556",
         "prefix": "SEMARKET"
     },
-    "provider": "https://nodes.devnet.iota.org:443"
+    "provider": "https://nodes.devnet.iota.org:443",
+    "db_endpoint": "https://us-central1-datamarket-617e1.cloudfunctions.net/storeMessage"
 }

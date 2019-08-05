@@ -1,8 +1,8 @@
+import axios from 'axios';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
-
 
 /**
  * Class to handle ZMQ service.
@@ -85,7 +85,7 @@ export class ZmqService {
         try {
             if (!this._socket) {
                 this._socket = zmq.socket('sub');
-                this._socket.connect(this._config.endpoint);
+                this._socket.connect(this._config.zmq.endpoint);
 
                 this._socket.on('message', (msg) => this.handleMessage(msg));
 
@@ -170,13 +170,19 @@ export class ZmqService {
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-            if (tag.startsWith(this._config.prefix) && messageType) {
+            if (tag.startsWith(this._config.zmq.prefix) && messageType) {
                 const bundle = messageParams[8];
 
                 if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
                     const data = await getPayload(bundle);
                     // 4.1 Send every such message to UI
                     this.sendEvent(data, messageType, messageParams);
+
+                    try {
+                        await axios.post(this._config.db_endpoint, data);
+                    } catch (error) {
+                        console.log('data error', error);
+                    }
                 }
             }
         }
