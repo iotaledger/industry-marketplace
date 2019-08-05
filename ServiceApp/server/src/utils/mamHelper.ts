@@ -1,5 +1,5 @@
-import { asciiToTrytes } from '@iota/converter';
-import Mam from '@iota/mam';
+import { asciiToTrytes, trytesToAscii } from '@iota/converter';
+import Mam, { MamMode } from '@iota/mam';
 import crypto from 'crypto';
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
@@ -21,7 +21,7 @@ const generateRandomKey = length => {
   };
 
 // Publish to tangle
-export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
+export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'SEMARKETMAM') => {
     try {
         let mamState;
         let secretKey;
@@ -31,7 +31,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
                 subscribed: [],
                 channel: {
                     side_key: mamStateFromDB.side_key,
-                    mode: 'restricted',
+                    mode,
                     next_root: mamStateFromDB.next_root,
                     security: 2,
                     start: mamStateFromDB.start,
@@ -48,7 +48,7 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
             
             // Set channel mode & update key
             secretKey = generateRandomKey(81);
-            mamState = Mam.changeMode(mamState, 'restricted', secretKey);
+            mamState = Mam.changeMode(mamState, mode, secretKey);
         }
 
         // Create MAM Payload - STRING OF TRYTES
@@ -69,6 +69,34 @@ export const publish = async (id, packet, tag = 'SEMARKETMAM') => {
         console.log('MAM publish Error', error);
         throw new Error(error);
     }
+};
+
+// Publish to tangle
+export const publishDID = async (publicKey, privateKey) => {
+    try {
+        const mamState = Mam.init(provider);
+        const trytes = asciiToTrytes(publicKey);
+        const message = Mam.create(mamState, trytes);
+        const root = message.root;
+      
+        // Attach the payload
+        const bundle = await Mam.attach(message.payload, message.address, 3, 9);
+        if (bundle && bundle.length && bundle[0].hash) {
+            // Save new mamState
+            await writeData('did', { root, privateKey });
+            return root;
+        }
+        return null;
+    } catch (error) {
+        console.log('MAM publishDID Error', error);
+        throw new Error(error);
+    }
+};
+
+export const fetchDID = async root => {
+    console.log('fetchDID', root);
+    const result: any = await Mam.fetch(root, 'public');
+    return result && result.messages && result.messages.map(trytesToAscii);
 };
 
 // export const fetchFromRoot = async (root, secretKey) => {

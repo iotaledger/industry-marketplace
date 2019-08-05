@@ -205,6 +205,7 @@ export class ZmqService {
 
                     interface IUser {
                         id?: string;
+                        name?: string;
                         role?: string;
                         areaCode?: string;
                     }

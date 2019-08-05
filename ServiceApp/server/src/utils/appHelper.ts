@@ -7,8 +7,9 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
+import { encrypt, generateKeyPair } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
-import { publish } from './mamHelper';
+import { fetchDID, publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
@@ -44,11 +45,12 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { areaCode, gps, userId, role, wallet } = req.body;
+                const { areaCode, gps, name, role, wallet } = req.body;
                 interface IUser {
                     areaCode?: string;
                     id?: string;
                     role?: string;
+                    name?: string;
                 }
                 const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
@@ -65,8 +67,8 @@ export class AppHelper {
                     user.role = role;
                 }
 
-                if (userId) {
-                    user.id = userId;
+                if (name) {
+                    user.name = name;
                 }
 
                 await writeData('user', user);
@@ -111,19 +113,20 @@ export class AppHelper {
         });
 
         app.get('/user', async (req, res) => {
-            interface IUser {
-                areaCode?: string;
-                id?: string;
-                role?: string;
-            }
-            const user: IUser = await readData('user');
+            let user: any = await readData('user');
 
-            interface IWallet {
-                address?: string;
-            }
-            const wallet: IWallet = await readData('wallet');
+            const wallet: any = await readData('wallet');
             const address = (wallet && wallet.address) || null;
             const balance = await getBalance(address);
+
+            if (!user || !user.id) {
+                // Generate key pair
+                const keys: any = await generateKeyPair();
+                const root = await publishDID(keys.publicKey, keys.privateKey);
+                const id = `did:tangle:${root}`;
+                user = user ? { ...user, id } : { id };
+                await writeData('user', user);
+            }
 
             res.json({ ...user, balance, wallet: address });
         });
@@ -198,6 +201,20 @@ export class AppHelper {
                 // 3. Update channel details in DB
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
+
+                // retrieve id/DID of the communication partner
+                // encrypt sensitive data using the public key from the MAM channel
+                const partnetId = req.body.frame.receiver.identification.id.replace('did:tangle:', '');
+                console.log('acceptProposal partnetId', partnetId);
+                const did = await fetchDID(partnetId);
+                console.log('acceptProposal did', did);
+                const publicKey = did[did.length - 1];
+
+                const message = Buffer.from(mam.secretKey, 'utf8');
+                const encryptedBuffer: any = await encrypt(publicKey, message);
+                const encryptedPayload = encryptedBuffer.toString('base64');
+                console.log('acceptProposal encryptedPayload', encryptedPayload);
+                mam.secretKey = encryptedPayload;
 
                 // 4. Create Tag
                 const location = getLocationFromMessage(req.body);
