@@ -94,7 +94,7 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
-    console.log('fetchDID', root);
+    Mam.init(provider);
     const result: any = await Mam.fetch(root, 'public');
     return result && result.messages && result.messages.map(trytesToAscii);
 };
