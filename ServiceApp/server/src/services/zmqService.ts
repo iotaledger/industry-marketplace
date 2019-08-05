@@ -200,9 +200,7 @@ export class ZmqService {
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
 
-                if (this.sentBundles.includes(bundle)) {
-                    this.sentBundles = [];
-                } else {
+                if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
 
                     interface IUser {
