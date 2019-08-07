@@ -271,7 +271,14 @@ export class ZmqService {
                                         if (messageType === 'acceptProposal') {
                                             const channelId = data.frame.conversationId;
                                             const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', { id: channelId, root: data.mam.root, seed: '', next_root: '', side_key: secretKey, start: 0 });
+                                            await writeData('mam', { 
+                                                id: channelId, 
+                                                root: data.mam.root, 
+                                                seed: '', 
+                                                next_root: '', 
+                                                side_key: secretKey, 
+                                                start: 0 
+                                            });
                                         }
                                         this.sendEvent(data, messageType, messageParams);
                                     }
