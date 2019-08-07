@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import isEmpty from 'lodash-es/isEmpty';
 import { stringify } from 'query-string';
 import AssetNav from '../components/asset-nav';
 import Loading from '../components/loading';
@@ -32,12 +33,15 @@ class Details extends React.Component {
         fetch(data.root, data.side_key, this.appendToMessages, this.fetchComplete);
       }
 
-      const { sensorData: { deviceId, userId, schema }} = await readFromStorage(conversationId);
-      const querystring = `${stringify({ deviceId, userId })}`;
-      const result = await axios.get(`${sensorDataDomain}${querystring}`);
-      if (result.data.length > 0) {
-        this.setState({ schema: JSON.parse(schema), sensorData: result.data });
-      };
+      const card = await readFromStorage(conversationId);
+      if (!isEmpty(card.sensorData)) {
+        const { sensorData: { deviceId, userId, schema }} = card;
+        const querystring = `${stringify({ deviceId, userId })}`;
+        const result = await axios.get(`${sensorDataDomain}${querystring}`);
+        if (result.data.length > 0) {
+          this.setState({ schema: JSON.parse(schema), sensorData: result.data });
+        };
+      }
     }
   }
 
