@@ -8,10 +8,11 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT, areaCode TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, areaCode TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT)');
     }
 );
 
@@ -23,8 +24,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, role, areaCode = '' }) => {
-    await db.run('REPLACE INTO user (id, role, areaCode) VALUES (?, ?, ?)', [id, role, areaCode]);
+export const createUser = async ({ id, name, role, areaCode = '' }) => {
+    await db.run('REPLACE INTO user (id, name, role, areaCode) VALUES (?, ?, ?, ?)', [id, name, role, areaCode]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
@@ -33,6 +34,10 @@ export const createWallet = async ({ seed, address, balance, keyIndex }) => {
 
 export const createSensorData = async ({ id, deviceId, userId, schema }) => {
     await db.run('REPLACE INTO data (id, deviceId, userId, schema) VALUES (?, ?, ?, ?)', [id, deviceId, userId, schema]);
+};
+
+export const createDID = async ({ root, privateKey }) => {
+    await db.run('REPLACE INTO did (root, privateKey) VALUES (?, ?)', [root, privateKey]);
 };
 
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
@@ -55,6 +60,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'data':
                 await createSensorData(data);
+                return;
+            case 'did':
+                await createDID(data);
                 return;
             case 'mam':
             default:

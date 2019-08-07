@@ -2,8 +2,9 @@ import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { maxDistance, operations } from '../config.json';
-import { readData } from '../utils/databaseHelper';
+import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
+import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
@@ -205,6 +206,7 @@ export class ZmqService {
 
                     interface IUser {
                         id?: string;
+                        name?: string;
                         role?: string;
                         areaCode?: string;
                     }
@@ -266,6 +268,18 @@ export class ZmqService {
 
                                     // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
                                     if (id === receiverID) {
+                                        if (messageType === 'acceptProposal') {
+                                            const channelId = data.frame.conversationId;
+                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                            await writeData('mam', { 
+                                                id: channelId, 
+                                                root: data.mam.root, 
+                                                seed: '', 
+                                                next_root: '', 
+                                                side_key: secretKey, 
+                                                start: 0 
+                                            });
+                                        }
                                         this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
