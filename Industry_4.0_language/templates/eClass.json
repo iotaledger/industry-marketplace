@@ -1,5 +1,168 @@
 {
-    "0173-1#02-BAF577#004": {
+    "0173-1#01-AAJ336#002": {
+        "submodelElements":[
+            {
+                "idShort":"total weight (freight)",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"decimal",
+                "semanticId":"0173-1#02-AAJ337#002"
+            },
+            {
+                "idShort":"starting point",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAJ338#002"
+            },
+            {
+                "idShort":"destination",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAJ339#002"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAJ333#002"
+            }
+        ]
+    },
+    "0173-1#01-AAP788#001": {
+        "submodelElements":[
+            {
+                "idShort":"number of photos that can be stored",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAP788#001"
+            },
+            {
+                "idShort":"reliability duration",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAY979#001"
+            },
+            {
+                "idShort":"target location",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAZ979#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAD979#001"
+            }
+        ]
+    },
+    "0173-1#01-AAI711#001": {
+        "submodelElements":[
+            {
+                "idShort":"starting point",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAL711#001"
+            },
+            {
+                "idShort":"destination",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAK711#001"
+            },
+            {
+                "idShort":"max. number of persons",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAI711#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAB711#001"
+            }
+        ]
+    },
+    "0173-1#01-AAO742#002": {
+        "submodelElements":[
+            {
+                "idShort":"brand",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAO742#002"
+            },
+            {
+                "idShort":"min. charging voltage",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAJ102#003"
+            },
+            {
+                "idShort":"cables included",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"boolean",
+                "semanticId":"0173-1#02-BAF464#008"
+            },
+            {
+                "idShort":"connection type",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAF631#001"
+            },
+            {
+                "idShort":"max. charging voltage",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAJ101#003"
+            },
+            {
+                "idShort":"cable length",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAB733#007"
+            },
+            {
+                "idShort":"number of connections",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAP397#001"
+            },
+            {
+                "idShort":"target location",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-AAW397#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAA397#001"
+            }
+        ]
+    },
+    "0173-1#01-BAF577#004": {
         "submodelElements":[
             {
                 "idShort":"gewicht",
@@ -45,7 +208,7 @@
             }
         ]
     },
-    "0173-1#02-BAF576#004": {
+    "0173-1#01-BAF576#004": {
         "submodelElements":[
             {
                 "idShort":"gewicht",
@@ -91,7 +254,7 @@
             }
         ]
     },
-    "0173-1#02-BAF575#004": {
+    "0173-1#01-BAF575#004": {
         "submodelElements":[
             {
                 "idShort":"gewicht",
@@ -137,7 +300,7 @@
             }
         ]
     },
-    "0173-1#02-BAF574#004": {
+    "0173-1#01-BAF574#004": {
         "submodelElements":[
             {
                 "idShort":"gewicht",
@@ -183,7 +346,7 @@
             }
         ]
     },
-    "0173-1#02-BAF573#004": {
+    "0173-1#01-BAF573#004": {
         "submodelElements":[
             {
                 "idShort":"gewicht",
@@ -206,6 +369,31 @@
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF634#008"
             },
+            {
+                "idShort":"ort",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-BAF163#002"
+            },
+            {
+                "idShort":"zeit",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"time",
+                "semanticId":"0173-1#02-AAO738#001"
+            },
+            {
+                "idShort":"preis",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
+            }
+        ]
+    },
+    "0173-1#01-BAF777#004": {
+        "submodelElements":[
             {
                 "idShort":"ort",
                 "modelType":"Property",

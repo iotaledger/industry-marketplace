@@ -1,32 +1,52 @@
 [
     {
+        "name": "Drone Transport",
+        "name_de": "Drone Transport",
+        "id":"0173-1#01-AAJ336#002"
+    },
+    {
+        "name": "Drone inspection",
+        "name_de": "Drone inspection",
+        "id":"0173-1#01-AAP788#001"
+    },
+    {
+        "name": "Mobility as a service",
+        "name_de": "Mobility as a service",
+        "id":"0173-1#01-AAI711#001"
+    },
+    {
+        "name": "EV Charging",
+        "name_de": "EV Charging",
+        "id":"0173-1#01-AAO742#002"
+    },
+    {
         "name": "Drilling",
         "name_de": "Bohren",
-        "id":"0173-1#02-BAF577#004"
+        "id":"0173-1#01-BAF577#004"
     },
     {
         "name": "Sawing",
         "name_de": "Sägen",
-        "id":"0173-1#02-BAF576#004"
+        "id":"0173-1#01-BAF576#004"
     },
     {
         "name": "Cutting",
         "name_de": "Schneiden",
-        "id":"0173-1#02-BAF575#004"
+        "id":"0173-1#01-BAF575#004"
     },
     {
         "name": "Hammering",
         "name_de": "Hämmern",
-        "id":"0173-1#02-BAF574#004"
+        "id":"0173-1#01-BAF574#004"
     },
     {
         "name": "Grinding",
         "name_de": "Schleifen",
-        "id":"0173-1#02-BAF573#004"
+        "id":"0173-1#01-BAF573#004"
     },
     {
         "name": "Weather Data",
         "name_de": "Wetterdated",
-        "id":"0173-1#02-BAF777#004"
+        "id":"0173-1#01-BAF777#004"
     }
 ]

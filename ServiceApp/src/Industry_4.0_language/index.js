@@ -34,7 +34,7 @@ export const evaluate = (irdi, values) => {
     let status;
     submodelTemplate.some(element => {
         const value = values[element.semanticId];
-        if (!value) {
+        if (element.valueType !== 'boolean' && !value) {
             status = `Value for ${element.idShort} (${element.semanticId}) is missing`;
             return null;
         }
