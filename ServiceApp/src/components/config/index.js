@@ -13,7 +13,7 @@ const Card = props => (
 
 const initState = {
   inputText: '',
-  userId: '',
+  name: '',
   role: '',
   wallet: false,
   loading: false,
@@ -56,13 +56,13 @@ export default class extends React.Component {
   }
 
   async submit() {
-    const { inputText, role, userId, wallet } = this.state;
+    const { inputText, role, name, wallet } = this.state;
     this.setState({ loading: true });
     // actions are defined in ./location.formats.js
     const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
       this.props.sendMessage,
       inputText,
-      { role, userId, wallet }
+      { role, name, wallet }
     );
 
     if (sendMessagetResult.error) {
@@ -72,7 +72,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const { loading, locationFormat, userId, role, wallet } = this.state;
+    const { loading, locationFormat, name, role, wallet } = this.state;
 
     return (
       <React.Fragment>
@@ -82,11 +82,11 @@ export default class extends React.Component {
               {!loading && (
                   <Form>
                     <Column>
-                      <label>User ID:</label>
+                      <label>User Name:</label>
                       <Input
                         type="text"
-                        name="userId"
-                        value={userId}
+                        name="name"
+                        value={name}
                         onChange={this.change}
                       />
                     </Column>

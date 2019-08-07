@@ -6,7 +6,7 @@ import { createUser, createWallet } from './databaseHelper';
 const createNewUser = async () => {
     const { id, role = '', areaCode = '' } = argv;
     if (id && (role === 'SR' || role === 'SP')) {
-        return await createUser({ id, role, areaCode });
+        return await createUser({ id, name: id, role, areaCode });
     } else {
         console.log('Params are missing or wrong');
         return;
