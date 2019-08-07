@@ -121,9 +121,10 @@ export class AppHelper {
 
             if (!user || !user.id) {
                 // Generate key pair
-                const keys: any = await generateKeyPair();
-                const root = await publishDID(keys.publicKey, keys.privateKey);
-                const id = `did:tangle:${root}`;
+                const { publicKey, privateKey }: any = await generateKeyPair();
+                const root = await publishDID(publicKey);
+                await writeData('did', { root, privateKey });
+                const id = `did:iota:${root}`;
                 user = user ? { ...user, id } : { id };
                 await writeData('user', user);
             }
@@ -204,16 +205,14 @@ export class AppHelper {
 
                 // retrieve id/DID of the communication partner
                 // encrypt sensitive data using the public key from the MAM channel
-                const partnetId = req.body.frame.receiver.identification.id.replace('did:tangle:', '');
-                console.log('acceptProposal partnetId', partnetId);
+                const id = req.body.frame.receiver.identification.id;
+                const partnetId = id.replace('did:iota:', '');
                 const did = await fetchDID(partnetId);
-                console.log('acceptProposal did', did);
                 const publicKey = did[did.length - 1];
 
                 const message = Buffer.from(mam.secretKey, 'utf8');
                 const encryptedBuffer: any = await encrypt(publicKey, message);
                 const encryptedPayload = encryptedBuffer.toString('base64');
-                console.log('acceptProposal encryptedPayload', encryptedPayload);
                 mam.secretKey = encryptedPayload;
 
                 // 4. Create Tag
@@ -222,7 +221,7 @@ export class AppHelper {
                 const tag = buildTag('acceptProposal', location, submodelId);
 
                 // 5. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, ...mam }, tag);
+                const hash = await sendMessage({ ...req.body, mam }, tag);
 
                 console.log('acceptProposal success', hash);
                 res.send({
@@ -290,7 +289,13 @@ export class AppHelper {
                     }
                 }
 
-                // 4. Send transaction, include MAM channel info
+                // 4. Retrieve MAM channel from DB
+                // 5. Attach message with confirmation payload
+                // 6. Update channel details in DB
+                const channelId = req.body.frame.conversationId;
+                await publish(channelId, payload);
+
+                // 7. Send transaction, include MAM channel info
                 const hash = await sendMessage(payload, tag);
 
                 console.log('informConfirm success', hash);
@@ -325,22 +330,21 @@ export class AppHelper {
                     // 4. Attach message with confirmation payload
                     // 5. Update channel details in DB
                     const channelId = req.body.frame.conversationId;
-                    const mam = await publish(channelId, req.body);
+                    await publish(channelId, req.body);
 
                     // 6. Create Tag
                     const location = getLocationFromMessage(req.body);
                     const submodelId = req.body.dataElements.submodels[0].identification.id;
                     const tag = buildTag('informPayment', location, submodelId);
 
-                    // 7. Send transaction, include MAM channel info
-                    const hash = await sendMessage({ ...req.body, ...mam }, tag);
+                    // 7. Send transaction
+                    const hash = await sendMessage(req.body, tag);
 
                     console.log('informPayment success', hash);
                     res.send({
                         success: true,
                         tag,
-                        hash,
-                        mam
+                        hash
                     });
                 } else {
                     console.log('informPayment insufficient balance');
