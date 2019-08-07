@@ -119,12 +119,13 @@ export default class extends React.Component {
     }
   };
 
-  changeSubmodelValue({ target: { name, type, value } }, index) {
+  changeSubmodelValue({ target: { name, type, value, checked = null } }, index) {
     const submodel = this.state.submodel;
     if (value && type === 'number') {
       submodel[index][name] = Number(value);
     } else {
-      submodel[index][name] = value;
+      const val = type === 'checkbox' ? checked : value;
+      submodel[index][name] = val;
     }
     this.setState({ submodel });
   };
@@ -150,6 +151,8 @@ export default class extends React.Component {
     submodel.forEach(({ semanticId, value, valueType }) => {
       if (['date', 'dateTime', 'dateTimeStamp'].includes(valueType)) {
         submodelValues[semanticId] = Date.parse(value);
+      } if (valueType === 'boolean') {
+        submodelValues[semanticId] = Boolean(value);
       } else {
         submodelValues[semanticId] = value;
       }
@@ -255,6 +258,7 @@ export default class extends React.Component {
                               type={getInputType(valueType)}
                               name="value"
                               value={submodel[i].value}
+                              checked={submodel[i].value}
                               onChange={e => this.changeSubmodelValue(e, i)}
                             />
                           </Small>
