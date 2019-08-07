@@ -1,0 +1,36 @@
+{
+    "zmq": {
+        "endpoint": "tcp://zmq.devnet.iota.org:5556",
+        "prefix": "SEMARKET"
+    },
+    "mqttConfig": {
+        "domain": "http://localhost:4000",
+        "broker": "mqtt://test.mosquitto.org"
+    },
+    "database": "../../../db/marketmanager.sqlite3",
+    "maxDistance": 10,
+    "operations": [
+        "0173-1#02-BAF577#004", 
+        "0173-1#02-BAF576#004", 
+        "0173-1#02-BAF575#004", 
+        "0173-1#02-BAF574#004", 
+        "0173-1#02-BAF573#004", 
+        "0173-1#02-AAN521#005",
+        "0173-1#02-BAF634#008", 
+        "0173-1#02-BAF777#004"
+    ],
+    "dataRequest": ["0173-1#02-BAF777#004"],
+    "faucet": "https://api.marketplace.tangle.works/semarket",
+    "provider": "https://nodes.devnet.iota.org:443",
+    "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD",
+    "demoSensorData": {
+        "conversationId": "",
+        "deviceId": "WeatherStation",
+        "userId": "bswJqRiy5ngfih3PyOmdGxC9a7u1",
+        "schema": [{
+            "id": "temp",
+            "name": "Temperature",
+            "unit": "C"
+        }]
+    }
+}
