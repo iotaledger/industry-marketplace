@@ -1,6 +1,6 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
-import { readData, writeData } from './databaseHelper';
+import { getRandomWallet, setWalletBusy, writeData } from './databaseHelper';
 
 export const getBalance = async address => {
     try {
@@ -72,6 +72,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
                             await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
+                            await setWalletBusy(seed, 'true')
 
                             const hashes = transactions.map(transaction => transaction.hash);
 
@@ -87,7 +88,8 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-                            
+                            await setWalletBusy(seed, 'false')
+
                             resolve(transactions);
                         })
                         .catch(error => {
@@ -118,7 +120,7 @@ export const processPayment = async (receiveAddress, paymentValue) => {
         seed?: string;
     }
 
-    const wallet: IWallet = await readData('wallet');
+    const wallet: IWallet = await getRandomWallet('wallet');
     console.log('processPayment', wallet, receiveAddress, paymentValue);
     
     const { address, keyIndex, seed } = wallet;
