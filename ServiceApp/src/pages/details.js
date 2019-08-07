@@ -39,7 +39,7 @@ class Details extends React.Component {
         const querystring = `${stringify({ deviceId, userId })}`;
         const result = await axios.get(`${sensorDataDomain}${querystring}`);
         if (result.data.length > 0) {
-          this.setState({ schema: JSON.parse(schema), sensorData: result.data });
+          this.setState({ schema, sensorData: result.data });
         };
       }
     }
