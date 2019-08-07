@@ -7,9 +7,9 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
-import { encrypt, generateKeyPair } from './encryptionHelper';
+import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
-import { fetchDID, publish, publishDID } from './mamHelper';
+import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
@@ -203,24 +203,16 @@ export class AppHelper {
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
 
-                // retrieve id/DID of the communication partner
-                // encrypt sensitive data using the public key from the MAM channel
+                // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = req.body.frame.receiver.identification.id;
-                const partnetId = id.replace('did:iota:', '');
-                const did = await fetchDID(partnetId);
-                const publicKey = did[did.length - 1];
+                mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
 
-                const message = Buffer.from(mam.secretKey, 'utf8');
-                const encryptedBuffer: any = await encrypt(publicKey, message);
-                const encryptedPayload = encryptedBuffer.toString('base64');
-                mam.secretKey = encryptedPayload;
-
-                // 4. Create Tag
+                // 5. Create Tag
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('acceptProposal', location, submodelId);
 
-                // 5. Send transaction, include MAM channel info
+                // 6. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, mam }, tag);
 
                 console.log('acceptProposal success', hash);

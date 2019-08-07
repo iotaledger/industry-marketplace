@@ -1,4 +1,6 @@
 import crypto from 'crypto';
+import { readData } from './databaseHelper';
+import { fetchDID } from './mamHelper';
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 
@@ -26,7 +28,7 @@ export const generateKeyPair = async () => {
     });
 };
 
-export const encrypt = async (key, message) => {
+const encrypt = async (key, message) => {
     return new Promise(async resolve => {
         const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
         const result = await crypto.publicEncrypt(payload, message);
@@ -34,10 +36,26 @@ export const encrypt = async (key, message) => {
     });
 };
 
-export const decrypt = async (key, message) => {
+const decrypt = async (key, message) => {
     return new Promise(async resolve => {
         const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
         const result = await crypto.privateDecrypt(payload, message);
         resolve(result);
     });
+};
+
+export const encryptWithReceiversPublicKey = async (receiverId, payload) => {
+    const partnetId = receiverId.replace('did:iota:', '');
+    const did = await fetchDID(partnetId);
+    const publicKey = did[did.length - 1];
+    const message = Buffer.from(payload, 'utf8');
+    const encryptedBuffer: any = await encrypt(publicKey, message);
+    return encryptedBuffer.toString('base64');
+};
+
+export const decryptWithReceiversPrivateKey = async (payload) => {
+    const did: any = await readData('did');
+    const messageBuffer = Buffer.from(payload.secretKey, 'base64');
+    const decryptedBuffer = await decrypt(did.privateKey, messageBuffer);
+    return decryptedBuffer.toString();
 };
