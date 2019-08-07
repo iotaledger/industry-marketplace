@@ -9,7 +9,7 @@ const db = new sqlite3.Database(
             return console.error('New database Error', error);
         }
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, role TEXT, areaCode TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER, busy TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
     }
@@ -28,7 +28,7 @@ export const createUser = async ({ id, role, areaCode = '' }) => {
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex, busy) VALUES (?, ?, ?, ?,?)', [seed, address, balance, keyIndex, 'false']);
+    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
 };
 
 export const createSensorData = async ({ id, deviceId, userId, schema }) => {
@@ -66,12 +66,6 @@ export const writeData = async (table, data) => {
         return null;
     }
 };
-
-export const setWalletBusy = async (seed, activation) => {
-         db.run(`UPDATE wallet SET busy = ? WHERE seed = ?`, [activation, seed])
- };
-
-
 
 export const readData = async (table, searchField = null) => {
     return new Promise((resolve, reject) => {
@@ -117,27 +111,6 @@ export const removeData = (table) => {
         resolve();
     });
 };
-
-export const getRandomWallet = async (table) => {
-    return new Promise((resolve, reject) => {
-        try {
-            let query = `SELECT * FROM ${table} WHERE busy = ? ORDER BY RANDOM() LIMIT 1`;
-
-            db.get(query, ['false'], (err, row) => {
-                if (err) {
-                    return resolve(null);
-                } else {
-                    return resolve(row || null);
-                }
-            });
-        } catch (error) {
-            console.log('readData', error);
-            return reject(null);
-        }
-    });
-};
-
-
 
 /*
 Example write operation:
