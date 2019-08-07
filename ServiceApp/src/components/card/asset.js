@@ -173,7 +173,7 @@ const Asset = props => {
           </RowThird>
           <RowThird>
             <RowDesc>Partner ID:</RowDesc>
-            <Data>{asset.partner}</Data>
+            <Data>{user.name}</Data>
           </RowThird>
         </Row>
         <Row>

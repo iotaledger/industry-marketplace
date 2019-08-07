@@ -21,7 +21,7 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
       <Header>
         <Block>
           <Desc>{user.role === 'SR' ? 'Service requester' : 'Service provider'}</Desc>
-          <UserID>{user.id}</UserID>
+          <Value>{user.name}</Value>
         </Block>
       </Header>
       <BurgerIconWrap>
@@ -34,7 +34,7 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
       <RightHeader>
         <Block>
           <Desc>Wallet balance</Desc>
-          <UserID>{user.balance}</UserID>
+          <Value>{user.balance}</Value>
         </Block>
         {
           user.role === 'SR' && !back ? (
@@ -86,7 +86,7 @@ const Block = styled.div`
   margin: 0 20px 0 10px;
 `;
 
-const UserID = styled.span`
+const Value = styled.span`
   color: #529FF8;
   font-size: 28px;
 `;
