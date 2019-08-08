@@ -361,6 +361,11 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSP"
       }
     },
+    "receiver":{
+        "identification":{
+           "id":"UserSR"
+        }
+     },
     "replyBy": 1564390525000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
