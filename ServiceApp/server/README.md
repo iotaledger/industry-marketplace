@@ -137,7 +137,7 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 #### GET /user
 
 * Generates public/private key pair if not in DB 
-* creates public MAM channel with DID as root. 
+* creates public MAM channel with DID as root
 * publishes public key as messages to public MAM channel
 * saves private key under DID in DB 
 
@@ -537,6 +537,9 @@ Please complete with [submodelElements](#submodelelements)
         "identification": {
           "id": "0173-1#02-BAF577#004",
           "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
+        }
+      }
+    ]
   },
 "walletAddress": "SSMP99ECJBTITUDWHTHYZAYTYCIIIEMEWIPNEMWEKWBNXQJWTCVFHHXPQFMAHJJSLYPYTDIGPNIHPHJLZNGEPFI99D"
 }
@@ -547,38 +550,45 @@ Please complete with [submodelElements](#submodelelements)
 
 ```json
 {
-              "idShort": "gewicht",
-              "modelType": "Property",
-              "value": "5",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAB713#005"
-            },
-            {
-              "idShort": "farbe",
-              "modelType": "Property",
-              "value": "schwarz",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAN521#005"
-            },
-            {
-              "idShort": "material",
-              "modelType": "Property",
-              "value": "stahl",
-              "valueType": "string",
-              "semanticId": "0173-1#02-BAF634#008"
-            },
-            {
-              "idShort": "ort",
-              "modelType": "Property",
-              "value": "berlin",
-              "valueType": "string",
-              "semanticId": "0173-1#02-BAF163#002"
-            },
-            {
-              "idShort": "zeit",
-              "modelType": "Property",
-              "value": "1558461600",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAO738#001"
-            }
+                        "idShort": "gewicht",
+                        "modelType": "Property",
+                        "value": "5",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAB713#005"
+                      },
+                      {
+                        "idShort": "farbe",
+                        "modelType": "Property",
+                        "value": "schwarz",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAN521#005"
+                      },
+                      {
+                        "idShort": "material",
+                        "modelType": "Property",
+                        "value": "stahl",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-BAF634#008"
+                      },
+                      {
+                        "idShort": "ort",
+                        "modelType": "Property",
+                        "value": "berlin",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-BAF163#002"
+                      },
+                      {
+                        "idShort": "zeit",
+                        "modelType": "Property",
+                        "value": "1558461600",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAO738#001"
+                      },
+                      {
+                        "idShort": "preis",
+                        "modelType": "Property",
+                        "value": "5",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAO738#001"
+                      }
 ```
