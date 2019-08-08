@@ -75,12 +75,15 @@ export const writeData = async (table, data) => {
     }
 };
 
-export const readData = async (table, searchField = null) => {
+export const readData = async (table, searchField = null, column = null) => {
     return new Promise((resolve, reject) => {
         try {
             let query = `SELECT * FROM ${table} ORDER BY rowid DESC LIMIT 1`;
             if (searchField) {
                 query = `SELECT * FROM ${table} WHERE id = '${searchField}' ORDER BY rowid DESC LIMIT 1`;
+            }
+            if (column) {
+                query = `SELECT ${column} FROM ${table} LIMIT 1`;
             }
             db.get(query, (err, row) => {
                 if (err) {
@@ -112,6 +115,29 @@ export const readAllData = async (table) => {
         }
     });
 };
+
+
+export const readDataEquals = async (table, column, value) => {
+    return new Promise((resolve, reject) => {
+        try {
+            db.get(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
+                if (err) {
+                    return resolve(err);
+                }
+                else {
+                    return resolve(rows);
+                }
+            });
+        } catch (error) {
+            console.log('readAllData', error);
+            return reject(null);
+        }
+    });
+};
+
+
+
+
 
 export const removeData = (table) => {
     return new Promise(async resolve => {

@@ -1,12 +1,11 @@
 import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { maxDistance, operations } from '../config.json';
-import { readData, writeData } from '../utils/databaseHelper';
+import { operations } from '../config.json';
+import { writeData, readData, readDataEquals } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
-import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 
 /**
@@ -17,7 +16,7 @@ export class ZmqService {
     /**
      * Bundlehashes that were already send to not send twice 
      *
-     */  
+     */
     public sentBundles = [];
 
     /**
@@ -197,34 +196,74 @@ export class ZmqService {
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-            
+
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
 
+
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
-
-                    interface IUser {
-                        id?: string;
-                        name?: string;
+                    interface IRole {
                         role?: string;
-                        areaCode?: string;
                     }
-                    const { id, role, areaCode }: IUser = await readData('user');
-
+                    const { role }: IRole = await readData('user', null, 'role')
+               
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
-                        case 'SR':
-                            // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                            if (['proposal', 'informConfirm'].includes(messageType)) {
-                                // 2.1 Decode every such message and retrieve receiver ID
+                        case 'SP':
+                            // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                            if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                                 const data = await getPayload(bundle);
-                                const receiverID = data.frame.receiver.identification.id;
 
-                                // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
-                                if (id === receiverID) {
+                                // 3.1 Decode every message of type A and send du simulator
+                                if (messageType === 'callForProposal') {
+
                                     this.sendEvent(data, messageType, messageParams);
 
+                                } else {
+                                    // 3.4 Decode every message of type C, D, F and retrieve receiver I
+                                    const receiverID = data.frame.receiver.identification.id;
+                                    const simulationUser = await readDataEquals('user', 'name', receiverID)
+                                    if (simulationUser) {
+                                        //check if user is simulation user, Only if match, send message to UI
+                                        // interface IUser {
+                                        //     id?: string;
+                                        //     name?: string;
+                                        //     role?: string;
+                                        //     areaCode?: string;
+                                        // }
+                                        // const { id, name, role, areaCode }: IUser = await readDataEquals('user', 'name', receiverID)
+
+
+                                        //     if (messageType === 'acceptProposal') {
+                                        //       const channelId = data.frame.conversationId;
+                                        // const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                        // await writeData('mam', {
+                                        //     id: channelId,
+                                        //     root: data.mam.root,
+                                        //     seed: '',
+                                        //     next_root: '',
+                                        //     side_key: secretKey,
+                                        //     start: 0
+                                        // });
+                                        //}
+                                        this.sendEvent(data, messageType, messageParams);
+                                    }
+                                }
+                            }
+                            break;
+                        case 'SR':
+                            
+                                // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                                if (['proposal', 'informConfirm'].includes(messageType)) {
+                                    const data = await getPayload(bundle);
+                                    const receiverID = data.frame.receiver.identification.id;
+                                    const simulationUser = await readDataEquals('user', 'name', receiverID)
+                                   
+                                    if (simulationUser) {
+                                    // 2.1 Decode every such message and retrieve receiver ID
+                                    this.sendEvent(data, messageType, messageParams);
+               
                                     if (messageType === 'informConfirm') {
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);
@@ -232,66 +271,7 @@ export class ZmqService {
                                 }
                             }
                             break;
-                        case 'SP':
-                            // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                            if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
-                                const data = await getPayload(bundle);
 
-                                // 3.1 Decode every message of type A, retrieve location.
-                                if (messageType === 'callForProposal') {
-                                    const location = await getLocationFromMessage(data);
-
-                                    // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                    if (!areaCode || !maxDistance) {
-                                        this.sendEvent(data, messageType, messageParams);
-                                    }
-
-                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                    if (areaCode && maxDistance) {
-
-                                        try {
-                                            const ownLocObj = await decode(areaCode);
-                                            const locObj = await decode(location);
-                                            const distance = await calculateDistance(ownLocObj, locObj);
-
-                                            // 3.3.1 If distance within accepted range, send message to UI
-                                            if (distance <= maxDistance) {
-                                                this.sendEvent(data, messageType, messageParams);
-                                            }
-                                        } catch (error) {
-                                            console.error(error);
-                                        }
-                                    }
-                                } else {
-                                    // 3.4 Decode every message of type C, D, F and retrieve receiver ID
-                                    const receiverID = data.frame.receiver.identification.id;
-
-                                    // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
-                                    if (id === receiverID) {
-                                        if (messageType === 'acceptProposal') {
-                                            const channelId = data.frame.conversationId;
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', { 
-                                                id: channelId, 
-                                                root: data.mam.root, 
-                                                seed: '', 
-                                                next_root: '', 
-                                                side_key: secretKey, 
-                                                start: 0 
-                                            });
-                                        }
-                                        this.sendEvent(data, messageType, messageParams);
-                                    }
-                                }
-                            }
-                            break;
-                        default:
-                            // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                            if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                                const data = await getPayload(bundle);
-                                // 4.1 Send every such message to UI
-                                this.sendEvent(data, messageType, messageParams);
-                            }
                     }
                 }
             }

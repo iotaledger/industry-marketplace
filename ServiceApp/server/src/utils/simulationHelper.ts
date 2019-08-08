@@ -1,15 +1,17 @@
 import io from 'socket.io-client'
 import get from 'lodash/get';
+//import {generate} from '../Industry_4.0_language'
 
 const socket = io('http://localhost:4000');
 const role = 'SP'
+//const id = 'UserSP'
 
 socket.on('connect', () => {
     console.log("Connected")
 });
 socket.emit('subscribe', { events: ['tx'] })
 
-socket.on('zmq', (message) => {
+socket.on('zmq', async (message) => {
 
     const data = get(message, 'data.data')
     if (typeof data === 'string') {
@@ -17,22 +19,31 @@ socket.on('zmq', (message) => {
     }
 
     const {
-        conversationId,
+       // conversationId,
         location,
-        type,
+       // type,
     } = data.frame;
 
+    const partner = await getPartner(role, data.frame);
+console.log(location, partner)
+  //  const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
+
+  
+//  const request = generate({
+// messageType: 'proposal',
+// location,
+// partner,
+// originalMessage: await JSON.parse(data),
+// userId: id,
+// price: 6,
+// })
 
 
-    const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
-    console.log(submodelElements)
-    console.log(conversationId,
-        location,
-        type)
-    // const params = submodelElements.map(({ idShort, value }) => ({ idShort, value }));
+
 
 
 });
+
 
 
 
@@ -81,4 +92,22 @@ switch (role) {
 
 // });
 
+
+const getPartner = async (role, data) => {
+    if (role === 'SP') {
+        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
+            return get(data, 'sender.identification.id');
+        } else if (['proposal', 'informConfirm'].includes(data.type)) {
+            return get(data, 'receiver.identification.id');
+        }
+    } else if (role === 'SR') {
+        if (data.type === 'callForProposal') {
+            return 'Pending';
+        } else if (['acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
+            return get(data, 'receiver.identification.id');
+        } else if (['proposal', 'informConfirm'].includes(data.type)) {
+            return get(data, 'sender.identification.id');
+        }
+    }
+}
 
