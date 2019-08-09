@@ -34,7 +34,8 @@
         "sqlite3": "^4.0.9",
         "uuid": "^3.3.2",
         "yargs": "^13.3.0",
-        "zeromq": "^5.1.0"
+        "zeromq": "^5.1.0",
+        "SeMarket": "iotaledger/SeMarket"
     },
     "devDependencies": {
         "@types/express": "^4.17.0",

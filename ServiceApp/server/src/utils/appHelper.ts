@@ -6,8 +6,8 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData } from './databaseHelper';
-import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
+import { readData, writeData, readDataEquals} from './databaseHelper';
+import {  generateKeyPair } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
@@ -15,6 +15,7 @@ import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
 
+//encryptWithReceiversPublicKey,
 /**
  * Class to help with expressjs routing.
  */
@@ -121,7 +122,7 @@ export class AppHelper {
 
             if (!user || !user.id) {
                 // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
+               const { publicKey, privateKey }: any = await generateKeyPair();
                 const root = await publishDID(publicKey);
                 await writeData('did', { root, privateKey });
                 const id = `did:iota:${root}`;
@@ -204,8 +205,8 @@ export class AppHelper {
                 const mam = await publish(channelId, req.body);
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
-                const id = req.body.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
+               // const id = req.body.frame.receiver.identification.id;
+              //  mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
 
                 // 5. Create Tag
                 const location = getLocationFromMessage(req.body);
@@ -267,10 +268,12 @@ export class AppHelper {
                 interface IWallet {
                     address?: string;
                 }
-                const wallet: IWallet = await readData('wallet');
+                const wallet: IWallet = await readDataEquals('wallet','status','reserved')
                 const { address } = wallet;
+            
 
                 const payload = { ...req.body, walletAddress: address };
+     
                 
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {

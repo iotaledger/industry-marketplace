@@ -1,10 +1,10 @@
-import { decode } from '@iota/area-codes';
+//import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { operations } from '../config.json';
-import { writeData, readData, readDataEquals } from '../utils/databaseHelper';
+import { readData, readDataEquals } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
-import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
+//import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
 

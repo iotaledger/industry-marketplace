@@ -1,113 +1,119 @@
 import io from 'socket.io-client'
 import get from 'lodash/get';
-//import {generate} from '../Industry_4.0_language'
+import axios from 'axios'
+import { generate } from 'SeMarket/Industry_4.0_language/index.js'
+import { getRandomRow, setWalletStatus } from './databaseHelper'
+//import {generateRandomSubmodelValues} from 'SeMarket/ServiceApp/src/utils/randomizer.js'
+
+import { readData } from './databaseHelper';
+
+
+const BASE_URL = 'http://localhost:4000';
 
 const socket = io('http://localhost:4000');
-const role = 'SP'
-//const id = 'UserSP'
 
-socket.on('connect', () => {
-    console.log("Connected")
-});
-socket.emit('subscribe', { events: ['tx'] })
+const simulate = async () => {
 
-socket.on('zmq', async (message) => {
-
-    const data = get(message, 'data.data')
-    if (typeof data === 'string') {
-        JSON.parse(data);
+    //Choose wallet for incoming payments 
+    interface IWallet {
+        seed?: string;
     }
 
-    const {
-       // conversationId,
-        location,
-       // type,
-    } = data.frame;
+    //Rotate Incoming Wallet 
+    const IncomingWallet: IWallet = await getRandomRow('wallet','status','reserved');
+    const { seed } = await IncomingWallet
+    setWalletStatus(seed, 'usable')
+ 
 
-    const partner = await getPartner(role, data.frame);
-console.log(location, partner)
-  //  const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
+   
+    const newIncomingWallet: IWallet = await getRandomRow('wallet','status','usable');
+    const seed2 = await newIncomingWallet.seed
+    setWalletStatus(seed2, 'reserved')
 
-  
-//  const request = generate({
-// messageType: 'proposal',
-// location,
-// partner,
-// originalMessage: await JSON.parse(data),
-// userId: id,
-// price: 6,
-// })
+    //get role of simulator
+    interface IRole {
+        role?: string;
+    }
+    const { role }: IRole = await readData('user', null, 'role')
 
 
+if(role === 'SR'){
+
+    //Add random cfps
 
 
-
-});
-
-
-
-
-// 1. Check user role (SR, SP, YP)
-switch (role) {
-    case 'SP':
-
-        //Extract message
-        //extract type of msg 
-        //if with type of msg
-
-
-
-
-
-
-        break;
 
 }
 
 
-//         // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-//         if (['proposal', 'informConfirm'].includes(messageType)) {
-//             // 2.1 Decode every such message and retrieve receiver ID
-//             const data = await getPayload(bundle);
-//             const receiverID = data.frame.receiver.identification.id;
+    //subscribe to ZMQ messages
+    socket.on('connect', () => {
+        console.log("Connected")
+    });
+    socket.emit('subscribe', { events: ['tx'] })
 
-//             // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
-//             if (id === receiverID) {
-//                 this.sendEvent(data, messageType, messageParams);
-
-//                 if (messageType === 'informConfirm') {
-//                     const channelId = data.frame.conversationId;
-//                     await publish(channelId, data);
-//                 }
-//             }
-//         }
-//         break;
-//     case 'SP':
-
-// socket.on('zmq', (data) => {
-//     console.log('zmsqdata',data)
-
-//   //  console.log(data.data)
-//   //  console.log(parse.data.data.dataElements)
-
-// });
-
-
-const getPartner = async (role, data) => {
-    if (role === 'SP') {
-        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
-            return get(data, 'sender.identification.id');
-        } else if (['proposal', 'informConfirm'].includes(data.type)) {
-            return get(data, 'receiver.identification.id');
+    socket.on('zmq', async (message) => {
+        const data = get(message, 'data.data')
+        if (typeof data === 'string') {
+            JSON.parse(data);
         }
-    } else if (role === 'SR') {
-        if (data.type === 'callForProposal') {
-            return 'Pending';
-        } else if (['acceptProposal', 'rejectProposal', 'informPayment'].includes(data.type)) {
-            return get(data, 'receiver.identification.id');
-        } else if (['proposal', 'informConfirm'].includes(data.type)) {
-            return get(data, 'sender.identification.id');
+        const { type } = data.frame;
+
+
+        if (['callForProposal'].includes(type)) {
+
+            //generate message 
+            const request = generate({
+                messageType: 'proposal',
+                originalMessage: data,
+                userId: 'SimSR',
+                price: 6,
+            })
+
+            //send message to Market Manager 
+            apiPost('proposal', request)
         }
-    }
+
+
+        if (['proposal'].includes(type)) {
+
+            const request = await generate({
+                messageType: 'acceptProposal',
+                originalMessage: data,
+            })
+            apiPost('acceptProposal', request)
+        }
+
+        if (['acceptProposal'].includes(type)) {
+
+            const request = await generate({
+                messageType: 'informConfirm',
+                originalMessage: data,
+            })
+            apiPost('informConfirm', request)
+        }
+
+        if (['informConfirm'].includes(type)) {
+
+            const request = await generate({
+                messageType: 'informPayment',
+                originalMessage: data,
+            })
+            console.log('informPayment', request)
+            //apiPost('informPayment', request)
+
+        }
+
+
+
+    })
 }
 
+
+simulate();
+
+
+const apiPost = async (messageType, message) => {
+    const response = await axios.post(`${BASE_URL}/${messageType}`, message);
+    console.log(response.data);
+}
