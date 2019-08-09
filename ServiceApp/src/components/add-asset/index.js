@@ -10,10 +10,26 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loading from '../loading';
 import { waitingTime } from '../../config.json';
+import { generateRandomSubmodelValues, getRandomTimestamp } from '../../utils/randomizer';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
-    {props.header ? <CardHeader>{props.header}</CardHeader> : null}
+    {
+      props.header ? (
+        <CardHeader>
+          {props.header}
+          {
+            props.randomize && <img
+              width={50}
+              src="/static/icons/dice_transparent.png"
+              alt="Chosen by fair dice roll. Guaranteed to be random"
+              role="button"
+              onClick={props.randomize}
+            />
+          }
+        </CardHeader> 
+      ) : null
+    }
     {props.children}
     {props.footer ? <CardFooter>{props.footer}</CardFooter> : null}
   </CardWrapper>
@@ -78,6 +94,7 @@ export default class extends React.Component {
     this.changeSubmodelValue = this.changeSubmodelValue.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.randomize = this.randomize.bind(this);
   }
 
   async componentDidMount() {
@@ -132,6 +149,12 @@ export default class extends React.Component {
 
   handleDateChange(date, component) {
     this.setState({ [component]: date });
+  }
+
+  randomize() {
+    const submodel = generateRandomSubmodelValues(this.state.submodel);
+    const [assetStart, assetEnd] = getRandomTimestamp();
+    this.setState({ submodel, assetStart, assetEnd });
   }
 
   async submit() {
@@ -193,7 +216,10 @@ export default class extends React.Component {
       <React.Fragment>
         <Modal className="access-modal-wrapper" show={true}>
           <AddAsset className="access-modal">
-            <Card header={<Header>New Request</Header>}>
+            <Card 
+              header={<Header>New Request</Header>} 
+              randomize={operation ? this.randomize : null}
+            >
               {
                 !loading ? (
                   <Form>
@@ -426,8 +452,11 @@ const CardWrapper = styled.div`
 
 const CardHeader = styled.header`
   position: relative;
-  padding: 0 30px 8px 30px;
+  padding: 8px 30px 6px 30px;
   border-bottom: 1px solid #eaecee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 `;
 
 const CardFooter = styled.footer`
