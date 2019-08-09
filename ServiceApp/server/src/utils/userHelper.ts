@@ -4,9 +4,9 @@ import { faucet } from '../config.json';
 import { createUser, createWallet } from './databaseHelper';
 
 const createNewUser = async () => {
-    const { id, role = '', areaCode = '' } = argv;
-    if (id && (role === 'SR' || role === 'SP')) {
-        return await createUser({ id, name: id, role, areaCode });
+    const { name, role = '', areaCode = '' } = argv;
+    if (name && (role === 'SR' || role === 'SP')) {
+        return await createUser({ id: '', name, role, areaCode });
     } else {
         console.log('Params are missing or wrong');
         return;
@@ -24,10 +24,10 @@ const createNewWallet = async () => {
 
 const argv = yargs
     .usage('Create new user or wallet')
-    .example('$0 --create user --role SR --id user-SR-123 --areaCode NPHTQORL9XK', 'Creates a new Service Requester with ID user-SR-123')
+    .example('$0 --create user --role SR --name user-SR-123 --areaCode NPHTQORL9XK', 'Creates a new Service Requester with name user-SR-123')
     .required('create', 'Mode must be provided').describe('create', 'Create new user or wallet. Options: ["user", "wallet"]')
     .describe('role', 'Define user role. Options: ["SR", "SP"]')
-    .describe('id', 'Define user ID')
+    .describe('name', 'Define user name')
     .describe('areaCode', 'Define location')
     .help('help')
     .argv;

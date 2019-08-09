@@ -46,14 +46,14 @@ const randomTextLength = 10;
 
 const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 
-const getRandomLocation = () => {
+export const getRandomLocation = () => {
     const lat = locationBoundaries.lat.min + getRandomInt(locationBoundaries.lat.max - locationBoundaries.lat.min) + Math.random();
     const lon = locationBoundaries.lon.min + getRandomInt(locationBoundaries.lon.max - locationBoundaries.lon.min) + Math.random();
     return encode(lat, lon);
 };
 
 const getRandomInteger = () => {
-    return getRandomInt(integerMaxValue);
+    return 1 + getRandomInt(integerMaxValue);
 };
 
 const getRandomDecimal = () => {
@@ -110,6 +110,11 @@ export const generateRandomSubmodelValues = submodel => {
             default: {
                 switch (item.idShort) {
                     case 'ort':
+                    case 'location':
+                    case 'target location':
+                    case 'starting point':
+                    case 'destination':
+                    case 'departure':
                         return { ...item, value: getRandomLocation() };
                     case 'material':
                         return { ...item, value: getRandomMaterial() };

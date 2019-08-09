@@ -44,7 +44,7 @@
                 "idShort":"reliability duration",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"integer",
+                "valueType":"time",
                 "semanticId":"0173-1#02-AAY979#001"
             },
             {
@@ -112,6 +112,13 @@
                 "semanticId":"0173-1#02-AAJ102#003"
             },
             {
+                "idShort":"max. charging voltage",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAJ101#003"
+            },
+            {
                 "idShort":"cables included",
                 "modelType":"Property",
                 "value":"",
@@ -124,13 +131,6 @@
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-AAF631#001"
-            },
-            {
-                "idShort":"max. charging voltage",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"integer",
-                "semanticId":"0173-1#02-AAJ101#003"
             },
             {
                 "idShort":"cable length",

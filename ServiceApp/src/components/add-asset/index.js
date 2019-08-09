@@ -10,7 +10,11 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Loading from '../loading';
 import { waitingTime } from '../../config.json';
-import { generateRandomSubmodelValues, getRandomTimestamp } from '../../utils/randomizer';
+import {
+  generateRandomSubmodelValues, 
+  getRandomTimestamp,
+  getRandomLocation
+} from '../../utils/randomizer';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -195,7 +199,7 @@ export default class extends React.Component {
       startTimestamp: Date.parse(assetStart),
       endTimestamp: Date.parse(assetEnd),
       replyTime: waitingTime,
-      location: this.props.user.areaCode
+      location: getRandomLocation()
     };
 
     this.setState({ loading: true });
@@ -278,7 +282,7 @@ export default class extends React.Component {
                     {
                       submodel.map(({ idShort, valueType }, i) => (
                         <Row key={i}>
-                          <Small>
+                          <Column>
                             <label>{idShort}:</label>
                             <Input
                               type={getInputType(valueType)}
@@ -287,7 +291,7 @@ export default class extends React.Component {
                               checked={submodel[i].value}
                               onChange={e => this.changeSubmodelValue(e, i)}
                             />
-                          </Small>
+                          </Column>
                         </Row>
                       ))
                     }
@@ -355,13 +359,6 @@ const Column = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-`;
-
-const Small = styled(Column)`
-  width: 45%;
-  @media (max-width: 760px) {
-    width: 100%;
-  }
 `;
 
 const Row = styled.div`
