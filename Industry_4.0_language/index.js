@@ -134,6 +134,10 @@ const generate = ({
         message.frame.endTimestamp = originalMessage.frame.endTimestamp;
         message.frame.creationDate = originalMessage.frame.creationDate;
 
+        if (originalMessage.walletAddress) {
+            message.walletAddress = originalMessage.walletAddress;
+        }
+
         if (messageType === 'proposal' && price && irdi) {
             const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => idShort === 'preis');
             priceModel.value = price;
@@ -160,12 +164,12 @@ const generate = ({
             const submodelElements = submodelTemplate.map(element => (
                 { ...element, value: submodelValues[element.semanticId] } 
             ));
-            message.dataElements.submodels.push({
+            message.dataElements.submodels = [{
                 identification: {
                     id: irdi,
                     submodelElements
                 }
-            });
+            }];
         }
     }
 

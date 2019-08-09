@@ -151,7 +151,7 @@ const Asset = props => {
               asset.params.map(({ idShort, value }) => (
                 <RowThird key={idShort}>
                   <RowDesc>{idShort}</RowDesc>
-                  <Data>{value}</Data>
+                  <Data>{value.toString()}</Data>
                 </RowThird>
               ))
             }

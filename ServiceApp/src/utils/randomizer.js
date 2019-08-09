@@ -126,6 +126,5 @@ export const generateRandomSubmodelValues = submodel => {
             }
         }
     })
-    console.log(randomSubmodel);
     return randomSubmodel;
 }
