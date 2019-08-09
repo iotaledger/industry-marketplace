@@ -172,8 +172,8 @@ const Asset = props => {
             </Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Partner ID:</RowDesc>
-            <Data>{user.name}</Data>
+            <RowDesc>Partner:</RowDesc>
+            <Data>{asset.partnerName}</Data>
           </RowThird>
         </Row>
         <Row>

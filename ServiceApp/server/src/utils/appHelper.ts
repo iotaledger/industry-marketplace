@@ -146,7 +146,8 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', location, submodelId);
                
                 // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const user: any = await readData('user');
+                const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
@@ -178,7 +179,8 @@ export class AppHelper {
                 const tag = buildTag('proposal', location, submodelId);
 
                 // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const user: any = await readData('user');
+                const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                 console.log('proposal success', hash);
                 res.send({
@@ -213,7 +215,8 @@ export class AppHelper {
                 const tag = buildTag('acceptProposal', location, submodelId);
 
                 // 6. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, mam }, tag);
+                const user: any = await readData('user');
+                const hash = await sendMessage({ ...req.body, mam, userName: user.name }, tag);
 
                 console.log('acceptProposal success', hash);
                 res.send({
@@ -239,7 +242,8 @@ export class AppHelper {
                 const tag = buildTag('rejectProposal', location, submodelId);
 
                 // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const user: any = await readData('user');
+                const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                 console.log('rejectProposal success', hash);
                 res.send({
@@ -270,7 +274,8 @@ export class AppHelper {
                 const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
-                const payload = { ...req.body, walletAddress: address };
+                const user: any = await readData('user');
+                const payload = { ...req.body, walletAddress: address, userName: user.name };
                 
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
@@ -330,7 +335,8 @@ export class AppHelper {
                     const tag = buildTag('informPayment', location, submodelId);
 
                     // 7. Send transaction
-                    const hash = await sendMessage(req.body, tag);
+                    const user: any = await readData('user');
+                    const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                     console.log('informPayment success', hash);
                     res.send({

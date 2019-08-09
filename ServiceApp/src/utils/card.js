@@ -46,6 +46,7 @@ export const prepareData = async (role, payload) => {
         partner,
         sensorData,
         id: conversationId,
+        partnerName: get(data, 'userName') || partner,
         originalMessage: JSON.stringify(data),
         storageId: type === 'proposal' && role === 'SR' ? `${conversationId}#${partner}` : conversationId,
         coordinates: await getCoordinates(location),
