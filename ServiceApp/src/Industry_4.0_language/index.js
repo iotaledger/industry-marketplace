@@ -54,7 +54,6 @@ const checkType = (type, value) => {
         case 'string':
         case 'langString':
         case 'anyURI':
-        case 'time':
             return typeof value === 'string';
 
         case 'decimal':
@@ -74,6 +73,7 @@ const checkType = (type, value) => {
         case 'nonNegativeInteger':
             return typeof value === 'number' && value >= 0 && value % 1 === 0;
         case 'positiveInteger':
+        case 'time':
             return typeof value === 'number' && value > 0 && value % 1 === 0;
         case 'nonPositiveInteger':
             return typeof value === 'number' && value <= 0 && value % 1 === 0;
