@@ -21,7 +21,7 @@ const generateRandomKey = length => {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
     const values = crypto.randomBytes(length);
     return Array.from(new Array(length), (x, i) => charset[values[i] % charset.length]).join('');
-  };
+};
 
 // Publish to tangle
 export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'SEMARKETMAM') => {
