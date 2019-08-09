@@ -277,7 +277,7 @@ export class AppHelper {
                     const conversationId = req.body.frame.conversationId;
                     payload.sensorData = await readData('data', conversationId);
                     if (!payload.sensorData) {
-                        payload.sensorData = { ... config.demoSensorData, conversationId };
+                        payload.sensorData = { ...config.demoSensorData, conversationId };
                     }
                 }
 

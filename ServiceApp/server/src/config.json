@@ -8,7 +8,7 @@
         "broker": "mqtt://test.mosquitto.org"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "maxDistance": 400,
+    "maxDistance": 1000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
