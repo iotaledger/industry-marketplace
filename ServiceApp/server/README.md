@@ -504,8 +504,7 @@ Please complete with [submodelElements](#submodelelements)
         }
       }
     ]
-  },
-"walletAddress": "SSMP99ECJBTITUDWHTHYZAYTYCIIIEMEWIPNEMWEKWBNXQJWTCVFHHXPQFMAHJJSLYPYTDIGPNIHPHJLZNGEPFI99D"
+  }
 }
 ```
 
