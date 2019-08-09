@@ -4,5 +4,5 @@
         "prefix": "SEMARKET"
     },
     "provider": "https://nodes.devnet.iota.org:443",
-    "db_endpoint": "https://us-central1-datamarket-617e1.cloudfunctions.net/storeMessage"
+    "db_endpoint": "https://us-central1-semarket-iota.cloudfunctions.net/storeMessage"
 }

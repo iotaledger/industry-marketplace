@@ -175,7 +175,6 @@ export class ZmqService {
 
                 if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
                     const data = await getPayload(bundle);
-                    // 4.1 Send every such message to UI
                     this.sendEvent(data, messageType, messageParams);
 
                     try {
