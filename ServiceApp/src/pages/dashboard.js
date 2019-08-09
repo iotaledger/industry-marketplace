@@ -185,7 +185,7 @@ class Dashboard extends React.Component {
   }
 
   async generateRequest(type, id, partner = null, price = null) {
-    const { irdi, originalMessage, walletAddress } = await readFromStorage(partner ? `${id}#${partner}` : id);
+    const { irdi, originalMessage } = await readFromStorage(partner ? `${id}#${partner}` : id);
     const request = generate({
       messageType: type,
       userId: this.context.user.id,
@@ -194,9 +194,6 @@ class Dashboard extends React.Component {
       irdi,
       price
     });
-    if (walletAddress) {
-      request.walletAddress = walletAddress;
-    }
     console.log('generateRequest', request);
     return request;
   }

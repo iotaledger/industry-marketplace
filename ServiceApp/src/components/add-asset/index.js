@@ -57,6 +57,7 @@ const getInputType = (type) => {
       case 'nonPositiveInteger':
       case 'negativeInteger':
       case 'dateTimeStamp':
+      case 'time':
           return 'number';
 
       case 'date':
@@ -75,23 +76,26 @@ const getInputType = (type) => {
       case 'anyType':
       case 'anySimpleType':
       case 'anyAtomicType':
-      case 'time':
       default:
         return 'text';
   }
+}
+
+const initState = {
+  loading: false,
+  assetStart: new Date(),
+  assetEnd: new Date(),
+  operation: '',
+  operations: [],
+  submodel: [],
 }
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      assetStart: new Date(),
-      assetEnd: new Date(),
-      operation: '',
-      operations: [],
-      submodel: [],
-    };
+      ...initState
+    }
 
     this.cancel = this.cancel.bind(this);
     this.change = this.change.bind(this);
@@ -99,33 +103,22 @@ export default class extends React.Component {
     this.handleDateChange = this.handleDateChange.bind(this);
     this.submit = this.submit.bind(this);
     this.randomize = this.randomize.bind(this);
+    this.cleanUp = this.cleanUp.bind(this);
   }
 
   async componentDidMount() {
+    await this.cleanUp();
     const eClassOperations = await operations();
     this.setState({ operations: eClassOperations });
   }
 
-  componentWillUnmount() {
-    this.setState({
-      loading: false,
-      assetStart: new Date(),
-      assetEnd: new Date(),
-      operation: '',
-      operations: [],
-      submodel: [],
-    });
+  async componentWillUnmount() {
+    await this.cleanUp();
   }
 
-  cancel() {
-    this.setState({
-      loading: false,
-      assetStart: new Date(),
-      assetEnd: new Date(),
-      operation: '',
-      operations: [],
-      submodel: [],
-    }, () => this.props.cancel());
+  async cancel() {
+    await this.cleanUp();
+    this.props.cancel();
   }
 
   async change({ target: { name, value } }) {
@@ -150,6 +143,10 @@ export default class extends React.Component {
     }
     this.setState({ submodel });
   };
+
+  async cleanUp() {
+    await this.setState({ ...initState });
+  }
 
   handleDateChange(date, component) {
     this.setState({ [component]: date });
@@ -196,8 +193,8 @@ export default class extends React.Component {
       messageType: 'callForProposal',
       userId: this.props.user.id,
       creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
-      startTimestamp: Date.parse(assetStart),
-      endTimestamp: Date.parse(assetEnd),
+      startTimestamp: typeof assetStart === 'number' ? assetStart : Date.parse(assetStart),
+      endTimestamp: typeof assetEnd === 'number' ? assetEnd : Date.parse(assetEnd),
       replyTime: waitingTime,
       location: getRandomLocation()
     };
