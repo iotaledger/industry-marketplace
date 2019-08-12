@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
+    "allowJs": true,
     "lib": [
       // "dom",
       "esnext",

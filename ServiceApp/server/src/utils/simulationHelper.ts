@@ -3,11 +3,12 @@ import get from 'lodash/get';
 import axios from 'axios';
 import yargs from 'yargs';
 
-import { generate } from 'SeMarket/Industry_4.0_language/index.js';
+import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
+import { generateRandomSubmodelValues, getRandomLocation } from '../utils/randomizer.js';
 import { getRandomRow, setWalletStatus } from './databaseHelper';
-//import {generateRandomSubmodelValues} from 'SeMarket/ServiceApp/src/utils/randomizer.js'
+import { operations } from '../config.json'
 
-
+//, getRandomTimestamp, getRandomLocation
 const BASE_URL = 'http://localhost:4000';
 const socket = io('http://localhost:4000');
 
@@ -19,22 +20,58 @@ const simulate = async (role) => {
     }
 
     //Rotate Incoming Wallet 
+
     const IncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'reserved');
-    const { seed } = await IncomingWallet
-    setWalletStatus(seed, 'usable')
-
-
+    if (IncomingWallet) {
+        const { seed } = await IncomingWallet
+        setWalletStatus(seed, 'usable')
+    }
 
     const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
-    const seed2 = await newIncomingWallet.seed
-    setWalletStatus(seed2, 'reserved')
+    const reservedSeed = await newIncomingWallet.seed
+    setWalletStatus(reservedSeed, 'reserved')
 
+//For SR send out random CFPs 
     if (role === 'SR') {
 
-        //Add random cfps
+        const sendRandomCFP = async () => {
 
+            interface IUser {
+                areaCode?: string;
+                id?: string;
+                role?: string;
+                name?: string;
+            }
+            const user: IUser = await getRandomRow('user', 'role', role);
 
+            const { id } = user
+            const randomOperation = randomValue(operations)
+            const randomSubmodel = await submodel(randomOperation)
 
+            const randomSubmodelElements = await generateRandomSubmodelValues(randomSubmodel)
+
+            const submodelValues = {};
+            randomSubmodelElements.forEach(({ semanticId, value, valueType }) => {
+                if (['date', 'dateTime', 'dateTimeStamp'].includes(valueType)) {
+                    submodelValues[semanticId] = Date.parse(value);
+                } if (valueType === 'boolean') {
+                    submodelValues[semanticId] = Boolean(value);
+                } else {
+                    submodelValues[semanticId] = value;
+                }
+            });
+
+            const request = generate({
+                messageType: 'callForProposal',
+                userId: id,
+                irdi: randomOperation,
+                submodelValues: submodelValues,
+                location: await getRandomLocation()
+            })
+
+            apiPost('cfp', request)
+        }
+        setInterval( sendRandomCFP , 5000);
     }
 
 
@@ -50,20 +87,35 @@ const simulate = async (role) => {
             JSON.parse(data);
         }
         const { type } = data.frame;
-
+   
 
         if (['callForProposal'].includes(type)) {
+         
+            [1, 2, 3].forEach(async () => {
+    
+                interface IUser {
+                    areaCode?: string;
+                    id?: string;
+                    role?: string;
+                    name?: string;
+                }
 
-            //generate message 
-            const request = generate({
-                messageType: 'proposal',
-                originalMessage: data,
-                userId: 'SimSR',
-                price: 6,
+                const user: IUser = await getRandomRow('user', 'role', role);
+                const { id } = user
+
+                //generate message 
+                const request = generate({
+                    messageType: 'proposal',
+                    originalMessage: data,
+                    userId: id,
+                    location: await getRandomLocation(),
+                    price: await randomValue([1,2,4,5,6,7,8,9])
+                })
+                console.log(request)
+
+                //send message to Market Manager 
+            //    apiPost('proposal', request)
             })
-
-            //send message to Market Manager 
-            apiPost('proposal', request)
         }
 
 
@@ -93,11 +145,7 @@ const simulate = async (role) => {
             })
             console.log('informPayment', request)
             //apiPost('informPayment', request)
-
         }
-
-
-
     })
 }
 
@@ -106,7 +154,9 @@ const apiPost = async (messageType, message) => {
     console.log(response.data);
 }
 
-
+const randomValue = array => {
+    return array[Math.floor(Math.random() * array.length)]
+}
 
 const argv = yargs
     .usage('Simulate SR or SP')

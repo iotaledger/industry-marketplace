@@ -170,9 +170,9 @@ export const getRandomRow = async (table, column, value) => {
 export const setWalletStatus = async (seed, activation) => {
     return new Promise((resolve, reject) => {
         try {
-    db.run(`UPDATE wallet SET busy = ? WHERE seed = ?`, [activation, seed],(err, row) => {
+    db.run(`UPDATE wallet SET status = ? WHERE seed = ?`, [activation, seed],(err, row) => {
         if (err) {
-            return resolve(null);
+            return resolve(err);
         } else {
             return resolve();
         }
