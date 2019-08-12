@@ -2,8 +2,9 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Link, withRouter } from 'react-router-dom';
 import UserContext from '../../context/user-context';
-import burgerIcon from './../../assets/img/burger.svg';
-import closeIcon from './../../assets/img/close.svg';
+import burgerIcon from '../../assets/img/burger.svg';
+import closeIcon from '../../assets/img/close.svg';
+import backIcon from '../../assets/img/icon-arrow-back-dark.svg';
 
 const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
@@ -14,7 +15,7 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
       {
         back && (
           <Back to={'/'} onClick={history.goBack}>
-            <img src="/static/icons/icon-arrow-back-dark.svg" alt="Icon arrow" />
+            <img src={backIcon} alt="Icon arrow" />
           </Back>
         )
       }

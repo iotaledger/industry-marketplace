@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../context/user-context';
-import configIcon from './../../assets/img/config.svg';
-import cActive from './../../assets/img/circleActive.svg';
-import cNormal from './../../assets/img/circleNormal.svg';
+import configIcon from '../../assets/img/config.svg';
+import cActive from '../../assets/img/circleActive.svg';
+import cNormal from '../../assets/img/circleNormal.svg';
 import { domain } from '../../config.json';
 
 const menu = {
