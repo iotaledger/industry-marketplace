@@ -44,7 +44,7 @@ const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, i
         <SideBarTitle>Request Stage</SideBarTitle>
           {
             showMenu ? (
-              <MenuFix><MenuWrapper>
+              <MenuFix>
                 {
                   user.role && menu[user.role].map(({ id, label }, index) => (
                     <Item key={id}>
@@ -63,7 +63,7 @@ const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, i
                     </Item>
                   ))
                 }
-              </MenuWrapper></MenuFix>
+              </MenuFix>
             ) : null
           }
 
@@ -73,14 +73,13 @@ const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, i
           >Create request</Button>
         </ButtonWrapper>
       </Upper>
-      <Lower>
-        <ModifyConfiguration
-          onClick={() => handleAndClose(() => handleConfigModal(true), handleSidebar)}
-        >
-          <ConfigIcon src={configIcon} />
-          <ConfigText>MODIFY CONFIGURATION</ConfigText>
-        </ModifyConfiguration>
-      </Lower>
+      <ModifyConfiguration
+        onClick={() => handleAndClose(() => handleConfigModal(true), handleSidebar)}
+        displayMode={domain.startsWith('http://localhost') ? 'flex' : 'none'}
+      >
+        <img src={configIcon} alt="Modify configuration"/>
+        <ConfigText>MODIFY CONFIGURATION</ConfigText>
+      </ModifyConfiguration>
     </SidebarWrapper>
   );
 }
@@ -89,13 +88,13 @@ export default Sidebar;
 
 const Item = styled.div`
   display: flex;
-`
+`;
+
 const Upper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-`
-const Lower = styled.div``
+`;
 
 const SideBarTitle = styled.div`
   font-weight: 600;
@@ -109,9 +108,10 @@ const SideBarTitle = styled.div`
   @media (min-width: 1440px) {
     font-size: 31px;
   }
-`
+`;
+
 const ModifyConfiguration = styled.div`
-  display: flex;
+  display: ${p => p.displayMode};
   justify-content: flex-start;
   @media (min-width: 769px) {
     left: 35px;
@@ -123,13 +123,11 @@ const ModifyConfiguration = styled.div`
   cursor: pointer;
 `;
 
-const ConfigIcon = styled.img`
-`
 const ConfigText = styled.div`
   margin-left: 25px;
   font-size: 18px;
   color: #15286D;
-`
+`;
 
 const SidebarWrapper = styled.aside`
   position: absolute;
@@ -154,10 +152,6 @@ const SidebarWrapper = styled.aside`
     width: 530px;
     padding-left: 30px;
   }
-`;
-
-const MenuWrapper = styled.div`
-
 `;
 
 const MenuFix = styled.div`
