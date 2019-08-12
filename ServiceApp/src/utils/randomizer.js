@@ -35,9 +35,9 @@ const color = [
     'Gelb',
     'Rot',
     'Orange',
-    'Grün',
+    'Gruen',
     'Blau',
-    'Weiß'
+    'Weiss'
 ];
 
 const integerMaxValue = 10;
