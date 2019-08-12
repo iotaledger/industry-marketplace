@@ -21,7 +21,7 @@ export const operations = () => {
  * 2. Returns submodel without price property
  */
 export const submodel = (irdi) => {
-    return eClass[irdi].submodelElements.filter(({ idShort }) => idShort !== 'preis');
+    return eClass[irdi].submodelElements.filter(({ idShort }) => !['preis', 'price'].includes(idShort));
 }
 
 /**
@@ -140,7 +140,7 @@ export const generate = ({
         }
 
         if (messageType === 'proposal' && price && irdi) {
-            const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => idShort === 'preis');
+            const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
             priceModel.value = price;
             message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
         }

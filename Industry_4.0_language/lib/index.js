@@ -133,7 +133,7 @@ const operations = () => {
 const submodel = irdi => {
   return eClass[irdi].submodelElements.filter(({
     idShort
-  }) => idShort !== 'preis');
+  }) => !['preis', 'price'].includes(idShort));
 };
 /**
  * GET /evaluate/{irdi}/values/{submodel_parameter_values}
@@ -148,7 +148,7 @@ const evaluate = (irdi, values) => {
   submodelTemplate.some(element => {
     const value = values[element.semanticId];
 
-    if (!value) {
+    if (element.valueType !== 'boolean' && !value) {
       status = "Value for ".concat(element.idShort, " (").concat(element.semanticId, ") is missing");
       return null;
     }
@@ -159,6 +159,8 @@ const evaluate = (irdi, values) => {
       status = "Type for ".concat(element.idShort, " (").concat(element.semanticId, ") is invalid");
       return null;
     }
+
+    return null;
   });
   return status || 'success';
 };
@@ -168,7 +170,6 @@ const checkType = (type, value) => {
     case 'string':
     case 'langString':
     case 'anyURI':
-    case 'time':
       return typeof value === 'string';
 
     case 'decimal':
@@ -190,6 +191,7 @@ const checkType = (type, value) => {
       return typeof value === 'number' && value >= 0 && value % 1 === 0;
 
     case 'positiveInteger':
+    case 'time':
       return typeof value === 'number' && value > 0 && value % 1 === 0;
 
     case 'nonPositiveInteger':
@@ -243,12 +245,11 @@ const generate = ({
     return null;
   }
 
-  const conversationId = uuid();
-  message.frame.conversationId = conversationId;
   message.frame.sender.identification.id = userId;
   message.frame.replyBy = getReplyByTime(replyTime);
 
   if (originalMessage && messageType !== 'callForProposal') {
+    message.frame.conversationId = originalMessage.frame.conversationId;
     message.frame.receiver.identification.id = originalMessage.frame.sender.identification.id;
     message.dataElements = originalMessage.dataElements;
     message.frame.location = originalMessage.frame.location;
@@ -256,14 +257,20 @@ const generate = ({
     message.frame.endTimestamp = originalMessage.frame.endTimestamp;
     message.frame.creationDate = originalMessage.frame.creationDate;
 
+    if (originalMessage.walletAddress) {
+      message.walletAddress = originalMessage.walletAddress;
+    }
+
     if (messageType === 'proposal' && price && irdi) {
       const priceModel = eClass[irdi].submodelElements.find(({
         idShort
-      }) => idShort === 'preis');
+      }) => ['preis', 'price'].includes(idShort));
       priceModel.value = price;
       message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
     }
   } else if (irdi && messageType === 'callForProposal') {
+    message.frame.conversationId = uuid();
+
     if (location) {
       message.frame.location = location;
     }
@@ -282,12 +289,12 @@ const generate = ({
       const submodelElements = submodelTemplate.map(element => _objectSpread({}, element, {
         value: submodelValues[element.semanticId]
       }));
-      message.dataElements.submodels.push({
+      message.dataElements.submodels = [{
         identification: {
           id: irdi,
           submodelElements
         }
-      });
+      }];
     }
   }
 
@@ -495,10 +502,10 @@ module.exports = {"frame":{"semanticProtocol":"http://www.vdi.de/gma720/vdi2193_
 /*!*******************************!*\
   !*** ./templates/eClass.json ***!
   \*******************************/
-/*! exports provided: 0173-1#02-BAF577#004, 0173-1#02-BAF576#004, 0173-1#02-BAF575#004, 0173-1#02-BAF574#004, 0173-1#02-BAF573#004, default */
+/*! exports provided: 0173-1#01-AAJ336#002, 0173-1#01-AAP788#001, 0173-1#01-AAI711#001, 0173-1#01-AAO742#002, 0173-1#01-BAF577#004, 0173-1#01-BAF576#004, 0173-1#01-BAF575#004, 0173-1#01-BAF574#004, 0173-1#01-BAF573#004, 0173-1#01-BAF777#004, default */
 /***/ (function(module) {
 
-module.exports = {"0173-1#02-BAF577#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#02-BAF576#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#02-BAF575#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#02-BAF574#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#02-BAF573#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]}};
+module.exports = {"0173-1#01-AAJ336#002":{"submodelElements":[{"idShort":"total weight (freight)","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAJ337#002"},{"idShort":"starting point","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAJ338#002"},{"idShort":"destination","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAJ339#002"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ333#002"}]},"0173-1#01-AAP788#001":{"submodelElements":[{"idShort":"number of photos that can be stored","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAP788#001"},{"idShort":"reliability duration","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAY979#001"},{"idShort":"target location","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAZ979#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAD979#001"}]},"0173-1#01-AAI711#001":{"submodelElements":[{"idShort":"starting point","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAL711#001"},{"idShort":"destination","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAK711#001"},{"idShort":"max. number of persons","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAI711#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB711#001"}]},"0173-1#01-AAO742#002":{"submodelElements":[{"idShort":"brand","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAO742#002"},{"idShort":"min. charging voltage","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ102#003"},{"idShort":"cables included","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#02-BAF464#008"},{"idShort":"connection type","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAF631#001"},{"idShort":"max. charging voltage","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ101#003"},{"idShort":"cable length","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB733#007"},{"idShort":"number of connections","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAP397#001"},{"idShort":"target location","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAW397#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAA397#001"}]},"0173-1#01-BAF577#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF576#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF575#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF574#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF573#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF777#004":{"submodelElements":[{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]}};
 
 /***/ }),
 
@@ -528,10 +535,10 @@ module.exports = {"frame":{"semanticProtocol":"http://www.vdi.de/gma720/vdi2193_
 /*!***********************************!*\
   !*** ./templates/operations.json ***!
   \***********************************/
-/*! exports provided: 0, 1, 2, 3, 4, default */
+/*! exports provided: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, default */
 /***/ (function(module) {
 
-module.exports = [{"name":"Drilling","name_de":"Bohren","id":"0173-1#02-BAF577#004"},{"name":"Sawing","name_de":"Sägen","id":"0173-1#02-BAF576#004"},{"name":"Cutting","name_de":"Schneiden","id":"0173-1#02-BAF575#004"},{"name":"Hammering","name_de":"Hämmern","id":"0173-1#02-BAF574#004"},{"name":"Grinding","name_de":"Schleifen","id":"0173-1#02-BAF573#004"}];
+module.exports = [{"name":"Drone Transport","name_de":"Drone Transport","id":"0173-1#01-AAJ336#002"},{"name":"Drone inspection","name_de":"Drone inspection","id":"0173-1#01-AAP788#001"},{"name":"Mobility as a service","name_de":"Mobility as a service","id":"0173-1#01-AAI711#001"},{"name":"EV Charging","name_de":"EV Charging","id":"0173-1#01-AAO742#002"},{"name":"Drilling","name_de":"Bohren","id":"0173-1#01-BAF577#004"},{"name":"Sawing","name_de":"Sägen","id":"0173-1#01-BAF576#004"},{"name":"Cutting","name_de":"Schneiden","id":"0173-1#01-BAF575#004"},{"name":"Hammering","name_de":"Hämmern","id":"0173-1#01-BAF574#004"},{"name":"Grinding","name_de":"Schleifen","id":"0173-1#01-BAF573#004"},{"name":"Weather Data","name_de":"Wetterdated","id":"0173-1#01-BAF777#004"}];
 
 /***/ }),
 
