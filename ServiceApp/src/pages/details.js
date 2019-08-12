@@ -20,7 +20,8 @@ class Details extends React.Component {
       messages: [],
       sensorData: [],
       schema: {},
-      loading: false,
+      loading: true,
+      loadingText: 'Fetching data from the Tangle. This will take a couple of seconds, do not close the window'
     };
   }
 
@@ -50,7 +51,7 @@ class Details extends React.Component {
   fetchComplete = () => this.setState({ loading: false });
   
   render() {
-    const { loading, messages, schema, sensorData } = this.state;
+    const { loading, loadingText, messages, schema, sensorData } = this.state;
 
     return (
       <Main id="main">
@@ -59,11 +60,14 @@ class Details extends React.Component {
           {
             loading ? (
               <LoadingBox>
-                <Loading />
+                <Loading text={loadingText} delay={1500} />
               </LoadingBox>
             ) : (
               <React.Fragment>
                 <Wrapper>
+                  <Header>
+                    Transaction history
+                  </Header>
                   { 
                     messages.length > 0 
                       ? <List messages={messages} /> 
@@ -129,4 +133,13 @@ const Data = styled.section`
 
 const LoadingBox = styled.div`
   margin: auto;
+`;
+
+const Header = styled.div`
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 40px;
+  text-align: left;
+  width: 80%;
+  margin-left: 30px;
 `;

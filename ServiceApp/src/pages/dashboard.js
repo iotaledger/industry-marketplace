@@ -36,6 +36,7 @@ class Dashboard extends React.Component {
       assets: [],
       activeSection: 'callForProposal',
       loading: false,
+      loadingText: '',
       displayNewRequestForm: false,
       error: false,
       isConfigModal: false,
@@ -115,6 +116,7 @@ class Dashboard extends React.Component {
         this.setState({
           error: data.error,
           loading: false,
+          loadingText: ''
         });
       }
 
@@ -217,7 +219,7 @@ class Dashboard extends React.Component {
         case 'informConfirm':
           // send informPayment
           message = await this.generateRequest('informPayment', id);
-          this.setState({ loading: true });
+          this.setState({ loading: true, loadingText: 'Synchronizing with the Tangle. This will take a couple of seconds, do not close the window' });
           return this.sendMessage('informPayment', message);
         default:
           return null;
@@ -275,7 +277,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
-    const { activeSection, assets, badges, loading, displayNewRequestForm, isSideBarOpen } = this.state;
+    const { activeSection, assets, badges, loading, loadingText, displayNewRequestForm, isSideBarOpen } = this.state;
     return (
       <Main id="main">
         <AssetNav
@@ -323,7 +325,7 @@ class Dashboard extends React.Component {
                     {
                       loading ? (
                         <LoadingBox>
-                          <Loading />
+                          <Loading text={loadingText} />
                         </LoadingBox>
                       ) : <AssetList assets={assets} />
                     }
