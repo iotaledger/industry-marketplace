@@ -1,17 +1,28 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { isValid } from '@iota/area-codes';
 import { AssetContext } from '../../pages/dashboard';
 import UserContext from '../../context/user-context';
+import searchIcon from '../../assets/img/search.svg';
+import removeIcon from '../../assets/img/remove.svg';
+import externalLinkIcon from '../../assets/img/external-link.svg';
 import Card from './index.js';
+import { areaCodesExplorer, googleMaps } from '../../config.json';
 
 const Heading = ({ id, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
   return (
     <Full>
-      <Link to={`/conversation/${id}`}>
+      <LinkWrapper to={`/conversation/${id}`}>
         <Header>{operation}</Header>
-      </Link>
+        <Img
+          width={25}
+          src={searchIcon}
+          title="Inspect request transaction history"
+          alt="Inspect request transaction history"
+        />
+      </LinkWrapper>
       <StatusWrapper>
         <Status>
           {type}
@@ -19,7 +30,12 @@ const Heading = ({ id, operation, type }) => {
         {
           onCancel && (
             <CancelHeaderButton onClick={() => onCancel(id)}>
-              Remove
+              <Img
+                width={17}
+                src={removeIcon}
+                title="Delete this card from view"
+                alt="Delete this card from view"
+              />
             </CancelHeaderButton>
           )
         }
@@ -151,7 +167,28 @@ const Asset = props => {
               asset.params.map(({ idShort, value }) => (
                 <RowThird key={idShort}>
                   <RowDesc>{idShort}</RowDesc>
-                  <Data>{value.toString()}</Data>
+                  <Data>
+                    {
+                      typeof value === 'string' && isValid(value)
+                      ? ( <React.Fragment>
+                            { value.toString() }
+                            <a 
+                              href={`${areaCodesExplorer}${value}`} 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Img
+                                width={17}
+                                src={externalLinkIcon}
+                                title="View on IOTA Area Code Explorer"
+                                alt="View on IOTA Area Code Explorer"
+                              />
+                            </a>
+                          </React.Fragment>
+                        )
+                      : value.toString()
+                    }
+                  </Data>
                 </RowThird>
               ))
             }
@@ -163,12 +200,36 @@ const Asset = props => {
             <RowDesc>Coordinates</RowDesc>
             <Data>
               {asset.coordinates || '--'}
+              <a 
+                href={`${googleMaps}${asset.coordinates}`} 
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Img
+                  width={17}
+                  src={externalLinkIcon}
+                  title="View on Google Maps"
+                  alt="View on Google Maps"
+                />
+              </a>
             </Data>
           </RowThird>
           <RowThird>
             <RowDesc>Location</RowDesc>
             <Data>
               {asset.location || '--'}
+              <a 
+                href={`${areaCodesExplorer}${asset.location}`} 
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Img
+                  width={17}
+                  src={externalLinkIcon}
+                  title="View on IOTA Area Code Explorer"
+                  alt="View on IOTA Area Code Explorer"
+                />
+              </a>
             </Data>
           </RowThird>
           <RowThird>
@@ -316,7 +377,7 @@ const FooterButton = styled.button`
 
 const StatusWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
 `;
 
@@ -349,4 +410,14 @@ const Input = styled.input`
   border-bottom: 2px solid #eee;
   background: transparent;
   font-size: 18px;
+`;
+
+const Img = styled.img`
+  cursor: pointer;
+  margin-left: 20px;
+`;
+
+const LinkWrapper = styled(Link)`
+  display: flex;
+  flex-direction: row;
 `;

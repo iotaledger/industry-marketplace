@@ -8,6 +8,7 @@ import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import randomIcon from '../../assets/img/random.svg';
 import Loading from '../loading';
 import { waitingTime } from '../../config.json';
 import {
@@ -23,9 +24,10 @@ const Card = props => (
         <CardHeader>
           {props.header}
           {
-            props.randomize && <img
-              width={50}
-              src="/static/icons/dice_transparent.png"
+            props.randomize && <Img
+              width={30}
+              src={randomIcon}
+              title="Generate random submodel values"
               alt="Chosen by fair dice roll. Guaranteed to be random"
               role="button"
               onClick={props.randomize}
@@ -333,6 +335,10 @@ const Form = styled.form`
   padding: 20px 30px;
 `;
 
+const Img = styled.img`
+  cursor: pointer;
+`;
+
 const Header = styled.span`
   font-size: 24px;
   top: 6px;
@@ -446,11 +452,11 @@ const CardWrapper = styled.div`
 
 const CardHeader = styled.header`
   position: relative;
-  padding: 8px 30px 6px 30px;
+  padding: 0 30px 10px 30px;
   border-bottom: 1px solid #eaecee;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
 `;
 
 const CardFooter = styled.footer`
