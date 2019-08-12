@@ -313,7 +313,7 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 // 1. Retrieve wallet
-                const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => idShort === 'preis');
+                const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     // 2. Process payment
                     const recepientAddress = req.body.walletAddress;

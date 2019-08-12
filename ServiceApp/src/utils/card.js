@@ -24,7 +24,7 @@ export const prepareData = async (role, payload) => {
     const params = submodelElements.map(({ idShort, value }) => ({ idShort, value }));
 
     // Get price
-    const price = submodelElements.find(({ idShort }) => idShort === 'preis');
+    const price = submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
 
     // Get operation
     const irdi = get(data, 'dataElements.submodels[0].identification.id');
