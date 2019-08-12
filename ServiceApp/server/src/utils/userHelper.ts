@@ -1,12 +1,22 @@
 import axios from 'axios';
 import yargs from 'yargs';
 import { faucet } from '../config.json';
-import { createUser, createWallet } from './databaseHelper';
+import { createUser, createWallet, writeData, getRandomRow } from './databaseHelper';
+import { publishDID } from './mamHelper';
+import { generateKeyPair } from './encryptionHelper';
 
 const createNewUser = async () => {
     const { id, role = '', areaCode = '' } = argv;
+
     if (id && (role === 'SR' || role === 'SP')) {
-        return await createUser({ id, name: id, role, areaCode });
+        const { publicKey, privateKey }: any = await generateKeyPair();
+
+        const root = await publishDID(publicKey);
+        await writeData('did', { root, privateKey });
+        const did = `did:iota:${root}`;
+        await createUser({ id: did, name: id, role, areaCode });
+        await getRandomRow('user', 'name', id);
+
     } else {
         console.log('Params are missing or wrong');
         return;
