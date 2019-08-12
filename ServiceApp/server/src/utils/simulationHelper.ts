@@ -1,18 +1,17 @@
-import io from 'socket.io-client'
+import io from 'socket.io-client';
 import get from 'lodash/get';
-import axios from 'axios'
-import { generate } from 'SeMarket/Industry_4.0_language/index.js'
-import { getRandomRow, setWalletStatus } from './databaseHelper'
-//import {generateRandomSubmodelValues} from 'SeMarket/ServiceApp/src/utils/randomizer.js'
+import axios from 'axios';
+import yargs from 'yargs';
 
-import { readData } from './databaseHelper';
+import { generate } from 'SeMarket/Industry_4.0_language/index.js';
+import { getRandomRow, setWalletStatus } from './databaseHelper';
+//import {generateRandomSubmodelValues} from 'SeMarket/ServiceApp/src/utils/randomizer.js'
 
 
 const BASE_URL = 'http://localhost:4000';
-
 const socket = io('http://localhost:4000');
 
-const simulate = async () => {
+const simulate = async (role) => {
 
     //Choose wallet for incoming payments 
     interface IWallet {
@@ -20,30 +19,23 @@ const simulate = async () => {
     }
 
     //Rotate Incoming Wallet 
-    const IncomingWallet: IWallet = await getRandomRow('wallet','status','reserved');
+    const IncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'reserved');
     const { seed } = await IncomingWallet
     setWalletStatus(seed, 'usable')
- 
 
-   
-    const newIncomingWallet: IWallet = await getRandomRow('wallet','status','usable');
+
+
+    const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
     const seed2 = await newIncomingWallet.seed
     setWalletStatus(seed2, 'reserved')
 
-    //get role of simulator
-    interface IRole {
-        role?: string;
+    if (role === 'SR') {
+
+        //Add random cfps
+
+
+
     }
-    const { role }: IRole = await readData('user', null, 'role')
-
-
-if(role === 'SR'){
-
-    //Add random cfps
-
-
-
-}
 
 
     //subscribe to ZMQ messages
@@ -109,11 +101,24 @@ if(role === 'SR'){
     })
 }
 
-
-simulate();
-
-
 const apiPost = async (messageType, message) => {
     const response = await axios.post(`${BASE_URL}/${messageType}`, message);
     console.log(response.data);
+}
+
+
+
+const argv = yargs
+    .usage('Simulate SR or SP')
+    .example('$0  --role SR', 'simulate SR')
+    .required('role', 'Mode must be provided').describe('role', 'Simulates SR or SP. Options: ["SR", "SP"]')
+    .describe('role', 'Define user role. Options: ["SR", "SP"]')
+    .help('help')
+    .argv;
+
+if (argv.role === 'SR') {
+    simulate('SR')
+}
+else if (argv.role === 'SP') {
+    simulate('SP')
 }

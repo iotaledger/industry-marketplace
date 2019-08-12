@@ -46,7 +46,8 @@
     "build": "react-scripts build",
     "new-wallet": "cd server/build/src/utils/ && node userHelper.js --create wallet",
     "new-user": "f(){ cd server/build/src/utils/ && node userHelper.js --create user --role $1 --id $2 --areaCode $3 ;};f",
-    "simulate": "cd server/build/src/utils/ && node simulationHelper.js" 
+    "simulate": "f(){ cd server/build/src/utils/ && node simulationHelper.js --simulate --role $1 ;};f"
+  
   },
   "eslintConfig": {
     "extends": "react-app"
