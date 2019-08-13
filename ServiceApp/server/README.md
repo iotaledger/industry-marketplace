@@ -138,7 +138,7 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 
 * Generates public/private key pair if not in DB 
 * creates public MAM channel with DID as root
-* publishes public key as messages to public MAM channel
+* publishes public key as message to public MAM channel
 * saves private key under DID in DB 
 
 Returns userId, role, location, wallet address and wallet balance
