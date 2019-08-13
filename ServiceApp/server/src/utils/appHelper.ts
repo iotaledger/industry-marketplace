@@ -7,7 +7,7 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData, readDataEquals} from './databaseHelper';
-import {  generateKeyPair } from './encryptionHelper';
+import {  generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
@@ -40,7 +40,7 @@ export class AppHelper {
             res.setHeader('Access-Control-Allow-Origin', `*`);
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
-
+            res.setHeader('Connection', 'keep-alive');
             next();
         });
 
@@ -205,8 +205,8 @@ export class AppHelper {
                 const mam = await publish(channelId, req.body);
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
-               // const id = req.body.frame.receiver.identification.id;
-              //  mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
+               const id = req.body.frame.receiver.identification.id;
+               mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
 
                 // 5. Create Tag
                 const location = getLocationFromMessage(req.body);
@@ -289,6 +289,7 @@ export class AppHelper {
                 // 6. Update channel details in DB
                 const channelId = req.body.frame.conversationId;
                 await publish(channelId, payload);
+                console.log(payload)
 
                 // 7. Send transaction, include MAM channel info
                 const hash = await sendMessage(payload, tag);
@@ -311,7 +312,7 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 // 1. Retrieve wallet
-                const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => idShort === 'preis');
+                const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     // 2. Process payment
                     const recepientAddress = req.body.walletAddress;

@@ -2,9 +2,9 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { operations } from '../config.json';
-import { readData, readDataEquals } from '../utils/databaseHelper';
+import { readData, readDataEquals, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
-//import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
+import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
 
@@ -207,7 +207,7 @@ export class ZmqService {
                         role?: string;
                     }
                     const { role }: IRole = await readData('user', null, 'role')
-               
+
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
                         case 'SP':
@@ -223,8 +223,21 @@ export class ZmqService {
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                     const receiverID = data.frame.receiver.identification.id;
-                                    const simulationUser = await readDataEquals('user', 'id', receiverID)
-                                    if (simulationUser) {
+                                    interface IUser {
+                                        id?: string;
+                                        name?: string;
+                                        role?: string;
+                                        areaCode?: string;
+                                    }
+                                    const { id }: IUser = await readDataEquals('user', 'name', receiverID)
+
+                                  ///  const simulationUser = await readDataEquals('user', 'id', id)
+                                    if (id) {
+
+                                        //const did = id.replace('did:iota:', '');
+
+
+
                                         //check if user is simulation user, Only if match, send message to UI
                                         // interface IUser {
                                         //     id?: string;
@@ -235,34 +248,39 @@ export class ZmqService {
                                         // const { id, name, role, areaCode }: IUser = await readDataEquals('user', 'name', receiverID)
 
 
-                                        //     if (messageType === 'acceptProposal') {
-                                        //       const channelId = data.frame.conversationId;
-                                        // const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                        // await writeData('mam', {
-                                        //     id: channelId,
-                                        //     root: data.mam.root,
-                                        //     seed: '',
-                                        //     next_root: '',
-                                        //     side_key: secretKey,
-                                        //     start: 0
-                                        // });
-                                        //}
+                                        if (messageType === 'acceptProposal') {
+
+                                            const channelId = data.frame.conversationId;
+                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+
+                                            await writeData('mam', {
+                                                id: channelId,
+                                                root: data.mam.root,
+                                                seed: '',
+                                                next_root: '',
+                                                side_key: secretKey,
+                                                start: 0
+                                            });
+                                        }
                                         this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }
                             break;
                         case 'SR':
-                                // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                                if (['proposal', 'informConfirm'].includes(messageType)) {
-                                    const data = await getPayload(bundle);
-                                    const receiverID = data.frame.receiver.identification.id;
-                                    const simulationUser = await readDataEquals('user', 'id', receiverID)
-                                   
-                                    if (simulationUser) {
+                            // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                            if (['proposal', 'informConfirm'].includes(messageType)) {
+                                const data = await getPayload(bundle);
+                                console.log(data.frame.receiver.identification)
+                                const receiverID = data.frame.receiver.identification.id;
+                                console.log(receiverID)
+                                const simulationUser = await readDataEquals('user', 'id', receiverID)
+                                console.log(simulationUser)
+
+                                if (simulationUser) {
                                     // 2.1 Decode every such message and retrieve receiver ID
                                     this.sendEvent(data, messageType, messageParams);
-               
+
                                     if (messageType === 'informConfirm') {
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);

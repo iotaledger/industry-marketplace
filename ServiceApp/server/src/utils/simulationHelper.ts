@@ -4,7 +4,7 @@ import axios from 'axios';
 import yargs from 'yargs';
 import format from 'date-fns/format';
 import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
-import { generateRandomSubmodelValues, getRandomLocation, getRandomTimestamp } from '../utils/randomizer.js';
+import { generateRandomSubmodelValues, getRandomTimestamp } from '../utils/randomizer.js';
 import { getRandomRow } from './databaseHelper';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
@@ -49,12 +49,14 @@ const simulate = async (role) => {
                 submodelValues: submodelValues,
                 startTimestamp: randomTimestamp[0],
                 endTimestamp: randomTimestamp[1],
-                location: await getRandomLocation()
+                location: 'NPHTQORL9XK'
+                //await getRandomLocation()
             })
             await apiPost('cfp', request)
 
         }
-        setInterval(sendRandomCFP, 2000000);
+        sendRandomCFP();
+        //setInterval(sendRandomCFP, 10000);
     }
 
 
@@ -74,7 +76,7 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
-            [1,2,3].forEach(async () => {
+           // [1,2,3].forEach(async () => {
 
                 const id = await getRandomUser(role);
                 const senderLocation = get(data.frame, 'location')
@@ -90,16 +92,19 @@ const simulate = async (role) => {
                 })
 
                 //send message to Market Manager 
-              //  await apiPost('proposal', request)
-              console.log(request)
-            })
+               await apiPost('proposal', request)
+             
+          //  })
         }
 
 
         if (['proposal'].includes(type)) {
 
+            const userId = get(data.frame.receiver.identification, 'id')
+
             const request = await generate({
                 messageType: 'acceptProposal',
+                userId, 
                 originalMessage: data,
             })
             apiPost('acceptProposal', request)
@@ -115,12 +120,10 @@ const simulate = async (role) => {
         }
 
         if (['informConfirm'].includes(type)) {
-            console.log("inform cionfirm received")
             const request = await generate({
                 messageType: 'informPayment',
                 originalMessage: data,
             })
-            console.log('informPayment', request)
             apiPost('informPayment', request)
         }
     })
