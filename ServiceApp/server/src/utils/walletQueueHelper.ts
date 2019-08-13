@@ -1,4 +1,4 @@
-import { getRandomRow, setWalletStatus } from './databaseHelper';
+import { getRandomRow, updateValue } from './databaseHelper';
 
 
 export const initializeWalletQueue = async () => {
@@ -13,12 +13,11 @@ export const initializeWalletQueue = async () => {
     const IncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'reserved');
     if (IncomingWallet) {
         const { seed } = await IncomingWallet
-        setWalletStatus(seed, 'usable')
+        updateValue(seed, 'usable')
     }
 
     //reserve random wallet
-    
     const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
     const reservedSeed = await newIncomingWallet.seed
-    setWalletStatus(reservedSeed, 'reserved')
+    updateValue(reservedSeed, 'reserved')
 }

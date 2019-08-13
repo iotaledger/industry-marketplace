@@ -1,6 +1,6 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
-import { getRandomRow, setWalletStatus, writeData } from './databaseHelper';
+import { getRandomRow, updateValue, writeData } from './databaseHelper';
 
 export const getBalance = async address => {
     try {
@@ -72,7 +72,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
                             await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
-                            await setWalletStatus(seed, 'true')
+                            await updateValue(seed, 'busy')
 
                             const hashes = transactions.map(transaction => transaction.hash);
 
@@ -88,7 +88,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-                            await setWalletStatus(seed, 'false')
+                            await updateValue(seed, 'usable')
 
                             resolve(transactions);
                         })
@@ -120,10 +120,12 @@ export const processPayment = async (receiveAddress, paymentValue) => {
         seed?: string;
     }
 
-    const wallet: IWallet = await getRandomRow('wallet','busy','false');
+    const wallet: IWallet = await getRandomRow('wallet','status','usable');
     console.log('processPayment', wallet, receiveAddress, paymentValue);
-    
+
     const { address, keyIndex, seed } = wallet;
+    await updateValue(seed, 'busy')
+
     return await transferFunds(
         receiveAddress,
         address,

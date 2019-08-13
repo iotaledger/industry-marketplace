@@ -54,7 +54,7 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        setInterval(sendRandomCFP, 5000);
+        setInterval(sendRandomCFP, 2000000);
     }
 
 
@@ -115,13 +115,13 @@ const simulate = async (role) => {
         }
 
         if (['informConfirm'].includes(type)) {
-
+            console.log("inform cionfirm received")
             const request = await generate({
                 messageType: 'informPayment',
                 originalMessage: data,
             })
             console.log('informPayment', request)
-            //apiPost('informPayment', request)
+            apiPost('informPayment', request)
         }
     })
 }

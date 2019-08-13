@@ -223,7 +223,7 @@ export class ZmqService {
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                     const receiverID = data.frame.receiver.identification.id;
-                                    const simulationUser = await readDataEquals('user', 'name', receiverID)
+                                    const simulationUser = await readDataEquals('user', 'id', receiverID)
                                     if (simulationUser) {
                                         //check if user is simulation user, Only if match, send message to UI
                                         // interface IUser {
@@ -253,12 +253,11 @@ export class ZmqService {
                             }
                             break;
                         case 'SR':
-                            
                                 // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                                 if (['proposal', 'informConfirm'].includes(messageType)) {
                                     const data = await getPayload(bundle);
                                     const receiverID = data.frame.receiver.identification.id;
-                                    const simulationUser = await readDataEquals('user', 'name', receiverID)
+                                    const simulationUser = await readDataEquals('user', 'id', receiverID)
                                    
                                     if (simulationUser) {
                                     // 2.1 Decode every such message and retrieve receiver ID
