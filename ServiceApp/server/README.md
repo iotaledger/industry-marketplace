@@ -544,7 +544,7 @@ Please complete with [submodelElements](#submodelelements)
         }
       }
     ]
-  },
+  }
 }
 ```
 
