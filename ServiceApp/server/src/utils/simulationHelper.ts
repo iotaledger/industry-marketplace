@@ -2,53 +2,34 @@ import io from 'socket.io-client';
 import get from 'lodash/get';
 import axios from 'axios';
 import yargs from 'yargs';
-
+import format from 'date-fns/format';
 import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
-import { generateRandomSubmodelValues, getRandomLocation } from '../utils/randomizer.js';
-import { getRandomRow, setWalletStatus } from './databaseHelper';
-import { operations } from '../config.json'
+import { generateRandomSubmodelValues, getRandomLocation, getRandomTimestamp } from '../utils/randomizer.js';
+import { getRandomRow } from './databaseHelper';
+import { operations } from '../config.json';
+import { initializeWalletQueue } from './walletQueueHelper';
+import { createCloseLocation } from './locationHelper';
 
-//, getRandomTimestamp, getRandomLocation
 const BASE_URL = 'http://localhost:4000';
 const socket = io('http://localhost:4000');
 
+
 const simulate = async (role) => {
 
-    //Choose wallet for incoming payments 
-    interface IWallet {
-        seed?: string;
-    }
+    initializeWalletQueue();
 
-    //Rotate Incoming Wallet 
-
-    const IncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'reserved');
-    if (IncomingWallet) {
-        const { seed } = await IncomingWallet
-        setWalletStatus(seed, 'usable')
-    }
-
-    const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
-    const reservedSeed = await newIncomingWallet.seed
-    setWalletStatus(reservedSeed, 'reserved')
-
-//For SR send out random CFPs 
+    //For SR send out random CFPs 
     if (role === 'SR') {
 
         const sendRandomCFP = async () => {
+            const id = await getRandomUser(role);
 
-            interface IUser {
-                areaCode?: string;
-                id?: string;
-                role?: string;
-                name?: string;
-            }
-            const user: IUser = await getRandomRow('user', 'role', role);
-
-            const { id } = user
-            const randomOperation = randomValue(operations)
+            const randomOperation = await randomValue(operations)
             const randomSubmodel = await submodel(randomOperation)
 
             const randomSubmodelElements = await generateRandomSubmodelValues(randomSubmodel)
+            const randomTimestamp = getRandomTimestamp()
+
 
             const submodelValues = {};
             randomSubmodelElements.forEach(({ semanticId, value, valueType }) => {
@@ -60,18 +41,20 @@ const simulate = async (role) => {
                     submodelValues[semanticId] = value;
                 }
             });
-
             const request = generate({
                 messageType: 'callForProposal',
                 userId: id,
+                creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
                 irdi: randomOperation,
                 submodelValues: submodelValues,
+                startTimestamp: randomTimestamp[0],
+                endTimestamp: randomTimestamp[1],
                 location: await getRandomLocation()
             })
+            await apiPost('cfp', request)
 
-            apiPost('cfp', request)
         }
-        setInterval( sendRandomCFP , 5000);
+        setInterval(sendRandomCFP, 5000);
     }
 
 
@@ -87,34 +70,28 @@ const simulate = async (role) => {
             JSON.parse(data);
         }
         const { type } = data.frame;
-   
+
 
         if (['callForProposal'].includes(type)) {
-         
-            [1, 2, 3].forEach(async () => {
-    
-                interface IUser {
-                    areaCode?: string;
-                    id?: string;
-                    role?: string;
-                    name?: string;
-                }
 
-                const user: IUser = await getRandomRow('user', 'role', role);
-                const { id } = user
+            [1,2,3].forEach(async () => {
+
+                const id = await getRandomUser(role);
+                const senderLocation = get(data.frame, 'location')
+                const location = await createCloseLocation(senderLocation)
 
                 //generate message 
                 const request = generate({
                     messageType: 'proposal',
                     originalMessage: data,
                     userId: id,
-                    location: await getRandomLocation(),
-                    price: await randomValue([1,2,4,5,6,7,8,9])
+                    location: location,
+                    price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                 })
-                console.log(request)
 
                 //send message to Market Manager 
-            //    apiPost('proposal', request)
+              //  await apiPost('proposal', request)
+              console.log(request)
             })
         }
 
@@ -151,12 +128,32 @@ const simulate = async (role) => {
 
 const apiPost = async (messageType, message) => {
     const response = await axios.post(`${BASE_URL}/${messageType}`, message);
-    console.log(response.data);
+    return response.data;
 }
 
 const randomValue = array => {
     return array[Math.floor(Math.random() * array.length)]
 }
+
+const getRandomUser = (role) => {
+    try {
+        return new Promise(async (resolve, reject) => {
+            interface IUser {
+                areaCode?: string;
+                id?: string;
+                role?: string;
+                name?: string;
+            }
+            const user: IUser = await getRandomRow('user', 'role', role);
+            const { id } = user
+            resolve(id)
+            if (id === 'undefined') { reject() }
+        });
+    } catch (error) {
+        console.error(`No User with role ${role} in DB`, error);
+    }
+};
+
 
 const argv = yargs
     .usage('Simulate SR or SP')

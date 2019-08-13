@@ -1,3 +1,5 @@
+import { encode, decode } from '@iota/area-codes';
+
 export const getLocationFromMessage = message => {
     return message.frame && message.frame.location ? message.frame.location : null;
 };
@@ -26,3 +28,14 @@ export const calculateDistance = (locObj1, locObj2) => {
         }
     }
 };
+
+
+export const createCloseLocation = targetLocation => {
+const {latitude, longitude} = decode(targetLocation)
+
+const closeLat = Number(latitude) + Number((Math.random() * (0.5 - 0.0200) + 0.0200).toFixed(4))
+const closeLong = Number(longitude) + Number((Math.random() * (0.5- 0.0200) + 0.0200).toFixed(4))
+
+return encode( Number(closeLat), Number(closeLong) );
+
+}
