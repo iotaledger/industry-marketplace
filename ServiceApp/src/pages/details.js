@@ -66,7 +66,7 @@ class Details extends React.Component {
               <React.Fragment>
                 <Wrapper>
                   <Header>
-                    Transaction history
+                    Transaction history / Audit log
                   </Header>
                   { 
                     messages.length > 0 
