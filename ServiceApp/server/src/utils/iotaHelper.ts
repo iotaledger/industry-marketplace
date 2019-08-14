@@ -85,7 +85,7 @@ export const getPayload = async (bundle) => {
             .forEach(({ signatureMessageFragment }) => {
                 message += signatureMessageFragment;
             });
-        return JSON.parse(fromTrytes(message));
+        return JSON.parse(decodeURI(fromTrytes(message)));
     } catch (error) {
         console.error('getPayload catch', error);
         return error;

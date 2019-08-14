@@ -7,7 +7,7 @@ const iota = composeAPI({ provider });
 
 export const sendMessage = (payload, tag) => {
     const seed = generateSeed();
-    const message = asciiToTrytes(JSON.stringify(payload));
+    const message = asciiToTrytes(encodeURI(JSON.stringify(payload)));
 
     const transfers = [{
         value: 0,
