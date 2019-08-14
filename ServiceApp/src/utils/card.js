@@ -21,7 +21,7 @@ export const prepareData = async (role, payload) => {
 
     // Get params/submodelElements
     const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
-    const params = submodelElements.map(({ idShort, value }) => ({ idShort, value }));
+    const params = submodelElements.map(({ idShort, semanticId, value }) => ({ idShort, semanticId, value }));
 
     // Get price
     const price = submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));

@@ -246,7 +246,7 @@ export default class extends React.Component {
                       operation ? (
                         <Row>
                           <Column>
-                            <label>Start Time:</label>
+                            <label>Contract Begin:</label>
                             <DatePicker
                               showTimeSelect
                               todayButton="Today"
@@ -261,7 +261,7 @@ export default class extends React.Component {
                             />
                           </Column>
                           <Column>
-                            <label>End Time:</label>
+                            <label>Contract End:</label>
                             <DatePicker
                               showTimeSelect
                               todayButton="Today"
