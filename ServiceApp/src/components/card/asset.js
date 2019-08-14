@@ -8,7 +8,7 @@ import searchIcon from '../../assets/img/search.svg';
 import removeIcon from '../../assets/img/remove.svg';
 import externalLinkIcon from '../../assets/img/external-link.svg';
 import Card from './index.js';
-import { areaCodesExplorer, googleMaps } from '../../config.json';
+import { areaCodesExplorer, eClassCatalog, googleMaps } from '../../config.json';
 
 const Heading = ({ id, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
@@ -164,9 +164,16 @@ const Asset = props => {
           asset.params && asset.params.length > 0 ? (
             <Row>
             {
-              asset.params.map(({ idShort, value }) => (
+              asset.params.map(({ idShort, semanticId, value }) => (
                 <RowThird key={idShort}>
-                  <RowDesc>{idShort}</RowDesc>
+                  <RowLink
+                    href={`${eClassCatalog}${semanticId.replace(/#/g, '%23')}`} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Go to eCl@ss to see property specs"
+                  >
+                    {idShort}
+                  </RowLink>
                   <Data>
                     {
                       typeof value === 'string' && isValid(value)
@@ -239,11 +246,11 @@ const Asset = props => {
         </Row>
         <Row>
           <RowThird>
-            <RowDesc>Begin Time:</RowDesc>
+            <RowDesc>Contract begin:</RowDesc>
             <Data>{asset.startTime}</Data>
           </RowThird>
           <RowThird>
-            <RowDesc>End Time:</RowDesc>
+            <RowDesc>Contract end:</RowDesc>
             <Data>{asset.endTime}</Data>
           </RowThird>
           {
@@ -311,6 +318,13 @@ const RowDesc = styled.span`
   font: 16px 'Nunito Sans', sans-serif;
   font-weight: 600;
   color: #B8B8B8;
+  text-transform: uppercase;
+`;
+
+const RowLink = styled.a`
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #529FF8;
   text-transform: uppercase;
 `;
 

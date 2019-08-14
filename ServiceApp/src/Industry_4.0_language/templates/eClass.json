@@ -2,21 +2,21 @@
     "0173-1#01-AAJ336#002": {
         "submodelElements":[
             {
-                "idShort":"total weight (freight)",
+                "idShort":"total weight (freight) [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
                 "semanticId":"0173-1#02-AAJ337#002"
             },
             {
-                "idShort":"starting point",
+                "idShort":"starting point [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-AAJ338#002"
             },
             {
-                "idShort":"destination",
+                "idShort":"destination [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
@@ -41,14 +41,14 @@
                 "semanticId":"0173-1#02-AAP788#001"
             },
             {
-                "idShort":"reliability duration",
+                "idShort":"reliability duration [min]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
                 "semanticId":"0173-1#02-AAY979#001"
             },
             {
-                "idShort":"target location",
+                "idShort":"target location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
@@ -66,18 +66,25 @@
     "0173-1#01-AAI711#001": {
         "submodelElements":[
             {
-                "idShort":"starting point",
+                "idShort":"starting point [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-AAL711#001"
             },
             {
-                "idShort":"destination",
+                "idShort":"destination [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-AAK711#001"
+            },
+            {
+                "idShort":"autonomous",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"boolean",
+                "semanticId":"0173-1#02-AAX711#001"
             },
             {
                 "idShort":"max. number of persons",
@@ -105,14 +112,14 @@
                 "semanticId":"0173-1#02-AAO742#002"
             },
             {
-                "idShort":"min. charging voltage",
+                "idShort":"min. charging voltage [V]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"integer",
                 "semanticId":"0173-1#02-AAJ102#003"
             },
             {
-                "idShort":"max. charging voltage",
+                "idShort":"max. charging voltage [V]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"integer",
@@ -133,7 +140,7 @@
                 "semanticId":"0173-1#02-AAF631#001"
             },
             {
-                "idShort":"cable length",
+                "idShort":"cable length [cm]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"integer",
@@ -147,7 +154,7 @@
                 "semanticId":"0173-1#02-AAP397#001"
             },
             {
-                "idShort":"target location",
+                "idShort":"target location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
@@ -165,7 +172,7 @@
     "0173-1#01-BAF577#004": {
         "submodelElements":[
             {
-                "idShort":"weight",
+                "idShort":"weight [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
@@ -186,14 +193,14 @@
                 "semanticId":"0173-1#02-BAF634#008"
             },
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [s]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
@@ -211,7 +218,7 @@
     "0173-1#01-BAF576#004": {
         "submodelElements":[
             {
-                "idShort":"weight",
+                "idShort":"weight [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
@@ -232,14 +239,14 @@
                 "semanticId":"0173-1#02-BAF634#008"
             },
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [s]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
@@ -257,7 +264,7 @@
     "0173-1#01-BAF575#004": {
         "submodelElements":[
             {
-                "idShort":"weight",
+                "idShort":"weight [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
@@ -278,14 +285,14 @@
                 "semanticId":"0173-1#02-BAF634#008"
             },
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [s]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
@@ -303,7 +310,7 @@
     "0173-1#01-BAF574#004": {
         "submodelElements":[
             {
-                "idShort":"weight",
+                "idShort":"weight [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
@@ -324,14 +331,14 @@
                 "semanticId":"0173-1#02-BAF634#008"
             },
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [s]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
@@ -349,7 +356,7 @@
     "0173-1#01-BAF573#004": {
         "submodelElements":[
             {
-                "idShort":"weight",
+                "idShort":"weight [kg]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
@@ -370,14 +377,14 @@
                 "semanticId":"0173-1#02-BAF634#008"
             },
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [s]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
@@ -395,14 +402,14 @@
     "0173-1#01-BAF777#004": {
         "submodelElements":[
             {
-                "idShort":"location",
+                "idShort":"location [lat, lng]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
             },
             {
-                "idShort":"time",
+                "idShort":"time [h]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"time",
