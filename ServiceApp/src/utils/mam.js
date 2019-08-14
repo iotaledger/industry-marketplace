@@ -7,7 +7,7 @@ export const fetch = (root, key, reportEvent, onFetchComplete) => {
   const promise = new Promise(async (resolve, reject) => {
     try {
       Mam.init(provider);
-      const convertAndReport = event => reportEvent(JSON.parse(trytesToAscii(event)));
+      const convertAndReport = event => reportEvent(JSON.parse(decodeURI(trytesToAscii(event))));
       await Mam.fetch(root, 'restricted', key, convertAndReport);
       return resolve(onFetchComplete());
     } catch (error) {

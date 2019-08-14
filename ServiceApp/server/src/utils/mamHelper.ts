@@ -54,7 +54,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
         }
 
         // Create MAM Payload - STRING OF TRYTES
-        const trytes = asciiToTrytes(JSON.stringify(packet));
+        const trytes = asciiToTrytes(encodeURI(JSON.stringify(packet)));
         const message = Mam.create(mamState, trytes);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         const { channel: { next_root, side_key, start }, seed } = message.state;
