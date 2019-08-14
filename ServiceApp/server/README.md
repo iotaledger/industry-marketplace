@@ -13,7 +13,19 @@
 <!-- Pre-requisites -->
 ### About the Project
  ![architecture](docs/architecture.png?raw=true)
+ 
+ 
+#### Digital Identity and Encryption 
+Within the SeMarket, every entity recieves a decentralized identifiers (DIDs) and a public/private key pair from the Market Manager. 
+For every entity, a public MAM channel is created with the DID as a root with the purpose to publish the public key. The private key is locally stored within the database of the entity. 
 
+ ![keys](docs/keys.png?raw=true)
+
+The public key of an entity can be used by others to encrypt sensitive data, that should only be accessible by the entity. This is enabled via asynchronous encryption, where messages that are encrypted with a public key can only be decrypted with the matching private key.
+
+ ![asyncEncryption](docs/asyncEncryption.jpg?raw=true)
+ 
+ 
 <!-- Pre-requisites -->
 ### Pre-requisites
 
@@ -123,6 +135,11 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 
 
 #### GET /user
+
+* Generates public/private key pair if not in DB 
+* creates public MAM channel with DID as root
+* publishes public key as message to public MAM channel
+* saves private key under DID in DB 
 
 Returns userId, role, location, wallet address and wallet balance
 
@@ -308,7 +325,7 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSR"
       }
     },
-    "replyBy": 1564390525000,
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -344,7 +361,12 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSP"
       }
     },
-    "replyBy": 1564390525000,
+    "receiver":{
+        "identification":{
+           "id":"UserSR"
+        }
+     },
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -385,7 +407,7 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSP"
       }
     },
-    "replyBy": 1564390525000,
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -426,7 +448,7 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSP"
       }
     },
-    "replyBy": 1564390525000,
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -467,7 +489,7 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSR"
       }
     },
-    "replyBy": 1564390525000,
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -482,8 +504,7 @@ Please complete with [submodelElements](#submodelelements)
         }
       }
     ]
-  },
-"walletAddress": "SSMP99ECJBTITUDWHTHYZAYTYCIIIEMEWIPNEMWEKWBNXQJWTCVFHHXPQFMAHJJSLYPYTDIGPNIHPHJLZNGEPFI99D"
+  }
 }
 ```
 
@@ -508,7 +529,7 @@ Please complete with [submodelElements](#submodelelements)
         "id": "UserSP"
       }
     },
-    "replyBy": 1564390525000,
+    "replyBy": 1704063600000,
     "location": "NPHTPOYO9JQ",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
@@ -520,8 +541,10 @@ Please complete with [submodelElements](#submodelelements)
         "identification": {
           "id": "0173-1#02-BAF577#004",
           "submodelElements": ["INSERT SUBMODELELEMENTS HERE"]
-  },
-"walletAddress": "SSMP99ECJBTITUDWHTHYZAYTYCIIIEMEWIPNEMWEKWBNXQJWTCVFHHXPQFMAHJJSLYPYTDIGPNIHPHJLZNGEPFI99D"
+        }
+      }
+    ]
+  }
 }
 ```
 
@@ -530,38 +553,45 @@ Please complete with [submodelElements](#submodelelements)
 
 ```json
 {
-              "idShort": "gewicht",
-              "modelType": "Property",
-              "value": "5",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAB713#005"
-            },
-            {
-              "idShort": "farbe",
-              "modelType": "Property",
-              "value": "schwarz",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAN521#005"
-            },
-            {
-              "idShort": "material",
-              "modelType": "Property",
-              "value": "stahl",
-              "valueType": "string",
-              "semanticId": "0173-1#02-BAF634#008"
-            },
-            {
-              "idShort": "ort",
-              "modelType": "Property",
-              "value": "berlin",
-              "valueType": "string",
-              "semanticId": "0173-1#02-BAF163#002"
-            },
-            {
-              "idShort": "zeit",
-              "modelType": "Property",
-              "value": "1558461600",
-              "valueType": "string",
-              "semanticId": "0173-1#02-AAO738#001"
-            }
+                        "idShort": "gewicht",
+                        "modelType": "Property",
+                        "value": "5",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAB713#005"
+                      },
+                      {
+                        "idShort": "farbe",
+                        "modelType": "Property",
+                        "value": "schwarz",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAN521#005"
+                      },
+                      {
+                        "idShort": "material",
+                        "modelType": "Property",
+                        "value": "stahl",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-BAF634#008"
+                      },
+                      {
+                        "idShort": "ort",
+                        "modelType": "Property",
+                        "value": "berlin",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-BAF163#002"
+                      },
+                      {
+                        "idShort": "zeit",
+                        "modelType": "Property",
+                        "value": "1558461600",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAO738#001"
+                      },
+                      {
+                        "idShort": "preis",
+                        "modelType": "Property",
+                        "value": "5",
+                        "valueType": "string",
+                        "semanticId": "0173-1#02-AAO738#001"
+                      }
 ```
