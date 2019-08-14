@@ -223,35 +223,22 @@ export class ZmqService {
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                     const receiverID = data.frame.receiver.identification.id;
+
                                     interface IUser {
                                         id?: string;
                                         name?: string;
                                         role?: string;
                                         areaCode?: string;
                                     }
-                                    const { id }: IUser = await readDataEquals('user', 'name', receiverID)
+                                    const { id }: IUser = await readDataEquals('user', 'id', receiverID)
 
-                                  ///  const simulationUser = await readDataEquals('user', 'id', id)
                                     if (id) {
 
-                                        //const did = id.replace('did:iota:', '');
+                                    if (messageType === 'acceptProposal') {
 
-
-
-                                        //check if user is simulation user, Only if match, send message to UI
-                                        // interface IUser {
-                                        //     id?: string;
-                                        //     name?: string;
-                                        //     role?: string;
-                                        //     areaCode?: string;
-                                        // }
-                                        // const { id, name, role, areaCode }: IUser = await readDataEquals('user', 'name', receiverID)
-
-
-                                        if (messageType === 'acceptProposal') {
-
+                                            const did = id.replace('did:iota:', '');
                                             const channelId = data.frame.conversationId;
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam, did);
 
                                             await writeData('mam', {
                                                 id: channelId,
@@ -262,7 +249,8 @@ export class ZmqService {
                                                 start: 0
                                             });
                                         }
-                                        this.sendEvent(data, messageType, messageParams);
+                                        console.log("madeit")
+                                    this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }

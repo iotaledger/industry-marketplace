@@ -35,9 +35,9 @@ const color = [
     'Gelb',
     'Rot',
     'Orange',
-    'Gruen',
+    'Grün',
     'Blau',
-    'Weiss'
+    'Weiß'
 ];
 
 const integerMaxValue = 10;
@@ -81,7 +81,7 @@ export const getRandomTimestamp = () => {
 };
 
 const getRandomText = () => {
-    const charset = 'abcdefghijklmnopqrstuvwxyz-';
+    const charset = 'abcdefghijklmnopqrstuvwxyzöäöäöäü-';
     return Array.from(new Array(randomTextLength), () => charset[getRandomInt(charset.length)]).join('');
 };
 

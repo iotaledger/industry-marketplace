@@ -53,7 +53,7 @@ export const encryptWithReceiversPublicKey = async (receiverId, payload) => {
     return encryptedBuffer.toString('base64');
 };
 
-export const decryptWithReceiversPrivateKey = async (payload) => {
+export const decryptWithReceiversPrivateKey = async (payload, did) => {
 
     console.log(payload)
 
@@ -61,9 +61,9 @@ export const decryptWithReceiversPrivateKey = async (payload) => {
         root?: string;
         privateKey?: string;
     }
-    const encryption: IEncryption = await readDataEquals('did', 'root', payload.root );
+
+    const encryption: IEncryption = await readDataEquals('did', 'root', did );
     const { privateKey } = encryption
-    console.log(privateKey)
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
     const decryptedBuffer = await decrypt(privateKey, messageBuffer);
     return decryptedBuffer.toString();

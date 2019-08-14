@@ -178,8 +178,17 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', location, submodelId);
 
-                // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const userDID = req.body.frame.sender.identification.id;
+
+                interface IUser {
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    areaCode?: string;
+                }
+                const { name }: IUser = await readDataEquals('user', 'id', userDID)
+
+                const hash = await sendMessage({ ...req.body, userName: name }, tag);
 
                 console.log('proposal success', hash);
                 res.send({
@@ -289,7 +298,6 @@ export class AppHelper {
                 // 6. Update channel details in DB
                 const channelId = req.body.frame.conversationId;
                 await publish(channelId, payload);
-                console.log(payload)
 
                 // 7. Send transaction, include MAM channel info
                 const hash = await sendMessage(payload, tag);

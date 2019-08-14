@@ -55,8 +55,8 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        sendRandomCFP();
-        //setInterval(sendRandomCFP, 10000);
+        //sendRandomCFP();
+        setInterval(sendRandomCFP, 10000);
     }
 
 
@@ -76,25 +76,28 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
-           // [1,2,3].forEach(async () => {
+            [1].forEach(async () => {
+                console.log(JSON.stringify(data.frame))
 
                 const id = await getRandomUser(role);
                 const senderLocation = get(data.frame, 'location')
                 const location = await createCloseLocation(senderLocation)
+         
 
-                //generate message 
+                //generate message  
                 const request = generate({
                     messageType: 'proposal',
                     originalMessage: data,
                     userId: id,
                     location: location,
+                    irdi: await get(data.dataElements.submodels[0].identification, 'id'),
                     price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                 })
-
                 //send message to Market Manager 
+                console.log(JSON.stringify(request))
                await apiPost('proposal', request)
              
-          //  })
+           })
         }
 
 
