@@ -14,7 +14,7 @@ const SensorCard = ({ schema, packet }) => {
 
   useEffect(() => {
     (async () => {
-      // Organise data for layout
+      // Organize data for layout
       const layout = [];
       schema.forEach((item, i) => {
         if (!layout[Math.floor(i / 2)]) {
