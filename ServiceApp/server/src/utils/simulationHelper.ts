@@ -55,8 +55,8 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        //sendRandomCFP();
-        setInterval(sendRandomCFP, 10000);
+        sendRandomCFP();
+        //setInterval(sendRandomCFP, 10000);
     }
 
 
@@ -73,7 +73,6 @@ const simulate = async (role) => {
         }
         const { type } = data.frame;
 
-
         if (['callForProposal'].includes(type)) {
 
             [1].forEach(async () => {
@@ -82,7 +81,7 @@ const simulate = async (role) => {
                 const id = await getRandomUser(role);
                 const senderLocation = get(data.frame, 'location')
                 const location = await createCloseLocation(senderLocation)
-         
+
 
                 //generate message  
                 const request = generate({
@@ -93,11 +92,10 @@ const simulate = async (role) => {
                     irdi: await get(data.dataElements.submodels[0].identification, 'id'),
                     price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                 })
-                //send message to Market Manager 
-                console.log(JSON.stringify(request))
-               await apiPost('proposal', request)
-             
-           })
+                //send message to Market Manager
+                await apiPost('proposal', request)
+
+            })
         }
 
 
@@ -107,33 +105,54 @@ const simulate = async (role) => {
 
             const request = await generate({
                 messageType: 'acceptProposal',
-                userId, 
+                userId,
                 originalMessage: data,
             })
-            apiPost('acceptProposal', request)
+
+            await apiPost('acceptProposal', request)
+
         }
 
         if (['acceptProposal'].includes(type)) {
 
+            const userId = get(data.frame.receiver.identification, 'id')
+
             const request = await generate({
                 messageType: 'informConfirm',
+                userId,
                 originalMessage: data,
             })
-            apiPost('informConfirm', request)
+            await apiPost('informConfirm', request)
+
         }
 
         if (['informConfirm'].includes(type)) {
+
+            const userId = get(data.frame.receiver.identification, 'id')
+
             const request = await generate({
                 messageType: 'informPayment',
+                userId,
                 originalMessage: data,
             })
-            apiPost('informPayment', request)
+        
+            await apiPost('informPayment', request)
+
         }
     })
+
 }
 
 const apiPost = async (messageType, message) => {
+
+   const randomTimeout= (min, max) => {
+        return min + Math.random() * (max - min);
+      }
+
+
+    await new Promise(resolve => setTimeout(resolve, randomTimeout(5000,15000)));
     const response = await axios.post(`${BASE_URL}/${messageType}`, message);
+
     return response.data;
 }
 

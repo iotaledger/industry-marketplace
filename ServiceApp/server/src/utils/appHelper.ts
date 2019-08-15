@@ -4,6 +4,7 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import get from 'lodash/get';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData, readDataEquals} from './databaseHelper';
@@ -14,6 +15,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
+import {getSpecificUser} from './multiUserHelper'
 
 //encryptWithReceiversPublicKey,
 /**
@@ -145,9 +147,15 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
+
+                const userDID = req.body.frame.sender.identification.id;
+
+                const user = await getSpecificUser('id',userDID)
+                const userName = get(user,'name')
+                
                
                 // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const hash = await sendMessage({...req.body,userName}, tag);
 
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
@@ -177,18 +185,12 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', location, submodelId);
-
                 const userDID = req.body.frame.sender.identification.id;
 
-                interface IUser {
-                    id?: string;
-                    name?: string;
-                    role?: string;
-                    areaCode?: string;
-                }
-                const { name }: IUser = await readDataEquals('user', 'id', userDID)
+                const user = await getSpecificUser('id',userDID)
+                const userName = get(user,'name')
 
-                const hash = await sendMessage({ ...req.body, userName: name }, tag);
+                const hash = await sendMessage({ ...req.body, userName }, tag);
 
                 console.log('proposal success', hash);
                 res.send({
@@ -206,7 +208,7 @@ export class AppHelper {
         });
 
         app.post('/acceptProposal', async (req, res) => {
-            try {
+            try {                
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
@@ -222,8 +224,15 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('acceptProposal', location, submodelId);
 
+
+
+                const userDID = req.body.frame.sender.identification.id;
+
+                const user = await getSpecificUser('id',userDID)
+                const userName = get(user,'name')
+                
                 // 6. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, mam }, tag);
+                const hash = await sendMessage({ ...req.body, mam, userName }, tag);
 
                 console.log('acceptProposal success', hash);
                 res.send({
@@ -248,8 +257,13 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('rejectProposal', location, submodelId);
 
+                const userDID = req.body.frame.sender.identification.id;
+
+                const user = await getSpecificUser('id',userDID)
+                const userName = get(user,'name')
+                
                 // 2. Send transaction
-                const hash = await sendMessage(req.body, tag);
+                const hash = await sendMessage({...req.body, userName}, tag);
 
                 console.log('rejectProposal success', hash);
                 res.send({
@@ -279,9 +293,14 @@ export class AppHelper {
                 }
                 const wallet: IWallet = await readDataEquals('wallet','status','reserved')
                 const { address } = wallet;
-            
 
-                const payload = { ...req.body, walletAddress: address };
+                const userDID = req.body.frame.sender.identification.id;
+
+                const user = await getSpecificUser('id',userDID)
+                const userName = get(user,'name')
+    
+
+                const payload = { ...req.body, walletAddress: address, userName };
      
                 
                 // 3. For data request include access credentials from DB
@@ -341,8 +360,14 @@ export class AppHelper {
                     const submodelId = req.body.dataElements.submodels[0].identification.id;
                     const tag = buildTag('informPayment', location, submodelId);
 
+                    const userDID = req.body.frame.sender.identification.id;
+
+                    const user = await getSpecificUser('id',userDID)
+                    const userName = get(user,'name')
+    
+
                     // 7. Send transaction
-                    const hash = await sendMessage(req.body, tag);
+                    const hash = await sendMessage({...req.body, userName}, tag);
 
                     console.log('informPayment success', hash);
                     res.send({
