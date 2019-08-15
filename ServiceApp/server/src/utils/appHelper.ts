@@ -151,7 +151,7 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
 
                 const user = await getSpecificUser('id',userDID)
-                const userName = get(user,'name')
+                const userName = await get(user,'name')
                 
                
                 // 2. Send transaction
@@ -188,7 +188,7 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
 
                 const user = await getSpecificUser('id',userDID)
-                const userName = get(user,'name')
+                const userName = await get(user,'name')
 
                 const hash = await sendMessage({ ...req.body, userName }, tag);
 
@@ -229,7 +229,7 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
 
                 const user = await getSpecificUser('id',userDID)
-                const userName = get(user,'name')
+                const userName = await get(user,'name')
                 
                 // 6. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, mam, userName }, tag);
@@ -260,7 +260,8 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
 
                 const user = await getSpecificUser('id',userDID)
-                const userName = get(user,'name')
+                const userName = await get(user,'name')
+                console.log(userName)
                 
                 // 2. Send transaction
                 const hash = await sendMessage({...req.body, userName}, tag);
@@ -295,10 +296,9 @@ export class AppHelper {
                 const { address } = wallet;
 
                 const userDID = req.body.frame.sender.identification.id;
-
                 const user = await getSpecificUser('id',userDID)
-                const userName = get(user,'name')
-    
+                const userName = await get(user,'name')
+                console.log(userName)
 
                 const payload = { ...req.body, walletAddress: address, userName };
      

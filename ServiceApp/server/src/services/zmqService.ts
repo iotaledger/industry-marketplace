@@ -259,11 +259,8 @@ export class ZmqService {
                             // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                             if (['proposal', 'informConfirm'].includes(messageType)) {
                                 const data = await getPayload(bundle);
-                                console.log(data.frame.receiver.identification)
                                 const receiverID = data.frame.receiver.identification.id;
-                                console.log(receiverID)
                                 const simulationUser = await readDataEquals('user', 'id', receiverID)
-                                console.log(simulationUser)
 
                                 if (simulationUser) {
                                     // 2.1 Decode every such message and retrieve receiver ID

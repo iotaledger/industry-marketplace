@@ -5,7 +5,7 @@ import yargs from 'yargs';
 import format from 'date-fns/format';
 import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
 import { generateRandomSubmodelValues, getRandomTimestamp } from '../utils/randomizer.js';
-import { getRandomRow } from './databaseHelper';
+import { getRandomUser } from './multiUserHelper';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
 import { createCloseLocation } from './locationHelper';
@@ -26,7 +26,6 @@ const simulate = async (role) => {
 
             const randomOperation = await randomValue(operations)
             const randomSubmodel = await submodel(randomOperation)
-
             const randomSubmodelElements = await generateRandomSubmodelValues(randomSubmodel)
             const randomTimestamp = getRandomTimestamp()
 
@@ -75,8 +74,7 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
-            [1].forEach(async () => {
-                console.log(JSON.stringify(data.frame))
+            [1, 2, 3].forEach(async () => {
 
                 const id = await getRandomUser(role);
                 const senderLocation = get(data.frame, 'location')
@@ -93,6 +91,8 @@ const simulate = async (role) => {
                     price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                 })
                 //send message to Market Manager
+
+                await new Promise(resolve => setTimeout(resolve, 4000));
                 await apiPost('proposal', request)
 
             })
@@ -135,7 +135,7 @@ const simulate = async (role) => {
                 userId,
                 originalMessage: data,
             })
-        
+
             await apiPost('informPayment', request)
 
         }
@@ -145,12 +145,11 @@ const simulate = async (role) => {
 
 const apiPost = async (messageType, message) => {
 
-   const randomTimeout= (min, max) => {
+    const randomTimeout = (min, max) => {
         return min + Math.random() * (max - min);
-      }
+    }
 
-
-    await new Promise(resolve => setTimeout(resolve, randomTimeout(5000,15000)));
+    await new Promise(resolve => setTimeout(resolve, randomTimeout(5000, 15000)));
     const response = await axios.post(`${BASE_URL}/${messageType}`, message);
 
     return response.data;
@@ -160,24 +159,6 @@ const randomValue = array => {
     return array[Math.floor(Math.random() * array.length)]
 }
 
-const getRandomUser = (role) => {
-    try {
-        return new Promise(async (resolve, reject) => {
-            interface IUser {
-                areaCode?: string;
-                id?: string;
-                role?: string;
-                name?: string;
-            }
-            const user: IUser = await getRandomRow('user', 'role', role);
-            const { id } = user
-            resolve(id)
-            if (id === 'undefined') { reject() }
-        });
-    } catch (error) {
-        console.error(`No User with role ${role} in DB`, error);
-    }
-};
 
 
 const argv = yargs
