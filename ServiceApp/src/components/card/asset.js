@@ -10,7 +10,7 @@ import externalLinkIcon from '../../assets/img/external-link.svg';
 import Card from './index.js';
 import { eClassCatalog, googleMaps } from '../../config.json';
 
-const Heading = ({ id, operation, type }) => {
+const Heading = ({ id, partner, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
   return (
     <Full>
@@ -29,7 +29,7 @@ const Heading = ({ id, operation, type }) => {
         </Status>
         {
           onCancel && (
-            <CancelHeaderButton onClick={() => onCancel(id)}>
+            <CancelHeaderButton onClick={() => onCancel(id, partner, type)}>
               <Img
                 width={17}
                 src={removeIcon}
@@ -241,18 +241,24 @@ const Asset = props => {
           </RowThird>
           <RowThird>
             <RowDesc>Partner:</RowDesc>
-            <Data>
-              <Clipboard
-                style={{ background: 'none', display: 'block' }}
-                data-clipboard-text={asset.partnerName}
-                onSuccess={() => alert('Successfully Copied')}
-              >
-                <CopyBox>
-                  {asset.partnerName && `${asset.partnerName.substr(9, 15)}...`}
-                </CopyBox>
-              </Clipboard>
-              <Alert message={message}>{message}</Alert>
-            </Data>
+            {
+              asset.partnerName === 'Pending'
+                ? (<Data>{asset.partnerName}</Data>)
+                : (
+                  <Data>
+                    <Clipboard
+                      style={{ background: 'none', display: 'block' }}
+                      data-clipboard-text={asset.partnerName}
+                      onSuccess={() => alert('Successfully Copied')}
+                    >
+                      <CopyBox>
+                        {asset.partnerName && `${asset.partnerName.substr(9, 15)}...`}
+                      </CopyBox>
+                    </Clipboard>
+                    <Alert message={message}>{message}</Alert>
+                  </Data>
+                )
+            }
           </RowThird>
         </Row>
         <Row>
@@ -407,7 +413,7 @@ const StatusWrapper = styled.div`
 `;
 
 const Status = styled.h3`
-  color: #529FF8;
+  color: #313131;
   font: 18px 'Nunito Sans', sans-serif;
   text-transform: uppercase;
   @media (min-width: 769px) {

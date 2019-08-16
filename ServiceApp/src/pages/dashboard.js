@@ -37,8 +37,10 @@ class Dashboard extends React.Component {
       activeSection: 'callForProposal',
       loading: false,
       loadingText: '',
+      notification: '',
       displayNewRequestForm: false,
       error: false,
+      confirmRemove: null,
       isConfigModal: false,
       isSideBarOpen: false,
       badges: {
@@ -200,9 +202,11 @@ class Dashboard extends React.Component {
     return request;
   }
 
-  async removeAsset(id) {
-    await removeFromStorage(id);
-    await this.checkExpired();
+  async removeAsset(id, partner, type) {
+    const cardId = type === 'proposal' ? `${id}#${partner}` : id;
+    const { irdi, operation } = await readFromStorage(cardId);
+    const notification = `Do you really want to remove request "${operation}" with IRDI "${irdi}" from the list?`;
+    this.setState({ notification, confirmRemove: id });
   }
 
   async confirmAction(id, partner, price = null) {
@@ -272,8 +276,12 @@ class Dashboard extends React.Component {
     }
   }
 
-  notificationCallback() {
-    this.setState({ error: false });
+  async notificationCallback(confirmRemove = false) {
+    if (confirmRemove) {
+      await removeFromStorage(this.state.confirmRemove);
+      await this.checkExpired();
+    }
+    this.setState({ error: false, notification: '', confirmRemove: null });
   }
 
   render() {
@@ -352,8 +360,10 @@ class Dashboard extends React.Component {
           }
         </ColumnWrap>
         <Modal
-          show={!isEmpty(this.state.error)}
+          show={!isEmpty(this.state.error) || this.state.notification}
           error={this.state.error}
+          type={this.state.confirmRemove ? 'confirmRemove' : 'general'}
+          notification={this.state.notification}
           callback={this.notificationCallback}
         />
         <Cookie />
