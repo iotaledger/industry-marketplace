@@ -1,18 +1,40 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export default ({ show, error = null, callback = null }) => {
+export default ({ show, type = 'general', notification = null, error = null, callback = null }) => {
   const closeButton = (
-    <Button type="button" className="btn btn-accent txt-bold modal-trigger" onClick={callback}>
+    <Button type="button" className="btn btn-accent txt-bold modal-trigger" onClick={() => callback()}>
       Close
     </Button>
   );
 
-  const content = {
-    heading: 'Error',
-    body: 'Error',
-    button: closeButton
+  const cancelButton = (
+    <Button type="button" onClick={() => callback()}>
+      Cancel
+    </Button>
+  );
+
+  const confirmButton = (
+    <Button type="button" onClick={() => callback(true)}>
+      Confirm
+    </Button>
+  );
+
+  const notifications = {
+    general: {
+      heading: 'Error',
+      body: 'Error',
+      buttonConfirm: closeButton
+    },
+    confirmRemove: {
+      heading: 'Remove request',
+      body: notification,
+      buttonReject: cancelButton,
+      buttonConfirm: confirmButton
+    }
   };
+
+  const content = notifications[type];
 
   return (
     <Modal className="access-modal-wrapper" show={show}>
@@ -20,7 +42,10 @@ export default ({ show, error = null, callback = null }) => {
         <Internal>
           <Heading>{content.heading}</Heading>
           <Info>{(error && error.body) || content.body || '--'}</Info>
-          { content.button || null }
+          <ButtonsWrapper>
+            { content.buttonReject || null }
+            { content.buttonConfirm || null }
+          </ButtonsWrapper>
         </Internal>
       </AccessBox>
     </Modal>
@@ -92,12 +117,21 @@ const Button = styled.button`
   box-shadow: 0 10px 20px 0 #0a2056;
   font-weight: 700;
   background-color: #009fff;
+  width: 100px;
 `;
 
 const Internal = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+`;
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
 `;

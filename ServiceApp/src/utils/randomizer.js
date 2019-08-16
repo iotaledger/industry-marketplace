@@ -107,7 +107,6 @@ export const generateRandomSubmodelValues = submodel => {
       
             case 'string':
             default: {
-                console.log(111, item.idShort)
                 switch (item.idShort) {
                     case 'ort':
                     case 'location [lat, lng]':
@@ -115,7 +114,6 @@ export const generateRandomSubmodelValues = submodel => {
                     case 'starting point [lat, lng]':
                     case 'destination [lat, lng]':
                     case 'departure [lat, lng]':
-                            console.log(222, item.idShort)
                         return { ...item, value: getRandomLocation() };
                     case 'material':
                         return { ...item, value: getRandomMaterial() };
