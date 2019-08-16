@@ -13,13 +13,13 @@ export const getBalance = async address => {
         
         if (balance === 0) {
             let retries = 0;
-            while (retries++ < 10) {
+            while (retries++ < 5) {
                 const response = await getBalances([address], 100);
                 balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
                 if (balance > 0) {
                     break;
                 }
-                await new Promise(resolved => setTimeout(resolved, 1000));
+                await new Promise(resolved => setTimeout(resolved, 100));
             }
         }
 
