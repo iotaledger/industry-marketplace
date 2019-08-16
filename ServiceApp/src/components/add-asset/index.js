@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
+import get from 'lodash-es/get';
 import { generate, evaluate, operations, submodel } from '../../Industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
 import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
+import format from 'date-fns/format';
+import parse from 'date-fns/parse';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import randomIcon from '../../assets/img/random.svg';
@@ -231,8 +232,8 @@ export default class extends React.Component {
                 !loading ? (
                   <Form>
                     <Column>
-                      <label>Select Operation:</label>
-                      <select
+                      <Label>Select Operation:</Label>
+                      <Select
                         type="text"
                         name="operation"
                         value={operation}
@@ -244,7 +245,7 @@ export default class extends React.Component {
                             <option key={id} value={id}>{name}</option>
                           )
                         }
-                      </select>
+                      </Select>
                     </Column>
                     { 
                       description && <Row><Description>{description}</Description></Row>
@@ -253,7 +254,7 @@ export default class extends React.Component {
                       operation ? (
                         <Row>
                           <Column>
-                            <label>Contract Begin:</label>
+                            <Label>Contract Begin:</Label>
                             <DatePicker
                               showTimeSelect
                               todayButton="Today"
@@ -267,8 +268,8 @@ export default class extends React.Component {
                               onChange={date => this.handleDateChange(date, 'assetStart')}
                             />
                           </Column>
-                          <Column>
-                            <label>Contract End:</label>
+                          <div>
+                            <Label>Contract End:</Label>
                             <DatePicker
                               showTimeSelect
                               todayButton="Today"
@@ -281,7 +282,7 @@ export default class extends React.Component {
                               selected={this.state.assetEnd}
                               onChange={date => this.handleDateChange(date, 'assetEnd')}
                             />
-                          </Column>
+                          </div>
                         </Row>
                       ) : null
                     }
@@ -289,7 +290,7 @@ export default class extends React.Component {
                       submodel.map(({ idShort, valueType }, i) => (
                         <Row key={i}>
                           <Column>
-                            <label>{idShort}:</label>
+                            <Label>{idShort}:</Label>
                             <Input
                               type={getInputType(valueType)}
                               name="value"
@@ -366,14 +367,17 @@ const FootRow = styled.div`
 `;
 
 const Column = styled.div`
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
   width: 100%;
+  text-align: left;
 `;
 
 const Row = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: baseline;
   @media (max-width: 760px) {
     flex-direction: column;
@@ -412,6 +416,15 @@ const Input = styled.input`
   margin: 0px 5px 10px 0;
   border-bottom: 2px solid #eee;
   background: transparent;
+  font-size: 18px;
+  color: #313131;
+
+  &[type=checkbox] {
+    height: 15px;
+    width: 15px;
+    transform: scale(1.5);
+    margin-top: 10px;
+  }
 `;
 
 const Modal = styled.div`
@@ -451,7 +464,7 @@ const CardWrapper = styled.div`
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
-  width: 400px;
+  width: 460px;
   &:hover {
     box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
   }
