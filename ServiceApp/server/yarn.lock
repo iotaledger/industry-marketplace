@@ -18,13 +18,6 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@iota/area-codes@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@iota/area-codes/-/area-codes-0.1.1.tgz#be5138907bd858f34a3b8d3c48a0b0de055c034c"
-  integrity sha512-BXKml7bM59u2ATS1q3JaNT0ldWrsWCQDDNDcVnggLZUuMdXk7hN7tTNiGYN7lvPr07668RAY/llUEESz/l3sEQ==
-  dependencies:
-    open-location-code-typescript "^1.4.0"
-
 "@iota/bundle-validator@^1.0.0-beta.19":
   version "1.0.0-beta.19"
   resolved "https://registry.yarnpkg.com/@iota/bundle-validator/-/bundle-validator-1.0.0-beta.19.tgz#92d61ab758d1741376c5901fec3851d3fbf48d03"
@@ -2659,11 +2652,6 @@ once@^1.3.0, once@^1.3.1, once@^1.4.0:
   integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
   dependencies:
     wrappy "1"
-
-open-location-code-typescript@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/open-location-code-typescript/-/open-location-code-typescript-1.4.0.tgz#509f51e7e02799b954ffb00be6f425167f5b0c66"
-  integrity sha512-k5qeLR3NiEXHCy8BjqazbfvOJbIlnTiBN+JkHAJHROuSVTD4c1I+wFRw3aZet1FxksoWuo7z6MXb6Ei21NLY8g==
 
 ordered-read-streams@^1.0.0:
   version "1.0.1"

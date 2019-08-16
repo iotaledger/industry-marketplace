@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
+import Clipboard from 'react-clipboard.js';
 import { Link } from 'react-router-dom';
 import { isValid } from '@iota/area-codes';
 import { AssetContext } from '../../pages/dashboard';
@@ -8,7 +9,7 @@ import searchIcon from '../../assets/img/search.svg';
 import removeIcon from '../../assets/img/remove.svg';
 import externalLinkIcon from '../../assets/img/external-link.svg';
 import Card from './index.js';
-import { areaCodesExplorer, eClassCatalog, googleMaps } from '../../config.json';
+import { eClassCatalog, googleMaps } from '../../config.json';
 
 const Heading = ({ id, operation, type }) => {
   const { onCancel } = useContext(AssetContext);
@@ -131,6 +132,7 @@ const Asset = props => {
   const { user } = useContext(UserContext);
   const { asset } = props;
   const [price, setPrice] = useState('');
+  const [message, setMessage] = useState('');
   const [isConfirmButtonEnabled, setConfirmButtonEnabled] = useState(true);
 
   useEffect(() => {
@@ -151,6 +153,11 @@ const Asset = props => {
     } else {
       setConfirmButtonEnabled(false);
     }
+  };
+
+  function alert(text) {
+    setMessage(text);
+    setTimeout(() => setMessage(''), 1500);
   };
 
   return (
@@ -180,7 +187,7 @@ const Asset = props => {
                       ? ( <React.Fragment>
                             { value.toString() }
                             <a 
-                              href={`${areaCodesExplorer}${value}`} 
+                              href={`${googleMaps}${value}`} 
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -222,26 +229,19 @@ const Asset = props => {
             </Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Location</RowDesc>
-            <Data>
-              {asset.location || '--'}
-              <a 
-                href={`${areaCodesExplorer}${asset.location}`} 
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Img
-                  width={17}
-                  src={externalLinkIcon}
-                  title="View on IOTA Area Code Explorer"
-                  alt="View on IOTA Area Code Explorer"
-                />
-              </a>
-            </Data>
-          </RowThird>
-          <RowThird>
             <RowDesc>Partner:</RowDesc>
-            <Data>{asset.partnerName}</Data>
+            <Data>
+              <Clipboard
+                style={{ background: 'none', display: 'block' }}
+                data-clipboard-text={asset.partnerName}
+                onSuccess={() => alert('Successfully Copied')}
+              >
+                <CopyBox>
+                  {asset.partnerName && `${asset.partnerName.substr(9, 15)}...`}
+                </CopyBox>
+              </Clipboard>
+              <Alert message={message}>{message}</Alert>
+            </Data>
           </RowThird>
         </Row>
         <Row>
@@ -434,4 +434,21 @@ const Img = styled.img`
 const LinkWrapper = styled(Link)`
   display: flex;
   flex-direction: row;
+`;
+
+const CopyBox = styled(Data)`
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  &:hover {
+    opacity: 0.6;
+  }
+`;
+
+const Alert = styled.span`
+  font-size: 16px;
+  line-height: 32px;
+  color: #808b92;
+  opacity: ${props => (props.message ? 1 : 0)};
+  transition: all 0.5s ease;
 `;
