@@ -1,5 +1,4 @@
 // tslint:disable-next-line:no-require-imports
-import { encode } from '@iota/area-codes';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -45,9 +44,9 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { areaCode, gps, name, role, wallet } = req.body;
+                const { gps, name, role, wallet } = req.body;
                 interface IUser {
-                    areaCode?: string;
+                    location?: string;
                     id?: string;
                     role?: string;
                     name?: string;
@@ -55,12 +54,8 @@ export class AppHelper {
                 const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
 
-                if (areaCode) {
-                    user.areaCode = areaCode;
-                } else if (gps) {
-                    const coordinates = gps.split(',');
-                    const newAreaCode = encode(Number(coordinates[0]), Number(coordinates[1]));
-                    user.areaCode = newAreaCode;
+                if (gps) {
+                    user.location = gps;
                 }
 
                 if (role) {

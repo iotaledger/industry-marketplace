@@ -8,7 +8,7 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, areaCode TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, location TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
@@ -24,8 +24,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name, role, areaCode = '' }) => {
-    await db.run('REPLACE INTO user (id, name, role, areaCode) VALUES (?, ?, ?, ?)', [id, name, role, areaCode]);
+export const createUser = async ({ id, name, role, location = '' }) => {
+    await db.run('REPLACE INTO user (id, name, role, location) VALUES (?, ?, ?, ?)', [id, name, role, location]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {

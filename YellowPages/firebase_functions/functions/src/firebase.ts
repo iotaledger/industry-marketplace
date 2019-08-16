@@ -36,3 +36,19 @@ exports.getMessages = async (timestamp: string) => {
     }
   });
 };
+
+exports.getGoogleMapsApiKey = async () => {
+  const doc = await admin
+    .firestore()
+    .collection('settings')
+    .doc('settings')
+    .get();
+  if (doc.exists) {
+    const data = doc.data();
+    if (data.googleMapsApiKey) {
+      return data.googleMapsApiKey;
+    }
+  }
+  console.log('getGoogleMapsApiKey failed. Setting does not exist', doc);
+  throw Error(`The getGoogleMapsApiKey setting doesn't exist.`);
+};

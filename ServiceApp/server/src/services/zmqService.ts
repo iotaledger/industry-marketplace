@@ -1,4 +1,3 @@
-import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { maxDistance, operations } from '../config.json';
@@ -208,9 +207,9 @@ export class ZmqService {
                         id?: string;
                         name?: string;
                         role?: string;
-                        areaCode?: string;
+                        location?: string;
                     }
-                    const { id, role, areaCode }: IUser = await readData('user');
+                    const { id, role, location }: IUser = await readData('user');
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
@@ -239,20 +238,18 @@ export class ZmqService {
 
                                 // 3.1 Decode every message of type A, retrieve location.
                                 if (messageType === 'callForProposal') {
-                                    const location = await getLocationFromMessage(data);
+                                    const senderLocation = await getLocationFromMessage(data);
 
                                     // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                    if (!areaCode || !maxDistance) {
+                                    if (!location || !maxDistance) {
                                         this.sendEvent(data, messageType, messageParams);
                                     }
 
                                     // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                    if (areaCode && maxDistance) {
+                                    if (location && maxDistance) {
 
                                         try {
-                                            const ownLocObj = await decode(areaCode);
-                                            const locObj = await decode(location);
-                                            const distance = await calculateDistance(ownLocObj, locObj);
+                                            const distance = await calculateDistance(location, senderLocation);
 
                                             // 3.3.1 If distance within accepted range, send message to UI
                                             if (distance <= maxDistance) {

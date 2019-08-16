@@ -1,8 +1,7 @@
 {
   "domain": "http://localhost:4000",
-  "addressApi": "https://api.marketplace.tangle.works/location",
+  "addressApi": "https://us-central1-semarket-iota.cloudfunctions.net/location",
   "googleMaps": "https://www.google.com/maps/search/",
-  "areaCodesExplorer": "https://iota-poc-area-codes.dag.sh/conversion/",
   "waitingTime": 10,
   "googleAnalyticsId": "UA-143368819-1",
   "provider": "https://nodes.devnet.iota.org:443",
