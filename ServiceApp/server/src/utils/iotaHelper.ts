@@ -75,10 +75,20 @@ export const generateSeed = (length = 81) => {
 
 export const getPayload = async (bundle) => {
     try {
-        const transactions = await findTransactions(bundle);
-        if (!transactions.length || !transactions[0].signatureMessageFragment) {
+        const rawTransactions = await findTransactions(bundle);
+        if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
             return null;
         }
+
+        const transactions = [];
+        const map = new Map();
+        for (const transaction of rawTransactions) {
+            if (!map.has(transaction.currentIndex)) {
+                map.set(transaction.currentIndex, true);
+                transactions.push(transaction);
+            }
+        }
+
         let message = '';
         transactions
             .sort((a, b) => a.currentIndex - b.currentIndex)
@@ -87,7 +97,7 @@ export const getPayload = async (bundle) => {
             });
         return JSON.parse(decodeURI(fromTrytes(message)));
     } catch (error) {
-        console.error('getPayload catch', error);
+        console.error('getPayload catch', error, bundle);
         return error;
     }
 };
