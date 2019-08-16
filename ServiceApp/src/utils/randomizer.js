@@ -1,4 +1,3 @@
-import { encode } from '@iota/area-codes';
 import format from 'date-fns/format';
 
 const locationBoundaries = {
@@ -108,13 +107,15 @@ export const generateRandomSubmodelValues = submodel => {
       
             case 'string':
             default: {
+                console.log(111, item.idShort)
                 switch (item.idShort) {
                     case 'ort':
-                    case 'location':
-                    case 'target location':
-                    case 'starting point':
-                    case 'destination':
-                    case 'departure':
+                    case 'location [lat, lng]':
+                    case 'target location [lat, lng]':
+                    case 'starting point [lat, lng]':
+                    case 'destination [lat, lng]':
+                    case 'departure [lat, lng]':
+                            console.log(222, item.idShort)
                         return { ...item, value: getRandomLocation() };
                     case 'material':
                         return { ...item, value: getRandomMaterial() };

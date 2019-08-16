@@ -1,8 +1,6 @@
 import get from 'lodash-es/get';
 import { operations } from '../Industry_4.0_language';
 
-const iotaAreaCodes = require('@iota/area-codes');
-
 export const prepareData = async (role, payload) => {
     let data = payload;
     if (typeof payload === 'string') {
@@ -49,7 +47,6 @@ export const prepareData = async (role, payload) => {
         partnerName: get(data, 'userName') || partner,
         originalMessage: JSON.stringify(data),
         storageId: type === 'proposal' && role === 'SR' ? `${conversationId}#${partner}` : conversationId,
-        coordinates: await getCoordinates(location),
         price: get(price, 'value') || 'Pending',
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
         endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
@@ -57,11 +54,6 @@ export const prepareData = async (role, payload) => {
     
     return card;
 };
-
-const getCoordinates = async areaCode => {
-    const { latitude, longitude } = iotaAreaCodes.decode(areaCode);
-    return `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
-}
 
 const getPartner = async (role, data) => {
     if (role === 'SP') {
