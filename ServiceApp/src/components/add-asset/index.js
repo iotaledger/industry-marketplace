@@ -88,6 +88,7 @@ const initState = {
   assetStart: new Date(),
   assetEnd: new Date(),
   operation: '',
+  description: '',
   operations: [],
   submodel: [],
 }
@@ -126,9 +127,12 @@ export default class extends React.Component {
   async change({ target: { name, value } }) {
     if (name === 'operation') {
       const eClassSubmodel = await submodel(value);
+      const operationObject = value ? this.state.operations.find(({ id }) => id === value) : null;
+
       this.setState({
         submodel: eClassSubmodel,
-        [name]: value
+        [name]: value,
+        description: get(operationObject, 'description') 
       });
     } else {
       this.setState({ [name]: value });
@@ -213,7 +217,7 @@ export default class extends React.Component {
   };
 
   render() {
-    const { loading, operation, operations, submodel } = this.state;
+    const { loading, operation, operations, submodel, description } = this.state;
 
     return (
       <React.Fragment>
@@ -242,6 +246,9 @@ export default class extends React.Component {
                         }
                       </select>
                     </Column>
+                    { 
+                      description && <Row><Description>{description}</Description></Row>
+                    }
                     {
                       operation ? (
                         <Row>
@@ -464,4 +471,24 @@ const CardFooter = styled.footer`
   background-color: rgba(206, 218, 226, 0.2);
   border-top: 1px solid #eaecee;
   cursor: default;
+`;
+
+const Description = styled.p`
+  font-size: 16px;
+  margin: 5px 0 15px;
+  color: #808b92;
+`;
+
+const Label = styled.label`
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #313131;
+  text-transform: uppercase;
+`;
+
+const Select = styled.select`
+  margin-top: 10px;
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #313131;
 `;

@@ -1,52 +1,52 @@
 [
     {
         "name": "Drone Transport",
-        "name_de": "Drone Transport",
+        "description": "A drone with transport capability is requested to transport a package from A to B",
         "id":"0173-1#01-AAJ336#002"
     },
     {
         "name": "Drone inspection",
-        "name_de": "Drone inspection",
+        "description": "A drone with high resolution camera is requested to inspect a wind power plant at human unaccessable areas for potential maintenance / damage",
         "id":"0173-1#01-AAP788#001"
     },
     {
         "name": "Mobility as a service",
-        "name_de": "Mobility as a service",
+        "description": "A manned or autonomous vehicle is requested to transport a given number of persons from A to B",
         "id":"0173-1#01-AAI711#001"
     },
     {
         "name": "EV Charging",
-        "name_de": "EV Charging",
+        "description": "A manned or autonomous vehicle is requesting an available EV chaging slot at a nearby location or along a future route/location",
         "id":"0173-1#01-AAO742#002"
     },
     {
         "name": "Drilling",
-        "name_de": "Bohren",
+        "description": "",
         "id":"0173-1#01-BAF577#004"
     },
     {
         "name": "Sawing",
-        "name_de": "Sägen",
+        "description": "",
         "id":"0173-1#01-BAF576#004"
     },
     {
         "name": "Cutting",
-        "name_de": "Schneiden",
+        "description": "",
         "id":"0173-1#01-BAF575#004"
     },
     {
         "name": "Hammering",
-        "name_de": "Hämmern",
+        "description": "",
         "id":"0173-1#01-BAF574#004"
     },
     {
         "name": "Grinding",
-        "name_de": "Schleifen",
+        "description": "",
         "id":"0173-1#01-BAF573#004"
     },
     {
         "name": "Weather Data",
-        "name_de": "Wetterdated",
+        "description": "",
         "id":"0173-1#01-BAF777#004"
     }
 ]
