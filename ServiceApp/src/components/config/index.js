@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Loading from '../loading';
 import locationFormats from './location.formats'
+import UserContext from '../../context/user-context';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -11,20 +12,19 @@ const Card = props => (
   </CardWrapper>
 );
 
-const initState = {
-  inputText: '',
-  name: '',
-  role: '',
-  wallet: false,
-  loading: false,
-  selectedIndex: 0
-}
-
 export default class extends React.Component {
+  static contextType = UserContext;
+
   constructor(props) {
     super(props);
+
     this.state = {
-      ...initState
+      location: '',
+      name: '',
+      role: '',
+      wallet: false,
+      loading: false,
+      selectedIndex: 0
     }
 
     this.cancel = this.cancel.bind(this);
@@ -32,8 +32,9 @@ export default class extends React.Component {
     this.submit = this.submit.bind(this);
   }
 
-  componentWillUnmount() {
-    this.setState({ ...initState });
+  componentDidMount() {
+    const { location, name, role } = this.context.user;
+    this.setState({ location, name, role });
   }
 
   cancel() {
@@ -46,8 +47,8 @@ export default class extends React.Component {
     const name = target.name;
     const value = target.type === 'checkbox' ? target.checked : target.value;
 
-    if(name === 'inputText') {
-      this.setState({ inputText: value });
+    if (name === 'location') {
+      this.setState({ location: value });
     } else if (name === 'locationFormat') {
       this.setState({ selectedIndex : value });
     } else {
@@ -56,12 +57,12 @@ export default class extends React.Component {
   }
 
   async submit() {
-    const { inputText, role, name, wallet } = this.state;
+    const { location, role, name, wallet } = this.state;
     this.setState({ loading: true });
     // actions are defined in ./location.formats.js
     const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
       this.props.sendMessage,
-      inputText,
+      location,
       { role, name, wallet }
     );
 
@@ -82,7 +83,7 @@ export default class extends React.Component {
               {!loading && (
                   <Form>
                     <Column>
-                      <label>User Name:</label>
+                      <Label>User Name:</Label>
                       <Input
                         type="text"
                         name="name"
@@ -91,7 +92,7 @@ export default class extends React.Component {
                       />
                     </Column>
                     <Column>
-                      <label>Select user role:</label>
+                      <Label>Select user role:</Label>
                       <Select
                         type="text"
                         name="role"
@@ -104,7 +105,7 @@ export default class extends React.Component {
                       </Select>
                     </Column>
                     <Column>
-                      <label>Select Location format:</label>
+                      <Label>Select Location format:</Label>
                       <Select
                         type="text"
                         name="locationFormat"
@@ -123,20 +124,20 @@ export default class extends React.Component {
                       <Input
                         type="text"
                         onChange={this.change}
-                        name="inputText"
-                        value={this.state.inputText}
+                        name="location"
+                        value={this.state.location}
                        />
                     </InputWrapper>
                     <Row>
-                      <Label>
-                        <input
+                      <CheckboxLabel>
+                        <Input
                           name="wallet"
                           type="checkbox"
                           checked={wallet}
                           onChange={this.change}
                         />
-                        Generate new wallet?
-                      </Label>
+                        {'  '}Generate new wallet?
+                      </CheckboxLabel>
                     </Row>
                   </Form>
                 )}
@@ -181,6 +182,15 @@ const Input = styled.input`
   margin: 0px 5px 10px 0;
   border-bottom: 2px solid #eee;
   background: transparent;
+  font-size: 18px;
+  color: #313131;
+
+  &[type=checkbox] {
+    height: 15px;
+    width: 15px;
+    transform: scale(1.5);
+    margin-top: 10px;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -188,6 +198,10 @@ const InputWrapper = styled.div`
 
 const Select = styled.select`
   margin-bottom: 10px;
+  margin-top: 10px;
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #313131;
 `
 
 const Form = styled.form`
@@ -317,14 +331,21 @@ const CardFooter = styled.footer`
   cursor: default;
 `;
 
-const Label = styled.label`
-  font-size: 14px;
-  font-weight: normal;
+const CheckboxLabel = styled.label`
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
   font-style: italic;
   font-stretch: normal;
   line-height: normal;
   letter-spacing: normal;
   text-align: left;
-  color: rgba(78, 90, 97, 1);
+  color: #313131;
   margin-bottom: 5px;
+`;
+
+const Label = styled.label`
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #313131;
+  text-transform: uppercase;
 `;
