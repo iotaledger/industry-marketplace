@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Clipboard from 'react-clipboard.js';
 import { Link } from 'react-router-dom';
-import { isValid } from '@iota/area-codes';
 import { AssetContext } from '../../pages/dashboard';
 import UserContext from '../../context/user-context';
 import searchIcon from '../../assets/img/search.svg';
@@ -160,6 +159,18 @@ const Asset = props => {
     setTimeout(() => setMessage(''), 1500);
   };
 
+
+  function isValidGPS(gps) {
+    const [lat, lon] = gps.split(',');
+    const latRegex = /^(-?[1-8]?\d(?:\.\d{1,18})?|90(?:\.0{1,18})?)$/;
+    const lonRegex = /^(-?(?:1[0-7]|[1-9])?\d(?:\.\d{1,18})?|180(?:\.0{1,18})?)$/;
+    
+    if (latRegex.test(Number(lat)) && lonRegex.test(Number(lon))) {
+        return true;
+    }
+    return false;
+  }
+
   return (
     <Card
       header={Heading(asset)}
@@ -183,7 +194,7 @@ const Asset = props => {
                   </RowLink>
                   <Data>
                     {
-                      typeof value === 'string' && isValid(value)
+                      typeof value === 'string' && isValidGPS(value)
                       ? ( <React.Fragment>
                             { value.toString() }
                             <a 
@@ -194,8 +205,8 @@ const Asset = props => {
                               <Img
                                 width={17}
                                 src={externalLinkIcon}
-                                title="View on IOTA Area Code Explorer"
-                                alt="View on IOTA Area Code Explorer"
+                                title="View on Google Maps"
+                                alt="View on Google Maps"
                               />
                             </a>
                           </React.Fragment>
@@ -213,9 +224,9 @@ const Asset = props => {
           <RowThird>
             <RowDesc>Coordinates</RowDesc>
             <Data>
-              {asset.coordinates || '--'}
+              {asset.location || '--'}
               <a 
-                href={`${googleMaps}${asset.coordinates}`} 
+                href={`${googleMaps}${asset.location}`} 
                 target="_blank"
                 rel="noopener noreferrer"
               >
