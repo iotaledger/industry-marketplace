@@ -39,7 +39,7 @@
   "scripts": {
     "install-all": "yarn && cd server && yarn",
     "client": "yarn start",
-    "server": "nodemon server.js",
+    "server": "cd server && yarn start-dev",
     "server-build": "cd server && yarn build",
     "dev": "yarn install-all && yarn server-build && concurrently --kill-others-on-fail \"yarn client\" \"cd server && yarn start-dev\"",
     "start": "react-scripts start",
