@@ -7,7 +7,6 @@ import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
-import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { buildTag } from './tagHelper';
@@ -136,9 +135,8 @@ export class AppHelper {
         app.post('/cfp', async (req, res) => {
             try {
                 // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('callForProposal', location, submodelId);
+                const tag = buildTag('callForProposal', submodelId);
                
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -169,9 +167,8 @@ export class AppHelper {
         app.post('/proposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('proposal', location, submodelId);
+                const tag = buildTag('proposal', submodelId);
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -205,9 +202,8 @@ export class AppHelper {
                 mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
 
                 // 5. Create Tag
-                const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('acceptProposal', location, submodelId);
+                const tag = buildTag('acceptProposal', submodelId);
 
                 // 6. Send transaction, include MAM channel info
                 const user: any = await readData('user');
@@ -232,9 +228,8 @@ export class AppHelper {
         app.post('/rejectProposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('rejectProposal', location, submodelId);
+                const tag = buildTag('rejectProposal', submodelId);
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -258,9 +253,8 @@ export class AppHelper {
         app.post('/informConfirm', async (req, res) => {
             try {
                 // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('informConfirm', location, submodelId);
+                const tag = buildTag('informConfirm', submodelId);
 
                 // 2. Retrieve Wallet address from DB
                 interface IWallet {
@@ -325,9 +319,8 @@ export class AppHelper {
                     await publish(channelId, req.body);
 
                     // 6. Create Tag
-                    const location = getLocationFromMessage(req.body);
                     const submodelId = req.body.dataElements.submodels[0].identification.id;
-                    const tag = buildTag('informPayment', location, submodelId);
+                    const tag = buildTag('informPayment', submodelId);
 
                     // 7. Send transaction
                     const user: any = await readData('user');
