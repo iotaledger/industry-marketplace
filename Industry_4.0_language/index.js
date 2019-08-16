@@ -141,7 +141,12 @@ const generate = ({
         if (messageType === 'proposal' && price && irdi) {
             const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
             priceModel.value = price;
-            message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
+
+            const updatedModel = message.dataElements.submodels[0].identification.submodelElements
+                .filter(model => !['preis', 'price'].includes(model.idShort));
+            
+            updatedModel.push(priceModel);
+            message.dataElements.submodels[0].identification.submodelElements = updatedModel;
         }
     } else if (irdi && messageType === 'callForProposal') {
         message.frame.conversationId = uuid();
