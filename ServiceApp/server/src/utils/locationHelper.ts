@@ -3,10 +3,13 @@ export const getLocationFromMessage = message => {
 };
 
 export const calculateDistance = (locObj1, locObj2) => {
-    const lat1 = locObj1.latitude;
-    const lat2 = locObj2.latitude;
-    const lon1 = locObj1.longitude;
-    const lon2 = locObj2.longitude;
+    const coordsArr1 = locObj1.split(',');
+    const lat1 = Number(coordsArr1[0]);
+    const lon1 = Number(coordsArr1[1]);
+
+    const coordsArr2 = locObj2.split(',');
+    const lat2 = Number(coordsArr2[0]);
+    const lon2 = Number(coordsArr2[1]);
 
     if ((lat1 === lat2) && (lon1 === lon2)) {
         return 0;
