@@ -35,7 +35,7 @@ class Details extends React.Component {
       }
 
       const card = await readFromStorage(conversationId);
-      if (!isEmpty(card.sensorData)) {
+      if (card && card.sensorData && !isEmpty(card.sensorData)) {
         const { sensorData: { deviceId, userId, schema }} = card;
         const querystring = `${stringify({ deviceId, userId })}`;
         const result = await axios.get(`${sensorDataDomain}${querystring}`);
