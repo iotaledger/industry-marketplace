@@ -255,7 +255,10 @@ const Asset = props => {
                       onSuccess={() => alert('Successfully Copied')}
                     >
                       <CopyBox>
-                        {asset.partnerName && `${asset.partnerName.substr(9, 15)}...`}
+                        { asset.partnerName && asset.partnerName.indexOf('did:iota:') === 0 
+                          ? `${asset.partnerName.substr(9, 15)}...` 
+                          : asset.partnerName
+                        }
                       </CopyBox>
                     </Clipboard>
                     <Alert message={message}>{message}</Alert>
