@@ -73,7 +73,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const { loading, locationFormat, name, role, wallet } = this.state;
+    const { loading, location, locationFormat, name, role, wallet } = this.state;
 
     return (
       <React.Fragment>
@@ -125,7 +125,7 @@ export default class extends React.Component {
                         type="text"
                         onChange={this.change}
                         name="location"
-                        value={this.state.location}
+                        value={location}
                        />
                     </InputWrapper>
                     <Row>
