@@ -167,7 +167,7 @@ const params =
 {
     "userId": "User1",
     "role": "SR",
-    "areaCode": "NPHTQORL9XK",
+    "gps": "52.508,13.37789999999",
     "wallet": false
 }
 
