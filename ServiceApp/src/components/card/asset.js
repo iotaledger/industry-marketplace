@@ -147,7 +147,7 @@ const Asset = props => {
 
   function change({ target: { value } }) {
     setPrice(Number(value));
-    if (Number(value) > 0) {
+    if (Date.parse(asset.startTime) > Date.now() && Number(value) > 0) {
       setConfirmButtonEnabled(true);
     } else {
       setConfirmButtonEnabled(false);
@@ -158,7 +158,6 @@ const Asset = props => {
     setMessage(text);
     setTimeout(() => setMessage(''), 1500);
   };
-
 
   function isValidGPS(gps) {
     const [lat, lon] = gps.split(',');
@@ -222,7 +221,7 @@ const Asset = props => {
         }
         <Row>
           <RowThird>
-            <RowDesc>Coordinates</RowDesc>
+            <RowDesc>Requester Location</RowDesc>
             <Data>
               {asset.location || '--'}
               <a 
