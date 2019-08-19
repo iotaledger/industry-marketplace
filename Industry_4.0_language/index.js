@@ -116,7 +116,8 @@ const generate = ({
     location = null,
     startTimestamp = null,
     endTimestamp = null,
-    creationDate = null
+    creationDate = null,
+    userName = null,
 }) => {
     const message = getTemplate(messageType);
     if (!message) {
@@ -124,6 +125,7 @@ const generate = ({
     }
     message.frame.sender.identification.id = userId;
     message.frame.replyBy = getReplyByTime(replyTime);
+    message.userName = userName;
 
     if (originalMessage && messageType !== 'callForProposal') {
         message.frame.conversationId = originalMessage.frame.conversationId;

@@ -190,14 +190,15 @@ class Dashboard extends React.Component {
   }
 
   async generateRequest(type, id, partner = null, price = null) {
-    const { irdi, originalMessage } = await readFromStorage(partner ? `${id}#${partner}` : id);
+    const { irdi, originalMessage, partnerName } = await readFromStorage(partner ? `${id}#${partner}` : id);
     const request = generate({
       messageType: type,
       userId: this.context.user.id,
       replyTime: waitingTime,
       originalMessage: await JSON.parse(originalMessage),
+      userName: partnerName,
       irdi,
-      price
+      price,
     });
     console.log('generateRequest', request);
     return request;
