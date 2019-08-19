@@ -12,6 +12,7 @@ import Modal from '../components/modal';
 import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import Cookie from '../components/cookie';
+import NoRequests from '../components/no-requests';
 import { generate } from '../Industry_4.0_language';
 import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
@@ -317,26 +318,16 @@ class Dashboard extends React.Component {
               >
                 {
                   this.context.user.role === 'SR' && assets.length === 0 && activeSection === 'callForProposal' ? (
-                    <NoAssetsOuterWrapper>
-                      <NoAssetsInnerWrapper>
-                        <Heading>You have no active requests</Heading>
-                        <Text>Why not create a new one?</Text>
-                        <ButtonWrapper>
-                          <Button onClick={this.showNewRequestForm}>
-                            Create request
-                          </Button>
-                        </ButtonWrapper>
-                      </NoAssetsInnerWrapper>
-                    </NoAssetsOuterWrapper>
+                    <NoRequests callback={this.showNewRequestForm} />
                   ) : (
                     <AssetsWrapper>
-                    {
-                      loading ? (
-                        <LoadingBox>
-                          <Loading text={loadingText} />
-                        </LoadingBox>
-                      ) : <AssetList assets={assets} />
-                    }
+                      {
+                        loading ? (
+                          <LoadingBox>
+                            <Loading text={loadingText} />
+                          </LoadingBox>
+                        ) : <AssetList assets={assets} />
+                      }
                     </AssetsWrapper>
                   )
                 }
@@ -345,18 +336,18 @@ class Dashboard extends React.Component {
           </Data>
           {
             displayNewRequestForm &&
-            <AddCard
-              createRequest={this.createRequest}
-              cancel={this.hideNewRequestForm}
-              user={this.context.user}
-            />
+              <AddCard
+                createRequest={this.createRequest}
+                cancel={this.hideNewRequestForm}
+                user={this.context.user}
+              />
           }
           {
             this.state.isConfigModal &&
-            <Config
-              sendMessage={this.updateConfig}
-              handleConfigModal={this.handleConfigModal}
-            />
+              <Config
+                sendMessage={this.updateConfig}
+                handleConfigModal={this.handleConfigModal}
+              />
           }
         </ColumnWrap>
         <Modal
@@ -399,25 +390,6 @@ const AssetsWrapper = styled.div`
   height: 100%;
 `
 
-const NoAssetsOuterWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`
-
-const NoAssetsInnerWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10%;
-`
-
-const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-`
-
 const Data = styled.section`
   background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
   width: 100%;
@@ -430,39 +402,4 @@ const Data = styled.section`
 
 const LoadingBox = styled.div`
   margin: auto;
-`;
-
-const Button = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font: 15px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 20px 38px;
-  border-radius: 100px;
-  text-transform: uppercase;
-  color: #fff;
-  font-size: 12px;
-  letter-spacing: 0.38px;
-  padding: 12px 21px;
-  margin: 15px 0 0;
-  box-shadow: 0 10px 20px 0 #0a2056;
-  font-weight: 700;
-  background-color: #009fff;
-  width: 160px;
-`;
-
-const Heading = styled.h2`
-  font-size: 2rem;
-  font-weight: 300;
-  color: #ffffff;
-  padding-top: 50px;
-  margin: 0 40px;
-`;
-
-const Text = styled.h4`
-  font-size: 1.3rem;
-  font-weight: 300;
-  color: #ffffff;
-  padding: 20px 0;
 `;
