@@ -180,42 +180,44 @@ const Asset = props => {
         {
           asset.params && asset.params.length > 0 ? (
             <Row>
-            {
-              asset.params.map(({ idShort, semanticId, value }) => (
-                <RowThird key={idShort}>
-                  <RowLink
-                    href={`${eClassCatalog}${semanticId.replace(/#/g, '%23')}`} 
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="Go to eCl@ss to see property specs"
-                  >
-                    {idShort}
-                  </RowLink>
-                  <Data>
-                    {
-                      typeof value === 'string' && isValidGPS(value)
-                      ? ( <React.Fragment>
-                            { value.toString() }
-                            <a 
-                              href={`${googleMaps}${value}`} 
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Img
-                                width={17}
-                                src={externalLinkIcon}
-                                title="View on Google Maps"
-                                alt="View on Google Maps"
-                              />
-                            </a>
-                          </React.Fragment>
-                        )
-                      : value.toString()
-                    }
-                  </Data>
-                </RowThird>
-              ))
-            }
+              {
+                asset.params
+                  .filter(({ idShort }) => !['preis', 'price'].includes(idShort))
+                  .map(({ idShort, semanticId, value }) => (
+                    <RowThird key={idShort}>
+                      <RowLink
+                        href={`${eClassCatalog}${semanticId.replace(/#/g, '%23')}`} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Go to eCl@ss to see property specs"
+                      >
+                        {idShort}
+                      </RowLink>
+                      <Data>
+                        {
+                          typeof value === 'string' && isValidGPS(value)
+                          ? ( <React.Fragment>
+                                { value.toString() }
+                                <a 
+                                  href={`${googleMaps}${value}`} 
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <Img
+                                    width={17}
+                                    src={externalLinkIcon}
+                                    title="View on Google Maps"
+                                    alt="View on Google Maps"
+                                  />
+                                </a>
+                              </React.Fragment>
+                            )
+                          : value.toString()
+                        }
+                      </Data>
+                    </RowThird>
+                ))
+              }
             </Row>
           ) : null
         }
