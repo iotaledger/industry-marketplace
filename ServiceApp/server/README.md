@@ -12,7 +12,7 @@
  
 <!-- Pre-requisites -->
 ### About the Project
- ![architecture](docs/architecture.png?raw=true)
+ ![architectureV2](docs/architectureV2.png?raw=true)
  
  
 #### Digital Identity and Encryption 
@@ -51,9 +51,8 @@ One major task that the Market Manager executes for every incoming message is wr
 
 #### POST /config 
 
-Receives userId, role and location in GPS coordinates or IOTA areaCode according to [Industry 4.0 Semantic](#config)
+Receives userId, role and location in GPS coordinates according to [Industry 4.0 Semantic](#config)
 
-* Converts passed GPS coordinates to IOTA Area Codes 
 * Writes configuration details to database
 
 Returns success or failure notification
@@ -69,18 +68,18 @@ Receives conversationId, access credentials for sensor data and schema of sensor
 
 Receives ‘call for proposal’ according to [Industry 4.0 Semantic](#callforproposal)
 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Sends transaction with custom tag to Tangle 
 * creates MAM-channel and publishes call for proposal to MAM channel 
 * stores MAM-channel in database under conversation-ID 
 
-Returns success or failure notification,  tag, transaction hash and MAM information
+Returns success or failure notification, tag, transaction hash and MAM information
 
 #### POST /proposal
 
 Receives ‘proposal’ according to [Industry 4.0 Semantic](#proposal)
 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Sends transaction with custom tag to Tangle
 
 Returns success or failure notification, tag and transaction hash
@@ -89,7 +88,7 @@ Returns success or failure notification, tag and transaction hash
 
 Receives ‘acceptProposal’ according to [Industry 4.0 Semantic](#acceptproposal)
 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Publishes acceptProposal to MAM-channel 
 * Sends transaction with custom tag  to Tangle 
 
@@ -100,7 +99,7 @@ Returns success or failure notification, tag, transaction hash and MAM informati
 
 Receives ‘rejectProposal’  according to [Industry 4.0 Semantic](#rejectproposal)
 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Sends transaction with custom tag to Tangle
 
 Returns success or failure notification, tag and transaction hash
@@ -110,7 +109,7 @@ Returns success or failure notification, tag and transaction hash
 
 Receives ‘informConfirm’ according to [Industry 4.0 Semantic](#informconfirm)
 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Publishes informConfirm to MAM-channel 
 * Retrieves wallet address from database 
 * Adds wallet address to payload of transaction
@@ -127,7 +126,7 @@ Returns success or failure notification, tag and transaction hash
 Receives ‘informPayment’ according to [Industry 4.0 Semantic](#informpayment)
 
 * processes payment 
-* Creates a custom tag from type of message, operationID and location 
+* Creates a custom tag from Prefix, type of message and operationID 
 * Publishes informPayment to MAM-channel 
 * Sends transaction with custom tag to Tangle
 
@@ -275,15 +274,6 @@ Payload according to the Industry 4.0 Language can be created with the [SeMarket
 
 
 #### config 
-```json
-{
-    "userId": "User1",
-    "role": "SR",
-    "areaCode": "NPHTQORL9XK",
-    "wallet": true
-}
-```
-OR 
 
 ```json
 {
@@ -326,7 +316,7 @@ Please complete with [submodelElements](#submodelelements)
       }
     },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:45 am "
@@ -367,7 +357,7 @@ Please complete with [submodelElements](#submodelelements)
         }
      },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:46 am "
@@ -408,7 +398,7 @@ Please complete with [submodelElements](#submodelelements)
       }
     },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:48 am "
@@ -449,7 +439,7 @@ Please complete with [submodelElements](#submodelelements)
       }
     },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:48 am "
@@ -490,7 +480,7 @@ Please complete with [submodelElements](#submodelelements)
       }
     },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:55 am "
@@ -530,7 +520,7 @@ Please complete with [submodelElements](#submodelelements)
       }
     },
     "replyBy": 1704063600000,
-    "location": "NPHTPOYO9JQ",
+    "location": "52.508,13.37789999999",
     "startTimestamp": 1564476317000,
     "endTimestamp": 1564562717000,
     "creationDate": "29 July, 2019 10:58 am "
