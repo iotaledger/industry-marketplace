@@ -24,7 +24,7 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name, role, location = '' }) => {
+export const createUser = async ({ id, name = '', role = '', location = '' }) => {
     await db.run('REPLACE INTO user (id, name, role, location) VALUES (?, ?, ?, ?)', [id, name, role, location]);
 };
 
