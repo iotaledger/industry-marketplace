@@ -207,7 +207,7 @@ class Dashboard extends React.Component {
     const cardId = type === 'proposal' ? `${id}#${partner}` : id;
     const { irdi, operation } = await readFromStorage(cardId);
     const notification = `Do you really want to remove request "${operation}" with IRDI "${irdi}" from the list?`;
-    this.setState({ notification, confirmRemove: id });
+    this.setState({ notification, confirmRemove: cardId });
   }
 
   async confirmAction(id, partner, price = null) {
