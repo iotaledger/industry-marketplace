@@ -139,6 +139,8 @@ const Asset = props => {
       setConfirmButtonEnabled(false);
     } else if (user.balance <= 0) {
       setConfirmButtonEnabled(false);
+    } if (user.role === 'SR' && asset.type === 'proposal' &&  Date.parse(asset.startTime) < Date.now()) {
+      setConfirmButtonEnabled(false);
     } else {
       setConfirmButtonEnabled(true);
       setPrice(asset.price);
