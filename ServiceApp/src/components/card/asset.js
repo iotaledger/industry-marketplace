@@ -6,7 +6,7 @@ import { AssetContext } from '../../pages/dashboard';
 import UserContext from '../../context/user-context';
 import searchIcon from '../../assets/img/search.svg';
 import removeIcon from '../../assets/img/remove.svg';
-import externalLinkIcon from '../../assets/img/external-link.svg';
+import mapIcon from '../../assets/img/map.svg';
 import Card from './index.js';
 import { eClassCatalog, googleMaps } from '../../config.json';
 
@@ -206,8 +206,8 @@ const Asset = props => {
                                   rel="noopener noreferrer"
                                 >
                                   <Img
-                                    width={17}
-                                    src={externalLinkIcon}
+                                    width={20}
+                                    src={mapIcon}
                                     title="View on Google Maps"
                                     alt="View on Google Maps"
                                   />
@@ -234,8 +234,8 @@ const Asset = props => {
                 rel="noopener noreferrer"
               >
                 <Img
-                  width={17}
-                  src={externalLinkIcon}
+                  width={20}
+                  src={mapIcon}
                   title="View on Google Maps"
                   alt="View on Google Maps"
                 />
