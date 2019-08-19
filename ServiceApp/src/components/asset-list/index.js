@@ -1,15 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
 import AssetCard from '../card/asset';
+import NoRequests from '../no-requests';
 
 export default props => (
-  <InfoCol>
-    <CardWrapper>
-      {props.assets && props.assets.map(asset => (
-        <AssetCard key={asset.storageId ? asset.storageId : asset.id} asset={asset} />
-      ))}
-    </CardWrapper>
-  </InfoCol>
+  <React.Fragment>
+    {
+      props.assets && props.assets.length ? (
+        <InfoCol>
+          <CardWrapper>
+            {props.assets && props.assets.map(asset => (
+              <AssetCard key={asset.storageId ? asset.storageId : asset.id} asset={asset} />
+            ))}
+          </CardWrapper>
+        </InfoCol>
+      ) : <NoRequests />
+    }
+  </React.Fragment>
 );
 
 const InfoCol = styled.div`
