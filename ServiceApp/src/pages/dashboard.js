@@ -251,8 +251,7 @@ class Dashboard extends React.Component {
     if (role === 'SR') {
       switch (activeSection) {
         case 'callForProposal':
-          await removeFromStorage(id);
-          await this.checkExpired();
+          this.removeAsset(id, null, 'callForProposal');
           return null;
         case 'proposal':
           // send rejectProposal
