@@ -116,8 +116,7 @@ export class AppHelper {
             if (!user || !user.id) {
                 // Generate key pair
                 const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey);
-                await writeData('did', { root, privateKey });
+                const root = await publishDID(publicKey, privateKey);
                 const id = `did:iota:${root}`;
                 user = user ? { ...user, id } : { id };
                 await writeData('user', user);

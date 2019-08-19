@@ -74,11 +74,41 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
 };
 
 // Publish to tangle
-export const publishDID = async publicKey => {
+export const publishDID = async (publicKey, privateKey) => {
     try {
-        const message = Mam.create(cleanMAMState, asciiToTrytes(publicKey));
-        await Mam.attach(message.payload, message.address, 3, 9);
-        return message.root;
+        let mamState;
+        const mamStateFromDB: IMamState = await readData('did');
+        if (mamStateFromDB) {
+            mamState = {
+                subscribed: [],
+                channel: {
+                    side_key: null,
+                    mode: 'public',
+                    next_root: mamStateFromDB.next_root,
+                    security: 2,
+                    start: mamStateFromDB.start,
+                    count: 1,
+                    next_count: 1,
+                    index: 0
+                },
+                seed: mamStateFromDB.seed
+            };
+        } else {
+            mamState = cleanMAMState;
+        }
+
+        const message = Mam.create(mamState, asciiToTrytes(publicKey));
+        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
+        const { channel: { next_root, start }, seed } = message.state;
+      
+        // Attach the payload
+        const bundle = await Mam.attach(message.payload, message.address, 3, 9);
+        if (bundle && bundle.length && bundle[0].hash) {
+            // Save new mamState
+            await writeData('did', { root, privateKey, seed, next_root, start });
+            return message.root;
+        }
+        return null;
     } catch (error) {
         console.log('MAM publishDID Error', error);
         throw new Error(error);
