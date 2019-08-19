@@ -165,7 +165,7 @@ const BASE_URL = 'http://localhost:5000';
 
 const params =
 {
-    "userId": "User1",
+    "name": "User1",
     "role": "SR",
     "gps": "52.508,13.37789999999",
     "wallet": false
@@ -277,7 +277,7 @@ Payload according to the Industry 4.0 Language can be created with the [SeMarket
 
 ```json
 {
-    "userId": "User2",
+    "name": "User2",
     "role": "SP",
     "gps": "52.508,13.37789999999",
     "wallet": true
