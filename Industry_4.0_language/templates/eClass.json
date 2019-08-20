@@ -6,7 +6,7 @@
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
-                "semanticId":"0173-1#02-AAJ337#002"
+                "semanticId":"0173-1#02-AAJ336#002"
             },
             {
                 "idShort":"starting point [lat, lng]",
@@ -140,7 +140,7 @@
                 "semanticId":"0173-1#02-AAF631#001"
             },
             {
-                "idShort":"cable length [cm]",
+                "idShort":"cable length [m]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"integer",
@@ -172,25 +172,46 @@
     "0173-1#01-BAF577#004": {
         "submodelElements":[
             {
-                "idShort":"weight [kg]",
+                "idShort":"duration [min]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
-                "semanticId":"0173-1#02-AAB713#005"
+                "semanticId":"0173-1#02-AAA818#006"
             },
             {
-                "idShort":"color",
+                "idShort":"maximum velocity at rated value [km/h]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
-                "semanticId":"0173-1#02-AAN521#005"
+                "semanticId":"0173-1#02-AAB919#007"
             },
             {
-                "idShort":"material",
+                "idShort":"max. monitoring radius [m]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"string",
-                "semanticId":"0173-1#02-BAF634#008"
+                "semanticId":"0173-1#02-AAI957#004"
+            },
+            {
+                "idShort":"2,4 GHz",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"boolean",
+                "semanticId":"0173-1#07-ABA076#001"
+            },
+            {
+                "idShort":"5 GHz",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"boolean",
+                "semanticId":"0173-1#07-ABA075#001"
+            },
+            {
+                "idShort":"energy consumption [kW/h]",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"decimal",
+                "semanticId":"0173-1#02-AAF090#005"
             },
             {
                 "idShort":"location [lat, lng]",
@@ -198,13 +219,6 @@
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
-            },
-            {
-                "idShort":"time [s]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"time",
-                "semanticId":"0173-1#02-AAO738#001"
             },
             {
                 "idShort":"price",
@@ -218,25 +232,18 @@
     "0173-1#01-BAF576#004": {
         "submodelElements":[
             {
-                "idShort":"weight [kg]",
+                "idShort":"maximum power [kW]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
-                "semanticId":"0173-1#02-AAB713#005"
+                "semanticId":"0173-1#02-AAF406#004"
             },
             {
-                "idShort":"color",
+                "idShort":"duration [min]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-AAN521#005"
-            },
-            {
-                "idShort":"material",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF634#008"
+                "valueType":"time",
+                "semanticId":"0173-1#02-AAA818#006"
             },
             {
                 "idShort":"location [lat, lng]",
@@ -244,13 +251,6 @@
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
-            },
-            {
-                "idShort":"time [s]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"time",
-                "semanticId":"0173-1#02-AAO738#001"
             },
             {
                 "idShort":"price",
@@ -264,71 +264,25 @@
     "0173-1#01-BAF575#004": {
         "submodelElements":[
             {
-                "idShort":"weight [kg]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"decimal",
-                "semanticId":"0173-1#02-AAB713#005"
-            },
-            {
-                "idShort":"color",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-AAN521#005"
-            },
-            {
-                "idShort":"material",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF634#008"
-            },
-            {
-                "idShort":"location [lat, lng]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF163#002"
-            },
-            {
-                "idShort":"time [s]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"time",
-                "semanticId":"0173-1#02-AAO738#001"
-            },
-            {
-                "idShort":"price",
+                "idShort":"range [m]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"integer",
-                "semanticId":"0173-1#02-AAO739#001"
-            }
-        ]
-    },
-    "0173-1#01-BAF574#004": {
-        "submodelElements":[
+                "semanticId":"0173-1#02-AAI957#004"
+            },
             {
-                "idShort":"weight [kg]",
+                "idShort":"frequency [MHz]",
                 "modelType":"Property",
                 "value":"",
                 "valueType":"decimal",
-                "semanticId":"0173-1#02-AAB713#005"
+                "semanticId":"0173-1#07-AAL034#004"
             },
             {
-                "idShort":"color",
+                "idShort":"energy consumption [MW]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-AAN521#005"
-            },
-            {
-                "idShort":"material",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF634#008"
+                "valueType":"decimal",
+                "semanticId":"0173-1#02-AAF090#005"
             },
             {
                 "idShort":"location [lat, lng]",
@@ -336,59 +290,6 @@
                 "value":"",
                 "valueType":"string",
                 "semanticId":"0173-1#02-BAF163#002"
-            },
-            {
-                "idShort":"time [s]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"time",
-                "semanticId":"0173-1#02-AAO738#001"
-            },
-            {
-                "idShort":"price",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"integer",
-                "semanticId":"0173-1#02-AAO739#001"
-            }
-        ]
-    },
-    "0173-1#01-BAF573#004": {
-        "submodelElements":[
-            {
-                "idShort":"weight [kg]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"decimal",
-                "semanticId":"0173-1#02-AAB713#005"
-            },
-            {
-                "idShort":"color",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-AAN521#005"
-            },
-            {
-                "idShort":"material",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF634#008"
-            },
-            {
-                "idShort":"location [lat, lng]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"string",
-                "semanticId":"0173-1#02-BAF163#002"
-            },
-            {
-                "idShort":"time [s]",
-                "modelType":"Property",
-                "value":"",
-                "valueType":"time",
-                "semanticId":"0173-1#02-AAO738#001"
             },
             {
                 "idShort":"price",
