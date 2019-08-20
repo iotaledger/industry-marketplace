@@ -40,7 +40,7 @@ const color = [
 ];
 
 const integerMaxValue = 10;
-const decimalMaxValue = 10;
+const bigIntegerMaxValue = 100;
 const randomTextLength = 10;
 
 const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
@@ -55,8 +55,16 @@ const getRandomInteger = () => {
     return 1 + getRandomInt(integerMaxValue);
 };
 
+const getRandomBigInteger = () => {
+    return 1 + getRandomInt(bigIntegerMaxValue);
+};
+
 const getRandomDecimal = () => {
-    return Number((getRandomInt(decimalMaxValue) + Math.random()).toFixed(2, 10));
+    return Number((getRandomInt(integerMaxValue) + Math.random()).toFixed(2, 10));
+};
+
+const getRandomBigDecimal = () => {
+    return Number((getRandomInt(bigIntegerMaxValue) + Math.random()).toFixed(2, 10));
 };
 
 const getRandomBoolean = () => {
@@ -91,10 +99,16 @@ export const generateRandomSubmodelValues = submodel => {
             case 'float':
                 return { ...item, value: getRandomDecimal() };
 
+            case 'double':
+                return { ...item, value: getRandomBigDecimal() };
+
             case 'int':
             case 'integer':
-            case 'time':
                 return { ...item, value: getRandomInteger() };
+
+            case 'long':
+            case 'time':
+                return { ...item, value: getRandomBigInteger() };
 
             case 'dateTimeStamp':
                 return { ...item, value: getRandomTimestamp()[0] };
