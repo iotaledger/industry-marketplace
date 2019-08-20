@@ -5,7 +5,7 @@
                 "idShort":"total weight (freight) [kg]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"decimal",
+                "valueType":"double",
                 "semanticId":"0173-1#02-AAJ336#002"
             },
             {
@@ -37,7 +37,7 @@
                 "idShort":"number of photos that can be stored",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"integer",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAP788#001"
             },
             {
@@ -122,7 +122,7 @@
                 "idShort":"max. charging voltage [V]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"integer",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAJ101#003"
             },
             {
@@ -175,21 +175,21 @@
                 "idShort":"duration [min]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"decimal",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAA818#006"
             },
             {
                 "idShort":"maximum velocity at rated value [km/h]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"string",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAB919#007"
             },
             {
                 "idShort":"max. monitoring radius [m]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"string",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAI957#004"
             },
             {
@@ -235,7 +235,7 @@
                 "idShort":"maximum power [kW]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"decimal",
+                "valueType":"double",
                 "semanticId":"0173-1#02-AAF406#004"
             },
             {
@@ -267,14 +267,14 @@
                 "idShort":"range [m]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"integer",
+                "valueType":"long",
                 "semanticId":"0173-1#02-AAI957#004"
             },
             {
                 "idShort":"frequency [MHz]",
                 "modelType":"Property",
                 "value":"",
-                "valueType":"decimal",
+                "valueType":"double",
                 "semanticId":"0173-1#07-AAL034#004"
             },
             {
