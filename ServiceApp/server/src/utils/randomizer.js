@@ -1,4 +1,3 @@
-import { encode } from '@iota/area-codes';
 import format from 'date-fns/format';
 
 const locationBoundaries = {
@@ -49,7 +48,7 @@ const getRandomInt = max => Math.floor(Math.random() * Math.floor(max));
 export const getRandomLocation = () => {
     const lat = locationBoundaries.lat.min + getRandomInt(locationBoundaries.lat.max - locationBoundaries.lat.min) + Math.random();
     const lon = locationBoundaries.lon.min + getRandomInt(locationBoundaries.lon.max - locationBoundaries.lon.min) + Math.random();
-    return encode(lat, lon);
+    return `${lat.toFixed(7)}, ${lon.toFixed(7)}`;
 };
 
 const getRandomInteger = () => {

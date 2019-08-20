@@ -135,6 +135,24 @@ export const processPayment = async (receiveAddress, paymentValue) => {
     );
 };
 
+
+
+export const getBalanceForSimulator = async address => {
+    try {
+        if (!address) {
+            return 0;
+        }
+        const { getBalances } = composeAPI({ provider });
+        const { balances } = await getBalances([address], 100);
+        const balance = balances && balances.length > 0 ? balances[0] : 0;
+        return balance;
+    } catch (error) {
+        console.error('getBalance error', error);
+        return 0;
+    }
+};
+
+
 /*
 Example getBalance operation:
 

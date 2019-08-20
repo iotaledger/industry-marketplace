@@ -152,7 +152,7 @@ export class AppHelper {
 
                 const user = await getSpecificUser('id',userDID)
                 const userName = await get(user,'name')
-                
+                console.log(JSON.stringify(req.body))
                
                 // 2. Send transaction
                 const hash = await sendMessage({...req.body,userName}, tag);
@@ -182,9 +182,9 @@ export class AppHelper {
         app.post('/proposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
+                const location = await getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('proposal', location, submodelId);
+                const tag =await buildTag('proposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
 
                 const user = await getSpecificUser('id',userDID)
@@ -424,7 +424,7 @@ export class AppHelper {
             }
         });
 
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {

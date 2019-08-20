@@ -1,14 +1,17 @@
-import { encode, decode } from '@iota/area-codes';
+
 
 export const getLocationFromMessage = message => {
     return message.frame && message.frame.location ? message.frame.location : null;
 };
 
 export const calculateDistance = (locObj1, locObj2) => {
-    const lat1 = locObj1.latitude;
-    const lat2 = locObj2.latitude;
-    const lon1 = locObj1.longitude;
-    const lon2 = locObj2.longitude;
+    const coordsArr1 = locObj1.split(',');
+    const lat1 = Number(coordsArr1[0]);
+    const lon1 = Number(coordsArr1[1]);
+
+    const coordsArr2 = locObj2.split(',');
+    const lat2 = Number(coordsArr2[0]);
+    const lon2 = Number(coordsArr2[1]);
 
     if ((lat1 === lat2) && (lon1 === lon2)) {
         return 0;
@@ -22,20 +25,20 @@ export const calculateDistance = (locObj1, locObj2) => {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const d = R * c;
         if (d > 1) {
-            return `${Math.round(d)}`;
-       // } else if (d <= 1) { 
-         //   return `${Math.round(d * 1000)}m`; 
+            return Math.round(d);
         }
     }
 };
 
 
 export const createCloseLocation = targetLocation => {
-const {latitude, longitude} = decode(targetLocation)
+    const coordsArr = targetLocation.split(',');
+    const lat = coordsArr[0];
+    const lon = coordsArr[1];
 
-const closeLat = Number(latitude) + Number((Math.random() * (0.5 - 0.0200) + 0.0200).toFixed(4))
-const closeLong = Number(longitude) + Number((Math.random() * (0.5- 0.0200) + 0.0200).toFixed(4))
+    const closeLat = Number(lat) + Number((Math.random() * (0.1 - 0.0200) + 0.0200).toFixed(4))
+    const closeLon = Number(lon) + Number((Math.random() * (0.1 - 0.0200) + 0.0200).toFixed(4))
 
-return encode( Number(closeLat), Number(closeLong) );
+    return `${closeLat.toFixed(7)}, ${closeLon.toFixed(7)}`;
 
 }

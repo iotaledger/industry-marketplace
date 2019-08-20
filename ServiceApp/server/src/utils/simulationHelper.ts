@@ -8,10 +8,11 @@ import { generateRandomSubmodelValues, getRandomTimestamp } from '../utils/rando
 import { getRandomUser } from './multiUserHelper';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
-import { createCloseLocation } from './locationHelper';
+//import { createCloseLocation } from './locationHelper';
 
-const BASE_URL = 'http://localhost:4000';
-const socket = io('http://localhost:4000');
+
+const BASE_URL = 'http://localhost:5000';
+const socket = io('http://localhost:5000');
 
 
 const simulate = async (role) => {
@@ -48,14 +49,14 @@ const simulate = async (role) => {
                 submodelValues: submodelValues,
                 startTimestamp: randomTimestamp[0],
                 endTimestamp: randomTimestamp[1],
-                location: 'NPHTQORL9XK'
-                //await getRandomLocation()
+                location: '49.3586079, 12.8020860'
+                // await getRandomLocation()
             })
             await apiPost('cfp', request)
 
         }
-        sendRandomCFP();
-        //setInterval(sendRandomCFP, 10000);
+        //sendRandomCFP();
+        setInterval(sendRandomCFP, 10000);
     }
 
 
@@ -74,12 +75,16 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
-            [1, 2, 3].forEach(async () => {
+            let iterable = [1, 2, 3];
 
+            for (let value of iterable) {
+                value += 1;
                 const id = await getRandomUser(role);
-                const senderLocation = get(data.frame, 'location')
-                const location = await createCloseLocation(senderLocation)
-
+                // const senderLocation = await get(data.frame, 'location')
+                // await createCloseLocation(senderLocation)
+                const location = '48.8757494, 9.6105181'
+                const price = await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
+               
 
                 //generate message  
                 const request = generate({
@@ -88,15 +93,17 @@ const simulate = async (role) => {
                     userId: id,
                     location: location,
                     irdi: await get(data.dataElements.submodels[0].identification, 'id'),
-                    price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
+                    price
                 })
+
+                //Timeout
+                await new Promise(resolve => setTimeout(resolve, 5000));
                 //send message to Market Manager
-
-                await new Promise(resolve => setTimeout(resolve, 4000));
                 await apiPost('proposal', request)
+            }
 
-            })
         }
+
 
 
         if (['proposal'].includes(type)) {
@@ -144,15 +151,23 @@ const simulate = async (role) => {
 }
 
 const apiPost = async (messageType, message) => {
-
     const randomTimeout = (min, max) => {
         return min + Math.random() * (max - min);
     }
 
-    await new Promise(resolve => setTimeout(resolve, randomTimeout(5000, 15000)));
-    const response = await axios.post(`${BASE_URL}/${messageType}`, message);
 
-    return response.data;
+
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            await new Promise(resolve => setTimeout(resolve, randomTimeout(5000, 7000)));
+            const response = await axios.post(`${BASE_URL}/${messageType}`, message);
+            resolve(response.data);
+        } catch (error) {
+            console.error('findTransactions catch', error);
+            return error;
+        }
+    })
 }
 
 const randomValue = array => {

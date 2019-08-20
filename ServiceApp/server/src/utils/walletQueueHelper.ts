@@ -1,5 +1,5 @@
 import { getRandomRow, updateValue, readAllData, writeData } from './databaseHelper';
-import { getBalance } from './walletHelper';
+import { getBalance, getBalanceForSimulator } from './walletHelper';
 import { generateAddress } from '@iota/core';
 
 export const initializeWalletQueue = async () => {
@@ -7,13 +7,6 @@ export const initializeWalletQueue = async () => {
     await checkAddressBalance();
 
     //Rotate Incoming Wallet 
-
-    //set reserved wallet back to usable
-    // const IncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'reserved');
-    // if (IncomingWallet) {
-    //     const { seed } = await IncomingWallet
-    //     updateValue(seed, 'usable')
-    // }
 
     //reset all reserved,busy wallets to usable
     const wallet: any = await readAllData('wallet');
@@ -29,33 +22,35 @@ export const initializeWalletQueue = async () => {
         seed?: string;
     }
 
-    //reserve random wallet
+    //reserve random wallet for incoming payments
     const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
     const {seed} = await newIncomingWallet
     updateValue(seed, 'reserved')
-
 }
 
 const checkAddressBalance = async () => {
 
     const wallet: any = await readAllData('wallet');
+    for (let each of wallet) {     
+        const { seed, address, keyIndex } = each
+        let balance = await getBalanceForSimulator(address);
+        console.log("Walletstatus", address, balance)
 
-    wallet.forEach(async ({ seed, address, keyIndex }) => {
-
-        //Check balance of all addresses 
-        let balance = await getBalance(address);
+        let iterable = [-2,-1,0,1,2];
         if (balance <= 0) {
-            [-2, -1, 0, 1, 2].forEach(async tempIndex => {
-                const index = Number(keyIndex) + Number(tempIndex)
+        for (let value of iterable) {
+                const index = Number(keyIndex) + Number(value)
+                value += 1;
     
                 const newAddress = await generateAddress(seed, index);
                 balance = await getBalance(newAddress);
-
+    
                 if (balance > 0) {
                     await writeData('wallet', { address: newAddress, balance, keyIndex, seed });
                 }
- 
-            })
+        
+            }
         }
-    });
+    }
+ 
 }
