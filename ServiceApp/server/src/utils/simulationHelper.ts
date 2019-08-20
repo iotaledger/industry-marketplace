@@ -8,7 +8,7 @@ import { generateRandomSubmodelValues, getRandomTimestamp } from '../utils/rando
 import { getRandomUser } from './multiUserHelper';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
-//import { createCloseLocation } from './locationHelper';
+import { createCloseLocation } from './locationHelper';
 
 
 const BASE_URL = 'http://localhost:5000';
@@ -56,7 +56,7 @@ const simulate = async (role) => {
 
         }
         //sendRandomCFP();
-        setInterval(sendRandomCFP, 10000);
+        setInterval(sendRandomCFP, 20000);
     }
 
 
@@ -80,9 +80,9 @@ const simulate = async (role) => {
             for (let value of iterable) {
                 value += 1;
                 const id = await getRandomUser(role);
-                // const senderLocation = await get(data.frame, 'location')
-                // await createCloseLocation(senderLocation)
-                const location = '48.8757494, 9.6105181'
+                const senderLocation = await get(data.frame, 'location')
+                const location = await createCloseLocation(senderLocation)
+                
                 const price = await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                
 
@@ -91,15 +91,16 @@ const simulate = async (role) => {
                     messageType: 'proposal',
                     originalMessage: data,
                     userId: id,
-                    location: location,
+                    location,
                     irdi: await get(data.dataElements.submodels[0].identification, 'id'),
                     price
                 })
 
-                //Timeout
-                await new Promise(resolve => setTimeout(resolve, 5000));
                 //send message to Market Manager
                 await apiPost('proposal', request)
+
+                //Timeout
+                await new Promise(resolve => setTimeout(resolve, 5000));
             }
 
         }
@@ -155,12 +156,9 @@ const apiPost = async (messageType, message) => {
         return min + Math.random() * (max - min);
     }
 
-
-
-
     return new Promise(async (resolve, reject) => {
         try {
-            await new Promise(resolve => setTimeout(resolve, randomTimeout(5000, 7000)));
+            await new Promise(resolve => setTimeout(resolve, randomTimeout(1000, 7000)));
             const response = await axios.post(`${BASE_URL}/${messageType}`, message);
             resolve(response.data);
         } catch (error) {
