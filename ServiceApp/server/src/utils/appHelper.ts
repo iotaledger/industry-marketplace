@@ -12,7 +12,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { getBalance } from './walletHelper';
+import { getBalance, processPayment } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
