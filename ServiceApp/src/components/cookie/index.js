@@ -28,6 +28,8 @@ class Cookie extends React.Component {
         website.&nbsp;
         <a
           className="disclaimer-link"
+          target="_blank"
+          rel="noopener noreferrer"
           href="https://www.iota.org/research/privacy-policy"
         >
         Learn more
