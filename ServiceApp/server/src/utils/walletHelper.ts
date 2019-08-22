@@ -127,7 +127,7 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
     const { id, usePaymentQueue }: IUser = await readData('user');
     console.log('user id', id, usePaymentQueue); 
 
-    const transfers = [];
+    let transfers = [];
     let totalAmount = 0;
     if (usePaymentQueue && usePaymentQueue === 1) {
         const paymentQueue = await processPaymentQueue(id);
