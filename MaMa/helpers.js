@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { trytesToAscii } = require('@iota/converter');
+const { composeAPI } = require('@iota/core');
 
 const generateSeed = (length = 81) => {
     const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
@@ -74,3 +75,78 @@ module.exports = {
   getLetterFromNumber,
   getNumberFromLetter
 }
+
+
+const provider = 'https://nodes.devnet.iota.org:443';
+const iota = composeAPI({ provider });
+
+const findTransactions = async (bundle) => {
+    try {
+        return new Promise((resolve, reject) => {
+            iota.findTransactionObjects({ bundles: [bundle] })
+                .then(resolve)
+                .catch(error => {
+                    console.error('findTransactions error', error);
+                    reject(error);
+                });
+        });
+    } catch (error) {
+        console.error('findTransactions catch', error);
+        return error;
+    }
+};
+
+const decodeNonASCII = (value) => {
+    return value ? value.replace(/\\u([\d\w]{4})/gi, (match, grp) => String.fromCharCode(parseInt(grp, 16))) : undefined;
+};
+
+const fromTrytes = (trytes) => {
+    // Trim trailing 9s
+    let trimmed = trytes.replace(/\9+$/, '');
+
+    // And make sure it is even length (2 trytes per ascii char)
+    if (trimmed.length % 2 === 1) {
+        trimmed += '9';
+    }
+
+    const ascii = trytesToAscii(trimmed);
+    return decodeNonASCII(ascii);
+    // return json ? JSON.parse(json) : undefined;
+};
+
+const getPayload = async (bundle) => {
+    try {
+        const rawTransactions = await findTransactions(bundle);
+        if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
+            return null;
+        }
+
+        const transactions = [];
+        const map = new Map();
+        for (const transaction of rawTransactions) {
+            if (!map.has(transaction.currentIndex)) {
+                map.set(transaction.currentIndex, true);
+                transactions.push(transaction);
+            }
+        }
+
+        let message = '';
+        transactions
+            .sort((a, b) => a.currentIndex - b.currentIndex)
+            .forEach(({ signatureMessageFragment }) => {
+                message += signatureMessageFragment;
+            });
+
+        console.log(JSON.parse(decodeURI(fromTrytes(message))));
+        // return JSON.parse(decodeURI(fromTrytes(message)));
+    } catch (error) {
+        console.error('getPayload catch', error);
+        console.error('getPayload bundle', bundle);
+        console.error('getPayload message', message);
+        return error;
+    }
+}
+
+const bundle = 'Q9JZBSOZ9ZAJBGLOZDJCPPBJAETXMBGGRRXQFFKKQBLBCX9VHOJ9YIKJPEIUBPHYZUZ9FKJFIIUGWEGNC';
+
+getPayload(bundle)
