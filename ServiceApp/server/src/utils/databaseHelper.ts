@@ -167,10 +167,10 @@ export const getRandomRow = async (table, column, value) => {
 };
 
 
-export const updateValue = async (seed, activation) => {
+export const updateValue = async (table, searchField, targetField, searchValue, targetValue) => {
     return new Promise((resolve, reject) => {
         try {
-    db.run(`UPDATE wallet SET status = ? WHERE seed = ?`, [activation, seed],(err, row) => {
+    db.run(`UPDATE ${table} SET ${targetField} = ? WHERE ${searchField} = ?`, [targetValue,searchValue],(err, row) => {
         if (err) {
             return resolve(err);
         } else {
@@ -178,7 +178,7 @@ export const updateValue = async (seed, activation) => {
         }
     });
 } catch (error) {
-    console.log('setWalletStatus', error);
+    console.log('updateValue', error);
     return reject(null);
 }
 });

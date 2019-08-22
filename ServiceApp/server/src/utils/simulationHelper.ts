@@ -4,7 +4,7 @@ import axios from 'axios';
 import yargs from 'yargs';
 import format from 'date-fns/format';
 import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
-import { generateRandomSubmodelValues, getRandomTimestamp } from '../utils/randomizer.js';
+import { generateRandomSubmodelValues, getRandomTimestamp, getRandomLocation } from '../utils/randomizer.js';
 import { getRandomUser } from './multiUserHelper';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
@@ -23,13 +23,11 @@ const simulate = async (role) => {
     if (role === 'SR') {
 
         const sendRandomCFP = async () => {
-            const id = await getRandomUser(role);
 
             const randomOperation = await randomValue(operations)
             const randomSubmodel = await submodel(randomOperation)
             const randomSubmodelElements = await generateRandomSubmodelValues(randomSubmodel)
             const randomTimestamp = getRandomTimestamp()
-
 
             const submodelValues = {};
             randomSubmodelElements.forEach(({ semanticId, value, valueType }) => {
@@ -43,14 +41,13 @@ const simulate = async (role) => {
             });
             const request = generate({
                 messageType: 'callForProposal',
-                userId: id,
+                userId: await getRandomUser(role),
                 creationDate: format(Date.now(), 'DD MMMM, YYYY H:mm a '),
                 irdi: randomOperation,
                 submodelValues: submodelValues,
                 startTimestamp: randomTimestamp[0],
                 endTimestamp: randomTimestamp[1],
-                location: '49.3586079, 12.8020860'
-                // await getRandomLocation()
+                location: await getRandomLocation()
             })
             await apiPost('cfp', request)
 
@@ -78,22 +75,18 @@ const simulate = async (role) => {
             let iterable = [1, 2, 3];
 
             for (let value of iterable) {
+
                 value += 1;
-                const id = await getRandomUser(role);
                 const senderLocation = await get(data.frame, 'location')
-                const location = await createCloseLocation(senderLocation)
-                
-                const price = await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
-               
 
                 //generate message  
                 const request = generate({
                     messageType: 'proposal',
                     originalMessage: data,
-                    userId: id,
-                    location,
+                    userId: await getRandomUser(role),
+                    location: await createCloseLocation(senderLocation),
                     irdi: await get(data.dataElements.submodels[0].identification, 'id'),
-                    price
+                    price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
                 })
 
                 //send message to Market Manager
@@ -105,29 +98,22 @@ const simulate = async (role) => {
 
         }
 
-
-
         if (['proposal'].includes(type)) {
-
-            const userId = get(data.frame.receiver.identification, 'id')
-
-            const request = await generate({
+          
+            const request = generate({
                 messageType: 'acceptProposal',
-                userId,
+                userId: await  get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
-
             await apiPost('acceptProposal', request)
 
         }
 
         if (['acceptProposal'].includes(type)) {
 
-            const userId = get(data.frame.receiver.identification, 'id')
-
             const request = await generate({
                 messageType: 'informConfirm',
-                userId,
+                userId: await  get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
             await apiPost('informConfirm', request)
@@ -136,11 +122,10 @@ const simulate = async (role) => {
 
         if (['informConfirm'].includes(type)) {
 
-            const userId = get(data.frame.receiver.identification, 'id')
 
             const request = await generate({
                 messageType: 'informPayment',
-                userId,
+                userId:  await  get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
 

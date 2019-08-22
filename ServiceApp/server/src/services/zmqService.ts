@@ -1,4 +1,3 @@
-//import { decode } from '@iota/area-codes';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { operations } from '../config.json';
@@ -7,6 +6,8 @@ import { convertOperationsList, extractMessageType } from '../utils/eclassHelper
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
+import { getBalance } from '../utils/walletHelper.js';
+import {updateValue} from '../utils/databaseHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -232,7 +233,7 @@ export class ZmqService {
                                     }
                                     const { id }: IUser = await readDataEquals('user', 'id', receiverID)
 
-                                    if (id) {
+                                    if (id === receiverID){
 
                                     if (messageType === 'acceptProposal') {
 
@@ -249,10 +250,14 @@ export class ZmqService {
                                                 start: 0
                                             });
                                         }
-                                        console.log("madeit")
+                                        if (messageType === 'informPayment') {
+                                            const address = data.walletAddress;
+                                            const balance = await getBalance(address)
+                                            await updateValue('wallet', 'address','balance',address, balance)
+                                        }
                                     this.sendEvent(data, messageType, messageParams);
                                     }
-                                }
+                            }
                             }
                             break;
                         case 'SR':

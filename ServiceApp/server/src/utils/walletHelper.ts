@@ -72,7 +72,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
                             await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
-                            await updateValue(seed, 'busy')
+                            await updateValue('wallet', 'seed','status', seed,  'busy')
 
                             const hashes = transactions.map(transaction => transaction.hash);
 
@@ -88,7 +88,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-                            await updateValue(seed, 'usable')
+                            await updateValue('wallet', 'seed','status', seed,  'usable')
 
                             resolve(transactions);
                         })
@@ -124,7 +124,7 @@ export const processPayment = async (receiveAddress, paymentValue) => {
     console.log('processPayment', wallet, receiveAddress, paymentValue);
 
     const { address, keyIndex, seed } = wallet;
-    await updateValue(seed, 'busy')
+    await updateValue('wallet', 'seed','status', seed,  'busy')
 
     return await transferFunds(
         receiveAddress,

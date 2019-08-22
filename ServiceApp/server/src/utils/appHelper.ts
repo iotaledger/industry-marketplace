@@ -152,7 +152,6 @@ export class AppHelper {
 
                 const user = await getSpecificUser('id',userDID)
                 const userName = await get(user,'name')
-                console.log(JSON.stringify(req.body))
                
                 // 2. Send transaction
                 const hash = await sendMessage({...req.body,userName}, tag);
@@ -261,8 +260,7 @@ export class AppHelper {
 
                 const user = await getSpecificUser('id',userDID)
                 const userName = await get(user,'name')
-                console.log(userName)
-                
+
                 // 2. Send transaction
                 const hash = await sendMessage({...req.body, userName}, tag);
 
@@ -368,7 +366,7 @@ export class AppHelper {
 
                     // 7. Send transaction
                     const hash = await sendMessage({...req.body, userName}, tag);
-
+                   
                     console.log('informPayment success', hash);
                     res.send({
                         success: true,

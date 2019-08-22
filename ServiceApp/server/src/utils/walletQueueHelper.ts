@@ -13,7 +13,7 @@ export const initializeWalletQueue = async () => {
 
     wallet.forEach(async ({ seed, status }) => {
         if(status === 'reserved' || 'busy'){
-           await updateValue(seed, 'usable')
+           await updateValue('wallet', 'seed','status', seed, 'usable')
         }
     });
 
@@ -25,7 +25,7 @@ export const initializeWalletQueue = async () => {
     //reserve random wallet for incoming payments
     const newIncomingWallet: IWallet = await getRandomRow('wallet', 'status', 'usable');
     const {seed} = await newIncomingWallet
-    updateValue(seed, 'reserved')
+    await updateValue('wallet', 'seed','status', seed, 'reserved')
 }
 
 const checkAddressBalance = async () => {

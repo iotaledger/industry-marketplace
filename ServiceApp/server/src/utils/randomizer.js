@@ -34,9 +34,9 @@ const color = [
     'Gelb',
     'Rot',
     'Orange',
-    'Grün',
+    'Gruen',
     'Blau',
-    'Weiß'
+    'Weiss'
 ];
 
 const integerMaxValue = 10;
@@ -80,7 +80,7 @@ export const getRandomTimestamp = () => {
 };
 
 const getRandomText = () => {
-    const charset = 'abcdefghijklmnopqrstuvwxyzöäöäöäü-';
+    const charset = 'abcdefghijklmnopqrstuvwxyz-';
     return Array.from(new Array(randomTextLength), () => charset[getRandomInt(charset.length)]).join('');
 };
 
@@ -109,11 +109,11 @@ export const generateRandomSubmodelValues = submodel => {
             default: {
                 switch (item.idShort) {
                     case 'ort':
-                    case 'location':
-                    case 'target location':
-                    case 'starting point':
-                    case 'destination':
-                    case 'departure':
+                    case 'location [lat, lng]':
+                    case 'target location [lat, lng]':
+                    case 'starting point [lat, lng]':
+                    case 'destination [lat, lng]':
+                    case 'departure [lat, lng]':
                         return { ...item, value: getRandomLocation() };
                     case 'material':
                         return { ...item, value: getRandomMaterial() };
