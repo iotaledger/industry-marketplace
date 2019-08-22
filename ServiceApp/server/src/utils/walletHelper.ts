@@ -1,6 +1,7 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
+import { processPaymentQueue } from './paymentQueueHelper';
 
 export const getBalance = async address => {
     try {
@@ -30,7 +31,7 @@ export const getBalance = async address => {
     }
 };
 
-const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => {
+const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) => {
     try {
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
         const prepareTransfers = createPrepareTransfers();
@@ -48,12 +49,11 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
             console.error('transferFunds. Insufficient balance', address);
             return null;
         }
-        if (balance < value) {
-            throw new Error(`Insufficient balance: ${balance}. Needed: ${value}`);
+        if (balance < totalAmount) {
+            throw new Error(`Insufficient balance: ${balance}. Needed: ${totalAmount}`);
         }
 
         return new Promise((resolve, reject) => {
-            const transfers = [{ address: receiveAddress, value }];
             const remainderAddress = generateAddress(seed, keyIndex + 1);
             const options = {
                 inputs: [{
@@ -71,7 +71,7 @@ const transferFunds = async (receiveAddress, address, keyIndex, seed, value) => 
                     sendTrytes(trytes, depth, minWeightMagnitude)
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
-                            await updateWallet(seed, remainderAddress, keyIndex + 1, balance - value);
+                            await updateWallet(seed, remainderAddress, keyIndex + 1, balance - totalAmount);
 
                             const hashes = transactions.map(transaction => transaction.hash);
 
@@ -110,24 +110,50 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
     await writeData('wallet', { address, balance, keyIndex, seed });
 };
 
-export const processPayment = async (receiveAddress, paymentValue) => {
+export const processPayment = async (receiveAddress = null, paymentValue = null) => {
+    console.log('processPayment called', receiveAddress, paymentValue);
     interface IWallet {
         address?: string;
         balance?: number;
         keyIndex?: number;
         seed?: string;
     }
+    interface IUser {
+        id?: string;
+        usePaymentQueue?: number;
+    }
 
     const wallet: IWallet = await readData('wallet');
-    console.log('processPayment', wallet, receiveAddress, paymentValue);
+    const { id, usePaymentQueue }: IUser = await readData('user');
+    console.log('user id', id, usePaymentQueue); 
+
+    const transfers = [];
+    let totalAmount = 0;
+    if (usePaymentQueue && usePaymentQueue === 1) {
+        const paymentQueue = await processPaymentQueue(id);
+        console.log('paymentQueue', paymentQueue);
     
+        transfers = paymentQueue.map(({ address, value }) => {
+            totalAmount += value;
+            return { address, value };
+        })
+    } else if (receiveAddress && paymentValue) {
+        transfers = [{ address: receiveAddress, value: paymentValue }];
+        totalAmount = paymentValue;
+    }
+
+    console.log('processPayment 1', wallet.balance, totalAmount);
+    console.log('processPayment 2', transfers);
+    
+    if (transfers.length === 0) return;
+
     const { address, keyIndex, seed } = wallet;
     return await transferFunds(
-        receiveAddress,
         address,
         keyIndex,
         seed,
-        paymentValue
+        totalAmount,
+        transfers
     );
 };
 
