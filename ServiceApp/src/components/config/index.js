@@ -23,6 +23,7 @@ export default class extends React.Component {
       name: '',
       role: '',
       wallet: false,
+      usePaymentQueue: false,
       loading: false,
       selectedIndex: 0
     }
@@ -33,8 +34,8 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    const { location, name, role } = this.context.user;
-    this.setState({ location, name, role });
+    const { location, name, role, usePaymentQueue } = this.context.user;
+    this.setState({ location, name, role, usePaymentQueue });
   }
 
   cancel() {
@@ -57,13 +58,13 @@ export default class extends React.Component {
   }
 
   async submit() {
-    const { location, role, name, wallet } = this.state;
+    const { location, role, name, wallet, usePaymentQueue } = this.state;
     this.setState({ loading: true });
     // actions are defined in ./location.formats.js
     const sendMessagetResult = await locationFormats[this.state.selectedIndex].action(
       this.props.sendMessage,
       location,
-      { role, name, wallet }
+      { role, name, wallet, usePaymentQueue }
     );
 
     if (sendMessagetResult.error) {
@@ -73,7 +74,7 @@ export default class extends React.Component {
   }
 
   render() {
-    const { loading, location, locationFormat, name, role, wallet } = this.state;
+    const { loading, location, locationFormat, name, role, wallet, usePaymentQueue } = this.state;
 
     return (
       <React.Fragment>
@@ -128,6 +129,17 @@ export default class extends React.Component {
                         value={location}
                        />
                     </InputWrapper>
+                    <Row>
+                      <CheckboxLabel>
+                        <Input
+                          name="usePaymentQueue"
+                          type="checkbox"
+                          checked={usePaymentQueue}
+                          onChange={this.change}
+                        />
+                        {'  '}Use payment queue?
+                      </CheckboxLabel>
+                    </Row>
                     <Row>
                       <CheckboxLabel>
                         <Input
@@ -332,9 +344,8 @@ const CardFooter = styled.footer`
 `;
 
 const CheckboxLabel = styled.label`
-  font: 16px 'Nunito Sans', sans-serif;
+  font: 18px 'Nunito Sans', sans-serif;
   font-weight: 600;
-  font-style: italic;
   font-stretch: normal;
   line-height: normal;
   letter-spacing: normal;
