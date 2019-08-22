@@ -6,41 +6,56 @@ const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 
 export const generateKeyPair = async () => {
     return new Promise((resolve, reject) => {
-        crypto.generateKeyPair('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: {
-                type: 'spki',
-                format: 'pem'
-            },
-            privateKeyEncoding: {
-                type: 'pkcs8',
-                format: 'pem',
-                cipher: 'aes-256-cbc',
-                passphrase
-            }
-        // tslint:disable-next-line:align
-        }, (err, publicKey, privateKey) => {
-            if (err) {
-                reject(err);
-            } // may signify a bad 'type' name, etc
-            resolve({ publicKey, privateKey });
-        });
+        try {
+            crypto.generateKeyPair('rsa', {
+                modulusLength: 2048,
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem',
+                    cipher: 'aes-256-cbc',
+                    passphrase
+                }
+            // tslint:disable-next-line:align
+            }, (err, publicKey, privateKey) => {
+                if (err) {
+                    reject(err);
+                } // may signify a bad 'type' name, etc
+                resolve({ publicKey, privateKey });
+            });
+        } catch (error) {
+            console.error('generateKeyPair error', error);
+            reject();
+        }
     });
 };
 
 const encrypt = async (key, message) => {
-    return new Promise(async resolve => {
-        const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-        const result = await crypto.publicEncrypt(payload, message);
-        resolve(result);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
+            const result = await crypto.publicEncrypt(payload, message);
+            resolve(result);
+        } catch (error) {
+            console.error('encrypt error', error);
+            reject();
+        }
     });
 };
 
 const decrypt = async (key, message) => {
-    return new Promise(async resolve => {
-        const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-        const result = await crypto.privateDecrypt(payload, message);
-        resolve(result);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
+            const result = await crypto.privateDecrypt(payload, message);
+            resolve(result);
+        } catch (error) {
+            console.error('decrypt error', error);
+            reject();
+        }
     });
 };
 
