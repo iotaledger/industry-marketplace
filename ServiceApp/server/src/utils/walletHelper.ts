@@ -119,7 +119,10 @@ export const processPayment = async (receiveAddress, paymentValue) => {
         keyIndex?: number;
         seed?: string;
     }
-
+    let count = 0;
+    const maxTries = 10;
+    while(true) {
+    try{
     const wallet: IWallet = await getRandomRow('wallet','status','usable');
     console.log('processPayment', wallet, receiveAddress, paymentValue);
 
@@ -133,6 +136,12 @@ export const processPayment = async (receiveAddress, paymentValue) => {
         seed,
         paymentValue
     );
+}catch(e){
+    console.log("No address wallet available")
+    await new Promise(resolve => setTimeout(resolve, 20000));
+    if (++count === maxTries) throw e;
+        }
+    }
 };
 
 

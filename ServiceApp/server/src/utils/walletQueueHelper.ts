@@ -7,7 +7,6 @@ export const initializeWalletQueue = async () => {
     await checkAddressBalance();
 
     //Rotate Incoming Wallet 
-
     //reset all reserved,busy wallets to usable
     const wallet: any = await readAllData('wallet');
 
@@ -16,7 +15,6 @@ export const initializeWalletQueue = async () => {
            await updateValue('wallet', 'seed','status', seed, 'usable')
         }
     });
-
 
     interface IWallet {
         seed?: string;
@@ -46,7 +44,7 @@ const checkAddressBalance = async () => {
                 balance = await getBalance(newAddress);
     
                 if (balance > 0) {
-                    await writeData('wallet', { address: newAddress, balance, keyIndex, seed });
+                    await writeData('wallet', { address: newAddress, balance, keyIndex, seed, status: 'usable' });
                 }
         
             }
