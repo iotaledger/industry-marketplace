@@ -233,7 +233,7 @@ export class ZmqService {
                                     }
                                     const { id }: IUser = await readDataEquals('user', 'id', receiverID)
 
-                                    if (id === receiverID){
+                                    if (id){
 
                                     if (messageType === 'acceptProposal') {
 
