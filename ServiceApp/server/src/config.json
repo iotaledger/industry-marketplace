@@ -7,7 +7,12 @@
         "domain": "http://localhost:4000",
         "broker": "mqtt://test.mosquitto.org"
     },
-    "database": "../../../db/marketmanager.sqlite3",
+    "dbconnectionstring": {
+        "user": "dev",
+        "password": "dev",
+        "server": "localhost",
+        "database": "semarket"
+    },
     "maxDistance": 1000,
     "operations": [
         "0173-1#01-AAJ336#002",

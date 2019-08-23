@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { maxDistance, operations } from '../config.json';
-import { readData, writeData } from '../utils/databaseHelper';
+import { readData, writeData, connect } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
@@ -47,6 +47,7 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._interval = setInterval(this.emptyBundleArray.bind(this), 10000);
+        connect();
     }
 
     /**
