@@ -135,30 +135,27 @@ export const readData = async (table, searchField = null) => {
 };
 
 export const readAllData = async (table) => {
-    const request = new sql.Request(db)
-    let queryStatement = `SELECT * FROM ${table} ORDER BY internal_id`;
-    request.query(queryStatement, (err, result) => {
-        if (err){
-        console.log(err);}
-        else{
-           return result;
-        }
-    })
+    try 
+    {
+        return readData(table);
+    } 
+    catch (error) {
+        console.log('readData', error);
+    }
+   
 };
 
-export const removeData = (table) => {
-    return new Promise(async resolve => {
-        await db.run(`DROP TABLE IF EXISTS ${table}`);
-        resolve();
-    });
+export const removeData = async (table) => {
+    await connect();
+    try 
+    {
+        let query = `Delete * FROM [dbo].[${table}]`;
+        let result = await db.request()
+            .query(query);   
+        
+        return result;
+    } 
+    catch (error) {
+        console.log('readData', error);
+    }
 };
-
-
-/*
-export const getAllUsers = async () => {
-	const query = "select * from user";
-	const request = new sql.Request(db);
-	const result = await request.query(query);
-	return result.recordset;
-};
-*/

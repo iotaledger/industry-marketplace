@@ -7,10 +7,8 @@ import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
+import { processPayment } from '../utils/walletHelper';
 
-/**
- * Class to handle ZMQ service.
- */
 export class ZmqService {
 
     /**
@@ -22,8 +20,13 @@ export class ZmqService {
     /**
      * The interval to frequently delete sentBundle array.
      */
+    public _bundleInterval;
 
-    public _interval;
+    /**
+     * The interval to frequently delete sentBundle array.
+     */
+    public _paymentInterval;
+    
     /**
      * The configuration for the service.
      */
@@ -46,7 +49,8 @@ export class ZmqService {
     constructor(config) {
         this._config = config;
         this._subscriptions = {};
-        this._interval = setInterval(this.emptyBundleArray.bind(this), 10000);
+        this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
+        this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
         connect();
     }
 
@@ -55,6 +59,13 @@ export class ZmqService {
      */
     public emptyBundleArray() {
         this.sentBundles = [];
+    }
+
+    /**
+     * Process payments
+     */
+    public processPayments() {
+        processPayment();
     }
 
     /**

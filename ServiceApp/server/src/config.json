@@ -7,13 +7,18 @@
         "domain": "http://localhost:4000",
         "broker": "mqtt://test.mosquitto.org"
     },
+    "mongoDB": {
+        "stitchApplicationID": "semarket-pmogr",
+        "stitchServiceName": "mongodb-semarket",
+        "database": "semarket",
+        "collection": "payments"
+    },
     "dbconnectionstring": {
         "user": "dev",
         "password": "dev",
         "server": "localhost",
         "database": "semarket"
-    },
-    "maxDistance": 1000,
+    }, "maxDistance": 1000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
