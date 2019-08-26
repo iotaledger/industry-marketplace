@@ -12,7 +12,7 @@
  
 <!-- Pre-requisites -->
 ### About the Project
- ![architectureV3](docs/architectureV3.png?raw=true)
+ ![architectureV4](docs/architectureV4.png?raw=true)
  
  
 #### Digital Identity and Encryption 
@@ -24,6 +24,12 @@ For every entity, a public MAM channel is created with the DID as a root with th
 The public key of an entity can be used by others to encrypt sensitive data, that should only be accessible by the entity. This is enabled via asynchronous encryption, where messages that are encrypted with a public key can only be decrypted with the matching private key.
 
  ![asyncEncryptionV3](docs/asyncEncryptionV3.png?raw=true)
+ 
+ #### Payment Queue 
+ 
+ For clients that are expected to execute outgoing payments in a high frequence, the funtionality of a payment queue is provided. Hereby, multiple outgoing payments are collected and wrapped up in one bundle every 5 minutes. 
+ 
+ ![PaymentQueue.png](docs/PaymentQueue.png?raw=true)
  
  
 <!-- Pre-requisites -->
@@ -51,7 +57,7 @@ One major task that the Market Manager executes for every incoming message is wr
 
 #### POST /config 
 
-Receives userId, role and location in GPS coordinates according to [Industry 4.0 Semantic](#config)
+Receives userId, role, location in GPS coordinates and flag for PaymentQueue according to [Industry 4.0 Semantic](#config)
 
 * Writes configuration details to database
 
@@ -164,11 +170,12 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:5000';
 
 const params =
-{
-    "name": "User1",
-    "role": "SR",
-    "gps": "52.508,13.37789999999",
-    "wallet": false
+{  
+    "name": "User2",
+    "role": "SP",
+    "location": "52.508,13.37789999999",
+    "wallet": false,
+    "usePaymentQueue": 1
 }
 
 const configuration = async (params) => {
@@ -279,8 +286,9 @@ Payload according to the Industry 4.0 Language can be created with the [SeMarket
 {
     "name": "User2",
     "role": "SP",
-    "gps": "52.508,13.37789999999",
-    "wallet": true
+    "location": "52.508,13.37789999999",
+    "wallet": true,
+    "usePaymentQueue": 1
 }
 ```
 
