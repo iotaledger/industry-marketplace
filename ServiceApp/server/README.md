@@ -12,18 +12,18 @@
  
 <!-- Pre-requisites -->
 ### About the Project
- ![architectureV2](docs/architectureV2.png?raw=true)
+ ![architectureV3](docs/architectureV3.png?raw=true)
  
  
 #### Digital Identity and Encryption 
 Within the SeMarket, every entity recieves a decentralized identifiers (DIDs) and a public/private key pair from the Market Manager. 
 For every entity, a public MAM channel is created with the DID as a root with the purpose to publish the public key. The private key is locally stored within the database of the entity. 
 
- ![keys](docs/keys.png?raw=true)
+ ![keysV2](docs/keysV2.png?raw=true)
 
 The public key of an entity can be used by others to encrypt sensitive data, that should only be accessible by the entity. This is enabled via asynchronous encryption, where messages that are encrypted with a public key can only be decrypted with the matching private key.
 
- ![asyncEncryption](docs/asyncEncryption.jpg?raw=true)
+ ![asyncEncryptionV3](docs/asyncEncryptionV3.png?raw=true)
  
  
 <!-- Pre-requisites -->
