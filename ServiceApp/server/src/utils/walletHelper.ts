@@ -1,7 +1,7 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
 import { getRandomRow, updateValue, writeData, readDataEquals } from './databaseHelper';
-
+import {repairWallet} from './walletQueueHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
 
@@ -48,7 +48,14 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         const minWeightMagnitude = 9;
 
         if (balance === 0) {
-            console.error('transferFunds. Insufficient balance', address);
+            
+
+            try{
+            await repairWallet(seed, address, keyIndex); 
+            } catch(e){
+                await updateValue('wallet', 'seed', 'status', seed, 'error')
+                console.error('transferFunds. Insufficient balance', address);
+            }
             return null;
         }
         if (balance < totalAmount) {
