@@ -74,7 +74,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
 };
 
 // Publish to tangle
-export const publishDID = async publicKey => {
+export const publishDID = async (publicKey, privateKey) => {
     try {
         const message = Mam.create(cleanMAMState, asciiToTrytes(publicKey));
         await Mam.attach(message.payload, message.address, 3, 9);

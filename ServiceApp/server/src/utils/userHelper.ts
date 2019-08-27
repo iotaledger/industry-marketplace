@@ -1,20 +1,20 @@
 import axios from 'axios';
 import yargs from 'yargs';
 import { faucet } from '../config.json';
-import { createUser, createWallet, writeData} from './databaseHelper';
+import { createWallet, writeData} from './databaseHelper';
 import { publishDID } from './mamHelper';
 import { generateKeyPair } from './encryptionHelper';
 
 const createNewUser = async () => {
-    const { id, role = '', areaCode = '' } = argv;
+    const { name, role = '', location = '', paymentQueue = 'true' } = argv;
 
-    if (id && (role === 'SR' || role === 'SP')) {
+    if (name && (role === 'SR' || role === 'SP')) {
         const { publicKey, privateKey }: any = await generateKeyPair();
-
-        const root = await publishDID(publicKey);
+        const root = await publishDID(publicKey, privateKey);
         await writeData('did', { root, privateKey });
-        const did = `did:iota:${root}`;
-        return await createUser({ id: did, name: id, role, areaCode });
+        const id = `did:iota:${root}`;
+        const usePaymentQueue = paymentQueue === 'true' ? 1 : 0;
+        return await writeData('user', { id, name, role, location, usePaymentQueue });
     } else {
         console.log('Params are missing or wrong');
         return;
@@ -32,11 +32,12 @@ const createNewWallet = async () => {
 
 const argv = yargs
     .usage('Create new user or wallet')
-    .example('$0 --create user --role SR --id user-SR-123 --areaCode NPHTQORL9XK', 'Creates a new Service Requester with ID user-SR-123')
+    .example('$0 --create user --role SR --name user-SR-123 --location 47.934438,10.340688 --paymentQueue true')
     .required('create', 'Mode must be provided').describe('create', 'Create new user or wallet. Options: ["user", "wallet"]')
     .describe('role', 'Define user role. Options: ["SR", "SP"]')
-    .describe('id', 'Define user ID')
-    .describe('areaCode', 'Define location')
+    .describe('name', 'Define user name')
+    .describe('location', 'Define location')
+    .describe('paymentQueue', 'Define if cloud-based payment queue should be used to speed up multiple payments')
     .help('help')
     .argv;
 

@@ -1,5 +1,3 @@
-// tslint:disable-next-line:no-require-imports
-import { encode } from '@iota/area-codes';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -7,15 +5,16 @@ import express from 'express';
 import get from 'lodash/get';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, readDataEquals} from './databaseHelper';
-import {  generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
+import { readData, writeData, readDataEquals } from './databaseHelper';
+import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
+import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
-import {getSpecificUser} from './multiUserHelper'
+import { getSpecificUser } from './multiUserHelper'
 
 //encryptWithReceiversPublicKey,
 /**
@@ -48,23 +47,16 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { areaCode, gps, name, role, wallet } = req.body;
+                const { gps, name, role, wallet, usePaymentQueue } = req.body;
                 interface IUser {
                     areaCode?: string;
                     id?: string;
                     role?: string;
                     name?: string;
+                    usePaymentQueue?: number;
                 }
                 const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
-
-                if (areaCode) {
-                    user.areaCode = areaCode;
-                } else if (gps) {
-                    const coordinates = gps.split(',');
-                    const newAreaCode = encode(Number(coordinates[0]), Number(coordinates[1]));
-                    user.areaCode = newAreaCode;
-                }
 
                 if (role) {
                     user.role = role;
@@ -73,6 +65,8 @@ export class AppHelper {
                 if (name) {
                     user.name = name;
                 }
+
+                user.usePaymentQueue = usePaymentQueue ? 1 : 0;
 
                 await writeData('user', user);
 
@@ -124,8 +118,8 @@ export class AppHelper {
 
             if (!user || !user.id) {
                 // Generate key pair
-               const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey);
+                const { publicKey, privateKey }: any = await generateKeyPair();
+                const root = await publishDID(publicKey, privateKey);
                 await writeData('did', { root, privateKey });
                 const id = `did:iota:${root}`;
                 user = user ? { ...user, id } : { id };
@@ -150,11 +144,11 @@ export class AppHelper {
 
                 const userDID = req.body.frame.sender.identification.id;
 
-                const user = await getSpecificUser('id',userDID)
-                const userName = await get(user,'name')
-               
+                const user = await getSpecificUser('id', userDID)
+                const userName = await get(user, 'name')
+
                 // 2. Send transaction
-                const hash = await sendMessage({...req.body,userName}, tag);
+                const hash = await sendMessage({ ...req.body, userName }, tag);
 
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
@@ -180,14 +174,16 @@ export class AppHelper {
 
         app.post('/proposal', async (req, res) => {
             try {
+
                 // 1. Create Tag
                 const location = await getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag =await buildTag('proposal', location, submodelId);
+                const tag = await buildTag('proposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
 
-                const user = await getSpecificUser('id',userDID)
-                const userName = await get(user,'name')
+                const user = await getSpecificUser('id', userDID)
+                const userName = await get(user, 'name')
+                console.log("send", JSON.stringify(req.body))
 
                 const hash = await sendMessage({ ...req.body, userName }, tag);
 
@@ -207,7 +203,7 @@ export class AppHelper {
         });
 
         app.post('/acceptProposal', async (req, res) => {
-            try {                
+            try {
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
@@ -215,8 +211,8 @@ export class AppHelper {
                 const mam = await publish(channelId, req.body);
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
-               const id = req.body.frame.receiver.identification.id;
-               mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
+                const id = req.body.frame.receiver.identification.id;
+                mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
 
                 // 5. Create Tag
                 const location = getLocationFromMessage(req.body);
@@ -227,9 +223,9 @@ export class AppHelper {
 
                 const userDID = req.body.frame.sender.identification.id;
 
-                const user = await getSpecificUser('id',userDID)
-                const userName = await get(user,'name')
-                
+                const user = await getSpecificUser('id', userDID)
+                const userName = await get(user, 'name')
+
                 // 6. Send transaction, include MAM channel info
                 const hash = await sendMessage({ ...req.body, mam, userName }, tag);
 
@@ -258,11 +254,11 @@ export class AppHelper {
 
                 const userDID = req.body.frame.sender.identification.id;
 
-                const user = await getSpecificUser('id',userDID)
-                const userName = await get(user,'name')
+                const user = await getSpecificUser('id', userDID)
+                const userName = await get(user, 'name')
 
                 // 2. Send transaction
-                const hash = await sendMessage({...req.body, userName}, tag);
+                const hash = await sendMessage({ ...req.body, userName }, tag);
 
                 console.log('rejectProposal success', hash);
                 res.send({
@@ -290,23 +286,23 @@ export class AppHelper {
                 interface IWallet {
                     address?: string;
                 }
-                const wallet: IWallet = await readDataEquals('wallet','status','reserved')
+                const wallet: IWallet = await readDataEquals('wallet', 'status', 'reserved')
                 const { address } = wallet;
 
                 const userDID = req.body.frame.sender.identification.id;
-                const user = await getSpecificUser('id',userDID)
-                const userName = await get(user,'name')
-                console.log(userName)
+                const user = await getSpecificUser('id', userDID)
+                const userName = await get(user, 'name')
+                console.log("send", JSON.stringify(req.body))
 
                 const payload = { ...req.body, walletAddress: address, userName };
-     
-                
+
+
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
                     const conversationId = req.body.frame.conversationId;
                     payload.sensorData = await readData('data', conversationId);
                     if (!payload.sensorData) {
-                        payload.sensorData = { ... config.demoSensorData, conversationId };
+                        payload.sensorData = { ...config.demoSensorData, conversationId };
                     }
                 }
 
@@ -336,15 +332,32 @@ export class AppHelper {
 
         app.post('/informPayment', async (req, res) => {
             try {
+                const userDID = req.body.frame.sender.identification.id;
+
+                const user = await getSpecificUser('id', userDID)
+                const paymentQueue = get(user, 'usePaymentQueue')
+
+
                 // 1. Retrieve wallet
                 const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
-                    // 2. Process payment
                     const recepientAddress = req.body.walletAddress;
-                    const transactions = await processPayment(recepientAddress, Number(priceObject.value));
 
-                    if (transactions.length < 1) {
-                        throw new Error(`processPayment Error: ${transactions}`);
+                    if (user && paymentQueue === 1) {
+                        // 2. Add to payment queue
+                        const payload = {
+                            timestamp: Date.now(),
+                            address: recepientAddress,
+                            value: Number(priceObject.value)
+                        }
+                        await addToPaymentQueue(userDID, payload);
+                    } else {
+                        // 2. Process payment
+                        const transactions = await processPayment(recepientAddress, Number(priceObject.value));
+
+                        if (transactions.length < 1) {
+                            throw new Error(`processPayment Error: ${transactions}`);
+                        }
                     }
 
                     // 3. Retrieve MAM channel from DB
@@ -357,16 +370,12 @@ export class AppHelper {
                     const location = getLocationFromMessage(req.body);
                     const submodelId = req.body.dataElements.submodels[0].identification.id;
                     const tag = buildTag('informPayment', location, submodelId);
+                    const userName = get(user, 'name')
 
-                    const userDID = req.body.frame.sender.identification.id;
-
-                    const user = await getSpecificUser('id',userDID)
-                    const userName = get(user,'name')
-    
 
                     // 7. Send transaction
-                    const hash = await sendMessage({...req.body, userName}, tag);
-                   
+                    const hash = await sendMessage({ ...req.body, userName }, tag);
+
                     console.log('informPayment success', hash);
                     res.send({
                         success: true,

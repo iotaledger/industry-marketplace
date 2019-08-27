@@ -45,7 +45,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "new-wallet": "cd server/build/src/utils/ && node userHelper.js --create wallet",
-    "new-user": "f(){ cd server/build/src/utils/ && node userHelper.js --create user --role $1 --id $2 --areaCode $3 ;};f",
+    "new-user": "f(){ cd server/build/src/utils/ && node userHelper.js --create user --role $1 --name $2 --location $3 --paymentQueue $4;};f",
     "simulate": "f(){ cd server/build/src/utils/ && node simulationHelper.js --simulate --role $1 ;};f"
   
   },
@@ -55,7 +55,7 @@
   "engines": {
     "node": ">=8.0"
   },
-  "proxy": "http://localhost:4000/",
+  "proxy": "http://localhost:5000/",
   "browserslist": [
     ">0.2%",
     "not dead",

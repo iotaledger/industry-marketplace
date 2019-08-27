@@ -52,8 +52,8 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        //sendRandomCFP();
-        setInterval(sendRandomCFP, 20000);
+       // sendRandomCFP();
+        setInterval(sendRandomCFP, 15000);
     }
 
 
@@ -92,17 +92,16 @@ const simulate = async (role) => {
                 //send message to Market Manager
                 await apiPost('proposal', request)
 
-                //Timeout
-                await new Promise(resolve => setTimeout(resolve, 5000));
+                await new Promise(resolve => setTimeout(resolve, 9000));
             }
 
-        }
+        }//Timeout
 
         if (['proposal'].includes(type)) {
-          
+
             const request = generate({
                 messageType: 'acceptProposal',
-                userId: await  get(data.frame.receiver.identification, 'id'),
+                userId: await get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
             await apiPost('acceptProposal', request)
@@ -113,7 +112,7 @@ const simulate = async (role) => {
 
             const request = await generate({
                 messageType: 'informConfirm',
-                userId: await  get(data.frame.receiver.identification, 'id'),
+                userId: await get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
             await apiPost('informConfirm', request)
@@ -125,7 +124,7 @@ const simulate = async (role) => {
 
             const request = await generate({
                 messageType: 'informPayment',
-                userId:  await  get(data.frame.receiver.identification, 'id'),
+                userId: await get(data.frame.receiver.identification, 'id'),
                 originalMessage: data,
             })
 

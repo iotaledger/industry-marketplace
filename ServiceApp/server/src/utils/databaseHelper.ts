@@ -8,11 +8,12 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, areaCode TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, location TEXT, usePaymentQueue INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER, status TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT)');
+        
     }
 );
 
@@ -24,8 +25,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name, role, areaCode = '' }) => {
-    await db.run('REPLACE INTO user (id, name, role, areaCode) VALUES (?, ?, ?, ?)', [id, name, role, areaCode]);
+export const createUser = async ({ id, name, role, location = '', usePaymentQueue = 0 }) => {
+    await db.run('REPLACE INTO user (id, name, role, location, usePaymentQueue) VALUES (?, ?, ?, ?, ?)', [id, name, role, location,  usePaymentQueue]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
@@ -121,7 +122,7 @@ export const readAllData = async (table) => {
 export const readDataEquals = async (table, column, value) => {
     return new Promise((resolve, reject) => {
         try {
-            db.get(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
+            db.all(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
                 if (err) {
                     return resolve(err);
                 }

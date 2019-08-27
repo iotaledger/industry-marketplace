@@ -9,7 +9,7 @@ export const getSpecificUser = async (column, value) => {
                 id?: string;
                 name?: string;
                 role?: string;
-                areaCode?: string;
+                location?: string;
             }
 
             const user : IUser = await readDataEquals('user', `${column}`, value)
