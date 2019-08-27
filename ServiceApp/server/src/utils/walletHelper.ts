@@ -130,7 +130,7 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
     let transfers = [];
     let totalAmount = 0;
     if (usePaymentQueue && usePaymentQueue === 1) {
-        const paymentQueue = await processPaymentQueue(id);
+        const paymentQueue = await processPaymentQueue();
         console.log('paymentQueue', paymentQueue);
     
         transfers = paymentQueue.map(({ address, value }) => {
