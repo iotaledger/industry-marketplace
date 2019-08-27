@@ -13,7 +13,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT)');
-        
+
     }
 );
 

@@ -132,25 +132,29 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
     const { address, keyIndex, seed } = wallet;
 
     const user : any = await readDataEquals('user','usePaymentQueue', '1')
-    user.map(async({id})=> {
-        console.log('id', id)
-
+        
     let transfers = [];
     let totalAmount = 0;
 
-       // const paymentQueue = await processPaymentQueue(id);
+    if(user){
+       const paymentQueue = await processPaymentQueue();
         console.log('paymentQueue', paymentQueue);
 
         transfers = paymentQueue.map(({ address, value }) => {
             totalAmount += value;
             return { address, value };
         })
+    } else if (receiveAddress && paymentValue) {
+        transfers = [{ address: receiveAddress, value: paymentValue }];
+        totalAmount = paymentValue;
+    }
+
 
     console.log('processPayment 1', wallet.balance, totalAmount);
     console.log('processPayment 2', transfers);
 
     if (transfers.length === 0) return;
-
+    
     await updateValue('wallet', 'seed','status', seed,  'busy')
 
     return await transferFunds(
@@ -160,9 +164,8 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
         totalAmount,
         transfers
     );
-    })
 }catch(e){
-    console.log("No address wallet available")
+    console.log("No wallet address available")
     await new Promise(resolve => setTimeout(resolve, 20000));
     if (++count === maxTries) throw e;
         }

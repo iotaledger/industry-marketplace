@@ -47,9 +47,9 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { gps, name, role, wallet, usePaymentQueue } = req.body;
+                const { location, name, role, wallet, usePaymentQueue } = req.body;
                 interface IUser {
-                    areaCode?: string;
+                    location?: string;
                     id?: string;
                     role?: string;
                     name?: string;
@@ -64,6 +64,10 @@ export class AppHelper {
 
                 if (name) {
                     user.name = name;
+                }
+
+                if (location) {
+                    user.location = location;
                 }
 
                 user.usePaymentQueue = usePaymentQueue ? 1 : 0;
