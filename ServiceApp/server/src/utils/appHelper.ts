@@ -349,12 +349,7 @@ export class AppHelper {
 
                     if (user && paymentQueue === 1) {
                         // 2. Add to payment queue
-                        const payload = {
-                            timestamp: Date.now(),
-                            address: recepientAddress,
-                            value: Number(priceObject.value)
-                        }
-                        await addToPaymentQueue(userDID, payload);
+                        await addToPaymentQueue(recepientAddress, Number(priceObject.value));
                     } else {
                         // 2. Process payment
                         const transactions = await processPayment(recepientAddress, Number(priceObject.value));
