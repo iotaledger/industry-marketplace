@@ -69,7 +69,7 @@ export const writeData = async (table, data) => {
             case 'did':
                 await createDID(data);
                 return;
-                case 'paymentQueue':
+            case 'paymentQueue':
                 await createPaymentQueue(data);
                 return;
             case 'mam':
@@ -129,7 +129,7 @@ export const readAllData = async (table) => {
 export const readDataEquals = async (table, column, value) => {
     return new Promise((resolve, reject) => {
         try {
-            db.all(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
+            db.get(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
                 if (err) {
                     return resolve(err);
                 }
@@ -143,10 +143,6 @@ export const readDataEquals = async (table, column, value) => {
         }
     });
 };
-
-
-
-
 
 export const removeData = (table) => {
     return new Promise(async resolve => {
