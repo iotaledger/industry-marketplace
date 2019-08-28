@@ -150,7 +150,7 @@ export class AppHelper {
 
                 const user = await getSpecificUser('id', userDID)
                 const userName = await get(user, 'name')
-
+           
                 // 2. Send transaction
                 const hash = await sendMessage({ ...req.body, userName }, tag);
 
@@ -187,7 +187,6 @@ export class AppHelper {
 
                 const user = await getSpecificUser('id', userDID)
                 const userName = await get(user, 'name')
-                console.log("send", JSON.stringify(req.body))
 
                 const hash = await sendMessage({ ...req.body, userName }, tag);
 
@@ -296,7 +295,6 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
                 const user = await getSpecificUser('id', userDID)
                 const userName = await get(user, 'name')
-                console.log("send", JSON.stringify(req.body))
 
                 const payload = { ...req.body, walletAddress: address, userName };
 
@@ -337,17 +335,16 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 const userDID = req.body.frame.sender.identification.id;
-
+        
                 const user = await getSpecificUser('id', userDID)
-                const paymentQueue = get(user, 'usePaymentQueue')
-
-
+                const paymentQueue = await get(user, 'usePaymentQueue')
                 // 1. Retrieve wallet
                 const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     const recepientAddress = req.body.walletAddress;
 
                     if (user && paymentQueue === 1) {
+                        console.log("Add to Payment Queue")
                         // 2. Add to payment queue
                         await addToPaymentQueue(recepientAddress, Number(priceObject.value));
                     } else {

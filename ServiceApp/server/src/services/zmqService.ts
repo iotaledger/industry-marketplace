@@ -54,8 +54,7 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
-        this._paymentInterval = setInterval(this.processPayments.bind(this), 10000);
-        //5 * 60 * 
+        this._paymentInterval = setInterval(this.processPayments.bind(this), 5*60*1000);
     }
 
     /**
@@ -243,7 +242,7 @@ export class ZmqService {
                                         id?: string;
                                         name?: string;
                                         role?: string;
-                                        areaCode?: string;
+                                        location?: string;
                                     }
                                     const { id }: IUser = await readDataEquals('user', 'id', receiverID)
 

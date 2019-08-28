@@ -10,6 +10,7 @@ export const getSpecificUser = async (column, value) => {
                 name?: string;
                 role?: string;
                 location?: string;
+                usePaymentQueue?: number;
             }
 
             const user : IUser = await readDataEquals('user', `${column}`, value)
@@ -26,10 +27,11 @@ export const getRandomUser = (role) => {
     try {
         return new Promise(async (resolve, reject) => {
             interface IUser {
-                areaCode?: string;
                 id?: string;
-                role?: string;
                 name?: string;
+                role?: string;
+                location?: string;
+                usePaymentQueue?: number;
             }
             const user: IUser = await getRandomRow('user', 'role', role);
             const { id } = user
