@@ -119,9 +119,10 @@ export class AppHelper {
 
             if (!user || !user.id) {
                 // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
+               const { publicKey, privateKey }: any = await generateKeyPair();
+               const root = await publishDID(publicKey, privateKey);
                 const id = `did:iota:${root}`;
+              
                 user = user ? { ...user, id } : { id };
                 await writeData('user', user);
             }
@@ -305,6 +306,7 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 const user: any = await readData('user');
+            
 
                 // 1. Retrieve wallet
                 const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
@@ -312,12 +314,7 @@ export class AppHelper {
                     const recepientAddress = req.body.walletAddress;
                     if (user && user.usePaymentQueue === 1) {
                         // 2. Add to payment queue
-                        const payload = {
-                            timestamp: Date.now(),
-                            address: recepientAddress,
-                            value: Number(priceObject.value)
-                        }
-                        await addToPaymentQueue(user.id, payload);
+                        await addToPaymentQueue( recepientAddress, Number(priceObject.value));
                     } else {
                         // 2. Process payment
                         const transactions = await processPayment(recepientAddress, Number(priceObject.value));

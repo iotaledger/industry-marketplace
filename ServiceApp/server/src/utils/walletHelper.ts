@@ -11,7 +11,6 @@ export const getBalance = async address => {
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
         let balance = balances && balances.length > 0 ? balances[0] : 0;
-        
         if (balance === 0) {
             let retries = 0;
             while (retries++ < 5) {
@@ -111,7 +110,7 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-    console.log('processPayment called', receiveAddress, paymentValue);
+  ;
     interface IWallet {
         address?: string;
         balance?: number;
@@ -124,14 +123,12 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
     }
 
     const wallet: IWallet = await readData('wallet');
-    const { id, usePaymentQueue }: IUser = await readData('user');
-    console.log('user id', id, usePaymentQueue); 
+    const { usePaymentQueue }: IUser = await readData('user');
 
     let transfers = [];
     let totalAmount = 0;
     if (usePaymentQueue && usePaymentQueue === 1) {
         const paymentQueue = await processPaymentQueue();
-        console.log('paymentQueue', paymentQueue);
     
         transfers = paymentQueue.map(({ address, value }) => {
             totalAmount += value;
