@@ -10,21 +10,21 @@ export const getBalance = async address => {
         }
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
-        let balance = balances && balances.length > 0 ? balances[0] : 0;
         
-        if (balance === 0) {
-            let retries = 0;
-            while (retries++ < 5) {
-                const response = await getBalances([address], 100);
-                balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
-                if (balance > 0) {
-                    break;
-                }
-                await new Promise(resolved => setTimeout(resolved, 100));
-            }
-        }
+        // let balance = balances && balances.length > 0 ? balances[0] : 0;
+        // if (balance === 0) {
+        //     let retries = 0;
+        //     while (retries++ < 5) {
+        //         const response = await getBalances([address], 100);
+        //         balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
+        //         if (balance > 0) {
+        //             break;
+        //         }
+        //         await new Promise(resolved => setTimeout(resolved, 100));
+        //     }
+        // }
 
-        return balance;
+        return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
         console.error('getBalance error', error);
         return 0;
