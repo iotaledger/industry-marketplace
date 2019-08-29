@@ -316,7 +316,7 @@ export class AppHelper {
                             timestamp: Date.now(),
                             address: recepientAddress,
                             value: Number(priceObject.value)
-                        }
+                        };
                         await addToPaymentQueue(user.id, payload);
                     } else {
                         // 2. Process payment

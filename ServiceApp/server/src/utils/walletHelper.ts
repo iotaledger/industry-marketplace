@@ -136,18 +136,20 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
         transfers = paymentQueue.map(({ address, value }) => {
             totalAmount += value;
             return { address, value };
-        })
+        });
     } else if (receiveAddress && paymentValue) {
         transfers = [{ address: receiveAddress, value: paymentValue }];
         totalAmount = paymentValue;
     }
 
-    console.log('processPayment 1', wallet.balance, totalAmount);
+    const { address, balance, keyIndex, seed } = wallet;
+    console.log('processPayment 1', balance, totalAmount);
     console.log('processPayment 2', transfers);
     
-    if (transfers.length === 0) return;
+    if (transfers.length === 0) {
+        return null;
+    }
 
-    const { address, keyIndex, seed } = wallet;
     return await transferFunds(
         address,
         keyIndex,
