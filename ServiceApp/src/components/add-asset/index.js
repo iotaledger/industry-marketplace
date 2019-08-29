@@ -345,6 +345,8 @@ const LoadingBox = styled.div`
 const Form = styled.form`
   transition: all 0.5s ease;
   padding: 20px 30px;
+  overflow-y: auto;
+  max-height: 450px;
 `;
 
 const Img = styled.img`
