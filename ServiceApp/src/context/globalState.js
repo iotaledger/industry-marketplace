@@ -9,6 +9,7 @@ class GlobalState extends Component {
 
   async componentDidMount() {
     await this.getUser();
+    this.timer = setInterval(() => this.getUser(), 2 * 60 * 1000);
   }
 
   getUser = async () => {
