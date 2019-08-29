@@ -13,6 +13,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, seed TEXT, next_root TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
     }
 );
 
@@ -34,6 +35,10 @@ export const createWallet = async ({ seed, address, balance, keyIndex }) => {
 
 export const createSensorData = async ({ id, deviceId, userId, schema }) => {
     await db.run('REPLACE INTO data (id, deviceId, userId, schema) VALUES (?, ?, ?, ?)', [id, deviceId, userId, schema]);
+};
+
+export const createPaymentQueue = async ({ address, value }) => {
+    await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
 };
 
 export const createDID = async ({ root, privateKey, seed, next_root, start }) => {
@@ -67,6 +72,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'did':
                 await createDID(data);
+                return;
+            case 'paymentQueue':
+                await createPaymentQueue(data);
                 return;
             case 'mam':
             default:
