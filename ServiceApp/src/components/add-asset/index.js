@@ -12,6 +12,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import randomIcon from '../../assets/img/random.svg';
 import Loading from '../loading';
 import { waitingTime } from '../../config.json';
+import UserContext from '../../context/user-context';
 import {
   generateRandomSubmodelValues, 
   getRandomTimestamp,
@@ -95,6 +96,8 @@ const initState = {
 }
 
 export default class extends React.Component {
+  static contextType = UserContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -167,6 +170,7 @@ export default class extends React.Component {
 
   async submit() {
     const { operation, submodel, assetStart, assetEnd } = this.state;
+    const { location } = this.context.user;
     const startDate = parse(assetStart);
     const endDate = parse(assetEnd);
 
@@ -203,7 +207,7 @@ export default class extends React.Component {
       startTimestamp: typeof assetStart === 'number' ? assetStart : Date.parse(assetStart),
       endTimestamp: typeof assetEnd === 'number' ? assetEnd : Date.parse(assetEnd),
       replyTime: waitingTime,
-      location: getRandomLocation()
+      location: location || getRandomLocation()
     };
 
     this.setState({ loading: true });
