@@ -10,20 +10,7 @@ export const getBalance = async address => {
         }
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
-        let balance = balances && balances.length > 0 ? balances[0] : 0;
-        if (balance === 0) {
-            let retries = 0;
-            while (retries++ < 5) {
-                const response = await getBalances([address], 100);
-                balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
-                if (balance > 0) {
-                    break;
-                }
-                await new Promise(resolved => setTimeout(resolved, 100));
-            }
-        }
-
-        return balance;
+        return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
         console.error('getBalance error', error);
         return 0;
@@ -110,41 +97,30 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-  ;
     interface IWallet {
         address?: string;
         balance?: number;
         keyIndex?: number;
         seed?: string;
     }
-    interface IUser {
-        id?: string;
-        usePaymentQueue?: number;
-    }
 
     const wallet: IWallet = await readData('wallet');
-    const { usePaymentQueue }: IUser = await readData('user');
-
-    let transfers = [];
+  
     let totalAmount = 0;
-    if (usePaymentQueue && usePaymentQueue === 1) {
-        const paymentQueue = await processPaymentQueue();
-    
-        transfers = paymentQueue.map(({ address, value }) => {
-            totalAmount += value;
-            return { address, value };
-        })
-    } else if (receiveAddress && paymentValue) {
-        transfers = [{ address: receiveAddress, value: paymentValue }];
-        totalAmount = paymentValue;
-    }
+    const paymentQueue = await processPaymentQueue();
+    const transfers = paymentQueue.map(({ address, value }) => {
+        totalAmount += value;
+        return { address, value };
+    });
 
-    console.log('processPayment 1', wallet.balance, totalAmount);
+    const { address, balance, keyIndex, seed } = wallet;
+    console.log('processPayment 1', balance, totalAmount);
     console.log('processPayment 2', transfers);
     
-    if (transfers.length === 0) return;
+    if (transfers.length === 0) {
+        return null;
+    }
 
-    const { address, keyIndex, seed } = wallet;
     return await transferFunds(
         address,
         keyIndex,
