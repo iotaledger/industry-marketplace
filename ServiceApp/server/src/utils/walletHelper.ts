@@ -10,20 +10,6 @@ export const getBalance = async address => {
         }
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
-        
-        // let balance = balances && balances.length > 0 ? balances[0] : 0;
-        // if (balance === 0) {
-        //     let retries = 0;
-        //     while (retries++ < 5) {
-        //         const response = await getBalances([address], 100);
-        //         balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
-        //         if (balance > 0) {
-        //             break;
-        //         }
-        //         await new Promise(resolved => setTimeout(resolved, 100));
-        //     }
-        // }
-
         return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
         console.error('getBalance error', error);
@@ -111,36 +97,21 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-    console.log('processPayment called', receiveAddress, paymentValue);
     interface IWallet {
         address?: string;
         balance?: number;
         keyIndex?: number;
         seed?: string;
     }
-    interface IUser {
-        id?: string;
-        usePaymentQueue?: number;
-    }
 
     const wallet: IWallet = await readData('wallet');
-    const { id, usePaymentQueue }: IUser = await readData('user');
-    console.log('user id', id, usePaymentQueue); 
-
-    let transfers = [];
+  
     let totalAmount = 0;
-    if (usePaymentQueue && usePaymentQueue === 1) {
-        const paymentQueue = await processPaymentQueue(id);
-        console.log('paymentQueue', paymentQueue);
-    
-        transfers = paymentQueue.map(({ address, value }) => {
-            totalAmount += value;
-            return { address, value };
-        });
-    } else if (receiveAddress && paymentValue) {
-        transfers = [{ address: receiveAddress, value: paymentValue }];
-        totalAmount = paymentValue;
-    }
+    const paymentQueue = await processPaymentQueue();
+    const transfers = paymentQueue.map(({ address, value }) => {
+        totalAmount += value;
+        return { address, value };
+    });
 
     const { address, balance, keyIndex, seed } = wallet;
     console.log('processPayment 1', balance, totalAmount);
