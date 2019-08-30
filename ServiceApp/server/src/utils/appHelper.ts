@@ -54,8 +54,8 @@ export class AppHelper {
                 const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
 
-                if (gps) {
-                    user.location = gps;
+                if (gps || location) {
+                    user.location = gps || location;
                 }
 
                 if (role) {
