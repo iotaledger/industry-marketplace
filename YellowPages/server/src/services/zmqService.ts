@@ -9,6 +9,17 @@ import { getPayload } from '../utils/iotaHelper';
  */
 export class ZmqService {
     /**
+     * Bundlehashes that were already send to not send twice 
+     *
+     */  
+    public sentBundles = [];
+
+    /**
+     * The interval to frequently delete sentBundle array.
+     */
+    public _bundleInterval;
+
+    /**
      * The configuration for the service.
      */
     private readonly _config;
@@ -30,6 +41,14 @@ export class ZmqService {
     constructor(config) {
         this._config = config;
         this._subscriptions = {};
+        this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
+    }
+
+    /**
+     * Clear sentBundles array
+     */
+    public emptyBundleArray() {
+        this.sentBundles = [];
     }
 
     /**
@@ -173,14 +192,18 @@ export class ZmqService {
             if (tag.startsWith(this._config.zmq.prefix) && messageType) {
                 const bundle = messageParams[8];
 
-                if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                    const data = await getPayload(bundle);
-                    this.sendEvent(data, messageType, messageParams);
+                if (!this.sentBundles.includes(bundle)) {
+                    this.sentBundles.push(bundle);
+                   
+                    if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                        const data = await getPayload(bundle);
+                        this.sendEvent(data, messageType, messageParams);
 
-                    try {
-                        await axios.post(this._config.db_endpoint, data);
-                    } catch (error) {
-                        console.log('data error', error);
+                        try {
+                            await axios.post(this._config.db_endpoint, data);
+                        } catch (error) {
+                            console.log('data error', error);
+                        }
                     }
                 }
             }
