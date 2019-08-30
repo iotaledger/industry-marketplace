@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Card from './index.js';
+import { eClassCatalog } from '../../config.json';
 
 const Heading = ({ operation, type }) => {
   return (
@@ -18,53 +19,84 @@ const Heading = ({ operation, type }) => {
 const Asset = props => {
   const { asset } = props;
   
+  function isValidGPS(gps) {
+    const [lat, lon] = gps.split(',');
+    const latRegex = /^(-?[1-8]?\d(?:\.\d{1,18})?|90(?:\.0{1,18})?)$/;
+    const lonRegex = /^(-?(?:1[0-7]|[1-9])?\d(?:\.\d{1,18})?|180(?:\.0{1,18})?)$/;
+    
+    if (latRegex.test(Number(lat)) && lonRegex.test(Number(lon))) {
+        return true;
+    }
+    return false;
+  }
+
   return (
-    <Card header={Heading(asset)} asset={asset}>
+    <Card
+      header={Heading(asset)}
+      asset={asset}
+    >
       <CardContent>
         {
           asset.params && asset.params.length > 0 ? (
             <Row>
-            {
-              asset.params.map(({ idShort, value }) => (
-                <RowThird key={idShort}>
-                  <RowDesc>{idShort}</RowDesc>
-                  <Data>{value}</Data>
-                </RowThird>
-              ))
-            }
+              {
+                asset.params
+                  .filter(({ idShort }) => !['preis', 'price'].includes(idShort))
+                  .map(({ idShort, semanticId, value }) => (
+                    <RowThird key={idShort}>
+                      <RowLink
+                        href={`${eClassCatalog}${semanticId.replace(/#/g, '%23')}`} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Go to eCl@ss to see property specs"
+                      >
+                        {idShort}
+                      </RowLink>
+                      <Data>
+                        {
+                          typeof value === 'string' && isValidGPS(value)
+                          ? ( <React.Fragment>
+                                { value.toString() }
+                              </React.Fragment>
+                            )
+                          : value.toString()
+                        }
+                      </Data>
+                    </RowThird>
+                ))
+              }
             </Row>
           ) : null
         }
         <Row>
           <RowThird>
-            <RowDesc>Coordinates</RowDesc>
-            <Data>
-              {asset.latitude.toFixed(5)}, {asset.longitude.toFixed(5)}
-            </Data>
-          </RowThird>
-          <RowThird>
-            <RowDesc>Location</RowDesc>
+            <RowDesc>Requester Location</RowDesc>
             <Data>
               {asset.location || '--'}
             </Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Sender:</RowDesc>
-            <Data>{asset.sender}</Data>
+            <RowDesc>Partner:</RowDesc>
+              <Data>
+                  { asset.partnerName && asset.partnerName.indexOf('did:iota:') === 0 
+                    ? `${asset.partnerName.substr(9, 15)}...` 
+                    : asset.partnerName
+                  }
+              </Data>
           </RowThird>
         </Row>
         <Row>
           <RowThird>
-            <RowDesc>Begin Time:</RowDesc>
+            <RowDesc>Contract begin:</RowDesc>
             <Data>{asset.startTime}</Data>
           </RowThird>
           <RowThird>
-            <RowDesc>End Time:</RowDesc>
+            <RowDesc>Contract end:</RowDesc>
             <Data>{asset.endTime}</Data>
           </RowThird>
           <RowThird>
-            <RowDesc>Receiver:</RowDesc>
-            <Data>{asset.receiver}</Data>
+            <RowDesc>Price (IOTA):</RowDesc>
+            <Data>{asset.price}</Data>
           </RowThird>
         </Row>
       </CardContent>
@@ -85,13 +117,21 @@ const Row = styled.div`
   &:not(:last-of-type) {
     margin-bottom: 5px;
   }
+  @media (min-width: 769px) {
+    flex-direction: row;
+  }
 `;
 
 const RowThird = styled.div`
-  width: 33.3%;
   padding: 10px 30px;
   display: inline-block;
   text-align: left;
+  @media (min-width: 426px) {
+    width: 50%;
+  }
+  @media (min-width: 950px) {
+    width: 33.3%;
+  }
 `;
 
 const Data = styled.p`
@@ -108,6 +148,13 @@ const RowDesc = styled.span`
   text-transform: uppercase;
 `;
 
+const RowLink = styled.a`
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  color: #529FF8;
+  text-transform: uppercase;
+`;
+
 const Header = styled.h2`
   font-size: 24px;
   font-weight: 600;
@@ -120,21 +167,25 @@ const Header = styled.h2`
 const Full = styled.div`
   width: 100%;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  @media (min-width: 769px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
 
 const StatusWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
 `;
 
 const Status = styled.h3`
-  color: #529FF8;
+  color: #313131;
   font: 18px 'Nunito Sans', sans-serif;
-  font-weight: 600;
-  text-align: right;
   text-transform: uppercase;
+  @media (min-width: 769px) {
+    text-align: right;
+  }
 `;

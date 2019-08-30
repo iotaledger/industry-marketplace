@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { useTable, useFilters, usePagination } from 'react-table'
 import matchSorter from 'match-sorter'
+import hljs from 'highlightjs'
+import 'highlightjs/styles/github.css'
 
 // Define a default UI for filtering
 function DefaultColumnFilter({ filterValue, setFilter }) {
@@ -143,6 +145,30 @@ function Table({ columns, data }) {
   // it at 20 for this use case
   const firstPageRows = rows.slice(0, 20)
 
+  const messageContent = cell => {
+    const codeEl = useRef(null);
+
+    const highlight = () => {
+      try {
+        hljs.highlightBlock(codeEl.current);
+      } catch (e) {
+        // console.log(hljs, window.hljs);
+      }
+    };
+
+    highlight();
+
+    return (
+      <div className="highlightjs-component">
+        <pre className="prettyprint lang-json">
+          <code className="json prettyprint lang-json" ref={codeEl}>
+            {cell.render('Cell')}
+          </code>
+        </pre>
+      </div>
+    )
+  }
+
   return (
     <>
       <div>
@@ -166,14 +192,21 @@ function Table({ columns, data }) {
         </thead>
         <tbody>
           {firstPageRows.map(
-            (row, i) =>
+            row =>
               prepareRow(row) || (
                 <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    )
-                  })}
+                  {row.cells.map((cell, i) =>
+                    <td 
+                      {...cell.getCellProps()}
+                      className={i === row.cells.length - 1 ? 'expandable' : ''}
+                    >
+                      {
+                        i === row.cells.length - 1
+                        ? messageContent(cell)
+                        : cell.render('Cell')
+                      }
+                    </td>
+                  )}
                 </tr>
               )
           )}
@@ -251,6 +284,10 @@ function List({ assets }) {
         accessor: "type",
         Filter: SelectColumnFilter,
         filter: 'includes',
+      },
+      {
+        Header: "Content",
+        accessor: "originalMessage",
       }
     ],
     []
@@ -287,7 +324,7 @@ const Section = styled.section`
 
 const Shape = styled.img`
   position: absolute;
-  bottom: 0px;
+  top: -60px;
   left: 70vw;
   z-index: -100;
   @media (max-width: 1120px) {
@@ -328,6 +365,25 @@ const Styles = styled.div`
       margin: 0;
       padding: 0.5rem 1rem;
       min-width: 130px;
+      vertical-align: top;
+    }
+
+    td.expandable {
+      cursor: pointer;
+      height: 60px;
+      width: 300px;
+      float: left;
+      position: relative;
+      transition: height 0.2s;
+      -webkit-transition: height 0.2s;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &:hover {
+        height: 100%;
+        white-space: unset;
+      }
     }
   }
 `
