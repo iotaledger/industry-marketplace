@@ -57,7 +57,7 @@ One major task that the Market Manager executes for every incoming message is wr
 
 #### POST /config 
 
-Receives userId, role, location in GPS coordinates and flag for PaymentQueue according to [Industry 4.0 Semantic](#config)
+Receives userId, role, GPS coordinates and flag for PaymentQueue according to [Industry 4.0 Semantic](#config)
 
 * Writes configuration details to database
 
@@ -146,7 +146,7 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 * publishes public key as message to public MAM channel
 * saves private key under DID in DB 
 
-Returns userId, role, location, wallet address and wallet balance
+Returns userId, role, gps coordinates, wallet address and wallet balance
 
 
 #### GET /mam/{conversationId}
@@ -173,9 +173,8 @@ const params =
 {  
     "name": "User2",
     "role": "SP",
-    "location": "52.508,13.37789999999",
-    "wallet": false,
-    "usePaymentQueue": 1
+    "gps": "52.508,13.37789999999",
+    "wallet": false
 }
 
 const configuration = async (params) => {
@@ -286,9 +285,8 @@ Payload according to the Industry 4.0 Language can be created with the [SeMarket
 {
     "name": "User2",
     "role": "SP",
-    "location": "52.508,13.37789999999",
-    "wallet": true,
-    "usePaymentQueue": 1
+    "gps": "52.508,13.37789999999",
+    "wallet": true
 }
 ```
 
@@ -551,45 +549,45 @@ Please complete with [submodelElements](#submodelelements)
 
 ```json
 {
-                        "idShort": "gewicht",
-                        "modelType": "Property",
-                        "value": "5",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAB713#005"
-                      },
-                      {
-                        "idShort": "farbe",
-                        "modelType": "Property",
-                        "value": "schwarz",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAN521#005"
-                      },
-                      {
-                        "idShort": "material",
-                        "modelType": "Property",
-                        "value": "stahl",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-BAF634#008"
-                      },
-                      {
-                        "idShort": "ort",
-                        "modelType": "Property",
-                        "value": "berlin",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-BAF163#002"
-                      },
-                      {
-                        "idShort": "zeit",
-                        "modelType": "Property",
-                        "value": "1558461600",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAO738#001"
-                      },
-                      {
-                        "idShort": "preis",
-                        "modelType": "Property",
-                        "value": "5",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAO738#001"
-                      }
+  "idShort": "gewicht",
+  "modelType": "Property",
+  "value": "5",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAB713#005"
+},
+{
+  "idShort": "farbe",
+  "modelType": "Property",
+  "value": "schwarz",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAN521#005"
+},
+{
+  "idShort": "material",
+  "modelType": "Property",
+  "value": "stahl",
+  "valueType": "string",
+  "semanticId": "0173-1#02-BAF634#008"
+},
+{
+  "idShort": "ort",
+  "modelType": "Property",
+  "value": "berlin",
+  "valueType": "string",
+  "semanticId": "0173-1#02-BAF163#002"
+},
+{
+  "idShort": "zeit",
+  "modelType": "Property",
+  "value": "1558461600",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAO738#001"
+},
+{
+  "idShort": "preis",
+  "modelType": "Property",
+  "value": "5",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAO738#001"
+}
 ```
