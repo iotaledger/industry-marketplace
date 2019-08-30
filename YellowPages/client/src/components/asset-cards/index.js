@@ -86,7 +86,7 @@ export default class extends React.Component {
 
 const Shape = styled.img`
   position: absolute;
-  bottom: 0px;
+  top: -60px;
   left: 70vw;
   z-index: -100;
   @media (max-width: 1120px) {
