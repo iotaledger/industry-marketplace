@@ -1,8 +1,6 @@
 import get from 'lodash-es/get';
 import { operations } from '../Industry_4.0_language';
 
-const iotaAreaCodes = require('@iota/area-codes');
-
 export const prepareData = async (payload) => {
     let data = payload;
     if (typeof payload === 'string') {
@@ -21,7 +19,7 @@ export const prepareData = async (payload) => {
 
     // Get params/submodelElements
     const submodelElements = get(data, 'dataElements.submodels[0].identification.submodelElements');
-    const params = submodelElements.map(({ idShort, value }) => ({ idShort, value }));
+    const params = submodelElements.map(({ idShort, semanticId, value }) => ({ idShort, semanticId, value }));
 
     // Get price
     const price = submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
@@ -33,9 +31,12 @@ export const prepareData = async (payload) => {
     const operation = get(operationObject, 'name');
     // Set date format options
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-    const sender = get(data, 'frame.sender.identification.id');
-    const receiver = get(data, 'frame.receiver.identification.id') || 'Pending';
-    const coordinates = await iotaAreaCodes.decode(location);
+    let sender = get(data.frame, 'sender.identification.id');
+    sender = sender && sender.indexOf('did:iota:') === 0 ? `${sender.substr(9, 15)}...` : sender;
+    let receiver = get(data, 'frame.receiver.identification.id') || 'Pending';
+    receiver = receiver && receiver.indexOf('did:iota:') === 0 ? `${receiver.substr(9, 15)}...` : receiver;
+    const sensorData = get(data, 'sensorData') || null;
+    const coordinates = location.split(',');
 
     const card = {
         operation,
@@ -44,14 +45,15 @@ export const prepareData = async (payload) => {
         location,
         params,
         irdi,
-        sender,
         receiver,
-        partner: sender,
+        sender,
+        sensorData,
+        startTimestamp,
         id: conversationId,
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-        walletAddress: get(data, 'walletAddress') || null,
-        originalMessage: JSON.stringify(data),
+        latitude: Number(coordinates[0]),
+        longitude: Number(coordinates[1]),
+        partnerName: get(data, 'userName') || sender,
+        originalMessage: JSON.stringify(data, null, 2),
         storageId: type === 'proposal' ? `${conversationId}#${sender}` : conversationId,
         price: get(price, 'value') || 'Pending',
         startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
