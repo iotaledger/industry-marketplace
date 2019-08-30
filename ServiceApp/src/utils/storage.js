@@ -57,17 +57,17 @@ export const removeExpired = async type => {
 
 /*
 
-Service Requesrer 
+Service Requester 
 * Awaiting proposal - messageType: "callForProposal"
 * Proposal received - messageType: "proposal"
-* Awaiting fulfilment - messageType: "acceptProposal"
+* Awaiting fulfillment - messageType: "acceptProposal"
 * Awaiting payment - messageType: "informConfirm"
 * Completed - messageType: "informPayment"
 
 For Service Provider we can have items like:
 * Received requests - messageType: "callForProposal"
 * Proposal sent - messageType: "proposal"
-* Awaiting fulfilment - messageType: "acceptProposal"
+* Awaiting fulfillment - messageType: "acceptProposal"
 * Awaiting payment - messageType: "informConfirm"
 * Completed - messageType: "informPayment"
 
