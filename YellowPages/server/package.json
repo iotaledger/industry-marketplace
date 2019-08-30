@@ -17,7 +17,8 @@
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
         "start-dev": "run-p serve-mon build-watch",
-        "start": "node ./build/src/index"
+        "start": "node ./build/src/index",
+        "deploy": "now --docker"
     },
     "dependencies": {
         "@iota/converter": "^1.0.0-beta.19",
