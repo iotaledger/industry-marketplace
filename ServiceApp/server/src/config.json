@@ -30,6 +30,9 @@
     "dataRequest": ["0173-1#01-BAF777#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "provider": "https://nodes.devnet.iota.org:443",
+    "security": 2,
+    "depth": 5,
+    "minWeightMagnitude": 9,
     "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD",
     "demoSensorData": {
         "conversationId": "",

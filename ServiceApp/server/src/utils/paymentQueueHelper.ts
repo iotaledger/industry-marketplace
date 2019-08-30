@@ -1,28 +1,19 @@
 import { readAllData, removeData, writeData } from './databaseHelper';
 
-export const fetchUserPaymentQueue = async () => {
-    try {
-        const userObject: any = await readAllData('paymentQueue');
-        return userObject;
-    } catch(error) {
-        console.error('fetchUserPaymentQueue', error);
-    }
-}
-
 export const addToPaymentQueue = async (address, value) => {
     try {
         await writeData('paymentQueue', { address, value });
-    } catch(error) {
+    } catch (error) {
         console.error('addToPaymentQueue', address, error);
     }
-}
+};
 
 export const processPaymentQueue = async () => {
     try {
-        const currentUserObject = await fetchUserPaymentQueue();
+        const currentUserObject = await readAllData('paymentQueue');
         await removeData('paymentQueue');
         return currentUserObject || [];
-    } catch(error) {
+    } catch (error) {
         console.error('processPaymentQueue', error);
     }
-}
+};
