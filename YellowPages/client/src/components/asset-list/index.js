@@ -1,9 +1,7 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { useTable, useFilters, usePagination } from 'react-table'
 import matchSorter from 'match-sorter'
-import hljs from 'highlightjs'
-import 'highlightjs/styles/github.css'
 
 // Define a default UI for filtering
 function DefaultColumnFilter({ filterValue, setFilter }) {
@@ -146,22 +144,10 @@ function Table({ columns, data }) {
   const firstPageRows = rows.slice(0, 20)
 
   const messageContent = cell => {
-    const codeEl = useRef(null);
-
-    const highlight = () => {
-      try {
-        hljs.highlightBlock(codeEl.current);
-      } catch (e) {
-        // console.log(hljs, window.hljs);
-      }
-    };
-
-    highlight();
-
     return (
       <div className="highlightjs-component">
         <pre className="prettyprint lang-json">
-          <code className="json prettyprint lang-json" ref={codeEl}>
+          <code className="json prettyprint lang-json">
             {cell.render('Cell')}
           </code>
         </pre>
