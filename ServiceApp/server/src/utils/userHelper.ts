@@ -6,6 +6,7 @@ import { generateKeyPair } from './encryptionHelper';
 import { publishDID } from './mamHelper';
 
 const createNewUser = async () => {
+    console.log("CREATING NEW USER");
     const { name, role = '', location = '', paymentQueue = 'true' } = argv;
     if (name && (role === 'SR' || role === 'SP')) {
         // Generate key pair

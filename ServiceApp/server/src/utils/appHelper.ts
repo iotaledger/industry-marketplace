@@ -2,17 +2,20 @@
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
-import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
-import { publish, publishDID } from './mamHelper';
+import { encryptWithReceiversPublicKey } from './encryptionHelper';
+import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
+import { provider } from '../config.json';
+
 
 /**
  * Class to help with expressjs routing.
@@ -118,15 +121,25 @@ export class AppHelper {
             const balance = await getBalance(address);
 
             if (!user || !user.id) {
-                // Generate key pair
-               const { publicKey, privateKey }: any = await generateKeyPair();
-               const root = await publishDID(publicKey, privateKey);
-                const id = `did:iota:${root}`;
-              
+                //Creating a NEW Identity following the DID standard
+                console.log("Getting a new User");
+                const userSeed = GenerateSeed();
+                const userDIDDocument = CreateRandomDID(userSeed);
+                const keypair = await GenerateRSAKeypair();
+                const privateKey = keypair.GetPrivateKey();
+                const keyId  = "keys-1";
+                userDIDDocument.AddKeypair(keypair, keyId);
+                const publisher = new DIDPublisher(provider, userSeed);
+                const root = await publisher.PublishDIDDocument(userDIDDocument, "SEMARKET", 9);
+                const state = publisher.ExportMAMChannelState();
+                await writeData('did', { root, privateKey, 'keyId' : keyId, 'seed' : userSeed, 'next_root' : state.nextRoot , 'start' : state.channelStart });
+
+                //Store user
+                const id = userDIDDocument.GetDID().GetDID();
                 user = user ? { ...user, id } : { id };
                 await writeData('user', user);
             }
-
+            console.log("User, loaded");
             res.json({ ...user, balance, wallet: address });
         });
 
