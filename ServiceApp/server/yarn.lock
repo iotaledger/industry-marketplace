@@ -56,6 +56,13 @@
   dependencies:
     core-js "^3.1.4"
 
+"@iota/converter@^1.0.0-beta.21":
+  version "1.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@iota/converter/-/converter-1.0.0-beta.21.tgz#ea94bb738cf1df753530e60a2089ee187622fae2"
+  integrity sha512-voiOZyaCCCTQ0rAwkwkuMAhuz4yLanPVd1nmZe0Jh1OeksQWZzlnJL7QQcBP4k4LZvRKw0sb1FyIKIsDJfdyig==
+  dependencies:
+    core-js "^3.1.4"
+
 "@iota/core@^1.0.0-beta.12", "@iota/core@^1.0.0-beta.20":
   version "1.0.0-beta.20"
   resolved "https://registry.yarnpkg.com/@iota/core/-/core-1.0.0-beta.20.tgz#9d9d1cf2437c233091ae671d58c97951dcb0a4f7"
@@ -205,6 +212,11 @@
   integrity sha512-Ind+4qMNfQ62llyB4IMs1D8znMEBsMKohZBPqfBUIXqLQ9bdtWIbNTBWwtdcBWJKnokMZGcmWOOKslatni5vtA==
   dependencies:
     "@types/node" "*"
+
+"@types/tv4@^1.2.29":
+  version "1.2.29"
+  resolved "https://registry.yarnpkg.com/@types/tv4/-/tv4-1.2.29.tgz#4c6d2222b03245dd2104f4fd67f54d1658985911"
+  integrity sha512-NtJmi+XbYocrLb5Au4Q64srX4FlCPDvrSF/OnK3H0QJwrw40tIUoQPDoUHnZ5wpAB2KThtVyeS+kOEQyZabORg==
 
 "@types/warning@^3.0.0":
   version "3.0.0"
@@ -1778,6 +1790,15 @@ iconv-lite@0.4.24, iconv-lite@^0.4.4:
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
+
+"identity_ts@git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git":
+  version "0.1.4"
+  resolved "git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git#895a32b76d38200b59bbffb7ff12a89badbe21c0"
+  dependencies:
+    "@iota/converter" "^1.0.0-beta.21"
+    "@iota/mam" "^0.7.3"
+    "@types/tv4" "^1.2.29"
+    tv4 "^1.3.0"
 
 ieee754@^1.1.4:
   version "1.1.13"
@@ -3943,6 +3964,11 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
+
+tv4@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/tv4/-/tv4-1.3.0.tgz#d020c846fadd50c855abb25ebaecc68fc10f7963"
+  integrity sha1-0CDIRvrdUMhVq7JeuuzGj8EPeWM=
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

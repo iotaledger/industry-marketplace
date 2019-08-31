@@ -1,5 +1,5 @@
 {
-    "extends": [
+    /*"extends": [
         "tslint:recommended",
         "tslint-microsoft-contrib",
         "tslint-eslint-rules"
@@ -7,8 +7,6 @@
     "linterOptions": {
         "exclude": [
             "node_modules",
-            "**/*.d.ts",
-            "**/*.json"
         ]
     },
     "rules": {
@@ -341,5 +339,5 @@
         "jsx-no-lambda": false,
         "prefer-readonly": true,
         "react-a11y-anchors": false
-     }
+     }*/
 }

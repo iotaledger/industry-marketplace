@@ -28,6 +28,7 @@
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "identity_ts": "git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git",
         "mongodb-stitch-server-sdk": "^4.5.0",
         "mqtt": "^3.0.0",
         "socket.io": "^2.2.0",
