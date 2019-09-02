@@ -2,7 +2,7 @@
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, VerifiableCredential, Credential, BuildRSAProof } from 'identity_ts';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, VerifiableCredential, Credential, BuildRSAProof, Presentation, VerifiablePresentation } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -192,16 +192,24 @@ export class AppHelper {
                 const tag = buildTag('proposal', submodelId);
 
                 //Deal with Identity Challenges
-                console.log(req.body);
+                console.log("Identity reached")
+                console.log(JSON.stringify(req.body));
                 const user: any = await readData('user');
                 const did: any = await readData('did');
-                req.body.identification.authenticationChallenge = GenerateSeed(12);
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
                 const credential = Credential.Create(SchemaHelper.GetInstance().GetSchema("DIDAuthenticationCredential"), userDIDDocument.GetDID(), {"DID" : userDIDDocument.GetDID()});
                 const proof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.originalMessage.identification.authenticationChallenge});
-                VerifiableCredential.Create(credential, proof);
+                proof.Sign(credential.EncodeToJSON());
+                const VC = VerifiableCredential.Create(credential, proof);
+                const presentation = Presentation.Create([VC]);
+                const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.originalMessage.identification.authenticationChallenge});
+                presentationProof.Sign(presentation.EncodeToJSON());
+                const verifiablePresentation = VerifiablePresentation.Create(presentation, presentationProof);
+                req.body.identification.verifiablePresentation = verifiablePresentation.EncodeToJSON();
 
+                //Set new challenge
+                req.body.identification.authenticationChallenge = GenerateSeed(12);
 
                 // 2. Send transaction
                 const hash = await sendMessage({ ...req.body, userName: user.name }, tag);

@@ -136,6 +136,10 @@ export const generate = ({
         message.frame.startTimestamp = originalMessage.frame.startTimestamp;
         message.frame.endTimestamp = originalMessage.frame.endTimestamp;
         message.frame.creationDate = originalMessage.frame.creationDate;
+
+        if(originalMessage.identification && originalMessage.identification.authenticationChallenge) {
+            message.identification.authenticationChallenge = originalMessage.identification.authenticationChallenge;
+        }
         
         if (originalMessage.walletAddress) {
             message.walletAddress = originalMessage.walletAddress;
