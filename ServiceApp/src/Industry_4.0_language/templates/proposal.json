@@ -14,10 +14,10 @@
             "id":""
          }
       },
-      "identification": {
-         "authenticationChallenge":"",
-         "verifiablePresentation":""
-      },
       "replyBy":""
+   },
+   "identification": {
+      "authenticationChallenge":"",
+      "verifiablePresentation":""
    }
 }
