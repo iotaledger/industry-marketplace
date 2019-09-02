@@ -199,11 +199,11 @@ export class AppHelper {
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
                 const credential = Credential.Create(SchemaHelper.GetInstance().GetSchema("DIDAuthenticationCredential"), userDIDDocument.GetDID(), {"DID" : userDIDDocument.GetDID()});
-                const proof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.originalMessage.identification.authenticationChallenge});
+                const proof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.identification.authenticationChallenge});
                 proof.Sign(credential.EncodeToJSON());
                 const VC = VerifiableCredential.Create(credential, proof);
                 const presentation = Presentation.Create([VC]);
-                const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.originalMessage.identification.authenticationChallenge});
+                const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.identification.authenticationChallenge});
                 presentationProof.Sign(presentation.EncodeToJSON());
                 const verifiablePresentation = VerifiablePresentation.Create(presentation, presentationProof);
                 req.body.identification.verifiablePresentation = verifiablePresentation.EncodeToJSON();
