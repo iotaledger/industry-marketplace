@@ -1233,11 +1233,6 @@
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.2.tgz#e13182e1b69871a422d7863e11a4a6f5b814a4bd"
   integrity sha512-42zEJkBpNfMEAvWR5WlwtTH22oDzcMjFsL9gDGExwF8X8WvAiw7Vwop7hPw03QT8TKfec83LwbHj6SvpqM4ELQ==
 
-"@types/tv4@^1.2.29":
-  version "1.2.29"
-  resolved "https://registry.yarnpkg.com/@types/tv4/-/tv4-1.2.29.tgz#4c6d2222b03245dd2104f4fd67f54d1658985911"
-  integrity sha512-NtJmi+XbYocrLb5Au4Q64srX4FlCPDvrSF/OnK3H0QJwrw40tIUoQPDoUHnZ5wpAB2KThtVyeS+kOEQyZabORg==
-
 "@types/warning@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@types/warning/-/warning-3.0.0.tgz#0d2501268ad8f9962b740d387c4654f5f8e23e52"
@@ -5364,15 +5359,6 @@ identity-obj-proxy@3.0.0:
   integrity sha1-lNK9qWCERT7zb7xarsN+D3nx/BQ=
   dependencies:
     harmony-reflect "^1.4.6"
-
-"identity_ts@git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git":
-  version "0.1.1"
-  resolved "git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git#35953d60368b3ec18204ff5ade796ff20a99bbbb"
-  dependencies:
-    "@iota/converter" "^1.0.0-beta.21"
-    "@iota/mam" "^0.7.3"
-    "@types/tv4" "^1.2.29"
-    tv4 "^1.3.0"
 
 ieee754@^1.1.4:
   version "1.1.13"
@@ -10954,11 +10940,6 @@ tunnel-agent@^0.6.0:
   integrity sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0=
   dependencies:
     safe-buffer "^5.0.1"
-
-tv4@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/tv4/-/tv4-1.3.0.tgz#d020c846fadd50c855abb25ebaecc68fc10f7963"
-  integrity sha1-0CDIRvrdUMhVq7JeuuzGj8EPeWM=
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
