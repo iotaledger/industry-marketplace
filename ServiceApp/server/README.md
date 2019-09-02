@@ -12,18 +12,24 @@
  
 <!-- Pre-requisites -->
 ### About the Project
- ![architectureV2](docs/architectureV2.png?raw=true)
+ ![architectureV4](docs/architectureV4.png?raw=true)
  
  
 #### Digital Identity and Encryption 
 Within the SeMarket, every entity recieves a decentralized identifiers (DIDs) and a public/private key pair from the Market Manager. 
 For every entity, a public MAM channel is created with the DID as a root with the purpose to publish the public key. The private key is locally stored within the database of the entity. 
 
- ![keys](docs/keys.png?raw=true)
+ ![keysV2](docs/keysV2.png?raw=true)
 
 The public key of an entity can be used by others to encrypt sensitive data, that should only be accessible by the entity. This is enabled via asynchronous encryption, where messages that are encrypted with a public key can only be decrypted with the matching private key.
 
- ![asyncEncryption](docs/asyncEncryption.jpg?raw=true)
+ ![asyncEncryptionV3](docs/asyncEncryptionV3.png?raw=true)
+ 
+ #### Payment Queue 
+ 
+ For clients that are expected to execute outgoing payments in a high frequence, the funtionality of a payment queue is provided. Hereby, multiple outgoing payments are collected and wrapped up in one bundle every 5 minutes. 
+ 
+ ![PaymentQueue.png](docs/PaymentQueue.png?raw=true)
  
  
 <!-- Pre-requisites -->
@@ -51,7 +57,7 @@ One major task that the Market Manager executes for every incoming message is wr
 
 #### POST /config 
 
-Receives userId, role and location in GPS coordinates according to [Industry 4.0 Semantic](#config)
+Receives userId, role, GPS coordinates and flag for PaymentQueue according to [Industry 4.0 Semantic](#config)
 
 * Writes configuration details to database
 
@@ -140,7 +146,7 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 * publishes public key as message to public MAM channel
 * saves private key under DID in DB 
 
-Returns userId, role, location, wallet address and wallet balance
+Returns userId, role, gps coordinates, wallet address and wallet balance
 
 
 #### GET /mam/{conversationId}
@@ -164,9 +170,9 @@ import axios from 'axios';
 const BASE_URL = 'http://localhost:5000';
 
 const params =
-{
-    "name": "User1",
-    "role": "SR",
+{  
+    "name": "User2",
+    "role": "SP",
     "gps": "52.508,13.37789999999",
     "wallet": false
 }
@@ -543,45 +549,45 @@ Please complete with [submodelElements](#submodelelements)
 
 ```json
 {
-                        "idShort": "gewicht",
-                        "modelType": "Property",
-                        "value": "5",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAB713#005"
-                      },
-                      {
-                        "idShort": "farbe",
-                        "modelType": "Property",
-                        "value": "schwarz",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAN521#005"
-                      },
-                      {
-                        "idShort": "material",
-                        "modelType": "Property",
-                        "value": "stahl",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-BAF634#008"
-                      },
-                      {
-                        "idShort": "ort",
-                        "modelType": "Property",
-                        "value": "berlin",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-BAF163#002"
-                      },
-                      {
-                        "idShort": "zeit",
-                        "modelType": "Property",
-                        "value": "1558461600",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAO738#001"
-                      },
-                      {
-                        "idShort": "preis",
-                        "modelType": "Property",
-                        "value": "5",
-                        "valueType": "string",
-                        "semanticId": "0173-1#02-AAO738#001"
-                      }
+  "idShort": "gewicht",
+  "modelType": "Property",
+  "value": "5",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAB713#005"
+},
+{
+  "idShort": "farbe",
+  "modelType": "Property",
+  "value": "schwarz",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAN521#005"
+},
+{
+  "idShort": "material",
+  "modelType": "Property",
+  "value": "stahl",
+  "valueType": "string",
+  "semanticId": "0173-1#02-BAF634#008"
+},
+{
+  "idShort": "ort",
+  "modelType": "Property",
+  "value": "berlin",
+  "valueType": "string",
+  "semanticId": "0173-1#02-BAF163#002"
+},
+{
+  "idShort": "zeit",
+  "modelType": "Property",
+  "value": "1558461600",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAO738#001"
+},
+{
+  "idShort": "preis",
+  "modelType": "Property",
+  "value": "5",
+  "valueType": "string",
+  "semanticId": "0173-1#02-AAO738#001"
+}
 ```

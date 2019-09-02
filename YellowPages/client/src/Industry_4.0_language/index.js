@@ -34,7 +34,7 @@ export const evaluate = (irdi, values) => {
     let status;
     submodelTemplate.some(element => {
         const value = values[element.semanticId];
-        if (!value) {
+        if (element.valueType !== 'boolean' && !value) {
             status = `Value for ${element.idShort} (${element.semanticId}) is missing`;
             return null;
         }
@@ -54,7 +54,6 @@ const checkType = (type, value) => {
         case 'string':
         case 'langString':
         case 'anyURI':
-        case 'time':
             return typeof value === 'string';
 
         case 'decimal':
@@ -74,6 +73,7 @@ const checkType = (type, value) => {
         case 'nonNegativeInteger':
             return typeof value === 'number' && value >= 0 && value % 1 === 0;
         case 'positiveInteger':
+        case 'time':
             return typeof value === 'number' && value > 0 && value % 1 === 0;
         case 'nonPositiveInteger':
             return typeof value === 'number' && value <= 0 && value % 1 === 0;
@@ -116,7 +116,8 @@ export const generate = ({
     location = null,
     startTimestamp = null,
     endTimestamp = null,
-    creationDate = null
+    creationDate = null,
+    userName = null,
 }) => {
     const message = getTemplate(messageType);
     if (!message) {
@@ -125,6 +126,7 @@ export const generate = ({
     const conversationId = uuid();
     message.frame.sender.identification.id = userId;
     message.frame.replyBy = getReplyByTime(replyTime);
+    message.userName = userName;
 
     if (originalMessage && messageType !== 'callForProposal') {
         message.frame.conversationId = originalMessage.frame.conversationId;
@@ -134,11 +136,19 @@ export const generate = ({
         message.frame.startTimestamp = originalMessage.frame.startTimestamp;
         message.frame.endTimestamp = originalMessage.frame.endTimestamp;
         message.frame.creationDate = originalMessage.frame.creationDate;
+        
+        if (originalMessage.walletAddress) {
+            message.walletAddress = originalMessage.walletAddress;
+        }
 
         if (messageType === 'proposal' && price && irdi) {
             const priceModel = eClass[irdi].submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
             priceModel.value = price;
-            message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
+            
+            const updatedModel = message.dataElements.submodels[0].identification.submodelElements
+                .filter(model => !['preis', 'price'].includes(model.idShort));
+            updatedModel.push(priceModel);
+            message.dataElements.submodels[0].identification.submodelElements = updatedModel;
         }
     } else if (irdi && messageType === 'callForProposal') {
         message.frame.conversationId = conversationId;
@@ -161,12 +171,12 @@ export const generate = ({
             const submodelElements = submodelTemplate.map(element => (
                 { ...element, value: submodelValues[element.semanticId] } 
             ));
-            message.dataElements.submodels.push({
+            message.dataElements.submodels = [{
                 identification: {
                     id: irdi,
                     submodelElements
                 }
-            });
+            }];
         }
     }
 

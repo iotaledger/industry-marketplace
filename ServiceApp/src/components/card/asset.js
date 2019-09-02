@@ -149,7 +149,7 @@ const Asset = props => {
 
   function change({ target: { value } }) {
     setPrice(Number(value));
-    if (Date.parse(asset.startTime) > Date.now() && Number(value) > 0) {
+    if (asset.startTimestamp > Date.now() && Number(value) > 0) {
       setConfirmButtonEnabled(true);
     } else {
       setConfirmButtonEnabled(false);

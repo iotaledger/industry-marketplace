@@ -43,6 +43,7 @@ export const prepareData = async (role, payload) => {
         irdi,
         partner,
         sensorData,
+        startTimestamp,
         id: conversationId,
         partnerName: get(data, 'userName') || partner,
         originalMessage: JSON.stringify(data),

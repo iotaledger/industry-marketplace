@@ -99,11 +99,6 @@ class Map extends React.Component {
           <CardHeader>
             <SensorType>
               {popupInfo.type}{' '}
-              <LocationIcon
-                src="/static/icons/icon-small-location-dark.svg"
-                alt="Icon location pin"
-              />{' '}
-              <span>{popupInfo.location}</span>
             </SensorType>
             <SensorId>
               {popupInfo.operation}
@@ -112,11 +107,15 @@ class Map extends React.Component {
           <CardFooter>
             <FootRow>
               <InfoKey>Owner:</InfoKey>
-              <InfoValue>{popupInfo.partner}</InfoValue>
+              <InfoValue>{popupInfo.partnerName}</InfoValue>
             </FootRow>
             <FootRow>
               <InfoKey>Irdi:</InfoKey>
               <InfoValue>{popupInfo.irdi}</InfoValue>
+            </FootRow>
+            <FootRow>
+              <InfoKey>:Location:</InfoKey>
+              <InfoValue>{popupInfo.location}</InfoValue>
             </FootRow>
             <FootRow>
               <InfoKey>Price:</InfoKey>
@@ -291,7 +290,7 @@ const SensorCard = styled.span`
   color: inherit;
   text-decoration: none;
   width: 280px;
-  height: 150px;
+  height: 180px;
   padding-top: 19px;
   border: none;
   background-color: #0e38a0;
@@ -333,10 +332,6 @@ const InfoValue = styled.span`
   line-height: 16px;
   font-weight: 400;
   color: #fff;
-`;
-
-const LocationIcon = styled.img`
-  margin: 0 6px 0 13px;
 `;
 
 const SensorType = styled.span`

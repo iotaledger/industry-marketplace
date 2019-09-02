@@ -1,10 +1,12 @@
 {
   "domain": "http://localhost:5000",
-  "serviceRequester": "https://market-manager-ui-iyz10mzo3.now.sh",
-  "serviceProvider": "https://market-manager-ui-n40tmapp4.now.sh",
+  "serviceRequester": "https://market-manager-ui-gpw6qipy6.now.sh",
+  "serviceProvider": "https://market-manager-ui-qqwjqv3rz.now.sh",
   "addressApi": "https://api.marketplace.tangle.works/location",
   "waitingTime": 1440,
+  "googleMaps": "https://www.google.com/maps/search/",
   "googleAnalyticsId": "UA-143368819-1",
+  "eClassCatalog": "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.0&pridatt=",
   "mapboxStyles": "mapbox://styles/iotafoundation/cj8y282t417092rlgv4j9wcxg",
   "mapboxApiAccessToken": "pk.eyJ1IjoiaW90YWZvdW5kYXRpb24iLCJhIjoiY2o4eTFnMnJyMjhjazMzbWI1cTdmcndmMCJ9.9tZ4MHPpl54wJvOrAWiE7g"
 }

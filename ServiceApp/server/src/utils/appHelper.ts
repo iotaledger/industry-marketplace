@@ -12,7 +12,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { getBalance, processPayment } from './walletHelper';
+import { getBalance } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -44,20 +44,19 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { gps, name, role, wallet, usePaymentQueue } = req.body;
+                const { gps, location, name, role, wallet } = req.body;
                 interface IUser {
                     location?: string;
                     id?: string;
                     role?: string;
                     name?: string;
-                    usePaymentQueue?: number;
                 }
                 const existingUser: IUser = await readData('user');
                 console.log('existinguser '+ existingUser.name);
                 const user = { ...existingUser };
 
-                if (gps) {
-                    user.location = gps;
+                if (gps || location) {
+                    user.location = gps || location;
                 }
 
                 if (role) {
@@ -67,8 +66,6 @@ export class AppHelper {
                 if (name) {
                     user.name = name;
                 }
-
-                user.usePaymentQueue = usePaymentQueue ? 1 : 0;
 
                 await writeData('user', user);
 
@@ -307,27 +304,12 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 const user: any = await readData('user');
-
+            
                 // 1. Retrieve wallet
                 const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
-                    const recepientAddress = req.body.walletAddress;
-                    if (user && user.usePaymentQueue === 1) {
-                        // 2. Add to payment queue
-                        const payload = {
-                            timestamp: Date.now(),
-                            address: recepientAddress,
-                            value: Number(priceObject.value)
-                        }
-                        await addToPaymentQueue(user.id, payload);
-                    } else {
-                        // 2. Process payment
-                        const transactions = await processPayment(recepientAddress, Number(priceObject.value));
-
-                        if (transactions.length < 1) {
-                            throw new Error(`processPayment Error: ${transactions}`);
-                        }
-                    }
+                    // 2. Add to payment queue
+                    await addToPaymentQueue(req.body.walletAddress, Number(priceObject.value));
 
                     // 3. Retrieve MAM channel from DB
                     // 4. Attach message with confirmation payload

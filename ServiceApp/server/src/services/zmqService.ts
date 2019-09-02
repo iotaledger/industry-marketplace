@@ -12,7 +12,7 @@ import { processPayment } from '../utils/walletHelper';
 export class ZmqService {
 
     /**
-     * Bundlehashes that were already send to not send twice 
+     * Bundle hashes that were already send to not send twice 
      *
      */  
     public sentBundles = [];
@@ -61,9 +61,6 @@ export class ZmqService {
         this.sentBundles = [];
     }
 
-    /**
-     * Process payments
-     */
     public processPayments() {
         processPayment();
     }
