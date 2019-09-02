@@ -17,6 +17,7 @@
       "replyBy":""
    },
    "identification": {
-      "authenticationChallenge":""
+      "authenticationChallenge":"",
+      "verifiablePresentation":""
    }
 }
