@@ -138,6 +138,8 @@ export const generate = ({
         message.frame.creationDate = originalMessage.frame.creationDate;
 
         if(originalMessage.identification && originalMessage.identification.authenticationChallenge) {
+            console.log("LAYOUT");
+            console.log(JSON.stringify(message));
             message.identification.authenticationChallenge = originalMessage.identification.authenticationChallenge;
         }
         
