@@ -7,7 +7,7 @@ export class SchemaHelper {
 
     private constructor() {
         //Load all default application schemas
-        let folderPath : string = __dirname +"../Schemas";
+        let folderPath : string = __dirname +"/../Schemas";
         let filePaths : string[] = fs.readdirSync(folderPath);
         for(let i=0; i < filePaths.length; i++) {
             let fileName : string = filePaths[i].substr(0, filePaths[i].lastIndexOf('.'));
