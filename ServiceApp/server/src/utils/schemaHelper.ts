@@ -23,6 +23,6 @@ export class SchemaHelper {
         if(!SchemaHelper.instance) {
             SchemaHelper.instance = new SchemaHelper();
         }
-        return SchemaHelper.GetInstance();
+        return SchemaManager.GetInstance();
     }
 }
