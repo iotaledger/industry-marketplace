@@ -2,7 +2,7 @@
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair } from 'identity_ts';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, VerifiableCredential, Credential, BuildRSAProof } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -15,6 +15,7 @@ import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
 import { provider } from '../config.json';
+import { SchemaHelper } from './schemaHelper.js';
 
 
 /**
@@ -190,8 +191,19 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
-                // 2. Send transaction
+                //Deal with Identity Challenges
+                console.log(req.body);
                 const user: any = await readData('user');
+                const did: any = await readData('did');
+                req.body.identification.authenticationChallenge = GenerateSeed(12);
+                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+                const credential = Credential.Create(SchemaHelper.GetInstance().GetSchema("DIDAuthenticationCredential"), userDIDDocument.GetDID(), {"DID" : userDIDDocument.GetDID()});
+                const proof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.originalMessage.identification.authenticationChallenge});
+                VerifiableCredential.Create(credential, proof);
+
+
+                // 2. Send transaction
                 const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                 console.log('proposal success', hash);
