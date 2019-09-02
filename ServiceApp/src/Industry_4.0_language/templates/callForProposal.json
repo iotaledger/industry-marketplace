@@ -13,5 +13,8 @@
    },
    "dataElements":{
       "submodels":[]
+   },
+   "identification": {
+      "authenticationChallenge":""
    }
 }
