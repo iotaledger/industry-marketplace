@@ -1,0 +1,11 @@
+{
+    "type" : "object",
+    "required" : ["id", "number of photos that can be stored", "reliability duration [min]", "target location [lat, lng]", "price"],
+    "properties" : {
+        "id" : { "type" : "string" },
+        "number of photos that can be stored" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "reliability duration [min]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "target location [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "price" : { "type" : "common.json#/definitions/eClassSubModelElement" }
+    }
+}

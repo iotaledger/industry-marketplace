@@ -1,0 +1,12 @@
+{
+    "type" : "object",
+    "required" : ["id", "starting point [lat, lng]", "destination [lat, lng]", "autonomous", "max. number of persons", "price"],
+    "properties" : {
+        "id" : { "type" : "string" },
+        "starting point [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "destination [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "autonomous" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "max. number of persons" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "price" : { "type" : "common.json#/definitions/eClassSubModelElement" }
+    }
+}
