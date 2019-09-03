@@ -236,6 +236,10 @@ export class ZmqService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
+                                    //Verify Identity challange completion before sending events
+                                    console.log("Received message");
+                                    console.log(message);
+
                                     this.sendEvent(data, messageType, messageParams);
 
                                     if (messageType === 'informConfirm') {
