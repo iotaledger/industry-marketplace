@@ -51,7 +51,7 @@ export const createDID = async ({ root, privateKey, seed, next_root, start }) =>
 
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
     const insert = `
-        INSERT INTO mam (
+        REPLACE INTO mam (
         id, root, seed, next_root, side_key, start)
         VALUES (?, ?, ?, ?, ?, ?)`;
     await db.run(insert, [id, root, seed, next_root, side_key, start]);

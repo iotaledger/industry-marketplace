@@ -100,9 +100,9 @@ export const processPayment = async () => {
         }
 
         const wallet: IWallet = await readData('wallet');
-        console.log('processPayment wallet', wallet);
     
         if (!wallet) {
+            console.log('processPayment error. No Wallet');
             return null;
         }
 
@@ -110,7 +110,7 @@ export const processPayment = async () => {
         const paymentQueue: any = await processPaymentQueue();
         console.log('processPayment paymentQueue', paymentQueue);
         paymentQueue.forEach(({ value }) => totalAmount += value);
-        console.log('processPayment', totalAmount, paymentQueue);
+        console.log('processPayment', totalAmount, wallet);
         
         if (paymentQueue.length === 0 || totalAmount === 0) {
             return null;
