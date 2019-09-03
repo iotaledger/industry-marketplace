@@ -324,5 +324,23 @@
                 "semanticId":"0173-1#02-AAO739#001"
             }
         ]
+    },
+    "0173-1#01-BAF888#004": {
+        "submodelElements":[
+            {
+                "idShort":"location [lat, lng]",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"string",
+                "semanticId":"0173-1#02-BAF163#002"
+            },
+            {
+                "idShort":"price",
+                "modelType":"Property",
+                "value":"",
+                "valueType":"integer",
+                "semanticId":"0173-1#02-AAO739#001"
+            }
+        ]
     }
 }

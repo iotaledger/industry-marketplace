@@ -41,7 +41,7 @@ yarn
 <!-- Development -->
 ### Development
 
-This will run the api at <http://localhost:4000>
+This will run the api at <http://localhost:4001>
 
 ```shell
 yarn start-dev
@@ -195,7 +195,7 @@ The implemented websockets are based on socket-io and therefore a [socket-io-cli
 #### Connect to server 
 
 ```javascript
-const socket = require('socket.io-client')('http://localhost:4000');
+const socket = require('socket.io-client')('http://localhost:4001');
 
 socket.on('connect', () => {
     console.log("Connected")

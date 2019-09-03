@@ -1,5 +1,5 @@
 {
-  "domain": "http://localhost:4000",
+  "domain": "http://localhost:4001",
   "addressApi": "https://us-central1-semarket-iota.cloudfunctions.net/location",
   "googleMaps": "https://www.google.com/maps/search/",
   "waitingTime": 10,

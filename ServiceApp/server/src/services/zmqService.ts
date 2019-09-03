@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { maxDistance, operations } from '../config.json';
-import { readData, writeData, connect } from '../utils/databaseHelper';
+import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
@@ -9,6 +9,9 @@ import { calculateDistance, getLocationFromMessage } from '../utils/locationHelp
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
 
+/**
+ * Class to handle ZMQ service.
+ */
 export class ZmqService {
 
     /**
@@ -51,7 +54,6 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
-        connect();
     }
 
     /**
