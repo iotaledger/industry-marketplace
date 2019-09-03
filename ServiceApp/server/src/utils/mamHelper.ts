@@ -4,9 +4,6 @@ import crypto from 'crypto';
 import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
-// Initialise MAM State
-const cleanMAMState = Mam.init(provider);
-
 interface IMamState {
     id?: string;
     root?: string;
@@ -26,7 +23,7 @@ const generateRandomKey = length => {
 // Publish to tangle
 export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'SEMARKETMAM') => {
     try {
-        let mamState;
+        let mamState = Mam.init(provider);
         let secretKey;
         const mamStateFromDB: IMamState = await readData('mam', id);
         if (mamStateFromDB) {
@@ -46,8 +43,6 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
             };
             secretKey = mamStateFromDB.side_key;
         } else {
-            mamState = cleanMAMState;
-            
             // Set channel mode & update key
             secretKey = generateRandomKey(81);
             mamState = Mam.changeMode(mamState, mode, secretKey);
@@ -76,7 +71,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
 // Publish to tangle
 export const publishDID = async (publicKey, privateKey) => {
     try {
-        let mamState;
+        let mamState = Mam.init(provider);
         const mamStateFromDB: IMamState = await readData('did');
         if (mamStateFromDB) {
             mamState = {
@@ -93,8 +88,6 @@ export const publishDID = async (publicKey, privateKey) => {
                 },
                 seed: mamStateFromDB.seed
             };
-        } else {
-            mamState = cleanMAMState;
         }
 
         const message = Mam.create(mamState, asciiToTrytes(publicKey));
@@ -116,6 +109,7 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
+    Mam.init(provider);
     const result: any = await Mam.fetch(root, 'public');
     return result && result.messages && result.messages.map(trytesToAscii);
 };
