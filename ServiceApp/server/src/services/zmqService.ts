@@ -1,6 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { maxDistance, operations } from '../config.json';
+import { maxDistance, operations, provider } from '../config.json';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -8,6 +8,9 @@ import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
+import { VerificationErrorCodes, VerifyDIDAuthentication } from 'identity_ts';
+import * as MAM from '@iota/mam';
+import { trytesToAscii } from '@iota/converter';
 
 /**
  * Class to handle ZMQ service.
@@ -236,15 +239,28 @@ export class ZmqService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
-                                    //Verify Identity challange completion before sending events
-                                    console.log("Received message");
-                                    console.log(message);
+                                    //Find the challenge
+                                    const mam = await readData('mam', data.frame.conversationId);
+                                    MAM.init(provider, mam["root"]);
+                                    const results : {nextRoot : string; messages ?: string[]} = <{nextRoot : string; messages ?: string[]}>await MAM.fetch(mam["root"], "restricted", mam["side_key"])
+                                    let challenge : string;
+                                    if( results ) {
+                                        const asciiResults = results.messages.map(trytesToAscii);
+                                        challenge = JSON.parse(decodeURI(asciiResults[0]))["identification"]["authenticationChallenge"];
 
-                                    this.sendEvent(data, messageType, messageParams);
+                                        //Verify Identity challange completion before sending events
+                                        let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.verifiablePresentation, provider);
+                                        //Check if the correct challenge is used and if the signatures are correct
+                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.verifiablePresentation.proof.nonce == challenge) {
+                                            this.sendEvent(data, messageType, messageParams);
 
-                                    if (messageType === 'informConfirm') {
-                                        const channelId = data.frame.conversationId;
-                                        await publish(channelId, data);
+                                            if (messageType === 'informConfirm') {
+                                                const channelId = data.frame.conversationId;
+                                                await publish(channelId, data);
+                                            }
+                                        } else {
+                                            console.log('DIDAuthenticationError', errorCode);
+                                        }
                                     }
                                 }
                             }
