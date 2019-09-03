@@ -2,7 +2,7 @@
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, VerifiableCredential, Credential, BuildRSAProof, Presentation, VerifiablePresentation } from 'identity_ts';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, SignDIDAuthentication } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -15,7 +15,6 @@ import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
 import { provider } from '../config.json';
-import { SchemaHelper } from './schemaHelper.js';
 
 
 /**
@@ -195,14 +194,7 @@ export class AppHelper {
                 const did: any = await readData('did');
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-                const credential = Credential.Create(SchemaHelper.GetInstance().GetSchema("DIDAuthenticationCredential"), userDIDDocument.GetDID(), {"DID" : userDIDDocument.GetDID().GetDID()});
-                const proof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.identification.authenticationChallenge});
-                proof.Sign(credential.EncodeToJSON());
-                const VC = VerifiableCredential.Create(credential, proof);
-                const presentation = Presentation.Create([VC]);
-                const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:did.keyId, challengeNonce:req.body.identification.authenticationChallenge});
-                presentationProof.Sign(presentation.EncodeToJSON());
-                const verifiablePresentation = VerifiablePresentation.Create(presentation, presentationProof);
+                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, req.body.identification.authenticationChallenge);
                 req.body.identification.verifiablePresentation = verifiablePresentation.EncodeToJSON();
 
                 //Set new challenge
