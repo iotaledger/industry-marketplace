@@ -151,7 +151,7 @@ class ContactForm extends React.Component {
                   !loading && (
                     <Button
                       type="submit" 
-                      className="medium secondary centered" 
+                      className="medium primary" 
                       onClick={this.submit}
                     >
                       Submit

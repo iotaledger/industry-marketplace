@@ -1,12 +1,12 @@
 import Layout from '../components/Layout'
 import Intro from '../components/Intro'
 import Features from '../components/Features'
-import Papers from '../components/Papers'
 import ContactForm from '../components/ContactForm'
 import Logotypes from '../components/Logotypes';
 import WhatIsMarketplace from '../components/WhatIsMarketplace';
 import KeyComponents from '../components/KeyComponents';
 import Video from '../components/Video';
+import CallToAction from '../components/CallToAction';
 
 export default () => {
     return (
@@ -19,7 +19,7 @@ export default () => {
                     <Features />
                     <Video />
                     <KeyComponents />
-                    <Papers />
+                    <CallToAction />
 
                     <div className="contact-form-wrapper">
                         <ContactForm />
