@@ -16,7 +16,7 @@ Router.onRouteChangeComplete = url => {
     gtag.pageview(url)
 }
 
-const defaultTitle = 'Coordicide - Powered by IOTA'
+const defaultTitle = 'IOTA Industry Marketplace'
 
 const externalPages = [
     { url: 'https://iota.org', title: 'iota' },

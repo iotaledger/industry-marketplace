@@ -41,7 +41,7 @@ const Menu = ({ onClick, router }) => {
                 />
                 <a
                     className="btn mini primary menu-link"
-                    href="https://files.iota.org/papers/Coordicide_WP.pdf"
+                    href="#"
                 >
                     Join & Participate
                 </a>

@@ -8,7 +8,7 @@ class Disclaimer extends React.Component {
   state = { ack: true }
 
   componentDidMount() {
-    const ack = this.props.cookies.get('coordicide-cookie');
+    const ack = this.props.cookies.get('semarket-cookie');
     if (!ack) {
       document.getElementById('footer').classList.add('cookie-bar-bottom-bar');
       this.setState({ ack: false });
@@ -16,7 +16,7 @@ class Disclaimer extends React.Component {
   }
 
   dismiss = () => {
-    this.props.cookies.set('coordicide-cookie', true, { path: '/' });
+    this.props.cookies.set('semarket-cookie', true, { path: '/' });
     document.getElementById('footer').classList.remove('cookie-bar-bottom-bar');
     this.setState({ ack: true })
   }
@@ -31,12 +31,14 @@ class Disclaimer extends React.Component {
           website.&nbsp;
           <a
             className="disclaimer-link"
+            target="_blank"
+            rel="noopener noreferrer"
             href="https://www.iota.org/research/privacy-policy"
           >
             Learn more
           </a>
         </span>
-        <Button className="medium primary centered" onClick={this.dismiss}>Dismiss</Button>
+        <Button className="mini primary" onClick={this.dismiss}>Dismiss</Button>
       </div>
     )
   }
