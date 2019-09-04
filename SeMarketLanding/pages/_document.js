@@ -17,10 +17,10 @@ export default class MyDocument extends Document {
                         content="Industry Marketplace. Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
                     />
                     <meta property="og:type" content="video.other" />
-                    <meta property="og:url" content="https://coordicide.iota.org" />
+                    <meta property="og:url" content="https://industry.iota.org" />
                     <meta
                         property="og:image"
-                        content="https://coordicide.iota.org/static/coordicide.png"
+                        content="https://industry.iota.org/static/industry_marketplace.png"
                     />
                     <meta
                         property="og:description"
