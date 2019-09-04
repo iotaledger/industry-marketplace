@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { readData } from './databaseHelper';
-import { fetchDID } from './mamHelper';
 import { DIDDocument, DID } from 'identity_ts';
 import { provider } from '../config.json';
 
@@ -35,7 +34,7 @@ export const generateKeyPair = async () => {
     });
 };
 
-const encrypt = async (key, message) => {
+/*const encrypt = async (key, message) => {
     return new Promise(async (resolve, reject) => {
         try {
             const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
@@ -46,7 +45,7 @@ const encrypt = async (key, message) => {
             reject();
         }
     });
-};
+};*/
 
 const decrypt = async (key, message) => {
     return new Promise(async (resolve, reject) => {
