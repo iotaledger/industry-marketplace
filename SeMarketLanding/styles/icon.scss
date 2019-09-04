@@ -1,0 +1,17 @@
+@import '../styles/colors';
+
+.icon-wrapper {
+    width: 53px;
+    height: 53px;
+    border-radius: 26.5px;
+    border: none;
+
+    color: $teal;
+    background: rgba(108, 228, 222, 0.6);
+
+    & > svg {
+        margin: 25%;
+        width: 27px !important;
+        height: 27px;
+    }
+}
