@@ -31,9 +31,10 @@
         flex-direction: column;
         align-items: center;
         position: relative;
+        top: -100px;
         overflow: hidden;
         width: calc(100% - 120px);
-        padding: 0px 60px 160px 60px;
+        padding: 0px 60px 100px 60px;
         text-align: center;
         z-index: 1000;
 
