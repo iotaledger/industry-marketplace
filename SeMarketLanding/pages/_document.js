@@ -9,12 +9,12 @@ export default class MyDocument extends Document {
                 <Head>
                     <meta
                         name="description"
-                        content="Industry Marketplace. Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
+                        content="IOTA Industry Marketplace. Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
                     />
                     <meta name="twitter:card" value="summary" />
                     <meta
                         property="og:title"
-                        content="Industry Marketplace. Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
+                        content="IOTA Industry Marketplace"
                     />
                     <meta property="og:type" content="video.other" />
                     <meta property="og:url" content="https://industry.iota.org" />
@@ -24,7 +24,7 @@ export default class MyDocument extends Document {
                     />
                     <meta
                         property="og:description"
-                        content="Industry Marketplace. Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
+                        content="Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision."
                     />
                     <link rel="stylesheet" href="/_next/static/style.css" />
                     {/* Global Site Tag (gtag.js) - Google Analytics */}
