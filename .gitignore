@@ -4,4 +4,4 @@ assets
 
 ServiceApp/docs
 
-.idea
+node_modules/

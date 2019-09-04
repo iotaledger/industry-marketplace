@@ -136,7 +136,7 @@ export default class extends React.Component {
                           checked={wallet}
                           onChange={this.change}
                         />
-                        {'  '}Generate new wallet?
+                        {'  '}Fund wallet?
                       </CheckboxLabel>
                     </Row>
                   </Form>
