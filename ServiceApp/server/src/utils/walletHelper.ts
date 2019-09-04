@@ -1,5 +1,5 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
-import { provider } from '../config.json';
+import { depth, minWeightMagnitude, provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
@@ -17,19 +17,12 @@ export const getBalance = async address => {
     }
 };
 
-const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) => {
+const transferFunds = async (wallet, totalAmount, transfers) => {
     try {
+        const { address, keyIndex, seed } = wallet;
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
         const prepareTransfers = createPrepareTransfers();
         const balance = await getBalance(address);
-        const security = 2;
-
-        // Depth or how far to go for tip selection entry point
-        const depth = 5;
-
-        // Difficulty of Proof-of-Work required to attach transaction to tangle.
-        // Minimum value on mainnet & spamnet is `14`, `9` on devnet and other testnets.
-        const minWeightMagnitude = 9;
 
         if (balance === 0) {
             console.error('transferFunds. Insufficient balance', address);
@@ -96,38 +89,42 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
     await writeData('wallet', { address, balance, keyIndex, seed });
 };
 
-export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-    interface IWallet {
-        address?: string;
-        balance?: number;
-        keyIndex?: number;
-        seed?: string;
-    }
+export const processPayment = async () => {
+    try {
+        console.log('processPayment start');
+        interface IWallet {
+            address?: string;
+            balance?: number;
+            keyIndex?: number;
+            seed?: string;
+        }
 
-    const wallet: IWallet = await readData('wallet');
-  
-    let totalAmount = 0;
-    const paymentQueue = await processPaymentQueue();
-    const transfers = paymentQueue.map(({ address, value }) => {
-        totalAmount += value;
-        return { address, value };
-    });
-
-    const { address, balance, keyIndex, seed } = wallet;
-    console.log('processPayment 1', balance, totalAmount);
-    console.log('processPayment 2', transfers);
+        const wallet: IWallet = await readData('wallet');
     
-    if (transfers.length === 0) {
-        return null;
-    }
+        if (!wallet) {
+            console.log('processPayment error. No Wallet');
+            return null;
+        }
 
-    return await transferFunds(
-        address,
-        keyIndex,
-        seed,
-        totalAmount,
-        transfers
-    );
+        let totalAmount = 0;
+        const paymentQueue: any = await processPaymentQueue();
+        console.log('processPayment paymentQueue', paymentQueue);
+        paymentQueue.forEach(({ value }) => totalAmount += value);
+        console.log('processPayment', totalAmount, wallet);
+        
+        if (paymentQueue.length === 0 || totalAmount === 0) {
+            return null;
+        }
+
+        return await transferFunds(
+            wallet,
+            totalAmount,
+            paymentQueue
+        );
+    } catch (error) {
+        console.error('transferFunds catch', error);
+        return error;
+    }
 };
 
 /*
@@ -144,9 +141,6 @@ Example payment operation:
 
 import { processPayment } from './walletHelper';
 
-const transactions = await processPayment(address, amount);
-if (transactions.length > 0) {
-    console.log('Success');
-}
+await processPayment();
 
 */

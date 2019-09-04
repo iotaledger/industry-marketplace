@@ -21,7 +21,7 @@ const Card = styled.div`
   background-color: #fff;
   cursor: default;
   transition: box-shadow 0.19s ease-out;
-  width: 800px;
+  width: 850px;
   height: 100%;
   border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
   @media (max-width: 1120px) {

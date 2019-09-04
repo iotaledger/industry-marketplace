@@ -8,9 +8,9 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, location TEXT, usePaymentQueue INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS incomingChallenge (id TEXT, challenge TEXT)');
@@ -27,8 +27,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name = '', role = '', location = '', usePaymentQueue = 0 }) => {
-    await db.run('REPLACE INTO user (id, name, role, location, usePaymentQueue) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, usePaymentQueue]);
+export const createUser = async ({ id, name = '', role = '', location = '' }) => {
+    await db.run('REPLACE INTO user (id, name, role, location) VALUES (?, ?, ?, ?)', [id, name, role, location]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
@@ -53,7 +53,7 @@ export const createDID = async ({ root, privateKey, keyId, seed, next_root, star
 
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
     const insert = `
-        INSERT INTO mam (
+        REPLACE INTO mam (
         id, root, seed, next_root, side_key, start)
         VALUES (?, ?, ?, ?, ?, ?)`;
     await db.run(insert, [id, root, seed, next_root, side_key, start]);
@@ -143,7 +143,7 @@ export const readAllData = async (table) => {
 
 export const removeData = (table) => {
     return new Promise(async resolve => {
-        await db.run(`DROP TABLE IF EXISTS ${table}`);
+        await db.run(`DELETE FROM ${table}`);
         resolve();
     });
 };

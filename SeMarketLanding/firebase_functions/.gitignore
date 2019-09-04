@@ -1,0 +1,9 @@
+# Logs
+logs
+*.log
+
+# Compiled binary addons
+/functions/lib
+
+# Dependency directory
+node_modules
