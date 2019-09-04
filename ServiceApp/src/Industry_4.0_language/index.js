@@ -151,7 +151,7 @@ export const generate = ({
             message.dataElements.submodels[0].identification.submodelElements = updatedModel;
         }
     } else if (irdi && messageType === 'callForProposal') {
-        message.frame.conversationId = conversationId;
+        message.frame.conversationId = conversationId;        
 
         if (location) {
             message.frame.location = location;
@@ -179,7 +179,6 @@ export const generate = ({
             }];
         }
     }
-
     return message;
 }
 

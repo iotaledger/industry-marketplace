@@ -152,14 +152,12 @@ export class AppHelper {
         app.post('/cfp', async (req, res) => {
             try {
                 // 1. Create Tag
-                console.log(JSON.stringify(req.body));
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
                 req.body.identification.authenticationChallenge = GenerateSeed(12);
-               
+
                 // 2. Send transaction
                 const user: any = await readData('user');
-                console.log(JSON.stringify({ ...req.body, userName: user.name }));
                 const hash = await sendMessage({ ...req.body, userName: user.name }, tag);
 
                 // 3. Create new MAM channel
@@ -190,14 +188,14 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
-                //Deal with Identity Challenges
-                const did: any = await readData('did');
+                //Retrieve Challenge
+                const incomingChallenge : any = await readData('incomingChallenge', req.body.receiver.identification.id);
+
+                const did : any = await readData('did');
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, req.body.identification.authenticationChallenge);
+                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-
-                //Set new challenge
                 req.body.identification.authenticationChallenge = GenerateSeed(12);
 
                 // 2. Send transaction
