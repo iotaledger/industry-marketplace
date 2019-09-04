@@ -249,9 +249,9 @@ export class ZmqService {
                                         challenge = JSON.parse(decodeURI(asciiResults[0]))["identification"]["authenticationChallenge"];
 
                                         //Verify Identity challange completion before sending events
-                                        let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.verifiablePresentation, provider);
+                                        let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
                                         //Check if the correct challenge is used and if the signatures are correct
-                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.verifiablePresentation.proof.nonce == challenge) {
+                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == challenge) {
                                             this.sendEvent(data, messageType, messageParams);
 
                                             if (messageType === 'informConfirm') {
