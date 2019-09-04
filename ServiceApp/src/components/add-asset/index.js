@@ -87,12 +87,18 @@ const getInputType = (type) => {
 
 const initState = {
   loading: false,
-  assetStart: new Date(),
-  assetEnd: new Date(),
+  assetStart: addDays(new Date(),1),
+  assetEnd: addDays(new Date(),2),
   operation: '',
   description: '',
   operations: [],
   submodel: [],
+}
+
+function addDays(date, days) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
 }
 
 export default class extends React.Component {
