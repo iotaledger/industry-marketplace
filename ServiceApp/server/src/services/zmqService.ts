@@ -188,9 +188,14 @@ export class ZmqService {
     /**
      * Send out an event
      */
-    private sendEvent(data, messageType, messageParams) {
+    private async sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
+
+        //Locally store the challenge received
+        if(['callForProposal', 'proposal'].includes(messageType)) {
+            await writeData('incomingChallenge', {id:data.frame.sender.identification.id, challenge:data.identification.authenticationChallenge});
+        }
 
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
@@ -240,6 +245,7 @@ export class ZmqService {
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
                                     //Find the challenge
+                                    console.log(data.frame.conversationId);
                                     const mam = await readData('mam', data.frame.conversationId);
                                     MAM.init(provider, mam["root"]);
                                     const results : {nextRoot : string; messages ?: string[]} = <{nextRoot : string; messages ?: string[]}>await MAM.fetch(mam["root"], "restricted", mam["side_key"])
@@ -252,7 +258,7 @@ export class ZmqService {
                                         let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
                                         //Check if the correct challenge is used and if the signatures are correct
                                         if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == challenge) {
-                                            this.sendEvent(data, messageType, messageParams);
+                                            await this.sendEvent(data, messageType, messageParams);
 
                                             if (messageType === 'informConfirm') {
                                                 const channelId = data.frame.conversationId;
@@ -260,6 +266,9 @@ export class ZmqService {
                                             }
                                         } else {
                                             console.log('DIDAuthenticationError', errorCode);
+                                            console.log(JSON.stringify(data.identification));
+                                            console.log(data.identification.didAuthenticationPresentation.proof.nonce);
+                                            console.log(challenge);
                                         }
                                     }
                                 }
@@ -276,7 +285,7 @@ export class ZmqService {
 
                                     // 3.2 If NO own location and NO accepted range are set, send message to UI
                                     if (!location || !maxDistance) {
-                                        this.sendEvent(data, messageType, messageParams);
+                                        await this.sendEvent(data, messageType, messageParams);
                                     }
 
                                     // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
@@ -287,7 +296,7 @@ export class ZmqService {
 
                                             // 3.3.1 If distance within accepted range, send message to UI
                                             if (distance <= maxDistance) {
-                                                this.sendEvent(data, messageType, messageParams);
+                                                await this.sendEvent(data, messageType, messageParams);
                                             }
                                         } catch (error) {
                                             console.error(error);
@@ -311,7 +320,7 @@ export class ZmqService {
                                                 start: 0 
                                             });
                                         }
-                                        this.sendEvent(data, messageType, messageParams);
+                                        await this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }

@@ -13,6 +13,8 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS incomingChallenge (id TEXT, challenge TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS outgoingChallenge (id TEXT, challenge TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
     }
 );
@@ -57,6 +59,14 @@ export const createMAMChannel = async ({ id, root, seed, next_root, side_key, st
     await db.run(insert, [id, root, seed, next_root, side_key, start]);
 };
 
+export const createIncomingChallenge = async ({ id, challenge }) => {
+    await db.run('REPLACE INTO incomingChallenge (id, challenge) VALUES (?, ?)', [id, challenge]);
+};
+
+export const createOutgoingChallenge = async ({ id, challenge }) => {
+    await db.run('REPLACE INTO outgoingChallenge (id, challenge) VALUES (?, ?)', [id, challenge]);
+};
+
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -75,6 +85,12 @@ export const writeData = async (table, data) => {
                 return;
             case 'paymentQueue':
                 await createPaymentQueue(data);
+                return;
+            case 'incomingChallenge':
+                await createIncomingChallenge(data);
+                return;
+            case 'outgoingChallenge':
+                await createOutgoingChallenge(data);
                 return;
             case 'mam':
             default:
