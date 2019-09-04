@@ -9,8 +9,6 @@ import { calculateDistance, getLocationFromMessage } from '../utils/locationHelp
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
 import { VerificationErrorCodes, VerifyDIDAuthentication } from 'identity_ts';
-import * as MAM from '@iota/mam';
-import { trytesToAscii } from '@iota/converter';
 
 /**
  * Class to handle ZMQ service.
@@ -194,7 +192,7 @@ export class ZmqService {
 
         //Locally store the challenge received
         if(['callForProposal', 'proposal'].includes(messageType)) {
-            await writeData('incomingChallenge', {id:data.frame.sender.identification.id, challenge:data.identification.authenticationChallenge});
+            await writeData('incomingChallenge', {id:data.frame.conversationId, challenge:data.identification.authenticationChallenge});
         }
 
         for (let i = 0; i < this._subscriptions[event].length; i++) {
@@ -244,20 +242,15 @@ export class ZmqService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
-                                    //Find the challenge
-                                    console.log(data.frame.conversationId);
-                                    const mam = await readData('mam', data.frame.conversationId);
-                                    MAM.init(provider, mam["root"]);
-                                    const results : {nextRoot : string; messages ?: string[]} = <{nextRoot : string; messages ?: string[]}>await MAM.fetch(mam["root"], "restricted", mam["side_key"])
-                                    let challenge : string;
-                                    if( results ) {
-                                        const asciiResults = results.messages.map(trytesToAscii);
-                                        challenge = JSON.parse(decodeURI(asciiResults[0]))["identification"]["authenticationChallenge"];
+                                    if(messageType == 'proposal') {
+                                        //Find the challenge
+                                        const outgoingChallenge : any = await readData('outgoingChallenge', data.frame.conversationId);
 
                                         //Verify Identity challange completion before sending events
                                         let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
                                         //Check if the correct challenge is used and if the signatures are correct
-                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == challenge) {
+                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == outgoingChallenge.challenge) {
+                                            //Only send to UI if the DID Authentication is succesful
                                             await this.sendEvent(data, messageType, messageParams);
 
                                             if (messageType === 'informConfirm') {
@@ -266,10 +259,13 @@ export class ZmqService {
                                             }
                                         } else {
                                             console.log('DIDAuthenticationError', errorCode);
-                                            console.log(JSON.stringify(data.identification));
-                                            console.log(data.identification.didAuthenticationPresentation.proof.nonce);
-                                            console.log(challenge);
+                                            console.log('SolvedChallenge', data.identification.didAuthenticationPresentation.proof.nonce);
+                                            console.log('RequestedChallenge', outgoingChallenge.challenge);
                                         }
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams);
+                                        const channelId = data.frame.conversationId;
+                                        await publish(channelId, data);
                                     }
                                 }
                             }
@@ -310,17 +306,30 @@ export class ZmqService {
                                     if (id === receiverID) {
                                         if (messageType === 'acceptProposal') {
                                             const channelId = data.frame.conversationId;
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', { 
-                                                id: channelId, 
-                                                root: data.mam.root, 
-                                                seed: '', 
-                                                next_root: '', 
-                                                side_key: secretKey, 
-                                                start: 0 
-                                            });
+                                            const outgoingChallenge : any = await readData('outgoingChallenge', channelId);
+
+                                            //Verify Identity challange completion before sending events
+                                            let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
+                                            //Check if the correct challenge is used and if the signatures are correct
+                                            if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == outgoingChallenge.challenge) {
+                                                const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                                await writeData('mam', { 
+                                                    id: channelId, 
+                                                    root: data.mam.root, 
+                                                    seed: '', 
+                                                    next_root: '', 
+                                                    side_key: secretKey, 
+                                                    start: 0 
+                                                });
+                                                await this.sendEvent(data, messageType, messageParams);
+                                            } else {
+                                                console.log('DIDAuthenticationError', errorCode);
+                                                console.log('SolvedChallenge', data.identification.didAuthenticationPresentation.proof.nonce);
+                                                console.log('RequestedChallenge', outgoingChallenge.challenge);
+                                            }
+                                        } else {
+                                            await this.sendEvent(data, messageType, messageParams);
                                         }
-                                        await this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }

@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import { readData } from './databaseHelper';
 import { fetchDID } from './mamHelper';
+import { DIDDocument, DID } from 'identity_ts';
+import { provider } from '../config.json';
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 
@@ -59,12 +61,9 @@ const decrypt = async (key, message) => {
     });
 };
 
-export const encryptWithReceiversPublicKey = async (receiverId, payload) => {
-    const partnetId = receiverId.replace('did:iota:', '');
-    const did = await fetchDID(partnetId);
-    const publicKey = did[did.length - 1];
-    const message = Buffer.from(payload, 'utf8');
-    const encryptedBuffer: any = await encrypt(publicKey, message);
+export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
+    const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
+    const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
 
