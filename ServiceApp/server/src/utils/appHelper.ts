@@ -12,7 +12,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { getBalance } from './walletHelper';
+import { generateNewWallet, getBalance } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -69,10 +69,17 @@ export class AppHelper {
                 await writeData('user', user);
 
                 if (wallet) {
-                    const response = await axios.get(config.faucet);
-                    const data = response.data;
-                    if (data.success) {
-                        await writeData('wallet', data.wallet);
+                    try {
+                        const userWallet: any = await readData('wallet');
+                        const response = await axios.get(`${config.faucet}?address=${userWallet.address}&amount=${config.faucetAmount}`);
+                        const data = response.data;
+                        if (data.success) {
+                            const balance = await getBalance(userWallet.address);
+                            await writeData('wallet', { ...userWallet, balance });
+                        }
+                    } catch (error) {
+                        console.log('fund wallet error');
+                        throw new Error('Wallet funding error. \n\nPlease contact industry@iota.org');
                     }
                 }
 
@@ -80,10 +87,10 @@ export class AppHelper {
                     success: true
                 });
             } catch (error) {
-                console.log('config Error', error);
+                console.log('config Error', error.message);
                 res.send({
                     success: false,
-                    error
+                    error: error.message
                 });
             }
         });
@@ -110,10 +117,6 @@ export class AppHelper {
         app.get('/user', async (req, res) => {
             let user: any = await readData('user');
 
-            const wallet: any = await readData('wallet');
-            const address = (wallet && wallet.address) || null;
-            const balance = await getBalance(address);
-
             if (!user || !user.id) {
                 // Generate key pair
                 const { publicKey, privateKey }: any = await generateKeyPair();
@@ -123,7 +126,18 @@ export class AppHelper {
                 await writeData('user', user);
             }
 
-            res.json({ ...user, balance, wallet: address });
+            const wallet: any = await readData('wallet');
+            let newWallet;
+            if (!wallet) {
+                newWallet = generateNewWallet();
+                await writeData('wallet', newWallet);
+            }
+
+            res.json({ 
+                ...user, 
+                balance: wallet ? await getBalance(wallet.address) : 0, 
+                wallet: wallet ? wallet.address : newWallet.address
+            });
         });
 
         app.get('/mam', async (req, res) => {
