@@ -195,7 +195,7 @@ export class AppHelper {
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
                 const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, req.body.identification.authenticationChallenge);
-                req.body.identification.verifiablePresentation = verifiablePresentation.EncodeToJSON();
+                req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 //Set new challenge
                 req.body.identification.authenticationChallenge = GenerateSeed(12);
@@ -221,10 +221,19 @@ export class AppHelper {
 
         app.post('/acceptProposal', async (req, res) => {
             try {
+                //Deal with Identity Challenges
+                const did: any = await readData('did');
+                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, req.body.identification.authenticationChallenge);
+                req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
                 const channelId = req.body.frame.conversationId;
+                console.log("CHANNEL");
+                console.log(channelId);
                 const mam = await publish(channelId, req.body);
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
