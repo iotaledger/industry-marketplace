@@ -14,6 +14,16 @@
         line-height: 36px;
         letter-spacing: 0.03em;
         color: #131F37;
+
+        @media (max-width: 840px) {
+            font-size: 26px;
+            line-height: 28px;
+        }
+
+        @media (max-width: 680px) {
+            font-size: 22px;
+            line-height: 26px;
+        }
     }
 
     &.subtitle {
@@ -23,6 +33,11 @@
         font-weight: 600;
         letter-spacing: 0.03em;
         color: #485776;
+
+        @media (max-width: 680px) {
+            font-size: 18px;
+            line-height: 24px;
+        }
     }
 
     &.bold {
