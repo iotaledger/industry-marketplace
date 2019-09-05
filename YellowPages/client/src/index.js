@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactGA from 'react-ga';
 import WebFontLoader from 'webfontloader';
-import './assets/scss/index.scss';
 import App from './App';
 import { googleAnalyticsId } from './config.json';
+import './assets/styles/index.scss'
 
 WebFontLoader.load({
   google: {
