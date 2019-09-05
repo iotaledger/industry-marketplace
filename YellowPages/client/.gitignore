@@ -1,7 +1,12 @@
-# dependencies
-/node_modules
-
-# build artifacts
-/build
-.DS_Store
 *.log
+
+# Dependency directories
+node_modules/
+
+.npmrc
+
+/build
+
+# DS_Store
+.DS_Store
+*/**/.DS_Store
