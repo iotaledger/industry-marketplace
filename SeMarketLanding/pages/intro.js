@@ -5,8 +5,9 @@ import ContactForm from '../components/ContactForm'
 import Logotypes from '../components/Logotypes';
 import WhatIsMarketplace from '../components/WhatIsMarketplace';
 import KeyComponents from '../components/KeyComponents';
-import Video from '../components/Video';
 import CallToAction from '../components/CallToAction';
+import WhatTheySay from '../components/WhatTheySay';
+import HowItWorks from '../components/HowItWorks';
 
 export default () => {
     return (
@@ -16,8 +17,9 @@ export default () => {
                     <Intro />
                     <Logotypes />
                     <WhatIsMarketplace />
+                    <HowItWorks />
                     <Features />
-                    <Video />
+                    <WhatTheySay />
                     <KeyComponents />
                     <CallToAction />
 
