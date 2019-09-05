@@ -8,6 +8,7 @@ import KeyComponents from '../components/KeyComponents';
 import CallToAction from '../components/CallToAction';
 import WhatTheySay from '../components/WhatTheySay';
 import HowItWorks from '../components/HowItWorks';
+import RequestMap from '../components/RequestMap';
 
 export default () => {
     return (
@@ -20,12 +21,10 @@ export default () => {
                     <HowItWorks />
                     <Features />
                     <WhatTheySay />
+                    <RequestMap />
                     <KeyComponents />
                     <CallToAction />
-
-                    <div className="contact-form-wrapper">
-                        <ContactForm />
-                    </div>
+                    <ContactForm />
                 </section>
             </div>
         </Layout>
