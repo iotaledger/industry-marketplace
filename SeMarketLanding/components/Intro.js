@@ -8,6 +8,7 @@ import '../styles/content.scss'
 export default () => {
     return (
         <React.Fragment>
+            <img className="asset heading" src="../static/marketing_assets/landing/header_illustration.svg"/>
             <div className="intro-wrapper">
                 <div className="intro">
                     <Text className="subtitle">The first autonomous</Text>
@@ -16,16 +17,15 @@ export default () => {
                 </div>
                 <div className="intro-buttons-wrapper">
                     <Link prefetch href="/scalability">
-                        <img className="intro-page secondary" src="../static/marketing_assets/landing/try_the_demo.svg"/>
+                        <img className="intro-page-btn secondary" src="../static/marketing_assets/landing/try_the_demo.svg"/>
                     </Link>
                     <Link prefetch href="/scalability">
-                        <Button className="intro-page medium primary">
+                        <Button className="intro-page-btn medium primary">
                             Get started
                         </Button>
                     </Link>
                 </div>
             </div>
-            <img className="asset heading" src="../static/marketing_assets/landing/header_illustration.svg"/>
         </React.Fragment>
     )
 }
