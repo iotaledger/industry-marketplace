@@ -36,6 +36,12 @@
   }
   @font-face {
     font-family: 'Inter';
+    src: url('../fonts/Inter-MediumItalic.ttf');
+    font-weight: 600;
+    font-style: italic;
+  }
+  @font-face {
+    font-family: 'Inter';
     src: url('../fonts/Inter-BoldItalic.ttf');
     font-weight: 800;
     font-style: italic;
