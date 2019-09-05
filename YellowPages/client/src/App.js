@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import GlobalState from './context/globalState'
 import { ServiceFactory } from './factories/serviceFactory';
 import { ApiClient } from './services/apiClient';
-import HomePage from './pages/home';
+import HomePage from './pages/intro';
 import DemoPage from './pages/demo';
 import config from './config.json';
 
@@ -40,15 +41,17 @@ class App extends Component {
 
     render() {
         return (
-            <BrowserRouter>
-                {!this.state.status && (
-                    <Switch>
-                        <Route path="/" component={HomePage} exact />
-                        <Route path="/demo" component={DemoPage} />
-                        <Route component={HomePage} />
-                    </Switch>
-                )}
-            </BrowserRouter>
+            <GlobalState>
+                <BrowserRouter>
+                    {!this.state.status && (
+                        <Switch>
+                            <Route path="/" component={HomePage} exact />
+                            <Route path="/demo" component={DemoPage} />
+                            <Route component={HomePage} />
+                        </Switch>
+                    )}
+                </BrowserRouter>
+            </GlobalState>
         );
     }
 }

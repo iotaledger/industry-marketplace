@@ -2,7 +2,7 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import MapGL, { Popup, NavigationControl } from 'react-map-gl';
-import '../../assets/scss/mapbox.scss';
+import '../../assets/styles/mapbox.scss';
 import Controls from './controls';
 import Markers from './markers';
 import { mapboxApiAccessToken, mapboxStyles } from '../../config.json';
@@ -23,7 +23,7 @@ class Map extends React.Component {
         height: 900,
       },
       popupInfo: null,
-      mapHeight: 900,
+      mapHeight: 640,
       assets: props.assets
     };
 
@@ -53,7 +53,7 @@ class Map extends React.Component {
   }
 
   resize() {
-    const mapHeight = window.innerWidth < 760 ? 500 : 900;
+    const mapHeight = window.innerWidth < 760 ? 440 : 640;
 
     this.setState({
       viewport: {
@@ -135,13 +135,7 @@ class Map extends React.Component {
     const { assets, viewport, mapHeight, popupInfo } = this.state;
 
     return (
-      <Main id="map">
-        <Header>
-          <div>
-            <Heading>Request map</Heading>
-            <Subtitle>Click on a pin to view the request information.</Subtitle>
-          </div>
-        </Header>
+      <Main>
         <MapGL
           scrollZoom={false}
           controller={mapControls}
@@ -158,17 +152,6 @@ class Map extends React.Component {
           <Markers assets={assets} openPopup={this.openPopup} />
           {this.renderPopup()}
         </MapGL>
-
-        <HeaderBg
-          src="/static/shapes/shape-main-1.svg"
-          className="shape-accent-1 mobile-hidden"
-          alt="Shape accent"
-        />
-        <HeaderBgMobile
-          src="/static/shapes/shape-main-1-mobile.svg"
-          className="shape-accent-1 desktop-hidden shape-mobile"
-          alt="Shape accent"
-        />
       </Main>
     );
   }
@@ -191,95 +174,6 @@ const Main = styled.div`
     }
   }
 `;
-
-const Header = styled.div`
-  max-width: 1170px;
-  padding: 0 15px;
-  margin-right: auto;
-  margin-left: auto;
-  display: flex;
-  justify-contents: center;
-  width: 300px;
-  position: absolute;
-  z-index: 900;
-  padding-top: 140px;
-  @media (max-width: 760px) {
-    padding-top: 50px;
-  }
-  @media (max-width: 520px) {
-    width: 200px;
-  }
-  @media (max-width: 400px) {
-    padding-top: 0;
-    margin-top: -100px;
-  }
-`;
-
-const Heading = styled.h3`
-  text-transform: capitalize;
-  text-align: left;
-  color: #009fff;
-  font-size: 28px;
-  font-weight: 100;
-  line-height: 42px;
-  margin-bottom: 12px;
-  @media (max-width: 760px) {
-    font-size: 24px;
-    margin-bottom: 0;
-    margin-bottom: 10px;
-  }
-`;
-
-const Subtitle = styled.h4`
-  font-size: 19px;
-  font-weight: 400;
-  line-height: 33px;
-  margin-bottom: 60px;
-  max-width: 265px;
-  color: #fff;
-  text-align: left;
-  @media (max-width: 1120px) {
-    max-width: 215px;
-  }
-  @media (max-width: 760px) {
-    font-size: 18px;
-    line-height: 28px;
-  }
-`;
-
-const HeaderBg = styled.img`
-  position: absolute;
-  top: -120px;
-  right: 75vw;
-  z-index: 800;
-  @media (max-width: 1120px) {
-    right: 67vw;
-  }
-  @media (max-width: 760px) {
-    display: none;
-  }
-`;
-
-const HeaderBgMobile = styled.img`
-  position: absolute;
-  top: -20px;
-  right: 70vw;
-  z-index: 800;
-  display: none;
-  @media (max-width: 1120px) {
-    right: 67vw;
-  }
-  @media (max-width: 760px) {
-    top: -100px;
-    right: 55vw;
-    display: block;
-  }
-  @media (max-width: 400px) {
-    top: -250px;
-    right: 50vw;
-  }
-`;
-
 const SensorCard = styled.span`
   display: block;
   border-radius: 6px;
@@ -306,7 +200,7 @@ const CardHeader = styled.header`
   border-bottom: 1px solid rgba(115, 143, 212, 0.2);
 `;
 
-const CardFooter = styled.footer`
+const CardFooter = styled.div`
   padding: 20px 30px;
   padding: 8px 30px;
   border-top: none;
