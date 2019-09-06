@@ -18,10 +18,10 @@ export default () => {
                     <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
                 </div>
                 <div className="intro-buttons-wrapper">
-                    <Link to="/scalability">
+                    <Link to="/demo">
                         <img className="intro-page-btn secondary" alt="Try the demo" src={tryIt} />
                     </Link>
-                    <Link to="/scalability">
+                    <Link to="/demo">
                         <Button className="intro-page-btn medium primary">
                             Get started
                         </Button>
