@@ -18,32 +18,32 @@ export default () => (
         </div>
         <div className="key-topic-wrapper">
             <div className="key-topic">
-                <img src={vendor_neutral} />
+                <img src={vendor_neutral} alt="Vendor neutral" />
                 <Text className="subtitle">Vendor neutral</Text>
                 <Text>Completely neutral communication conditions for all participants</Text>
             </div>
             <div className="key-topic">
-                <img src={machine_interaction} />
+                <img src={machine_interaction} alt="Machine Interaction" />
                 <Text className="subtitle">Machine Interaction</Text>
                 <Text>M2M communication for contracts, product data, purchasing, bids, orders, services</Text>
             </div>
             <div className="key-topic">
-                <img src={semantic_language} />
+                <img src={semantic_language} alt="Semantic language" />
                 <Text className="subtitle">Semantic language</Text>
                 <Text>Based on open standards, developed by academic institutes</Text>
             </div>
             <div className="key-topic">
-                <img src={decentralized} />
+                <img src={decentralized} alt="Decentralized" />
                 <Text className="subtitle">Decentralized</Text>
                 <Text>Decentralized and globally accessible protocol with paramount security</Text>
             </div>
             <div className="key-topic">
-                <img src={integrated_id} />
+                <img src={integrated_id} alt="Integrated ID" />
                 <Text className="subtitle">Integrated ID</Text>
                 <Text>Decentralized Identity, to ensure the authenticity of all participants</Text>
             </div>
             <div className="key-topic">
-                <img src={integrated_payment} />
+                <img src={integrated_payment} alt="Integrated payment" />
                 <Text className="subtitle">Integrated payment</Text>
                 <Text>Payment option for goods and services, without transaction fees</Text>
             </div>

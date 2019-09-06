@@ -10,12 +10,12 @@ import '../assets/styles/content.scss'
 
 export default () => (
     <div className="logotypes-wrapper">
-        <img src={iota} />
-        <img src={eclass} />
-        <img src={ovgu} />
-        <img src={neoception} />
-        <img src={hsu} />
-        <img src={wewash} />
+        <img src={eclass} alt="eclass" />
+        <img src={neoception} alt="neoception" />
+        <img src={ovgu} alt="ovgu" />
+        <img src={hsu} alt="hsu" />
+        <img src={wewash} alt="wewash" />
+        <img src={iota} alt="IOTA" />
     </div>
 )
 

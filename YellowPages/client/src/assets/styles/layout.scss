@@ -5,14 +5,7 @@
 .page {
     height: 100%;
     position: relative;
-    overflow-y: scroll;
     overflow-x: hidden;
-    // background: linear-gradient(-180deg, rgb(245, 247, 249) 1%, rgb(255, 255, 255) 99%);
-
-    @media (max-width: 768px) {
-        // overflow-y: visible;
-        // overflow-x: visible;
-    }
 
     .show-nav {
         width: 30px;
@@ -37,10 +30,6 @@
         padding: 0px 60px 100px 60px;
         text-align: center;
         z-index: 1000;
-
-        &.cookie-bar-bottom-bar {
-            // bottom: 30px;
-        }
 
         .menu {
             width: 100%;

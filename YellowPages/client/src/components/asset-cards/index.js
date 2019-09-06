@@ -78,25 +78,10 @@ export default class extends React.Component {
             </Arrow>
           </Button>
         </Nav>
-        <Shape src="/static/shapes/shape-main-2.svg" className="shape-accent-2" alt="Shape svg" />
       </Section>
     );
   }
 }
-
-const Shape = styled.img`
-  position: absolute;
-  top: -60px;
-  left: 70vw;
-  z-index: -100;
-  @media (max-width: 1120px) {
-    bottom: 100px;
-    left: 36vw;
-  }
-  @media (max-width: 760px) {
-    display: none;
-  }
-`;
 
 const Section = styled.section`
   position: relative;
