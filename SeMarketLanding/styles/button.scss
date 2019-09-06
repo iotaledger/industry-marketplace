@@ -59,6 +59,7 @@
 
     &.primary {
         color: #4140DF;
+        background-color: #FFFFFF;
         border: 2px solid #4140DF;
 
         &:hover {
@@ -72,11 +73,5 @@
         &:hover {
             opacity: 0.7;
         }
-    }
-
-    &.centered {
-        position: relative;
-        text-align: center;
-        line-height: unset;
     }
 }

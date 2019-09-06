@@ -84,91 +84,93 @@ class ContactForm extends React.Component {
     } = this.state;
 
     return (
-      <section className="contact-form">
-        {!success ? (
-          <form className="form" onSubmit={this.submit}>
-            <h2 className="form-heading">
-                Get in Touch
-            </h2>
-            {error && <p className="error">{error}</p>}
-            <section className="input-form-wrapper">
-              <div className="column-form-wrapper">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Name *"
-                  value={name}
-                  name="name"
-                  onChange={this.handleInputChange}
-                />
-                <input
-                  className="input"
-                  type="email"
-                  placeholder="Email *"
-                  value={email}
-                  name="email"
-                  onChange={this.handleInputChange}
-                />
-              </div>
-              <div className="column-form-wrapper">
-                <textarea
-                  className="textarea"
-                  value={message}
-                  placeholder="Message *"
-                  name="message"
-                  onChange={this.handleInputChange}
-                />
-              </div>
-            </section>
-            <section className="checkbox-wrapper">
-              <label className="label">
-                <input
-                  className="checkbox"
-                  name="acceptedDisclaimer"
-                  type="checkbox"
-                  checked={acceptedDisclaimer}
-                  onChange={this.handleInputChange}
-                />
-                * <strong>Acknowledgement</strong> of{' '}
-                <a target="_blank" href={emailConfig.policyUrl}>Disclaimer clause</a>
-              </label>
-              <label className="label">
-                <input
-                  className="checkbox"
-                  name="newsletter"
-                  type="checkbox"
-                  checked={newsletter}
-                  onChange={this.handleInputChange}
-                />
-                Please add me to the newsletter
-              </label>
-            </section>
-            <section className="control-wrapper">
-              {/* <div className="recaptcha-container">
-                <Recaptcha sitekey={emailConfig.recaptchaSiteKey} verifyCallback={this.verify} />
-              </div> */}
-              {
-                  !loading && (
-                    <Button
-                      type="submit" 
-                      className="medium secondary centered" 
-                      onClick={this.submit}
-                    >
-                      Submit
-                    </Button>
-                  )
-              }
-              {loading && <p className="error">Sending</p>}
-            </section>
-          </form>
-        ) : (
-          <div className="success-wrapper">
-            <p className="success">Your message has been sent!</p>
-          </div>
-        )}
+      <div className="contact-form-wrapper">
+        <section className="contact-form">
+          {!success ? (
+            <form className="form" onSubmit={this.submit}>
+              <h2 className="form-heading">
+                  Get in Touch
+              </h2>
+              {error && <p className="error">{error}</p>}
+              <section className="input-form-wrapper">
+                <div className="column-form-wrapper">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Name *"
+                    value={name}
+                    name="name"
+                    onChange={this.handleInputChange}
+                  />
+                  <input
+                    className="input"
+                    type="email"
+                    placeholder="Email *"
+                    value={email}
+                    name="email"
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+                <div className="column-form-wrapper">
+                  <textarea
+                    className="textarea"
+                    value={message}
+                    placeholder="Message *"
+                    name="message"
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+              </section>
+              <section className="checkbox-wrapper">
+                <label className="label">
+                  <input
+                    className="checkbox"
+                    name="acceptedDisclaimer"
+                    type="checkbox"
+                    checked={acceptedDisclaimer}
+                    onChange={this.handleInputChange}
+                  />
+                  * <strong>Acknowledgement</strong> of{' '}
+                  <a target="_blank" href={emailConfig.policyUrl}>Disclaimer clause</a>
+                </label>
+                <label className="label">
+                  <input
+                    className="checkbox"
+                    name="newsletter"
+                    type="checkbox"
+                    checked={newsletter}
+                    onChange={this.handleInputChange}
+                  />
+                  Please add me to the newsletter
+                </label>
+              </section>
+              <section className="control-wrapper">
+                {/* <div className="recaptcha-container">
+                  <Recaptcha sitekey={emailConfig.recaptchaSiteKey} verifyCallback={this.verify} />
+                </div> */}
+                {
+                    !loading && (
+                      <Button
+                        type="submit" 
+                        className="medium primary" 
+                        onClick={this.submit}
+                      >
+                        Submit
+                      </Button>
+                    )
+                }
+                {loading && <p className="error">Sending</p>}
+              </section>
+            </form>
+          ) : (
+            <div className="success-wrapper">
+              <p className="success">Your message has been sent!</p>
+            </div>
+          )}
 
-        <div className="bottom" />
-      </section>
+          <div className="bottom" />
+        </section>
+      </div>
     );
   }
 }

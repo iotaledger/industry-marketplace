@@ -41,7 +41,7 @@ export default ({ show, type = 'general', notification = null, error = null, cal
       <AccessBox className="access-modal">
         <Internal>
           <Heading>{content.heading}</Heading>
-          <Info>{(error && error.body) || content.body || '--'}</Info>
+          <Info>{(error || error.body) || content.body || '--'}</Info>
           <ButtonsWrapper>
             { content.buttonReject || null }
             { content.buttonConfirm || null }

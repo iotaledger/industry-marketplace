@@ -1,12 +1,14 @@
 import Layout from '../components/Layout'
 import Intro from '../components/Intro'
 import Features from '../components/Features'
-import Papers from '../components/Papers'
 import ContactForm from '../components/ContactForm'
 import Logotypes from '../components/Logotypes';
 import WhatIsMarketplace from '../components/WhatIsMarketplace';
 import KeyComponents from '../components/KeyComponents';
-import Video from '../components/Video';
+import CallToAction from '../components/CallToAction';
+import WhatTheySay from '../components/WhatTheySay';
+import HowItWorks from '../components/HowItWorks';
+import RequestMap from '../components/RequestMap';
 
 export default () => {
     return (
@@ -16,14 +18,13 @@ export default () => {
                     <Intro />
                     <Logotypes />
                     <WhatIsMarketplace />
+                    <HowItWorks />
                     <Features />
-                    <Video />
+                    <WhatTheySay />
+                    <RequestMap />
                     <KeyComponents />
-                    <Papers />
-
-                    <div className="contact-form-wrapper">
-                        <ContactForm />
-                    </div>
+                    <CallToAction />
+                    <ContactForm />
                 </section>
             </div>
         </Layout>

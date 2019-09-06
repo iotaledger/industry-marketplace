@@ -1,7 +1,19 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { depth, minWeightMagnitude, provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
+import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
+
+export const generateNewWallet = () => {
+    try {
+        const seed = generateSeed();
+        const address = generateAddress(seed, 0, 2, true);
+        return { seed, address, keyIndex: 0, balance: 0 };
+    } catch (error) {
+        console.error('generateNewWallet error', error);
+        return {};
+    }
+};
 
 export const getBalance = async address => {
     try {
