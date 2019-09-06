@@ -10,15 +10,15 @@ export default () => (
     <div className="key-components-wrapper">
         <div className="key-components-description">
             <Text className="title">Key Components</Text>
-            <Text>4.0 components must be able to talk to each other, offer services and, if necessary, negotiate tasks and offer payment.</Text>
-            <Text>Through the Semantic Marketplace components, I4.0 machine components act as independent service provider and consumer, who pay or are paid for the provided services supported by a common infrastructure.</Text>
+            <Text>Industry 4.0 components must be able to talk to each other, offer services and, if necessary, negotiate tasks and offer payment.</Text>
+            <Text>Through the Semantic Marketplace components, Industry 4.0 machine components act as independent service provider and consumer, who pay or are paid for the provided services supported by a common infrastructure.</Text>
         </div>
         <div className="key-components-list">
             <div className="key-component">
                 <img src={aas} alt="Asset Administration Shell" />
                 <div className="key-component-description">
                     <Text className="subtitle">Asset Administration Shell (AAS)</Text>
-                    <Text>An AAS is a standardized virtual representation of an asset, providing storage of asset information. Examples of assets are machines, equipment units, software etc. AAS and Asset form together an I4.0-component communication interface.</Text>
+                    <Text>An AAS is a standardized virtual representation of an asset, providing storage of asset information. Examples of assets are machines, equipment units, software etc. AAS and Asset form together an Industry 4.0 component communication interface.</Text>
                 </div>
             </div>
             <div className="key-component">
