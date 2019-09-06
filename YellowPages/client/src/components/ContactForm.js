@@ -131,7 +131,11 @@ class ContactForm extends React.Component {
                     onChange={this.handleInputChange}
                   />
                   * <strong>Acknowledgement</strong> of{' '}
-                  <a target="_blank" href={emailConfig.policyUrl}>Disclaimer clause</a>
+                  <a 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    href={emailConfig.policyUrl}
+                  >Disclaimer clause</a>
                 </label>
                 <label className="label">
                   <input

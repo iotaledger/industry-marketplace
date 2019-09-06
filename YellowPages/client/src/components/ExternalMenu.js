@@ -7,7 +7,13 @@ const ExternalMenu = ({ pages }) => (
         <div />
         <div className="external-menu-links">
             {pages.map(page => (
-                <a href={page.url} key={page.title} className="external-menu-link" target="_blank">
+                <a 
+                    href={page.url} 
+                    key={page.title} 
+                    className="external-menu-link" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     {page.title}
                 </a>
             ))}

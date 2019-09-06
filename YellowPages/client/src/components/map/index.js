@@ -114,7 +114,7 @@ class Map extends React.Component {
               <InfoValue>{popupInfo.irdi}</InfoValue>
             </FootRow>
             <FootRow>
-              <InfoKey>:Location:</InfoKey>
+              <InfoKey>Location:</InfoKey>
               <InfoValue>{popupInfo.location}</InfoValue>
             </FootRow>
             <FootRow>
@@ -185,7 +185,7 @@ const SensorCard = styled.span`
   text-decoration: none;
   width: 280px;
   height: 180px;
-  padding-top: 19px;
+  padding-top: 20px;
   border: none;
   background-color: #0e38a0;
   box-shadow: 0 14px 28px 0 rgba(10, 32, 87, 0.24);
@@ -202,7 +202,6 @@ const CardHeader = styled.header`
 
 const CardFooter = styled.div`
   padding: 20px 30px;
-  padding: 8px 30px;
   border-top: none;
   background-color: transparent;
 `;
@@ -211,7 +210,7 @@ const FootRow = styled.div`
   display: flex;
   justify-content: space-between;
   &:not(:last-of-type) {
-    margin-bottom: 5px;
+    margin-bottom: 7px;
   }
 `;
 

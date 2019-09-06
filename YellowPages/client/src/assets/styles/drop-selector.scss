@@ -75,7 +75,8 @@ $font-family-icons: 'IOTA icons';
       cursor: pointer;
   
       .drop-selector-list-item {
-        a {
+        button {
+          background: #EEF2FA;
           display: block;
           padding-right: 18px;
           padding-left: 18px;
@@ -89,23 +90,13 @@ $font-family-icons: 'IOTA icons';
           text-decoration: none;
   
           &:hover {
-            text-decoration: underline;
+            background-color: #fafafa;
           }
         }
   
-        &:hover,
-        &.drop-selector-list-item__selected {
+        &:hover {
           background-color: #fafafa;
-  
-          a {
-            color: #485776;
-            font-weight: bold;
-          }
         }
-      }
-  
-      .drop-selector-list-item + .drop-selector-list-item {
-        border-top: 1px solid #ededed;
       }
     }
   

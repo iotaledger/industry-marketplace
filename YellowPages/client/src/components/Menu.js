@@ -16,7 +16,7 @@ const Menu = ({ onClick }) => {
         <div className="menu">
             <div className="menu-logo">
                 <Link to="/">
-                    <img src={headerLogo} />
+                    <img src={headerLogo} alt="logo" />
                 </Link>
             </div>
 
@@ -26,12 +26,13 @@ const Menu = ({ onClick }) => {
                     selected={language}
                     callback={changeLanguage}
                 />
-                <a
-                    className="btn mini primary menu-link"
-                    href="#"
-                >
+
+                <Link className="btn mini primary menu-link mobile-only" to="/">
+                    Join
+                </Link>
+                <Link className="btn mini primary menu-link mobile-hidden" to="#">
                     Join & Participate
-                </a>
+                </Link>
                 <Button
                     icon="menu"
                     className="menu-link contents"
