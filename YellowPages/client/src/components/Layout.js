@@ -4,9 +4,9 @@ import ExternalMenu from './ExternalMenu'
 import Menu from './Menu'
 import Chapters from './Chapters'
 import Disclaimer from './Disclaimer'
+import Footer from './Footer'
 import '../assets/styles/layout.scss'
 import headerMobileLogo from '../assets/img/landing/logo_mobile.svg';
-import footerLogo from '../assets/img/landing/powered_by_iota.svg';
 
 export const MenuContext = React.createContext({});
 
@@ -51,15 +51,7 @@ export default ({ children }) => {
 
                         { children }
 
-                        <footer className="footer" id="footer">
-                            <a 
-                                href="https://iota.org" 
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <img className="footer-iota-logo" src={footerLogo} alt="logo" />
-                            </a>
-                        </footer>
+                        <Footer />
                     </div>
                 )
             }

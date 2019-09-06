@@ -3,7 +3,7 @@ import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
 import Map from '../components/map';
-import ScrollToTop from '../components/scroll-to-top';
+import Layout from '../components/Layout';
 import Cookie from '../components/cookie';
 import AssetCards from '../components/asset-cards';
 import AssetList from '../components/asset-list';
@@ -11,6 +11,7 @@ import Zmq from '../components/zmq';
 import { getAll, getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
 import { serviceRequester, serviceProvider } from '../config.json';
+import '../assets/styles/demo.scss';
 
 // const Header = ({ changeSection }) => {
 //   return (
@@ -91,48 +92,49 @@ export default class extends React.Component {
     const externalService = activeSection === 'proposal' ? serviceProvider : serviceRequester;
 
     return (
-      <Main id="main">
-        <Zmq callback={this.newMessage} />
-        <Cookie />
-        {
-          assets.length === 0 ? (
-            <NoProposals>
-              There are currently no <strong>&nbsp;{activeSection}</strong>s, create a new one
-              <a
-                href={externalService}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <strong>&nbsp;here</strong>
-              </a>
-            </NoProposals>
-          ) : (
-            <React.Fragment>
-              <ButtonsWrapper>
-                <Button
-                  selected={this.state.view === 'grid'}
-                  onClick={() => this.setState({ view: 'grid' })}
+      <Layout>
+        <Main>
+          <Zmq callback={this.newMessage} />
+          <Cookie />
+          {
+            assets.length === 0 ? (
+              <NoProposals>
+                There are currently no <strong>&nbsp;{activeSection}</strong>s, create a new one
+                <a
+                  href={externalService}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <i className="fas fa-th-large"></i>&nbsp;&nbsp;Grid
-                </Button> 
-                <Button 
-                  selected={this.state.view === 'list'}
-                  onClick={() => this.setState({ view: 'list' })}
-                >
-                  <i className="fas fa-bars"></i>&nbsp;&nbsp;List
-                </Button> 
-              </ButtonsWrapper>
-              {
-                this.state.view === 'grid'
-                  ? <AssetCards assets={assets} />
-                  : <AssetList assets={allAssets} />
-              }
-            </React.Fragment>
-          )
-        }
-        <Map assets={allAssets} />
-        <ScrollToTop onClick={this.onScrollToTop} />
-      </Main>
+                  <strong>&nbsp;here</strong>
+                </a>
+              </NoProposals>
+            ) : (
+              <React.Fragment>
+                <ButtonsWrapper>
+                  <Button
+                    selected={this.state.view === 'grid'}
+                    onClick={() => this.setState({ view: 'grid' })}
+                  >
+                    <i className="fas fa-th-large"></i>&nbsp;&nbsp;Grid
+                  </Button> 
+                  <Button 
+                    selected={this.state.view === 'list'}
+                    onClick={() => this.setState({ view: 'list' })}
+                  >
+                    <i className="fas fa-bars"></i>&nbsp;&nbsp;List
+                  </Button> 
+                </ButtonsWrapper>
+                {
+                  this.state.view === 'grid'
+                    ? <AssetCards assets={assets} />
+                    : <AssetList assets={allAssets} />
+                }
+              </React.Fragment>
+            )
+          }
+          <Map assets={allAssets} />
+        </Main>
+      </Layout>
     );
   }
 }
