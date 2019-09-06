@@ -5,6 +5,7 @@ import MapGL, { Popup, NavigationControl } from 'react-map-gl';
 import '../../assets/styles/mapbox.scss';
 import Controls from './controls';
 import Markers from './markers';
+import Text from '../Text'
 import { mapboxApiAccessToken, mapboxStyles } from '../../config.json';
 
 const mapControls = new Controls();
@@ -131,7 +132,11 @@ class Map extends React.Component {
     const { assets, viewport, mapHeight, popupInfo } = this.state;
 
     return (
-      <Main>
+      <Main className="map">
+        <div className="header">
+            <Text className="title">Request map</Text>
+            <Text className="info">Click on a pin to view the request information.</Text>
+        </div>
         <MapGL
           scrollZoom={false}
           controller={mapControls}
@@ -170,6 +175,7 @@ const Main = styled.div`
     }
   }
 `;
+
 const SensorCard = styled.span`
   display: block;
   border-radius: 6px;

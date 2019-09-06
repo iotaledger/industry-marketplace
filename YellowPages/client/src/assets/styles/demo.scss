@@ -1,0 +1,46 @@
+.request-data {
+    
+}
+
+
+
+
+
+
+
+.map {
+    .header {
+        padding: 0 15px;
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        position: absolute;
+        z-index: 900;
+        padding: 50px 0 0 130px;
+
+        .info {
+            font-size: 14px;
+            line-height: 21px;
+            width: 200px;
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .title {
+            color: #485776;
+            font-weight: 800;
+            text-align: left;
+        }
+
+        @media (max-width: 760px) {
+          padding-top: 50px;
+        }
+        @media (max-width: 520px) {
+          width: 200px;
+        }
+        @media (max-width: 400px) {
+          padding-top: 0;
+          margin-top: -100px;
+        }
+    }
+}
