@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import get from 'lodash-es/get';
 import Map from '../components/map';
 import Layout from '../components/Layout';
-import Cookie from '../components/cookie';
 import AssetCards from '../components/asset-cards';
 import AssetList from '../components/asset-list';
 import Zmq from '../components/zmq';
@@ -95,7 +94,6 @@ export default class extends React.Component {
       <Layout>
         <Main>
           <Zmq callback={this.newMessage} />
-          <Cookie />
           {
             assets.length === 0 ? (
               <NoProposals>
