@@ -14,11 +14,9 @@ export default class extends React.Component {
     this.setState({ assets: this.props.assets });
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ assets: nextProps.assets });
-    if (nextProps.anchor) {
-      const target = document.querySelector(`#${nextProps.anchor}`);
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  componentDidUpdate(prevProps) {
+    if (this.props.assets.length !== prevProps.assets.length) {
+      this.setState({ assets: this.props.assets });
     }
   }
 

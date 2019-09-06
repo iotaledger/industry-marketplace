@@ -38,13 +38,9 @@ class Map extends React.Component {
     this.resize();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.anchor) {
-      const target = document.querySelector(`#${nextProps.anchor}`);
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    if (nextProps.assets) {
-      this.setState({ assets: nextProps.assets });
+  componentDidUpdate(prevProps) {
+    if (this.props.assets.length !== prevProps.assets.length) {
+      this.setState({ assets: this.props.assets });
     }
   }
 
