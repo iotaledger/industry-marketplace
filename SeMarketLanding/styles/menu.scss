@@ -104,14 +104,13 @@
     &.mini {
         margin: 0 40px;
 
-        // @media (max-width: 768px) {
-        //     height: 41px;
-        //     margin: 0 20px 0 0px;
-        // }
+        @media (max-width: 768px) {
+            margin: 0 30px;
+        }
 
-        // @media (max-width: 580px) {
-        //     height: 36px;
-        // }
+        @media (max-width: 580px) {
+            margin: 0 20px;
+        }
     }
 
     @media (max-width: 768px) {

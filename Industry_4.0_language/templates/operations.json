@@ -38,5 +38,10 @@
         "name": "Weather Data",
         "description": "",
         "id":"0173-1#01-BAF777#004"
+    },
+    {
+        "name": "Sensor Data",
+        "description": "An industrial plant equipped with sensors offering the access to the sensor data during a certain window in time.",
+        "id":"0173-1#01-BAF888#004"
     }
 ]

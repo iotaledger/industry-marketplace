@@ -1,0 +1,8 @@
+@keyframes slide-right {
+    from {
+        transform: translateX(-80px);
+    }
+    to {
+        transform: translateX(0)
+    }
+}

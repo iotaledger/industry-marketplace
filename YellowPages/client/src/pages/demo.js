@@ -2,9 +2,6 @@ import React from 'react';
 import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
-import BurgerMenu from '../components//header/burger';
-import MiniHeader from '../components/header/mini-header';
-import Footer from '../components/footer';
 import Map from '../components/map';
 import ScrollToTop from '../components/scroll-to-top';
 import Cookie from '../components/cookie';
@@ -18,10 +15,6 @@ import { serviceRequester, serviceProvider } from '../config.json';
 const Header = ({ changeSection }) => {
   return (
     <Container>
-      <Shapes>
-        <Shape1 src="/static/shapes/demo/shape-5.svg" alt="Background shape" />
-        <Tagline>Blue Pages</Tagline>
-      </Shapes>
       <Info>
         <SubLink
           role="button"
@@ -101,9 +94,6 @@ export default class extends React.Component {
       <Main id="main">
         <Zmq callback={this.newMessage} />
         <Cookie />
-        <BurgerMenu />
-        <MiniHeader />
-        <Header changeSection={this.changeSection} />
         {
           assets.length === 0 ? (
             <NoProposals>
@@ -142,7 +132,6 @@ export default class extends React.Component {
         }
         <Map assets={allAssets} />
         <ScrollToTop onClick={this.onScrollToTop} />
-        <Footer />
       </Main>
     );
   }
@@ -180,7 +169,6 @@ const Container = styled.div`
   }
 
   @media (max-width: 660px) {
-    background-image: url(/static/shapes/demo/shape-header-hero.svg);
     background-repeat: no-repeat;
     background-size: 448px 209px;
     padding: 48px 0;
@@ -302,7 +290,6 @@ const Tagline = styled.h2`
 const Shapes = styled.div`
   width: 60%;
 
-  background-image: url(/static/shapes/demo/shape-header-hero-text.svg);
   background-repeat: no-repeat;
   background-size: 439px 269px;
   background-position-x: 187px;
