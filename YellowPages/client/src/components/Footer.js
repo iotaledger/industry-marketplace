@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default () => (
-    <footer>
+    <footer id="footer">
         <a 
             target="_blank"
             rel="noopener noreferrer"

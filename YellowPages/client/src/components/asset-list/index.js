@@ -291,7 +291,6 @@ function List({ assets }) {
 const Section = styled.section`
   position: relative;
   padding-top: 90px;
-  border-top: 1px solid #eaecee;
   padding-bottom: 90px;
   margin-bottom: 120px;
   overflow-y: hidden;

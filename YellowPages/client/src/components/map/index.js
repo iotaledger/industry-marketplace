@@ -92,34 +92,34 @@ class Map extends React.Component {
         closeOnClick={false}
         onClose={() => this.setState({ popupInfo: null })}
       >
-        <SensorCard>
-          <CardHeader>
-            <SensorType>
+        <div className="popup-card">
+          <div className="popup-header">
+            <span className="type">
               {popupInfo.type}{' '}
-            </SensorType>
-            <SensorId>
+            </span>
+            <span className="operation">
               {popupInfo.operation}
-            </SensorId>
-          </CardHeader>
-          <CardFooter>
-            <FootRow>
-              <InfoKey>Owner:</InfoKey>
-              <InfoValue>{popupInfo.partnerName}</InfoValue>
-            </FootRow>
-            <FootRow>
-              <InfoKey>Irdi:</InfoKey>
-              <InfoValue>{popupInfo.irdi}</InfoValue>
-            </FootRow>
-            <FootRow>
-              <InfoKey>Location:</InfoKey>
-              <InfoValue>{popupInfo.location}</InfoValue>
-            </FootRow>
-            <FootRow>
-              <InfoKey>Price:</InfoKey>
-              <InfoValue>{popupInfo.price}</InfoValue>
-            </FootRow>
-          </CardFooter>
-        </SensorCard>
+            </span>
+          </div>
+          <div className="popup-body">
+            <div className="popup-data">
+              <span className="key">Owner</span>
+              <span className="value">{popupInfo.partnerName}</span>
+            </div>
+            <div className="popup-data">
+              <span className="key">Irdi</span>
+              <span className="value">{popupInfo.irdi}</span>
+            </div>
+            <div className="popup-data">
+              <span className="key">Location</span>
+              <span className="value">{popupInfo.location}</span>
+            </div>
+            <div className="popup-data">
+              <span className="key">Price</span>
+              <span className="value">{popupInfo.price}</span>
+            </div>
+          </div>
+        </div>
       </Popup>
     )
   }
@@ -133,10 +133,14 @@ class Map extends React.Component {
 
     return (
       <Main className="map">
-        <div className="header">
-            <Text className="title">Request map</Text>
-            <Text className="info">Click on a pin to view the request information.</Text>
-        </div>
+        {
+          window.location && window.location.pathname === '/demo' && (
+            <div className="header">
+              <Text className="title">Request map</Text>
+              <Text className="info">Click on a pin to view the request information.</Text>
+            </div>
+          )
+        }
         <MapGL
           scrollZoom={false}
           controller={mapControls}
@@ -174,72 +178,4 @@ const Main = styled.div`
       top: 0;
     }
   }
-`;
-
-const SensorCard = styled.span`
-  display: block;
-  border-radius: 6px;
-  transition: box-shadow 0.19s ease-out;
-  position: relative;
-  user-select: none;
-  cursor: default;
-  color: inherit;
-  text-decoration: none;
-  width: 280px;
-  height: 180px;
-  padding-top: 20px;
-  border: none;
-  background-color: #0e38a0;
-  box-shadow: 0 14px 28px 0 rgba(10, 32, 87, 0.24);
-  @media (max-width: 760px) {
-    margin-bottom: 10px;
-  }
-`;
-
-const CardHeader = styled.header`
-  position: relative;
-  padding: 0 30px 8px 30px;
-  border-bottom: 1px solid rgba(115, 143, 212, 0.2);
-`;
-
-const CardFooter = styled.div`
-  padding: 20px 30px;
-  border-top: none;
-  background-color: transparent;
-`;
-
-const FootRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  &:not(:last-of-type) {
-    margin-bottom: 7px;
-  }
-`;
-
-const InfoKey = styled.span`
-  color: #738fd4;
-  text-transform: capitalize;
-  font: 12px/16px 'Nunito Sans', sans-serif;
-`;
-
-const InfoValue = styled.span`
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 400;
-  color: #fff;
-`;
-
-const SensorType = styled.span`
-  font: 12px/16px 'Nunito Sans', sans-serif;
-  position: absolute;
-  top: -8px;
-  color: #738fd4;
-`;
-
-const SensorId = styled.span`
-  font-size: 20px;
-  top: 4px;
-  color: #fff;
-  line-height: 42px;
-  position: relative;
 `;

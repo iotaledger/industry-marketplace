@@ -114,6 +114,7 @@ const Row = styled.div`
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
+  padding-left: 30px;
   &:not(:last-of-type) {
     margin-bottom: 5px;
   }
@@ -123,45 +124,48 @@ const Row = styled.div`
 `;
 
 const RowThird = styled.div`
-  padding: 10px 30px;
+  padding: 10px 0;
   display: inline-block;
   text-align: left;
-  @media (min-width: 426px) {
+  width: 32%;
+  @media (max-width: 950px) {
     width: 50%;
   }
-  @media (min-width: 950px) {
-    width: 33.3%;
+  @media (max-width: 520px) {
+    width: 100%;
   }
 `;
 
 const Data = styled.p`
-  font-size: 18px;
+  font-size: 16px;
   line-height: 30px;
   margin-top: 4px;
-  color: #313131;
+  color: #485776;
 `;
 
 const RowDesc = styled.span`
-  font: 16px 'Nunito Sans', sans-serif;
+  font-size: 14px;
+  line-height: 17px;
   font-weight: 600;
-  color: #B8B8B8;
+  color: #485776;
   text-transform: uppercase;
 `;
 
 const RowLink = styled.a`
-  font: 16px 'Nunito Sans', sans-serif;
+  font-size: 14px;
+  line-height: 17px;
   font-weight: 600;
-  color: #529FF8;
+  color: #4140DF;
   text-transform: uppercase;
 `;
 
 const Header = styled.h2`
-  font-size: 24px;
-  font-weight: 600;
+  font-family: 'Inter';
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 25px;
   position: relative;
-  color: #009fff;
-  text-transform: uppercase;
-  text-decoration: underline;
+  color: #485776;
 `;
 
 const Full = styled.div`
@@ -182,9 +186,13 @@ const StatusWrapper = styled.div`
 `;
 
 const Status = styled.h3`
-  color: #313131;
-  font: 18px 'Nunito Sans', sans-serif;
-  text-transform: uppercase;
+  font-family: 'Inter';
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 25px;
+  position: relative;
+  color: #485776;
+  opacity: 0.5;
   @media (min-width: 769px) {
     text-align: right;
   }
