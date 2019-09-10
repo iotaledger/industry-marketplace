@@ -122,7 +122,7 @@
             line-height: 32px;
             color: inherit;
             text-transform: uppercase;
-            color: #2ccfd0;
+            color: #4140DF;
             position: absolute;
             right: -400px;
             bottom: 30px;
@@ -168,7 +168,7 @@
 
                 &:after {
                     content: '';
-                    background: #2ccfd0;
+                    background: #4140DF;
                     position: absolute;
                     left: 0;
                     height: 2px;
@@ -287,6 +287,13 @@
                 font-size: 16px;
                 line-height: 32px;
             }
+        }
+    }
+
+    .chapters-wrapper,
+    .submodules-wrapper {
+        a {
+            width: 100%;
         }
     }
 
