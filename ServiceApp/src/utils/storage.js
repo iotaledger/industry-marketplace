@@ -31,11 +31,15 @@ export const removeFromStorage = async item => {
 export const getByType = async type => {
     const allItems = await Object.values(localStorage);
     const itemsOfType = allItems.reduce((accumulator, item) => {
-        const json = JSON.parse(item);
-        if (get(json, 'type') === type) {
-          accumulator.push(json);
+        try {
+            const json = JSON.parse(item);
+            if (get(json, 'type') === type) {
+                accumulator.push(json);
+            }
+            return accumulator
+        } catch (e) {
+            return accumulator;
         }
-        return accumulator
     }, []);
     return itemsOfType;
 }
