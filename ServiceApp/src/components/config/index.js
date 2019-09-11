@@ -178,19 +178,59 @@ const Input = styled.input`
   border: none;
   outline: none;
   width: 100%;
-  padding: 3px 10px 3px 0;
-  margin: 0px 5px 10px 0;
-  border-bottom: 2px solid #eee;
   background: transparent;
   font-size: 18px;
   color: #313131;
 
+  position: relative;
+  top: 0;
+  margin: -5px 15px 0 0;
+  cursor: pointer;
+
   &[type=checkbox] {
     height: 15px;
     width: 15px;
-    transform: scale(1.5);
+    transform: scale(1.2);
     margin-top: 10px;
   }
+
+  &:before {
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -4px;
+    z-index: 1;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #777;
+  }
+
+  &:checked:before {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    width: 22px;
+    height: 10px;
+    border-color: #009688;
+    border-top-style: none;
+    border-right-style: none;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    cursor: pointer;
+  }
+
 `;
 
 const InputWrapper = styled.div`
@@ -340,6 +380,7 @@ const CheckboxLabel = styled.label`
   text-align: left;
   color: #313131;
   margin-bottom: 5px;
+  cursor: pointer;
 `;
 
 const Label = styled.label`
