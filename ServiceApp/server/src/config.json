@@ -14,7 +14,7 @@
         "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "maxDistance": 1000,
+    "maxDistance": 2000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
