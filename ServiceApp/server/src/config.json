@@ -19,7 +19,7 @@
         "password": "dev",
         "server": "localhost",
         "database": "semarket"
-    }, "maxDistance": 1000,
+    }, "maxDistance": 10000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
