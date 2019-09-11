@@ -4,7 +4,7 @@ import Button from './Button'
 import '../assets/styles/contact-form.scss'
 
 const emailConfig = {
-    url: 'https://us-central1-asset-marketplace.cloudfunctions.net/sendEmail',
+    url: 'https://us-central1-semarket-iota.cloudfunctions.net/sendEmail',
     policyUrl: 'https://www.iota.org/research/privacy-policy'
 }
 
