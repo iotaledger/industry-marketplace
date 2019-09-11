@@ -49,7 +49,7 @@ export default class extends React.Component {
             <Zmq callback={this.newMessage} />
             <Map assets={this.state.allAssets} />
             <Link to="/demo">
-                <img className="map-cta intro-page-btn secondary" src={tryIt} />
+                <img className="map-cta intro-page-btn secondary" src={tryIt} alt="Try the demo" />
             </Link>
         </div>
     );

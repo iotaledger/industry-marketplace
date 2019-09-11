@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom';
 import Text from './Text'
 import Button from './Button'
@@ -10,7 +10,7 @@ import '../assets/styles/content.scss'
 export default () => {
     return (
         <React.Fragment>
-            <img className="asset heading" src={illustration} />
+            <img className="asset heading" src={illustration} alt="" />
             <div className="intro-wrapper">
                 <div className="intro">
                     <Text className="subtitle">The first autonomous</Text>
@@ -18,10 +18,10 @@ export default () => {
                     <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
                 </div>
                 <div className="intro-buttons-wrapper">
-                    <Link to="/scalability">
-                        <img className="intro-page-btn secondary" src={tryIt} />
+                    <Link to="/demo">
+                        <img className="intro-page-btn secondary" alt="Try the demo" src={tryIt} />
                     </Link>
-                    <Link to="/scalability">
+                    <Link to="/demo">
                         <Button className="intro-page-btn medium primary">
                             Get started
                         </Button>

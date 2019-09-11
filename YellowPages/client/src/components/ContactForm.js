@@ -1,12 +1,10 @@
 import React from 'react';
-// import Recaptcha from 'react-recaptcha';
 import axios from 'axios';
 import Button from './Button'
 import '../assets/styles/contact-form.scss'
 
 const emailConfig = {
-    url: 'https://us-central1-asset-marketplace.cloudfunctions.net/sendEmail',
-    // recaptchaSiteKey: 'xxxxxxxxxxxxxxx',
+    url: 'https://us-central1-semarket-iota.cloudfunctions.net/sendEmail',
     policyUrl: 'https://www.iota.org/research/privacy-policy'
 }
 
@@ -19,7 +17,6 @@ class ContactForm extends React.Component {
       name: '',
       email: '',
       message: '',
-      captcha: null,
       loading: false,
       success: false,
       error: null,
@@ -42,15 +39,10 @@ class ContactForm extends React.Component {
     this.setState({ [type]: title });
   }
 
-//   verify(data) {
-//       console.log('verify', data)
-//     this.setState({ captcha: data, loading: false });
-//   }
-
   async submit(e) {
     e.preventDefault();
     const {
-        captcha, name, email, acceptedDisclaimer, newsletter, message, loading,
+        name, email, acceptedDisclaimer, newsletter, message, loading,
     } = this.state;
 
     if (loading) return;
@@ -59,12 +51,8 @@ class ContactForm extends React.Component {
       return this.setState({ error: 'Please fill out all required fields marked with *' });
     }
 
-    // if (!captcha) {
-    //   return this.setState({ error: 'Please complete the captcha' });
-    // }
-
     this.setState({ loading: true }, async () => {
-      const packet = { captcha, name, email, acceptedDisclaimer, newsletter, message };
+      const packet = { name, email, acceptedDisclaimer, newsletter, message };
 
       axios
         .post(emailConfig.url, packet)
@@ -80,7 +68,7 @@ class ContactForm extends React.Component {
 
   render() {
     const {
-      acceptedDisclaimer, name, email, message, success, error, captcha, loading, newsletter,
+      acceptedDisclaimer, name, email, message, success, error, loading, newsletter,
     } = this.state;
 
     return (
@@ -131,7 +119,11 @@ class ContactForm extends React.Component {
                     onChange={this.handleInputChange}
                   />
                   * <strong>Acknowledgement</strong> of{' '}
-                  <a target="_blank" href={emailConfig.policyUrl}>Disclaimer clause</a>
+                  <a 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    href={emailConfig.policyUrl}
+                  >Disclaimer clause</a>
                 </label>
                 <label className="label">
                   <input
@@ -145,9 +137,6 @@ class ContactForm extends React.Component {
                 </label>
               </section>
               <section className="control-wrapper">
-                {/* <div className="recaptcha-container">
-                  <Recaptcha sitekey={emailConfig.recaptchaSiteKey} verifyCallback={this.verify} />
-                </div> */}
                 {
                     !loading && (
                       <Button

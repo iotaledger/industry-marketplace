@@ -30,12 +30,14 @@ export default () => {
                 role="button"
                 onClick={() => setShowVideo(true)}
                 src={videoDesktop} 
+                alt=""
             />
             <img 
                 className="mobile"
                 role="button"
                 onClick={() => setShowVideo(true)}
                 src={videoMobile}
+                alt=""
             />
             <ModalVideo 
                 channel='youtube' 

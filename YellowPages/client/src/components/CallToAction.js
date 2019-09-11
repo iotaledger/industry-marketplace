@@ -11,10 +11,10 @@ export default () => (
         <Text className="title">Explore for yourself</Text>
         <Text>To see how the Semantic Marketplace operates, try our demo, or dive into the extended documentation to get started</Text>
         <div className="callToAction-buttons-wrapper">
-            <Link to="/scalability">
-                <img className="intro-page-btn secondary" src={tryIt} />
+            <Link to="/demo">
+                <img className="intro-page-btn secondary" alt="Try the demo" src={tryIt} />
             </Link>
-            <Link to="/scalability">
+            <Link to="/demo">
                 <Button className="medium primary">
                     Get started
                 </Button>

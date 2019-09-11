@@ -37,9 +37,9 @@ class DropSelector extends React.PureComponent {
                                 'drop-selector-list-item',
                                 { 'drop-selector-list-item__selected': item === this.props.selected }
                             )}>
-                                <a role="button" onClick={() => this.props.callback(item)}>
+                                <button onClick={() => this.props.callback(item)}>
                                     {item}
-                                </a>
+                                </button>
                             </li>
                         ))}
                     </ul>

@@ -187,7 +187,7 @@ configuration(params);
 
 ### Websocket connection 
 
-Another major task of the Market Manager is to transmit relevant SeMarket Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistant connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistant connection, websockets are used to tackle this task. 
+Another major task of the Market Manager is to transmit relevant SeMarket Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistent connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistent connection, websockets are used to tackle this task. 
 After the Market Manager receives all incoming SeMarket transactions from the ZMQ, it filters only relevant ones for the client by matching its configuration with the content of the messages provided with the [Semantic I4.0 Language](#industry-4.0-language).
 The implemented websockets are based on socket-io and therefore a [socket-io-client](https://github.com/socketio/socket.io-client) is required from the client side. 
 

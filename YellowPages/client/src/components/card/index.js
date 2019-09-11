@@ -15,26 +15,20 @@ const Card = styled.div`
   color: inherit;
   text-decoration: none;
   position: relative;
-  margin-right: 50px;
   border-radius: 6px;
-  margin-bottom: 40px;
-  background-color: #fff;
+  background-color: #FFFFFF;
   cursor: default;
-  transition: box-shadow 0.19s ease-out;
   width: 850px;
   height: 100%;
-  border: ${props => (props.ownAsset ? '1px solid #009fff' : '1px solid #eaecee')};
+  border: 1px solid #F2F5FB;
   @media (max-width: 1120px) {
     margin-bottom: 20px;
   }
   @media (max-width: 890px) {
-    width: 100%;
+    width: 90%;
   }
   @media (max-width: 400px) {
     width: 280px;
-  }
-  &:hover {
-    box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
   }
 `;
 
