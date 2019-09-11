@@ -26,7 +26,7 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
       // Send email
       const result = await sendEmail(packet);
       console.log('sendEmail', result);
-      return res.json({ success: true, result });
+      return res.json({ success: true });
     } catch (e) {
       console.error('sendEmail failed. Error: ', e.message);
       return res.status(403).json({ error: e.message });
