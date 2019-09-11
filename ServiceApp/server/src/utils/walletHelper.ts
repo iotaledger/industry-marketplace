@@ -48,10 +48,9 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         const minWeightMagnitude = 9;
 
         if (balance === 0) {
-            
 
             try{
-            await repairWallet(seed, address, keyIndex); 
+            await repairWallet(seed, keyIndex); 
             } catch(e){
                 await updateValue('wallet', 'seed', 'status', seed, 'error')
                 console.error('transferFunds. Insufficient balance', address);

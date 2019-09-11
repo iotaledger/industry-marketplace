@@ -4,8 +4,6 @@ import { generateAddress } from '@iota/core';
 
 export const initializeWalletQueue = async () => {
 
-    await checkAddressBalance();
-
     //Rotate Incoming Wallet 
     //reset all reserved,busy wallets to usable
     const wallet: any = await readAllData('wallet');
@@ -15,6 +13,9 @@ export const initializeWalletQueue = async () => {
             await updateValue('wallet', 'seed', 'status', seed, 'usable')
         }
     });
+
+    //Check if balance correct
+    await checkAddressBalance();
 
     interface IWallet {
         seed?: string;
@@ -27,13 +28,11 @@ export const initializeWalletQueue = async () => {
 }
 
 
-export const repairWallet = async (seed, address, keyIndex) => {
+export const repairWallet = async (seed, keyIndex) => {
 
     return new Promise(async (resolve, reject) => {
 
-    let balance = await getBalanceForSimulator(address);
-
-    if (balance <= 0) {
+        await updateValue('wallet', 'seed', 'status', seed, 'repairing')
 
         let iterable = [-2, -1, 0, 1, 2];
 
@@ -48,7 +47,7 @@ export const repairWallet = async (seed, address, keyIndex) => {
                 resolve(); 
             }
         } reject(); 
-    }
+
     });
 }
 
@@ -58,15 +57,14 @@ export const checkAddressBalance = async () => {
         const wallet: any = await readAllData('wallet');
 
         for (let each of wallet) {
-            const { seed, address, keyIndex, status } = each
+            const { seed, address, keyIndex, status} = await each
             let balance = await getBalanceForSimulator(address);
 
             console.log("Wallet", address, balance)
 
-            if (balance > 0 && (status === 'reserved' || status === 'usable' )) {
-                await repairWallet(seed, address, keyIndex)
+            if (balance === 0 && (status ==='usable' || status ==='reserved')) {
+                await repairWallet(seed, keyIndex)
             }
-
         }
     }
 

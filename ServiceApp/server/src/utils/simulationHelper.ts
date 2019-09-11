@@ -17,7 +17,7 @@ const socket = io('http://localhost:5000');
 
 const simulate = async (role) => {
 
-    initializeWalletQueue();
+    await initializeWalletQueue();
 
     //For SR send out random CFPs 
     if (role === 'SR') {
@@ -52,7 +52,7 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-       // sendRandomCFP();
+        // sendRandomCFP();
         setInterval(sendRandomCFP, 15000);
     }
 
