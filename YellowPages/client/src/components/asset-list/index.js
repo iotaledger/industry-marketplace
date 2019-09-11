@@ -145,13 +145,11 @@ function Table({ columns, data }) {
 
   const messageContent = cell => {
     return (
-      <div className="highlightjs-component">
-        <pre className="prettyprint lang-json">
-          <code className="json prettyprint lang-json">
-            {cell.render('Cell')}
-          </code>
-        </pre>
-      </div>
+      <pre className="prettyprint lang-json">
+        <code className="json prettyprint lang-json">
+          {cell.render('Cell')}
+        </code>
+      </pre>
     )
   }
 
@@ -313,13 +311,14 @@ const Styles = styled.div`
     }
 
     tr {
+      td {
+        &:first-child {
+          font-weight: bold;
+        }
+      }
       :last-child {
         td {
           border-bottom: 0;
-
-          &:first-child {
-            font-weight: bold;
-          }
         }
       }
     }
