@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import sizeMe from 'react-sizeme';
 import { TabsContainer, Tabs, Tab } from 'react-md';
 
 class AssetTabs extends PureComponent {
@@ -15,11 +14,10 @@ class AssetTabs extends PureComponent {
   render() {
     return (
         <TabsContainer
-            className="tabsWrapper"
             activeTabIndex={this.state.activeTabIndex}
             onTabChange={this.onTabChange}
         >
-            <Tabs tabId="item-details" mobile={this.props.size.width <= 768}>
+            <Tabs tabId="request-details">
                 <Tab label="Calls for Proposal" className="cfp" />
                 <Tab label="Proposals" className="proposal" />
                 <Tab label="Accepted Proposals" className="acceptProposal" />
@@ -29,4 +27,4 @@ class AssetTabs extends PureComponent {
   }
 }
 
-export default sizeMe({ monitorHeight: false })(AssetTabs);
+export default AssetTabs;
