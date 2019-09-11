@@ -1,11 +1,8 @@
-# SeMarket Industry 4.0 Language Library
+# Industry 4.0 Language Library
 
 ## Usage
 
-Add the following line to your `package.json` dependencies list
-```
-    "SeMarket": "iotaledger/SeMarket",
-```
+Add the package name to your `package.json` dependencies list
 
 Import functions and call it within your application
 ```
