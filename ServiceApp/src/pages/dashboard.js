@@ -2,7 +2,6 @@ import React from 'react';
 import get from 'lodash-es/get';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
-import { generate } from 'industry_4.0_language';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
 import Config from '../components/config';
@@ -113,7 +112,7 @@ class Dashboard extends React.Component {
           loading: false,
         });
         if (endpoint !== 'rejectProposal') {
-          await this.newMessage({ data: packet }, true);
+          await this.newMessage({ data: data.request }, true);
         }        
       } else if (data.error) {
         this.setState({
@@ -191,7 +190,7 @@ class Dashboard extends React.Component {
 
   async generateRequest(type, id, partner = null, price = null) {
     const { irdi, originalMessage, partnerName } = await readFromStorage(partner ? `${id}#${partner}` : id);
-    const request = generate({
+    const request = {
       messageType: type,
       userId: this.context.user.id,
       replyTime: waitingTime,
@@ -199,7 +198,7 @@ class Dashboard extends React.Component {
       userName: partnerName,
       irdi,
       price,
-    });
+    };
     console.log('generateRequest', request);
     return request;
   }
