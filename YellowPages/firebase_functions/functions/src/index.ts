@@ -1,8 +1,38 @@
 import * as functions from 'firebase-functions';
 const cors = require('cors')({ origin: true });
+const { sendEmail } = require('./email');
 
 const { getMessages, storeMessage } = require('./firebase');
 const { addressToGPS } = require('./helpers');
+
+exports.sendEmail = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    // Check Fields
+    const packet = req.body;
+
+    if (
+      !packet 
+      || !packet.name 
+      || !packet.email 
+      || !packet.message 
+      || !packet.acceptedDisclaimer
+      // || !packet.captcha
+    ) {
+      console.error('sendEmail failed. Packet: ', packet);
+      return res.status(400).json({ error: 'Malformed Request' });
+    }
+
+    try {
+      // Send email
+      const result = await sendEmail(packet);
+      console.log('sendEmail', result);
+      return res.json({ success: true, result });
+    } catch (e) {
+      console.error('sendEmail failed. Error: ', e.message);
+      return res.status(403).json({ error: e.message });
+    }
+  });
+});
 
 exports.storeMessage = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
