@@ -1,14 +1,13 @@
 {
-    "name": "industry_4.0_language",
+    "name": "@iota/industry_4.0_language",
     "description": "Industry_4.0_Language",
     "version": "1.0.0",
     "author": "Alexey Sobolev <alexey@iota.org>",
     "repository": {
         "type": "git",
-        "url": "https://github.com/iotaledger/SeMarket.git"
+        "url": "https://github.com/iotaledger/industry-marketplace.git"
     },
     "license": "Apache-2.0",
-    "private": true,
     "main": "lib/index.js",
     "scripts": {
         "build": "webpack"
@@ -17,13 +16,13 @@
         "node": ">=6"
     },
     "dependencies": {
-        "uuid": "^3.3.2"
+        "uuid": "^3.3.3"
     },
     "devDependencies": {
-        "@babel/core": "^7.5.0",
-        "@babel/preset-env": "^7.5.0",
+        "@babel/core": "^7.6.0",
+        "@babel/preset-env": "^7.6.0",
         "babel-loader": "^8.0.6",
-        "webpack": "^4.35.2",
-        "webpack-cli": "^3.3.5"
+        "webpack": "^4.39.3",
+        "webpack-cli": "^3.3.8"
     }
 }

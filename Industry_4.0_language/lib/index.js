@@ -115,7 +115,6 @@ const informConfirm = __webpack_require__(/*! ./templates/informConfirm.json */ 
 
 const informPayment = __webpack_require__(/*! ./templates/informPayment.json */ "./templates/informPayment.json");
 /**
- * GET /operations
  * 1. For CfP message type returns list of operations (plain text)
  */
 
@@ -124,7 +123,6 @@ const operations = () => {
   return sample_operations;
 };
 /**
- * GET /submodel/{irdi}
  * 1. Performs lookup in the eCl@ss catalog, retrieves submodel  
  * 2. Returns submodel without price property
  */
@@ -136,7 +134,6 @@ const submodel = irdi => {
   }) => !['preis', 'price'].includes(idShort));
 };
 /**
- * GET /evaluate/{irdi}/values/{submodel_parameter_values}
  * 1. Evaluates values  
  * 2. Returns success or failure notification
  */
@@ -219,7 +216,6 @@ const checkType = (type, value) => {
   }
 };
 /**
- * GET /generate/{message_type}/user/{user_id}/irdi/{irdi}/values/{submodel_parameter_values}  
  * 1. Generates conversationId, messageId,  
  * 2. Fills placeholder JSON for selected message type with provided values, appends submodel  
  * 3. Returns generated message of the selected type (CfP, Proposal, etc.)  
@@ -237,7 +233,8 @@ const generate = ({
   location = null,
   startTimestamp = null,
   endTimestamp = null,
-  creationDate = null
+  creationDate = null,
+  userName = null
 }) => {
   const message = getTemplate(messageType);
 
@@ -247,6 +244,7 @@ const generate = ({
 
   message.frame.sender.identification.id = userId;
   message.frame.replyBy = getReplyByTime(replyTime);
+  message.userName = userName;
 
   if (originalMessage && messageType !== 'callForProposal') {
     message.frame.conversationId = originalMessage.frame.conversationId;
@@ -266,7 +264,9 @@ const generate = ({
         idShort
       }) => ['preis', 'price'].includes(idShort));
       priceModel.value = price;
-      message.dataElements.submodels[0].identification.submodelElements.push(priceModel);
+      const updatedModel = message.dataElements.submodels[0].identification.submodelElements.filter(model => !['preis', 'price'].includes(model.idShort));
+      updatedModel.push(priceModel);
+      message.dataElements.submodels[0].identification.submodelElements = updatedModel;
     }
   } else if (irdi && messageType === 'callForProposal') {
     message.frame.conversationId = uuid();
@@ -338,46 +338,7 @@ module.exports = {
   generate,
   evaluate,
   operations,
-  submodel // const values = {
-  //     "0173-1#02-AAB713#005": 4.5,
-  //     "0173-1#02-AAN521#005": "Rot",
-  //     "0173-1#02-BAF634#008": "Stahl",
-  //     "0173-1#02-BAF163#002": "Berlin",
-  //     "0173-1#02-AAO738#001": 1561968195120
-  // }
-  // const test3 = evaluate('0173-1#02-BAF574#004', values);
-  // console.log('Result', test3);
-  // console.log('=======================');
-  // const generateValuesCFP = {
-  //     messageType: 'callForProposal', 
-  //     userId: 'test-user1',
-  //     irdi: '0173-1#02-BAF574#004', 
-  //     submodelValues: values, 
-  //     replyTime: 10, 
-  // }
-  // const originalMessage = generate(generateValuesCFP);
-  // console.log(JSON.stringify(originalMessage));
-  // console.log('=========================')
-  // const generateValuesProposal = {
-  //     messageType: 'proposal', 
-  //     userId: 'test-user2',
-  //     irdi: '0173-1#02-BAF574#004', 
-  //     replyTime: 10,
-  //     price: 120,
-  //     originalMessage,
-  // }
-  // const proposalTest = generate(generateValuesProposal);
-  // console.log(JSON.stringify(proposalTest));
-  // console.log('=========================')
-  // const generateValuesAccept = {
-  //     messageType: 'acceptProposal', 
-  //     userId: 'test-user1',
-  //     replyTime: 10,
-  //     originalMessage: proposalTest,
-  // }
-  // const acceptTest = generate(generateValuesAccept);
-  // console.log(JSON.stringify(acceptTest));
-
+  submodel
 };
 
 /***/ }),
@@ -502,10 +463,10 @@ module.exports = {"frame":{"semanticProtocol":"http://www.vdi.de/gma720/vdi2193_
 /*!*******************************!*\
   !*** ./templates/eClass.json ***!
   \*******************************/
-/*! exports provided: 0173-1#01-AAJ336#002, 0173-1#01-AAP788#001, 0173-1#01-AAI711#001, 0173-1#01-AAO742#002, 0173-1#01-BAF577#004, 0173-1#01-BAF576#004, 0173-1#01-BAF575#004, 0173-1#01-BAF574#004, 0173-1#01-BAF573#004, 0173-1#01-BAF777#004, default */
+/*! exports provided: 0173-1#01-AAJ336#002, 0173-1#01-AAP788#001, 0173-1#01-AAI711#001, 0173-1#01-AAO742#002, 0173-1#01-BAF577#004, 0173-1#01-BAF576#004, 0173-1#01-BAF575#004, 0173-1#01-BAF777#004, 0173-1#01-BAF888#004, default */
 /***/ (function(module) {
 
-module.exports = {"0173-1#01-AAJ336#002":{"submodelElements":[{"idShort":"total weight (freight)","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAJ337#002"},{"idShort":"starting point","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAJ338#002"},{"idShort":"destination","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAJ339#002"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ333#002"}]},"0173-1#01-AAP788#001":{"submodelElements":[{"idShort":"number of photos that can be stored","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAP788#001"},{"idShort":"reliability duration","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAY979#001"},{"idShort":"target location","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAZ979#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAD979#001"}]},"0173-1#01-AAI711#001":{"submodelElements":[{"idShort":"starting point","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAL711#001"},{"idShort":"destination","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAK711#001"},{"idShort":"max. number of persons","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAI711#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB711#001"}]},"0173-1#01-AAO742#002":{"submodelElements":[{"idShort":"brand","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAO742#002"},{"idShort":"min. charging voltage","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ102#003"},{"idShort":"cables included","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#02-BAF464#008"},{"idShort":"connection type","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAF631#001"},{"idShort":"max. charging voltage","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ101#003"},{"idShort":"cable length","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB733#007"},{"idShort":"number of connections","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAP397#001"},{"idShort":"target location","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAW397#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAA397#001"}]},"0173-1#01-BAF577#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF576#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF575#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF574#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF573#004":{"submodelElements":[{"idShort":"gewicht","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAB713#005"},{"idShort":"farbe","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAN521#005"},{"idShort":"material","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF634#008"},{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF777#004":{"submodelElements":[{"idShort":"ort","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"zeit","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"preis","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]}};
+module.exports = {"0173-1#01-AAJ336#002":{"submodelElements":[{"idShort":"total weight (freight) [kg]","modelType":"Property","value":"","valueType":"double","semanticId":"0173-1#02-AAJ336#002"},{"idShort":"starting point [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"destination [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ333#002"}]},"0173-1#01-AAP788#001":{"submodelElements":[{"idShort":"number of photos that can be stored","modelType":"Property","value":"","valueType":"long","semanticId":"0173-1#02-AAP788#001"},{"idShort":"reliability duration [min]","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAY979#001"},{"idShort":"target location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAD979#001"}]},"0173-1#01-AAI711#001":{"submodelElements":[{"idShort":"starting point [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"destination [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"autonomous","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#02-AAX711#001"},{"idShort":"max. number of persons","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAI711#001"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB711#001"}]},"0173-1#01-AAO742#002":{"submodelElements":[{"idShort":"brand","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAO742#002"},{"idShort":"min. charging voltage [V]","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAJ102#003"},{"idShort":"max. charging voltage [V]","modelType":"Property","value":"","valueType":"long","semanticId":"0173-1#02-AAJ101#003"},{"idShort":"cables included","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#02-BAF464#008"},{"idShort":"connection type","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-AAF631#001"},{"idShort":"cable length [m]","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAB733#007"},{"idShort":"number of connections","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAP397#001"},{"idShort":"target location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAA397#001"}]},"0173-1#01-BAF577#004":{"submodelElements":[{"idShort":"duration [min]","modelType":"Property","value":"","valueType":"long","semanticId":"0173-1#02-AAA818#006"},{"idShort":"maximum velocity at rated value [km/h]","modelType":"Property","value":"","valueType":"long","semanticId":"0173-1#02-AAB919#007"},{"idShort":"max. monitoring radius [m]","modelType":"Property","value":"","valueType":"long","semanticId":"0173-1#02-AAI957#004"},{"idShort":"2,4 GHz","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#07-ABA076#001"},{"idShort":"5 GHz","modelType":"Property","value":"","valueType":"boolean","semanticId":"0173-1#07-ABA075#001"},{"idShort":"energy consumption [kW/h]","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAF090#005"},{"idShort":"location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF576#004":{"submodelElements":[{"idShort":"maximum power [kW]","modelType":"Property","value":"","valueType":"double","semanticId":"0173-1#02-AAF406#004"},{"idShort":"duration [min]","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAA818#006"},{"idShort":"location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF575#004":{"submodelElements":[{"idShort":"range [km]","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAI957#004"},{"idShort":"frequency [MHz]","modelType":"Property","value":"","valueType":"double","semanticId":"0173-1#07-AAL034#004"},{"idShort":"energy consumption [kWh]","modelType":"Property","value":"","valueType":"decimal","semanticId":"0173-1#02-AAF090#005"},{"idShort":"location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF777#004":{"submodelElements":[{"idShort":"location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"time period [h]","modelType":"Property","value":"","valueType":"time","semanticId":"0173-1#02-AAO738#001"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]},"0173-1#01-BAF888#004":{"submodelElements":[{"idShort":"location [lat, lng]","modelType":"Property","value":"","valueType":"string","semanticId":"0173-1#02-BAF163#002"},{"idShort":"price","modelType":"Property","value":"","valueType":"integer","semanticId":"0173-1#02-AAO739#001"}]}};
 
 /***/ }),
 
@@ -535,10 +496,10 @@ module.exports = {"frame":{"semanticProtocol":"http://www.vdi.de/gma720/vdi2193_
 /*!***********************************!*\
   !*** ./templates/operations.json ***!
   \***********************************/
-/*! exports provided: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, default */
+/*! exports provided: 0, 1, 2, 3, 4, 5, 6, 7, 8, default */
 /***/ (function(module) {
 
-module.exports = [{"name":"Drone Transport","name_de":"Drone Transport","id":"0173-1#01-AAJ336#002"},{"name":"Drone inspection","name_de":"Drone inspection","id":"0173-1#01-AAP788#001"},{"name":"Mobility as a service","name_de":"Mobility as a service","id":"0173-1#01-AAI711#001"},{"name":"EV Charging","name_de":"EV Charging","id":"0173-1#01-AAO742#002"},{"name":"Drilling","name_de":"Bohren","id":"0173-1#01-BAF577#004"},{"name":"Sawing","name_de":"Sägen","id":"0173-1#01-BAF576#004"},{"name":"Cutting","name_de":"Schneiden","id":"0173-1#01-BAF575#004"},{"name":"Hammering","name_de":"Hämmern","id":"0173-1#01-BAF574#004"},{"name":"Grinding","name_de":"Schleifen","id":"0173-1#01-BAF573#004"},{"name":"Weather Data","name_de":"Wetterdated","id":"0173-1#01-BAF777#004"}];
+module.exports = [{"name":"Drone Transport","description":"A drone with transport capability is requested to transport a package from A to B","id":"0173-1#01-AAJ336#002"},{"name":"Drone inspection","description":"A drone with high resolution camera is requested to inspect a wind power plant at human unaccessable areas for potential maintenance / damage","id":"0173-1#01-AAP788#001"},{"name":"Mobility as a service","description":"A manned or autonomous vehicle is requested to transport a given number of persons from A to B","id":"0173-1#01-AAI711#001"},{"name":"EV Charging","description":"A manned or autonomous vehicle is requesting an available EV chaging slot at a nearby location or along a future route/location","id":"0173-1#01-AAO742#002"},{"name":"Drone connectivity provision","description":"A drone with a mobile network connectivity equipment, e.g., WiFi access point is requested to cover a specific location in order to provide connectivity","id":"0173-1#01-BAF577#004"},{"name":"Power source","description":"A network equipment, that consumes a give amount of energy can be powered with renewable sources provided e.g., by a solar panel","id":"0173-1#01-BAF576#004"},{"name":"Cell tower rent","description":"A virtual mobile network operator, MVNO, request access to a cell tower in a given area to provide connectivity to its customers","id":"0173-1#01-BAF575#004"},{"name":"Weather Data","description":"","id":"0173-1#01-BAF777#004"},{"name":"Sensor Data","description":"An industrial plant equipped with sensors offering the access to the sensor data during a certain window in time.","id":"0173-1#01-BAF888#004"}];
 
 /***/ }),
 
