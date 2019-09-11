@@ -9,6 +9,7 @@ import { publish } from '../utils/mamHelper';
 import { getBalance } from '../utils/walletHelper.js';
 import {updateValue} from '../utils/databaseHelper';
 import { processPayment } from '../utils/walletHelper';
+import { checkAddressBalance } from '../utils/walletQueueHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -21,16 +22,21 @@ export class ZmqService {
      */
     public sentBundles = [];
 
-       /**
+    /**
      * The interval to frequently delete sentBundle array.
      */
     public _bundleInterval;
 
     /**
-     * The interval to frequently delete sentBundle array.
+     * The interval to frequently execute payments.
      */
     public _paymentInterval;
     
+     /**
+     * The interval to frequently check and repair wallets.
+     */
+    public _checkWalletInterval;
+
     /**
      * The configuration for the service.
      */
@@ -55,6 +61,7 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5*60*1000);
+        this._paymentInterval = setInterval(this.checkWallet.bind(this), 3*60*1000);
     }
 
     /**
@@ -68,6 +75,10 @@ export class ZmqService {
      */
     public processPayments() {
         processPayment();
+    }
+
+    public checkWallet() {
+        checkAddressBalance();
     }
 
     /**
