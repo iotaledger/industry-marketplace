@@ -1,5 +1,5 @@
 import get from 'lodash-es/get';
-import { operations } from '../Industry_4.0_language';
+import { operations } from 'industry_4.0_language';
 
 export const prepareData = async (role, payload) => {
     let data = payload;
