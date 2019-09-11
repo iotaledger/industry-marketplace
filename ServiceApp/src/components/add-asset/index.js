@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
-import { generate, evaluate, operations, submodel } from '../../Industry_4.0_language';
+import { generate, evaluate, operations, submodel } from 'industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
 import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
