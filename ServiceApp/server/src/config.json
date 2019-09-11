@@ -14,7 +14,7 @@
         "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "dbconnectionstring": {
+    "sqlServer": {
         "user": "dev",
         "password": "dev",
         "server": "localhost",

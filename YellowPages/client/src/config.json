@@ -1,5 +1,5 @@
 {
-  "domain": "http://localhost:5000",
+  "domain": "http://localhost:4001",
   "serviceRequester": "https://market-manager-ui-gpw6qipy6.now.sh",
   "serviceProvider": "https://market-manager-ui-qqwjqv3rz.now.sh",
   "addressApi": "https://api.marketplace.tangle.works/location",

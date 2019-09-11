@@ -64,7 +64,7 @@
   "engines": {
     "node": ">=8.0"
   },
-  "proxy": "http://localhost:5000/",
+  "proxy": "http://localhost:4001/",
   "browserslist": [
     ">0.2%",
     "not dead",

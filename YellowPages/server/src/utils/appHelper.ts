@@ -33,7 +33,7 @@ export class AppHelper {
             next();
         });
 
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4001;
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {
