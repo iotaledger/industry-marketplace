@@ -2,6 +2,7 @@ import React from 'react';
 import get from 'lodash-es/get';
 import isEmpty from 'lodash-es/isEmpty';
 import styled from 'styled-components';
+import { generate } from 'industry_4.0_language';
 import api from '../utils/api';
 import AddCard from '../components/add-asset';
 import Config from '../components/config';
@@ -13,7 +14,6 @@ import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import Cookie from '../components/cookie';
 import NoRequests from '../components/no-requests';
-import { generate } from '../Industry_4.0_language';
 import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
 import {
