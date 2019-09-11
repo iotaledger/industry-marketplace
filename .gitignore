@@ -5,3 +5,4 @@ testing
 ServiceApp/docs
 
 node_modules/
+.vs/
