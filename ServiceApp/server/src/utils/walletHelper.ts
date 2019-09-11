@@ -1,7 +1,6 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
 import { getRandomRow, updateValue, writeData, readDataEquals } from './databaseHelper';
-import {repairWallet} from './walletQueueHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
 
@@ -35,6 +34,7 @@ export const getBalance = async address => {
 
 const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) => {
     try {
+        console.log(address, seed, keyIndex)
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
         const prepareTransfers = createPrepareTransfers();
         const balance = await getBalance(address);
@@ -47,22 +47,12 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         // Minimum value on mainnet & spamnet is `14`, `9` on devnet and other testnets.
         const minWeightMagnitude = 9;
 
-        if (balance === 0) {
-
-            try{
-            await repairWallet(seed, keyIndex); 
-            } catch(e){
-                await updateValue('wallet', 'seed', 'status', seed, 'error')
-                console.error('transferFunds. Insufficient balance', address);
-            }
-            return null;
-        }
         if (balance < totalAmount) {
             throw new Error(`Insufficient balance: ${balance}. Needed: ${totalAmount}`);
         }
 
-        return new Promise((resolve, reject) => {
-            const remainderAddress = generateAddress(seed, keyIndex + 1);
+        return new Promise( (resolve, reject) => {
+            const remainderAddress =  generateAddress(seed, keyIndex + 1);
             const options = {
                 inputs: [{
                     address,
@@ -121,7 +111,7 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-        console.log('processPayment called', receiveAddress, paymentValue);
+        console.log('processPayment');
 
     interface IWallet {
         address?: string;
@@ -150,17 +140,13 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
             totalAmount += value;
             return { address, value };
         })
-    } else if (receiveAddress && paymentValue) {
-        transfers = [{ address: receiveAddress, value: paymentValue }];
-        totalAmount = paymentValue;
-    }
-
-
+    } 
+    
     console.log('processPayment 1', wallet.balance, totalAmount);
     console.log('processPayment 2', transfers);
 
     if (transfers.length === 0) return;
-    
+
     await updateValue('wallet', 'seed','status', seed,  'busy')
 
     return await transferFunds(

@@ -6,7 +6,7 @@ export const initializeWalletQueue = async () => {
 
     //Rotate Incoming Wallet 
     //reset all reserved,busy wallets to usable
-    const wallet: any = await readAllData('wallet');
+    const wallet : any = await readAllData('wallet');
 
     wallet.forEach(async ({ seed, status }) => {
         if (status === 'reserved' || 'busy') {
@@ -37,13 +37,14 @@ export const repairWallet = async (seed, keyIndex) => {
         let iterable = [-2, -1, 0, 1, 2];
 
         for (let value of iterable) {
-            const index = Number(keyIndex) + Number(value)
+            const newIndex = Number(keyIndex) + Number(value)
             value += 1;
-            const newAddress = await generateAddress(seed, index);
+            const newAddress = await generateAddress(seed, newIndex);
             const balance = await getBalance(newAddress);
+            console.log(balance)
 
             if (balance > 0) {
-                await writeData('wallet', { address: newAddress, balance, keyIndex, seed, status: 'usable' });
+                await writeData('wallet', { address: newAddress, balance, keyIndex: newIndex, seed, status: 'usable' });
                 resolve(); 
             }
         } reject(); 
@@ -60,9 +61,8 @@ export const checkAddressBalance = async () => {
             const { seed, address, keyIndex, status} = await each
             let balance = await getBalanceForSimulator(address);
 
-            console.log("Wallet", address, balance)
-
-            if (balance === 0 && (status ==='usable' || status ==='reserved')) {
+            console.log("Wallet", address, balance, status)
+            if (balance === 0 && (status === "usable" || status === "reserved")) {
                 await repairWallet(seed, keyIndex)
             }
         }

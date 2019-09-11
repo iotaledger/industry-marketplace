@@ -84,7 +84,6 @@ export const writeData = async (table, data) => {
 };
 
 export const readData = async (table, searchField = null, column = null) => {
-    console.log(readData)
     return new Promise((resolve, reject) => {
         try {
             let query = `SELECT * FROM ${table} ORDER BY rowid DESC LIMIT 1`;
@@ -146,7 +145,7 @@ export const readDataEquals = async (table, column, value) => {
 
 export const removeData = (table) => {
     return new Promise(async resolve => {
-        await db.run(`DROP TABLE IF EXISTS ${table}`);
+       db.get(`DELETE FROM ${table}`);
         resolve();
     });
 };

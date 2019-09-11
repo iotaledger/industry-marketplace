@@ -60,8 +60,8 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
-        this._paymentInterval = setInterval(this.processPayments.bind(this), 5*60*1000);
-        this._paymentInterval = setInterval(this.checkWallet.bind(this), 3*60*1000);
+        this._paymentInterval = setInterval(this.processPayments.bind(this), 1*60*1000);
+        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 0.5*60*1000);
     }
 
     /**
