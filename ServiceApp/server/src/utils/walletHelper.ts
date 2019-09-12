@@ -2,7 +2,19 @@ import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core'
 import { provider } from '../config.json';
 import { getRandomRow, updateValue, writeData, readDataEquals } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
+import { generateSeed } from './iotaHelper';
 
+
+export const generateNewWallet = () => {
+    try {
+        const seed = generateSeed();
+        const address = generateAddress(seed, 0, 2, true);
+        return { seed, address, keyIndex: 0, balance: 0 };
+    } catch (error) {
+        console.error('generateNewWallet error', error);
+        return {};
+    }
+};
 
 export const getBalance = async address => {
     try {
