@@ -17,7 +17,7 @@ const Heading = ({ id, partner, operation, type }) => {
       <LinkWrapper to={`/conversation/${id}`}>
         <Header>
           {operation}
-          <Img
+          <HeaderImg
             width={25}
             src={searchIcon}
             title="Inspect request transaction history"
@@ -437,7 +437,8 @@ const Status = styled.h3`
   color: #485776;
   font: 16px 'Nunito Sans', sans-serif;
   font-weight: 600;
-  border-radius: 6px;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
   text-transform: uppercase;
   padding: 15px 40px;
   background-color: #EEF2FA;
@@ -467,7 +468,11 @@ const Input = styled.input`
 
 const Img = styled.img`
   cursor: pointer;
-  margin-left: 20px;
+  margin-left: 19px;
+`;
+
+const HeaderImg = styled(Img)`
+  margin-bottom: -3px;
 `;
 
 const LinkWrapper = styled(Link)`
