@@ -223,6 +223,7 @@ const Asset = props => {
             </Row>
           ) : null
         }
+        <Hr />
         <Row>
           <RowThird>
             <RowDesc>Requester Location</RowDesc>
@@ -306,6 +307,11 @@ const CardContent = styled.div`
   padding: 20px 0 15px;
 `;
 
+const Hr = styled.hr`
+  border: 1px solid #F2F5FB;
+  margin: 15px 0;
+`;
+
 const Row = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -339,7 +345,8 @@ const Data = styled.p`
 
 const RowDesc = styled.span`
   font: 16px 'Nunito Sans', sans-serif;
-  font-weight: 600;
+  font-weight: bold;
+  letter-spacing: 0.03em;
   color: #B8B8B8;
   text-transform: uppercase;
 `;
@@ -385,30 +392,30 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  outline: none;
   margin: 5px;
   @media (min-width: 920px) {
     width: 200px;
   }
   font: 16px 'Nunito Sans', sans-serif;
-  line-height: 16px;
-  letter-spacing: 0.47px;
-  padding: 12px 21px;
-  border-radius: 100px;
-  font-size: 16px;
-  font-weight: normal;
-  letter-spacing: 0.38px;
+  line-height: 17px;
+  letter-spacing: 0.15px;
+  padding: 12px 20px 10px;
+  border-radius: 6px;
+  font-weight: 800;
   width: 100%;
-  height: 45px;
+  height: 48px;
+  text-transform: uppercase;
   cursor: ${p => p.disabled ? 'default' : 'pointer'};
 
   color: ${p => p.isAccept ? '#ffffff' : '#4140DF'};
   background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#4140DF') : '#ffffff'};
-  border: ${p => p.isAccept ? 'unset' : '1px solid #4140DF'};
+  border: ${p => p.isAccept ? 'unset' : '2px solid #4140DF'};
 
   &:hover {
     color: ${p => p.isAccept && !p.disabled ? '#4140DF' : '#ffffff'};
     background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#4140DF'};
-    border: ${p => p.isAccept && !p.disabled ? '1px solid #4140DF' : 'unset'};
+    border: ${p => p.isAccept && !p.disabled ? '2px solid #4140DF' : 'unset'};
   }
 `;
 
@@ -416,26 +423,27 @@ const StatusWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  background-color: #EEF2FA;
+  border-radius: 6px;
 `;
 
 const Status = styled.h3`
-  color: #313131;
-  font: 18px 'Nunito Sans', sans-serif;
+  color: #485776;
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
   text-transform: uppercase;
+  padding: 15px 40px;
   @media (min-width: 769px) {
     text-align: right;
   }
 `;
 
 const CancelHeaderButton = styled.a`
-  font: 14px 'Nunito Sans', sans-serif;
-  padding: 12px 21px;
-  color: #313131;
-  text-decoration: underline;
-  padding: 0;
-  @media (min-width: 769px) {
-    text-align: right;
-  }
+  width: 54px;
+  display: flex;
+  background-color: #D9E1EF;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
 `;
 
 const Input = styled.input`

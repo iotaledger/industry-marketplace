@@ -52,15 +52,15 @@ const Button = styled.button`
 
 const Heading = styled.h2`
   font-size: 2rem;
-  font-weight: 300;
+  font-weight: 600;
   color: #485776;
   padding-top: 50px;
   margin: 0 40px;
 `;
 
 const Text = styled.h4`
-  font-size: 1.3rem;
-  font-weight: 300;
+  font-size: 1.4rem;
+  font-weight: 600;
   color: #485776;
   padding: 20px 0;
 `;
