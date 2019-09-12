@@ -52,7 +52,6 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        // sendRandomCFP();
         setInterval(sendRandomCFP, 60000);
     }
 
@@ -72,11 +71,6 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
-            let iterable = [1, 2, 3];
-
-            for (let value of iterable) {
-
-                value += 1;
                 const senderLocation = await get(data.frame, 'location')
 
                 //generate message  
@@ -91,11 +85,7 @@ const simulate = async (role) => {
 
                 //send message to Market Manager
                 await apiPost('proposal', request)
-
-                await new Promise(resolve => setTimeout(resolve, 9000));
-            }
-
-        }//Timeout
+        }
 
         if (['proposal'].includes(type)) {
 
@@ -142,7 +132,7 @@ const apiPost = async (messageType, message) => {
 
     return new Promise(async (resolve, reject) => {
         try {
-            await new Promise(resolve => setTimeout(resolve, randomTimeout(1000, 7000)));
+            await new Promise(resolve => setTimeout(resolve, randomTimeout(10000, 15000)));
             const response = await axios.post(`${BASE_URL}/${messageType}`, message);
             resolve(response.data);
         } catch (error) {
