@@ -33,7 +33,7 @@ const Card = styled.div`
 
 const CardHeader = styled.header`
   position: relative;
-  padding: 20px 30px;
+  padding: 10px 30px;
   border-bottom: 1px solid #eaecee;
 `;
 

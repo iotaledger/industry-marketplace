@@ -15,13 +15,15 @@ const Heading = ({ id, partner, operation, type }) => {
   return (
     <Full>
       <LinkWrapper to={`/conversation/${id}`}>
-        <Header>{operation}</Header>
-        <Img
-          width={25}
-          src={searchIcon}
-          title="Inspect request transaction history"
-          alt="Inspect request transaction history"
-        />
+        <Header>
+          {operation}
+          <Img
+            width={25}
+            src={searchIcon}
+            title="Inspect request transaction history"
+            alt="Inspect request transaction history"
+          />
+        </Header>
       </LinkWrapper>
       <StatusWrapper>
         <Status>
@@ -365,6 +367,7 @@ const Header = styled.h2`
   color: #4140DF;
   text-transform: uppercase;
   text-decoration: underline;
+  white-space: nowrap;
 `;
 
 const Full = styled.div`
@@ -375,6 +378,10 @@ const Full = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+  }
+  > * {
+    margin: 10px 0;
   }
 `;
 
@@ -422,17 +429,18 @@ const FooterButton = styled.button`
 const StatusWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  background-color: #EEF2FA;
-  border-radius: 6px;
+  justify-content: flex-start;
+  width: auto;
 `;
 
 const Status = styled.h3`
   color: #485776;
   font: 16px 'Nunito Sans', sans-serif;
   font-weight: 600;
+  border-radius: 6px;
   text-transform: uppercase;
   padding: 15px 40px;
+  background-color: #EEF2FA;
   @media (min-width: 769px) {
     text-align: right;
   }
