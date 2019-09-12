@@ -5,6 +5,7 @@ const config = {
     "server": process.env.SAPP_SERVER_SQL_SERVER_HOSTNAME,
     "database": process.env.SAPP_SERVER_SQL_SERVER_DATABASE_NAME
 }
+console.log(config);
 let db;
 
 export const connect = async () => {
@@ -30,6 +31,17 @@ export const createUser = async (data) => {
         .input("name", data.name)
         .input("role", data.role)
         .input("location", data.location)
+        .query(query);
+
+    return result.rowsAffected === 1;
+};
+
+export const updateUserId = async (id) => {
+    const query = `update [dbo].[user] set id = @id;`;
+
+    const request = new sql.Request(db);
+    const result = await request
+        .input("id", id)
         .query(query);
 
     return result.rowsAffected === 1;

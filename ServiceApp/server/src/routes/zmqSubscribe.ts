@@ -32,6 +32,7 @@ export function zmqSubscribe(config, socket, request) {
             subscriptionIds
         };
     } catch (err) {
+        console.log(err);
         response = {
             success: false,
             message: err.toString()

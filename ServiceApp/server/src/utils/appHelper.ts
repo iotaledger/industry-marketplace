@@ -6,7 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData } from './databaseHelper';
+import { readData, writeData, updateUserId } from './databaseHelper';
 import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
@@ -73,6 +73,7 @@ export class AppHelper {
                     try {
                         const userWallet: any = await readData('wallet');
                         const response = await axios.get(`${config.faucet}?address=${userWallet.address}&amount=${config.faucetAmount}`);
+                        console.log(response);
                         const data = response.data;
                         if (data.success) {
                             const balance = await getBalance(userWallet.address);
@@ -124,7 +125,7 @@ export class AppHelper {
                 const root = await publishDID(publicKey, privateKey);
                 const id = `did:iota:${root}`;
                 user = user ? { ...user, id } : { id };
-                await writeData('user', user);
+                await updateUserId(id); 
             }
 
             const wallet: any = await readData('wallet');
@@ -406,6 +407,7 @@ export class AppHelper {
         });
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4001;
+        console.log('port is ' + port);
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {

@@ -4,7 +4,7 @@
         "prefix": "SEMARKET"
     },
     "mqttConfig": {
-        "domain": "0.0.0.0:4001",
+        "domain": "localhost:4000",
         "broker": "mqtt://test.mosquitto.org"
     },
     "mongoDB": {
