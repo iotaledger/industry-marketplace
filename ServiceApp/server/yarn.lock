@@ -151,10 +151,10 @@
     cross-fetch "^3.0.0"
     url-parse "^1.4.7"
 
-"@iota/industry_4.0_language@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@iota/industry_4.0_language/-/industry_4.0_language-1.0.1.tgz#d7161c0277175ee9529ea7a543345b503d800f9f"
-  integrity sha512-hl/vzIF4dzTdkA8HnNVIuASEbnTI9NpAmDLnjVRd0rSzW0inCy/q2RT/pNP7hZsU6aVWtkVwDu6Q2lWxLwbNxA==
+"@iota/industry_4.0_language@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@iota/industry_4.0_language/-/industry_4.0_language-1.0.3.tgz#e4fa6822af966bb007d4d4aea06f86ee4e73c6d2"
+  integrity sha512-tgr+qNd6U9ObZYLGtScnGx/vTmepqfkN9ICIMWQO8j7f7cfEFDTwB52NuPr2Hir7EAOe6RBNvaP+MLnu1buthA==
   dependencies:
     uuid "^3.3.3"
 
