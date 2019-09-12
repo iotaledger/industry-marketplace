@@ -1,10 +1,10 @@
 {
-  "name": "SeMarket",
-  "version": "0.1.0",
-  "description": "SeMarket",
+  "name": "Industry_Marketplace",
+  "version": "1.0.0",
+  "description": "Industry Marketplace",
   "repository": {
     "type": "git",
-    "url": "https://github.com/iotaledger/SeMarket.git"
+    "url": "https://github.com/iotaledger/industry-marketplace.git"
   },
   "private": true,
   "dependencies": {
