@@ -53,7 +53,7 @@ const simulate = async (role) => {
 
         }
         // sendRandomCFP();
-        setInterval(sendRandomCFP, 15000);
+        setInterval(sendRandomCFP, 60000);
     }
 
 
