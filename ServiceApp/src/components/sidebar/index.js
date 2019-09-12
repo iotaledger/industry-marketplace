@@ -4,6 +4,7 @@ import UserContext from '../../context/user-context';
 import configIcon from '../../assets/img/config.svg';
 import cActive from '../../assets/img/circleActive.svg';
 import cNormal from '../../assets/img/circleNormal.svg';
+import createRequestBtn from '../../assets/img/createRequest.svg';
 import { domain } from '../../config.json';
 
 const menu = {
@@ -41,6 +42,11 @@ const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, i
   return (
     <SidebarWrapper isSideBarOpen={isSideBarOpen}>
       <Upper>
+        <ButtonWrapper>
+          <Button onClick={() => handleAndClose(createRequest, handleSidebar)}>
+            <img src={createRequestBtn} alt="Create request"/>
+          </Button>
+        </ButtonWrapper>
         <SideBarTitle>Request Stage</SideBarTitle>
           {
             showMenu ? (
@@ -66,19 +72,13 @@ const Sidebar = ({ badges, currentPage, showMenu, callback, handleConfigModal, i
               </MenuFix>
             ) : null
           }
-
-        <ButtonWrapper>
-          <Button
-            onClick={() => handleAndClose(createRequest, handleSidebar)}
-          >Create request</Button>
-        </ButtonWrapper>
       </Upper>
       <ModifyConfiguration
         onClick={() => handleAndClose(() => handleConfigModal(true), handleSidebar)}
         displayMode={domain.startsWith('http://localhost') ? 'flex' : 'none'}
       >
         <img src={configIcon} alt="Modify configuration"/>
-        <ConfigText>MODIFY CONFIGURATION</ConfigText>
+        <ConfigText>Modify Configurations</ConfigText>
       </ModifyConfiguration>
     </SidebarWrapper>
   );
@@ -98,10 +98,11 @@ const Upper = styled.div`
 
 const SideBarTitle = styled.div`
   font-weight: 600;
-  color: #15286D;
+  color: #485776;
   font-size: 24px;
   width: 100%;
-  @media (min-width: 769px) {
+
+  @media (min-width: 840px) {
     position: relative;
     font-size: 28px;
   }
@@ -113,7 +114,8 @@ const SideBarTitle = styled.div`
 const ModifyConfiguration = styled.div`
   display: ${p => p.displayMode};
   justify-content: flex-start;
-  @media (min-width: 769px) {
+
+  @media (min-width: 840px) {
     left: 35px;
   }
   align-items: center;
@@ -124,9 +126,9 @@ const ModifyConfiguration = styled.div`
 `;
 
 const ConfigText = styled.div`
-  margin-left: 25px;
-  font-size: 18px;
-  color: #15286D;
+  margin-left: 20px;
+  font-size: 22px;
+  color: #8493AD;
 `;
 
 const SidebarWrapper = styled.aside`
@@ -136,14 +138,16 @@ const SidebarWrapper = styled.aside`
   height: calc(100% - 92px); 
   overflow-y: auto;
   padding: 20px;
+  border-top: 1px solid #F2F5FB;
   transition: transform 0.5s;
   transform: ${p => p.isSideBarOpen ? 'translateX(0%)' : 'translateX(100vw)'};
   display: ${p =>  p.isSideBarOpen ? 'flex' : 'none'};
-  background: rgba(240, 240, 240, 1);
+  background: #FFFFFF;
   flex-direction: column;
   justify-content: space-between;
   z-index: 3;
-  @media (min-width: 769px) {
+
+  @media (min-width: 840px) {
     min-height: calc(100% - 92px); 
     height: 100%;
     display: flex;
@@ -163,14 +167,14 @@ const ItemText = styled.div`
   white-space: nowrap;
   font-size: 46px;
   font-weight: 600;
-  padding: 0 10px;
+  padding: 0 10px 0 20px;
   cursor: pointer;
-  color: ${props => (props.active ? '#529FF8' : '#C4C4C4')};
+  color: ${props => (props.active ? '#4140DF' : '#C3D0E4')};
   position: relative;
   :before {
     content: '';
     position: absolute;
-    background-color: #C4C4C4;
+    background-color: #C3D0E4;
     width: 1px;
     height: 68px;
     left: -9px;
@@ -183,7 +187,7 @@ const ItemText = styled.div`
     line-height: 68px;
     vertical-align: text-bottom;
   }
-  @media (min-width: 769px) {
+  @media (min-width: 840px) {
     & > span {
       font-size: 22px;
     }
@@ -193,44 +197,29 @@ const ItemText = styled.div`
 const ButtonWrapper = styled.div`
   width: 100%;
   display: flex;
-  margin-top: 15px;
-  @media (min-width: 769px) {
+  margin: 20px 0 35px;
+  @media (min-width: 840px) {
     display: none;
   }
 `;
 
 const Button = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  outline: none;
   appearance: none;
-  font: 15px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 20px 38px;
-  border-radius: 100px;
-  color: #fff;
-  font-size: 16px;
-  letter-spacing: 0.38px;
-  padding: 12px 21px;
-  margin: 1px 0px 0;
-  font-weight: 700;
-  background-color: #009fff;
-  width: 100%;
 
   &:hover {
-    color: #009fff;
-    background-color: #ffffff;
-    border: 1px solid #009fff;
+    opacity: 0.9;
   }
 `;
 
 const Badge = styled.span`
   color: #FFFFFF;
-  background: #529FF8;
-  border-radius: 35px;
+  background: #4140DF;
+  border-radius: 6px;
   width: 52px;
   height: 25px;
   font-weight: 600;
-  font-size: 16px !important;
+  font-size: 12px !important;
   padding: 3px 9px;
   margin-left: 15px;
 `;

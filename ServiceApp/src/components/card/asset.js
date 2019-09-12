@@ -347,7 +347,7 @@ const RowDesc = styled.span`
 const RowLink = styled.a`
   font: 16px 'Nunito Sans', sans-serif;
   font-weight: 600;
-  color: #529FF8;
+  color: #4140DF;
   text-transform: uppercase;
 `;
 
@@ -355,7 +355,7 @@ const Header = styled.h2`
   font-size: 24px;
   font-weight: 600;
   position: relative;
-  color: #009fff;
+  color: #4140DF;
   text-transform: uppercase;
   text-decoration: underline;
 `;
@@ -401,14 +401,14 @@ const FooterButton = styled.button`
   height: 45px;
   cursor: ${p => p.disabled ? 'default' : 'pointer'};
 
-  color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
-  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#009fff') : '#ffffff'};
-  border: ${p => p.isAccept ? 'unset' : '1px solid #009fff'};
+  color: ${p => p.isAccept ? '#ffffff' : '#4140DF'};
+  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#4140DF') : '#ffffff'};
+  border: ${p => p.isAccept ? 'unset' : '1px solid #4140DF'};
 
   &:hover {
-    color: ${p => p.isAccept && !p.disabled ? '#009fff' : '#ffffff'};
-    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#009fff'};
-    border: ${p => p.isAccept && !p.disabled ? '1px solid #009fff' : 'unset'};
+    color: ${p => p.isAccept && !p.disabled ? '#4140DF' : '#ffffff'};
+    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#4140DF'};
+    border: ${p => p.isAccept && !p.disabled ? '1px solid #4140DF' : 'unset'};
   }
 `;
 
