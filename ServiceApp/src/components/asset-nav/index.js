@@ -2,8 +2,6 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Link, withRouter } from 'react-router-dom';
 import UserContext from '../../context/user-context';
-import burgerIcon from '../../assets/img/burger.svg';
-import closeIcon from '../../assets/img/close.svg';
 import backIcon from '../../assets/img/icon-arrow-back-dark.svg';
 import createRequestBtn from '../../assets/img/createRequest.svg';
 import logo from '../../assets/img/logo.svg';
@@ -25,11 +23,14 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
         <img src={logo} alt="logo"/>
       </Header>
       <BurgerIconWrap>
-        <BurgerIcon
-          src={isSideBarOpen ? closeIcon : burgerIcon}
+        <span 
+          className={`menu ${isSideBarOpen ? 'toggled' : ''}`}
           onClick={handleSidebar}
-          isSideBarOpen={isSideBarOpen}
-        />
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
       </BurgerIconWrap>
       <RightHeader>
         <Block>
@@ -62,14 +63,49 @@ const BurgerIconWrap = styled.div`
   @media (min-width: 840px) {
     display: none;
   }
-`
-const BurgerIcon = styled.img`
-  padding: ${p => p.isSideBarOpen ? 'unset' : '10px'};
 
-  @media (min-width: 840px) {
-    display: none;
+  .menu {
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+
+    display: block;
+    padding: 15px 0;
+
+    span {
+      background: #485776;
+      display: block;
+      width: 24px;
+      height: 3px;
+      border-radius: 3px;
+      transform-origin: center;
+      transition: 300ms all cubic-bezier(.4,0,.2,1);
+
+      :nth-child(2) {
+        margin: 4px 0;
+      }
+    }
+
+    &.toggled {
+      span {
+        background: #4140DF !important;
+
+        &:first-child {
+          transform: translateY(6px) rotate(45deg);
+        }
+
+        &:nth-child(2) {
+          opacity: 0;
+        }
+
+        &:last-child {
+          transform: translateY(-8px) rotate(-45deg);
+        }
+      }
+    }
   }
 `
+
 const Main = styled.nav`
   padding: 20px 30px;
   display: flex;
