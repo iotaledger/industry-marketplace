@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
-import { generate, evaluate, operations, submodel } from 'industry_4.0_language';
+import { evaluate, operations, submodel } from 'industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
 import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
@@ -218,8 +218,7 @@ export default class extends React.Component {
 
     this.setState({ loading: true });
 
-    const message = await generate(messageParameters);
-    const createRequestResult = await this.props.createRequest(message);
+    const createRequestResult = await this.props.createRequest(messageParameters);
 
     if (createRequestResult.error) {
       this.setState({ loading: false });

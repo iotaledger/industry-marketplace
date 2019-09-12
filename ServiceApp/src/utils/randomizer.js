@@ -72,6 +72,7 @@ const getRandomBoolean = () => {
 };
 
 const getRandomColor = () => {
+    // return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     return color[getRandomInt(color.length)];
 };
 

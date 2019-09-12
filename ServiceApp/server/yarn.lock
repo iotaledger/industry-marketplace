@@ -151,6 +151,13 @@
     cross-fetch "^3.0.0"
     url-parse "^1.4.7"
 
+"@iota/industry_4.0_language@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@iota/industry_4.0_language/-/industry_4.0_language-1.0.3.tgz#e4fa6822af966bb007d4d4aea06f86ee4e73c6d2"
+  integrity sha512-tgr+qNd6U9ObZYLGtScnGx/vTmepqfkN9ICIMWQO8j7f7cfEFDTwB52NuPr2Hir7EAOe6RBNvaP+MLnu1buthA==
+  dependencies:
+    uuid "^3.3.3"
+
 "@iota/kerl@^1.0.0-beta.19":
   version "1.0.0-beta.19"
   resolved "https://registry.yarnpkg.com/@iota/kerl/-/kerl-1.0.0-beta.19.tgz#57743e18a2d91ab668f814fdfd998e46c4c02097"
@@ -1901,12 +1908,6 @@ indexof@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
   integrity sha1-gtwzbSMrkGIXnQWrMpOmYFn9Q10=
-
-industry_4.0_language@iotaledger/industry_4.0_language:
-  version "1.0.2"
-  resolved "https://codeload.github.com/iotaledger/industry_4.0_language/tar.gz/027a06202f719d1dc9c08362b4eedbc18cff0bcb"
-  dependencies:
-    uuid "^3.3.3"
 
 inflight@^1.0.4:
   version "1.0.6"
