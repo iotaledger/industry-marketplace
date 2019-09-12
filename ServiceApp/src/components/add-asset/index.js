@@ -442,7 +442,7 @@ const Modal = styled.div`
   visibility: visible;
   opacity: 1;
   transition: all 0.5s ease;
-  background-color: rgba(14, 56, 160, 0.9);
+  background-color: rgba(246,248,252, 0.85);
   z-index: 10000;
 `;
 
@@ -457,7 +457,7 @@ const AddAsset = styled.div`
   transform: translate(-50%, -50%);
   padding: 30px;
   border-radius: 6px;
-  background-color: rgba(10, 32, 86, 0.9);
+  background-color: rgba(195,208,228, 1);
   box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
 `;
 
