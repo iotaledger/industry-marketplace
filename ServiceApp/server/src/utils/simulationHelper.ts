@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import axios from 'axios';
 import yargs from 'yargs';
 import format from 'date-fns/format';
-import { generate, submodel } from 'SeMarket/Industry_4.0_language/index.js';
+import { generate, submodel } from '@iota/industry_4.0_language'
 import { generateRandomSubmodelValues, getRandomTimestamp, getRandomLocation } from '../utils/randomizer.js';
 import { getRandomUser } from './multiUserHelper';
 import { operations } from '../config.json';
