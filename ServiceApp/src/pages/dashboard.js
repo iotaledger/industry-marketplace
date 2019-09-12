@@ -390,13 +390,11 @@ const AssetsWrapper = styled.div`
 `
 
 const Data = styled.section`
-  background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
+  background-color: #F6F8FC;
   width: 100%;
   display: flex;
   height: 100%;
   overflow-y: auto;
-  @media (min-width: 769px) {
-  }
 `;
 
 const LoadingBox = styled.div`

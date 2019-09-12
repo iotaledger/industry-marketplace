@@ -88,7 +88,7 @@ const Heading = styled.p`
   line-height: 42px;
   margin-bottom: 12px;
   text-align: center;
-  color: #009fff;
+  color: #4140DF;
 `;
 
 const Info = styled.p`
@@ -116,7 +116,7 @@ const Button = styled.button`
   margin: 15px 0 0;
   box-shadow: 0 10px 20px 0 #0a2056;
   font-weight: 700;
-  background-color: #009fff;
+  background-color: #4140DF;
   width: 100px;
 `;
 

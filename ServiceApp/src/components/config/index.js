@@ -254,7 +254,7 @@ const Header = styled.span`
   top: 6px;
   line-height: 42px;
   position: relative;
-  color: #009fff;
+  color: #4140DF;
 `;
 
 const FootRow = styled.div`
@@ -292,9 +292,9 @@ const FooterButton = styled.button`
   letter-spacing: 0.47px;
   padding: 12px 21px;
   border-radius: 100px;
-  color: ${props => (props.secondary ? '#009fff' : '#ffffff')};
-  background-color: ${props => (props.secondary ? '#ffffff' : '#009fff')};
-  border: ${props => (props.secondary ? '1px solid #009fff' : 'none')};
+  color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+  background-color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+  border: ${props => (props.secondary ? '1px solid #4140DF' : 'none')};
   font-size: 16px;
   font-weight: normal;
   letter-spacing: 0.38px;
@@ -302,9 +302,9 @@ const FooterButton = styled.button`
   height: 45px;
 
   &:hover {
-    color: ${props => (props.secondary ? '#ffffff' : '#009fff')};
-    background-color: ${props => (props.secondary ? '#009fff' : '#ffffff')};
-    border: 1px solid #009fff;
+    color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+    background-color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+    border: 1px solid #4140DF;
   }
 `;
 
