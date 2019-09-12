@@ -9,7 +9,7 @@ export default ({ show, type = 'general', notification = null, error = null, cal
   );
 
   const cancelButton = (
-    <Button type="button" onClick={() => callback()}>
+    <Button secondary type="button" onClick={() => callback()}>
       Cancel
     </Button>
   );
@@ -75,7 +75,7 @@ const AccessBox = styled.div`
   top: 50vh;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 360px;
+  width: 400px;
   height: 280px;
   padding: 30px;
   border-radius: 6px;
@@ -111,17 +111,17 @@ const Button = styled.button`
   line-height: 17px;
   padding: 12px 20px 10px;
   border-radius: 6px;
-  color: #ffffff;
-  background-color: #4140DF;
-  border: none;
+  color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+  background-color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+  border: ${props => (props.secondary ? '2px solid #4140DF' : 'none')};
   font-weight: 800;
-  width: 150px;
+  width: 120px;
   height: 48px;
   text-transform: uppercase;
 
   &:hover {
-    color: #4140DF;
-    background-color: #ffffff;
+    color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+    background-color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
     border: 2px solid #4140DF;
   }
 `;
