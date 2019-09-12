@@ -286,8 +286,6 @@ const Row = styled.div`
 `;
 
 const FooterButton = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   outline: none;
   font: 16px 'Nunito Sans', sans-serif;
@@ -302,6 +300,7 @@ const FooterButton = styled.button`
   width: 150px;
   height: 48px;
   text-transform: uppercase;
+  transition: all 0.3s;
 
   &:hover {
     color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};

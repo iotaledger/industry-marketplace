@@ -118,6 +118,7 @@ const Button = styled.button`
   width: 120px;
   height: 48px;
   text-transform: uppercase;
+  transition: all 0.3s;
 
   &:hover {
     color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
