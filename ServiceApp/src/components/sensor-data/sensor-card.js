@@ -119,7 +119,7 @@ const SensorCardWrapper = styled.div`
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #009fff;
+    background-color: #4140DF;
     box-shadow: 0 2px 10px 0 rgba(0, 159, 255, 0.4);
     @media (max-width: 1195px) {
       left: -36px;
@@ -163,7 +163,7 @@ const HeaderAccent = styled.span`
   font-size: 18px;
   line-height: 33px;
   margin-right: 10px;
-  color: #009fff;
+  color: #4140DF;
   @media (max-width: 470px) {
     display: block;
   }

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import yargs from 'yargs';
-import { faucet } from '../config.json';
-import { createWallet, writeData } from './databaseHelper';
+import { faucet, faucetAmount } from '../config.json';
+import { writeData } from './databaseHelper';
 import { generateKeyPair } from './encryptionHelper';
 import { publishDID } from './mamHelper';
+import { generateNewWallet, getBalance } from './walletHelper.js';
 
 const createNewUser = async () => {
     const { name, role = '', location = '' } = argv;
@@ -21,10 +22,11 @@ const createNewUser = async () => {
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    const response = await axios.get(faucet);
-    const data = response.data;
-    if (data.success) {
-        await createWallet(data.wallet);
+    const wallet = generateNewWallet();
+    const response = await axios.get(`${faucet}?address=${wallet.address}&amount=${faucetAmount}`);
+    if (response.data.success) {
+        const balance = await getBalance(wallet.address);
+        await writeData('wallet', { ...wallet, balance });
     }
 };
 

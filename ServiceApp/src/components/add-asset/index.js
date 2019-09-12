@@ -363,7 +363,7 @@ const Header = styled.span`
   top: 6px;
   line-height: 42px;
   position: relative;
-  color: #009fff;
+  color: #4140DF;
 `;
 
 const FootRow = styled.div`
@@ -399,23 +399,25 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  outline: none;
   font: 16px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 12px 21px;
-  border-radius: 100px;
-  color: ${props => (props.secondary ? '#009fff' : '#ffffff')};
-  background-color: ${props => (props.secondary ? '#ffffff' : '#009fff')};
-  border: ${props => (props.secondary ? '1px solid #009fff' : 'none')};
-  font-size: 16px;
-  font-weight: normal;
-  letter-spacing: 0.38px;
+  letter-spacing: 0.15px;
+  line-height: 17px;
+  padding: 12px 20px 10px;
+  border-radius: 6px;
+  color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+  background-color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+  border: ${props => (props.secondary ? '2px solid #4140DF' : 'none')};
+  font-weight: 800;
   width: 150px;
-  height: 45px;
+  height: 48px;
+  text-transform: uppercase;
+  transition: all 0.3s;
 
   &:hover {
-    color: ${props => (props.secondary ? '#ffffff' : '#009fff')};
-    background-color: ${props => (props.secondary ? '#009fff' : '#ffffff')};
-    border: 1px solid #009fff;
+    color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+    background-color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+    border: 2px solid #4140DF;
   }
 `;
 
@@ -447,7 +449,7 @@ const Modal = styled.div`
   visibility: visible;
   opacity: 1;
   transition: all 0.5s ease;
-  background-color: rgba(14, 56, 160, 0.9);
+  background-color: rgba(246,248,252, 0.85);
   z-index: 10000;
 `;
 
@@ -462,7 +464,7 @@ const AddAsset = styled.div`
   transform: translate(-50%, -50%);
   padding: 30px;
   border-radius: 6px;
-  background-color: rgba(10, 32, 86, 0.9);
+  background-color: rgba(195,208,228, 1);
   box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
 `;
 

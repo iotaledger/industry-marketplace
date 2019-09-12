@@ -23,7 +23,7 @@ const Card = styled.div`
 
   height: 100%;
   width: 100%;
-  border: 1px solid #eaecee;
+  border: 2px solid #eaecee;
   @media (min-width: 769px) {
   }
   &:hover {
@@ -33,7 +33,7 @@ const Card = styled.div`
 
 const CardHeader = styled.header`
   position: relative;
-  padding: 20px 30px;
+  padding: 10px 30px;
   border-bottom: 1px solid #eaecee;
 `;
 

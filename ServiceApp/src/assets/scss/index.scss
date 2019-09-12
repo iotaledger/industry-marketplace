@@ -205,26 +205,24 @@ button {
   }
 
   .button {
-    -webkit-appearance: none;
-    -moz-appearance: none;
     appearance: none;
     font: 15px 'Nunito Sans', sans-serif;
     letter-spacing: 0.47px;
     padding: 20px 38px;
-    border-radius: 100px;
+    border-radius: 6px;
     color: #fff;
     font-size: 16px;
     letter-spacing: 0.38px;
     padding: 12px 21px;
     margin: 1px 13px 0;
     font-weight: 700;
-    background-color: #009fff;
-    width: 160px;
+    background-color: #4140DF;
+    width: 150px;
   
     &:hover {
-      color: #009fff;
+      color: #4140DF;
       background-color: #ffffff;
-      border: 1px solid #009fff;
+      border: 2px solid #4140DF;
     }
 
     @media (max-width: 500px) {
