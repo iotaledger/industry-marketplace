@@ -396,8 +396,7 @@ const FootRow = styled.div`
 `;
 
 const FooterButton = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  transition: all 0.3s;
   appearance: none;
   outline: none;
   margin: 5px;
@@ -453,6 +452,11 @@ const CancelHeaderButton = styled.a`
   background-color: #D9E1EF;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
 `;
 
 const Input = styled.input`
@@ -472,7 +476,7 @@ const Img = styled.img`
 `;
 
 const HeaderImg = styled(Img)`
-  margin-bottom: -3px;
+  margin-bottom: -2px;
 `;
 
 const LinkWrapper = styled(Link)`

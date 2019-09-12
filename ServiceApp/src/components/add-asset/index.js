@@ -406,6 +406,7 @@ const FooterButton = styled.button`
   width: 150px;
   height: 48px;
   text-transform: uppercase;
+  transition: all 0.3s;
 
   &:hover {
     color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
