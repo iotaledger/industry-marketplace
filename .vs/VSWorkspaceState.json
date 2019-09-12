@@ -1,10 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ClientApp",
     "\\ServiceApp",
     "\\ServiceApp\\src"
   ],
-  "SelectedNode": "\\ClientApp\\app.js",
   "PreviewInSolutionExplorer": false
 }

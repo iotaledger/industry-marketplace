@@ -4,7 +4,7 @@
         "prefix": "SEMARKET"
     },
     "mqttConfig": {
-        "domain": "http://localhost:4001",
+        "domain": "0.0.0.0:4001",
         "broker": "mqtt://test.mosquitto.org"
     },
     "mongoDB": {
@@ -14,12 +14,7 @@
         "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "sqlServer": {
-        "user": "dev",
-        "password": "dev",
-        "server": "localhost",
-        "database": "semarket"
-    }, "maxDistance": 10000,
+    "maxDistance": 10000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",

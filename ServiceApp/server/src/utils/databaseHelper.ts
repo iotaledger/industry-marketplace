@@ -1,12 +1,15 @@
-const path = require("path");
 const sql = require("mssql");
-const config = require(path.resolve("./src/config.json"));
-
+const config = {
+    "user": process.env.SAPP_SERVER_SQL_SERVER_USER,
+    "password": process.env.SAPP_SERVER_SQL_SERVER_PASSWORD,
+    "server": process.env.SAPP_SERVER_SQL_SERVER_HOSTNAME,
+    "database": process.env.SAPP_SERVER_SQL_SERVER_DATABASE_NAME
+}
 let db;
 
 export const connect = async () => {
     try {
-        db = await new sql.ConnectionPool(config.sqlServer).connect();
+        db = await new sql.ConnectionPool(config).connect();
     } catch (e) {
         console.log(e);
     }

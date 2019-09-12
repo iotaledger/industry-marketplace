@@ -15,7 +15,7 @@
         "build-compile": "tsc",
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
-        "serve-mon": "nodemon ./build/src/index",
+        "serve-mon": "nodemon -r dotenv/config ./build/src/index",
         "start-dev": "run-p serve-mon build-watch",
         "start": "node ./build/src/index",
         "deploy": "now --docker"
@@ -49,7 +49,8 @@
         "tslint": "^5.20.0",
         "tslint-eslint-rules": "^5.4.0",
         "tslint-microsoft-contrib": "^6.2.0",
-        "typescript": "^3.6.3"
+        "typescript": "^3.6.3",
+        "dotenv": "^8.1.0"
     },
     "engines": {
         "node": ">=10.0"
