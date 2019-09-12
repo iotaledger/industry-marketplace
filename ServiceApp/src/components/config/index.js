@@ -287,24 +287,24 @@ const FooterButton = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  outline: none;
   font: 16px 'Nunito Sans', sans-serif;
-  margin-left: 10px;
-  letter-spacing: 0.47px;
-  padding: 12px 21px;
-  border-radius: 100px;
+  letter-spacing: 0.15px;
+  line-height: 17px;
+  padding: 12px 20px 10px;
+  border-radius: 6px;
   color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
   background-color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
-  border: ${props => (props.secondary ? '1px solid #4140DF' : 'none')};
-  font-size: 16px;
-  font-weight: normal;
-  letter-spacing: 0.38px;
+  border: ${props => (props.secondary ? '2px solid #4140DF' : 'none')};
+  font-weight: 800;
   width: 150px;
-  height: 45px;
+  height: 48px;
+  text-transform: uppercase;
 
   &:hover {
     color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
     background-color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
-    border: 1px solid #4140DF;
+    border: 2px solid #4140DF;
   }
 `;
 
