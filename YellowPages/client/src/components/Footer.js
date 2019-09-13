@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../assets/img/logos/logo-footer.svg';
 
 export default () => (
     <footer id="footer">
@@ -8,9 +9,9 @@ export default () => (
             href="https://iota.org/"
         >
             <img
-            src="/static/logotypes/logo-footer.png"
-            srcSet="/static/logotypes/logo-footer@2x.png 2x"
-            alt="IOTA logotype"
+                src={logo}
+                width={160}
+                alt="IOTA logotype"
             />
         </a>
         <div className="footer-links">

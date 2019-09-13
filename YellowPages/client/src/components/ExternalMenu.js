@@ -1,5 +1,4 @@
 import React from 'react'
-
 import '../assets/styles/external-menu.scss'
 
 const ExternalMenu = ({ pages }) => (
