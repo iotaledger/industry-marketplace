@@ -4,67 +4,6 @@
     background-color: #ffffff;
     overflow: hidden;
 
-    &.chapter1,
-    &.glossary {
-        background: url('/static/chapters/Chapter_1.png') no-repeat;
-    }
-
-    &.chapter2 {
-        background: url('/static/chapters/Chapter_2.png') no-repeat;
-    }
-
-    &.chapter3 {
-        background: url('/static/chapters/Chapter_3.png') no-repeat;
-    }
-
-    &.chapter4 {
-        background: url('/static/chapters/Chapter_4.png') no-repeat;
-    }
-
-    &.chapter5 {
-        background: url('/static/chapters/Chapter_5.png') no-repeat;
-    }
-
-    &.chapter6 {
-        background: url('/static/chapters/Chapter_6.png') no-repeat;
-    }
-
-    &.module1 {
-        background: url('/static/chapters/Module_1.png') no-repeat;
-    }
-
-    &.module2 {
-        background: url('/static/chapters/Module_2.png') no-repeat;
-    }
-
-    &.module3 {
-        background: url('/static/chapters/Module_3.png') no-repeat;
-    }
-
-    &.module4 {
-        background: url('/static/chapters/Module_4.png') no-repeat;
-    }
-
-    &.module5 {
-        background: url('/static/chapters/Module_5.png') no-repeat;
-    }
-
-    &.module51 {
-        background: url('/static/chapters/Module_5_1.png') no-repeat;
-    }
-
-    &.module511 {
-        background: url('/static/chapters/Module_5_1_1.png') no-repeat;
-    }
-
-    &.module512 {
-        background: url('/static/chapters/Module_5_1_2.png') no-repeat;
-    }
-
-    &.grants {
-        background: url('/static/chapters/Grants.png') no-repeat;
-    }
-
     @media (max-width: 768px) {
         overflow-y: visible;
         overflow-x: visible;
@@ -80,8 +19,19 @@
     height: 100%;
     background-color: #ffffff;
 
+    @media (max-width: 920px) {
+        padding: 100px 0;
+        max-width: 750px;
+    }
+
     @media (max-width: 768px) {
-        padding: 50px 100px;
+        padding: 50px 0;
+        max-width: 550px;
+    }
+
+    @media (max-width: 600px) {
+        padding: 50px 0;
+        max-width: 500px;
     }
 
     .label {
@@ -90,14 +40,6 @@
         letter-spacing: 0.05em;
         text-transform: uppercase;
         color: #5067EB;
-
-        @media (max-width: 768px) {
-            margin-left: 25px;
-        }
-
-        @media (max-width: 580px) {
-            margin-left: 35px;
-        }
     }
 
     .chapters-wrapper {
@@ -195,6 +137,7 @@
 
             @media (max-width: 768px) {
                 align-items: normal;
+                padding: 25px 0;
 
                 .title {
                     font-size: 40px;
@@ -208,6 +151,8 @@
             }
 
             @media (max-width: 580px) {
+                padding: 20px 0;
+                
                 .title {
                     font-size: 30px;
                 }
@@ -279,13 +224,19 @@
                         font-size: 20px;
                         padding-left: 10px;
                         margin-right: 30px;
-                        width: 95px;
+                        width: 80px;
                     }
 
                     .subtitle {
                         text-align: left;
                         word-wrap: break-word;
                         width: 100%;
+                    }
+                }
+
+                @media (max-width: 600px) {
+                    .title {
+                        width: 60px;
                     }
                 }
             }
