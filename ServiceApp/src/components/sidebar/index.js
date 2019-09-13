@@ -153,7 +153,7 @@ const SidebarWrapper = styled.aside`
     display: flex;
     position: relative;
     left: -100%;
-    width: 420px;
+    width: 450px;
     padding-left: 45px;
   }
 `;
