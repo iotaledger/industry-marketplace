@@ -52,7 +52,7 @@ class Dashboard extends React.Component {
       }
     };
 
-    this.handleSidebar =  this.handleSidebar.bind(this)
+    this.handleSidebar =  this.handleSidebar.bind(this);
     this.createRequest = this.createRequest.bind(this);
     this.newMessage = this.newMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
