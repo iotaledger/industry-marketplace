@@ -18,6 +18,7 @@ import {
   getRandomTimestamp,
   getRandomLocation
 } from '../../utils/randomizer';
+import ProximityFeedback from '../ProximityFeedback';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -233,7 +234,7 @@ export default class extends React.Component {
             >
               {
                 !loading ? (
-                  <Form>
+                  <Form className="form">
                     <Column>
                       <Label>Select Operation:</Label>
                       <Select
@@ -300,7 +301,9 @@ export default class extends React.Component {
                               value={submodel[i].value}
                               checked={submodel[i].value}
                               onChange={e => this.changeSubmodelValue(e, i)}
+                              { ...(valueType !== 'boolean' ? { required: true } : {}) }
                             />
+                            <div className="form__error"></div>
                           </Column>
                         </Row>
                       ))
@@ -318,7 +321,7 @@ export default class extends React.Component {
                     <FooterButton secondary onClick={this.cancel}>
                       Cancel
                     </FooterButton>
-                    <FooterButton onClick={this.submit}>
+                    <FooterButton onClick={this.submit} className="form__button">
                       Submit
                     </FooterButton>
                   </FootRow>
@@ -327,6 +330,7 @@ export default class extends React.Component {
             </Card>
           </AddAsset>
         </Modal>
+        { operation && <ProximityFeedback /> }
       </React.Fragment>
     );
   }
@@ -377,6 +381,7 @@ const Column = styled.div`
   flex-direction: column;
   width: 100%;
   text-align: left;
+  position: relative;
 `;
 
 const Row = styled.div`
