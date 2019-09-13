@@ -18,7 +18,7 @@ export const findTransactions = async (bundle) => {
                 .then(resolve)
                 .catch(error => {
                     console.error('findTransactions error', error);
-                    reject(error);
+                   // reject(error);
                 });
         });
     } catch (error) {

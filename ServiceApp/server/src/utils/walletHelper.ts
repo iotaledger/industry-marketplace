@@ -123,12 +123,12 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                         })
                         .catch(error => {
                             console.error('transferFunds sendTrytes error', error);
-                            reject(error);
+                            //reject(error);
                         });
                 })
                 .catch(error => {
                     console.error('transferFunds prepareTransfers error', error);
-                    reject(error);
+                 //   reject(error);
                 });
         });
     } catch (error) {
