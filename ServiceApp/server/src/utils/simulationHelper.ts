@@ -61,8 +61,8 @@ const simulate = async (role) => {
         console.log("Connected")
     });
 
-    socket.on('disconnect', () => {
-        console.log("disconnected")
+    socket.on('disconnect', (reason) => {
+        console.log("disconnected because of", reason)
     })   
 
     socket.emit('subscribe', { events: ['tx'] })
