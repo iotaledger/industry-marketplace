@@ -60,9 +60,15 @@ const simulate = async (role) => {
     socket.on('connect', () => {
         console.log("Connected")
     });
+
+    socket.on('disconnect', () => {
+        console.log("disconnected")
+    })   
+
     socket.emit('subscribe', { events: ['tx'] })
 
     socket.on('zmq', async (message) => {
+        console.log("got data from zmq")
         const data = get(message, 'data.data')
         if (typeof data === 'string') {
             JSON.parse(data);
@@ -89,7 +95,6 @@ const simulate = async (role) => {
         }
 
         if (['proposal'].includes(type)) {
-
             console.log("Sending acceptProposal")
             const request = generate({
                 messageType: 'acceptProposal',
@@ -164,3 +169,5 @@ if (argv.role === 'SR') {
 else if (argv.role === 'SP') {
     simulate('SP')
 }
+
+
