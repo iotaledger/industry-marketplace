@@ -16,7 +16,6 @@
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 10,
     "operations": [
-        "0173-1#01-BAF888#004",
         "0173-1#01-BAF777#004",
         "0173-1#01-BAF575#004",
         "0173-1#01-BAF576#004",
