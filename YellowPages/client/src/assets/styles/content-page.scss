@@ -3,6 +3,119 @@
 @import '../styles/slide-right';
 @import '../styles/slide-up';
 
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomoon/icomoon.eot');
+	src:url('../fonts/icomoon/icomoon.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/icomoon/icomoon.woff') format('woff'),
+		url('../fonts/icomoon/icomoon.ttf') format('truetype'),
+		url('../fonts/icomoon/icomoon.svg#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+/* Pseudo elements for icons */
+.navigation-btn:before,
+.icon-arrow-right:before,
+.icon-arrow-left:before {
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	position: relative;
+	-webkit-font-smoothing: antialiased;
+}
+
+.icon-arrow-right:before {
+	content: "\e00d";
+}
+
+.icon-arrow-left:before {
+	content: "\e003";
+}
+
+.navigation-btn {
+    transition: all 0.3s;
+
+    border-radius: 6px;
+    border: 2px solid #4140DF;
+    color: #4140DF;
+    overflow: hidden;
+
+    font-weight: 800;
+    font-size: 14px;
+    line-height: 17px;
+    text-align: center;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 25px 80px;
+    display: inline-block;
+    margin: 15px 30px;
+    outline: none;
+    position: relative;
+    outline: none;
+
+    align-items: flex-start;
+    text-indent: 0px;
+    text-shadow: none;
+    word-spacing: normal;
+    -webkit-appearance: button;
+    -webkit-writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+
+    &:hover {
+        background: #24b662;
+    }
+
+    &:before {
+        position: absolute;
+        height: 100%;
+        font-size: 125%;
+        line-height: 3.5;
+        color: #fff;
+        transition: all 0.3s;
+    }
+
+    &.next {
+        background: #4140DF;
+        color: #fff;
+
+        &:before {
+            left: 70%;
+            opacity: 0;
+            top: 0;
+        }
+
+        &:hover {
+            &:before {
+                left: 80%;
+                opacity: 1;
+            }
+        }
+    }
+
+    &.back {
+        &:before {
+            left: 30%;
+            opacity: 0;
+            top: 0;
+        }
+
+        &:hover {
+            &:before {
+                left: 10%;
+                opacity: 1;
+            }
+        }
+    }
+
+
+}
+
 .content-header {
     display: flex;
     flex-direction: column;
