@@ -4,8 +4,8 @@ import Button from './Button'
 
 export default ({ page, title }) => (
     <Link to={`/${page}`}>
-        <Button className="large secondary">
+        <button className="navigation-btn back icon-arrow-left">
             {title}
-        </Button>
+        </button>
     </Link>
 )
