@@ -103,6 +103,7 @@ export const createDID = async (data) => {
         .input("next_root", data.next_root)
         .input("start", data.start)
         .query(query);
+        console.log('createDID: \n data \n '+ data + ' result \n + ' + result);
 
     return result.rowsAffected === 1;
 };
@@ -179,15 +180,16 @@ export const readData = async (table, searchField = null) => {
     try {
         let query = `SELECT TOP 1 * FROM [dbo].[${table}] ORDER BY internal_id desc`;
         let result = null;
+        const request = new sql.Request(db);
         if (searchField) {
-            result = await db.request()
+            result = await request
                 .input('id', sql.VarChar(4000))
                 .query(query);
         } else {
-            await db.request()
+            result = await request
                 .query(query);
         }
-        return result;
+        return await parseResults(result);
     } catch (error) {
         console.log('readData', error);
     }
@@ -200,7 +202,7 @@ export const readAllData = async (table) => {
         let query = `SELECT * FROM [dbo].[${table}] ORDER BY internal_id desc`;
         let result = await db.request().query(query);
 
-        return result;
+        return await parseResults(result);
     } catch (error) {
         console.log('readAllData', error);
     }
@@ -215,8 +217,29 @@ export const removeData = async (table) => {
         let result = await db.request()
             .query(query);
 
-        return result;
+        return result.rowsAffected >= 1;
     } catch (error) {
         console.log('removeData', error);
     }
 };
+
+async function parseResults (result) {
+    try
+    {
+        if (result.recordsets.length == 1)
+        {
+            //console.log(result.recordset[0]);
+            return result.recordset[0];
+        }
+        else
+        {
+           // console.log(result.recordsets);
+            return result.recordsets;
+        }
+    }
+    catch(error)
+    {
+        console.log('ParseResults Error', error);
+    }
+    
+}
