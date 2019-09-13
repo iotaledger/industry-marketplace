@@ -401,7 +401,7 @@ const FooterButton = styled.button`
   outline: none;
   margin: 5px;
   @media (min-width: 920px) {
-    width: 200px;
+    width: 215px;
   }
   font: 16px 'Nunito Sans', sans-serif;
   line-height: 17px;

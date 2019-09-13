@@ -136,7 +136,7 @@ const LoadingBox = styled.div`
 `;
 
 const Header = styled.div`
-  color: #ffffff;
+  color: #485776;
   font-size: 24px;
   margin-bottom: 40px;
   text-align: left;
