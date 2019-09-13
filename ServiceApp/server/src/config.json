@@ -28,7 +28,7 @@
         "0173-1#01-BAF777#004",
         "0173-1#01-BAF888#004"
     ],
-    "dataRequest": ["0173-1#01-BAF777#004"],
+    "dataRequest": ["0173-1#01-BAF888#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "faucetAmount": 100,
     "provider": "https://nodes.devnet.iota.org:443",
