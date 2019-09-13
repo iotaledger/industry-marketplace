@@ -1,8 +1,12 @@
+import axios from 'axios';
+import config from '../config.json';
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
 import { getRandomRow, updateValue, writeData, readDataEquals } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 import { generateSeed } from './iotaHelper';
+import { repairWallet } from './walletQueueHelper.js';
+
 
 
 export const generateNewWallet = () => {
@@ -59,8 +63,23 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         // Minimum value on mainnet & spamnet is `14`, `9` on devnet and other testnets.
         const minWeightMagnitude = 9;
 
-        if (balance < totalAmount) {
-            throw new Error(`Insufficient balance: ${balance}. Needed: ${totalAmount}`);
+        if( balance === 0) {
+            repairWallet(seed, keyIndex); 
+        }
+        if (balance < totalAmount && balance != 0 ) {
+            const response = await axios.get(`${config.faucet}?address=${address}&amount=${config.faucetAmount}`);
+        if (response.data.success) {
+            const balance = await getBalance(address);
+            console.log("new balance", balance)
+        }
+        else {
+            await updateValue('wallet', 'seed', 'status', seed, 'error')
+            const wallet = generateNewWallet();
+            await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
+            seed = wallet.seed
+            address = wallet.address 
+            keyIndex = wallet.keyIndex
+        }
         }
 
         return new Promise( (resolve, reject) => {

@@ -1,6 +1,9 @@
+import axios from 'axios';
+import config from '../config.json';
 import { getRandomRow, updateValue, readAllData, writeData } from './databaseHelper';
-import { getBalance, getBalanceForSimulator } from './walletHelper';
+import { getBalance, getBalanceForSimulator, generateNewWallet } from './walletHelper';
 import { generateAddress } from '@iota/core';
+
 
 export const initializeWalletQueue = async () => {
 
@@ -32,22 +35,24 @@ export const repairWallet = async (seed, keyIndex) => {
 
     return new Promise(async (resolve, reject) => {
 
-        await updateValue('wallet', 'seed', 'status', seed, 'repairing')
+        console.log("repairing address", await generateAddress(seed, keyIndex)  )
+        await updateValue('wallet', 'seed', 'status', seed, 'error')
 
-        let iterable = [-2, -1, 0, 1, 2];
+        let iterable = [ -2, -1, 0, 1, 2 ];
 
         for (let value of iterable) {
             const newIndex = Number(keyIndex) + Number(value)
             value += 1;
-            const newAddress = await generateAddress(seed, newIndex);
+            const newAddress = await generateAddress(seed, newIndex) 
             const balance = await getBalance(newAddress);
-            console.log(balance)
 
             if (balance > 0) {
                 await writeData('wallet', { address: newAddress, balance, keyIndex: newIndex, seed, status: 'usable' });
                 resolve(); 
             }
-        } reject(); 
+        }
+        const wallet = generateNewWallet();
+        await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
 
     });
 }
