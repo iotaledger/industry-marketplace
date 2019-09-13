@@ -52,7 +52,7 @@ const simulate = async (role) => {
             await apiPost('cfp', request)
 
         }
-        setInterval(sendRandomCFP, 60000);
+        setInterval(sendRandomCFP, 30000);
     }
 
 
@@ -80,7 +80,7 @@ const simulate = async (role) => {
                     userId: await getRandomUser(role),
                     location: await createCloseLocation(senderLocation),
                     irdi: await get(data.dataElements.submodels[0].identification, 'id'),
-                    price: await randomValue([1, 2, 4, 5, 6, 7, 8, 9])
+                    price: await randomValue([1, 2])
                 })
 
                 //send message to Market Manager
@@ -89,6 +89,7 @@ const simulate = async (role) => {
 
         if (['proposal'].includes(type)) {
 
+            console.log("Sending acceptProposal")
             const request = generate({
                 messageType: 'acceptProposal',
                 userId: await get(data.frame.receiver.identification, 'id'),
