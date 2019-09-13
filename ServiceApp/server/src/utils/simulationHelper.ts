@@ -71,6 +71,7 @@ const simulate = async (role) => {
 
         if (['callForProposal'].includes(type)) {
 
+            console.log("send proposal")
                 const senderLocation = await get(data.frame, 'location')
 
                 //generate message  
