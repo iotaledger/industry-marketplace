@@ -43,9 +43,11 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
         </Block>
         {
           user.role === 'SR' && !back ? (
-            <Button onClick={createRequest}>
-              <img src={createRequestBtn} alt="Create request"/>
-            </Button>
+            <Block>
+              <Button onClick={createRequest}>
+                <img src={createRequestBtn} alt="Create request"/>
+              </Button>
+            </Block>
           ) : null
         }
       </RightHeader>
@@ -118,10 +120,14 @@ const Main = styled.nav`
 
   @media (min-width: 840px) {
     flex-wrap: unset;
-    padding: 20px 30px;
+    padding: 20px 15px;
     flex-direction: row;
     justify-content: space-between;
     height: 90px;
+  }
+
+  @media (min-width: 920px) {
+    padding: 20px 30px;
   }
 `;
 
@@ -142,14 +148,18 @@ const Desc = styled.div`
 const Block = styled.div`
   display: block;
   white-space: nowrap;
-  margin: 0 70px 0 10px;
+  margin: 0 10px 0 70px;
 
-  @media (max-width: 1000px) {
-    margin: 0 40px 0 10px;
+  &:first-child {
+    margin-left: 10px;
   }
 
-  @media (max-width: 900px) {
-    margin: 0 25px 0 10px;
+  @media (max-width: 1000px) {
+    margin: 0 10px 0 40px;
+  }
+
+  @media (max-width: 920px) {
+    margin: 0 10px;
   }
 
   @media (max-width: 839px) {
@@ -176,7 +186,7 @@ const RightHeader = styled.div`
   
   @media (min-width: 840px) {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-top: 0;
   }
 `;
