@@ -6,12 +6,13 @@ import { zmqUnsubscribe } from './routes/zmqUnsubscribe';
 import { ZmqService } from './services/zmqService';
 import { AppHelper } from './utils/appHelper';
 
+
 AppHelper.build(
     (app, config, port) => {
         ServiceFactory.register('zmq', () => new ZmqService(config.zmq));
 
         const server = new Server(app);
-        const socketServer = SocketIO(server);
+        const socketServer = SocketIO(server,  { pingTimeout: 60000});
 
         server.listen(port);
 
