@@ -14,23 +14,23 @@ export default () => (
         <div className="features-heading-wrapper">
             <Text className="title">Features</Text>
             <Text>Industry 4.0 (I4.0) delivers a new levels of manufacturing management, enabling advanced automated machine to machine operation.</Text>
-            <Text>By utilising The Tangle and eCl@ss together, all actors in the value chain are supported with increased trust and security, truly enabling I4.0</Text>
+            <Text>By utilising the Tangle and eCl@ss together, all actors in the value chain are supported with increased trust and security, truly enabling I4.0</Text>
         </div>
         <div className="key-topic-wrapper">
             <div className="key-topic">
                 <img src={vendor_neutral} alt="Vendor neutral" />
                 <Text className="subtitle">Vendor neutral</Text>
-                <Text>Completely neutral communication conditions for all participants</Text>
+                <Text>Vendor- and industry-neutral platform and communication for all participants</Text>
             </div>
             <div className="key-topic">
                 <img src={machine_interaction} alt="Machine Interaction" />
                 <Text className="subtitle">Machine Interaction</Text>
-                <Text>M2M communication for contracts, product data, purchasing, bids, orders, services</Text>
+                <Text>Standardised communication for contracts, product data, purchasing, bids, orders, services</Text>
             </div>
             <div className="key-topic">
                 <img src={semantic_language} alt="Semantic language" />
                 <Text className="subtitle">Semantic language</Text>
-                <Text>Based on open standards, developed by academic institutes</Text>
+                <Text>Semantic language, based on open specifications, developed by Plattform Industrie 4.0 and academic institutes</Text>
             </div>
             <div className="key-topic">
                 <img src={decentralized} alt="Decentralized" />
@@ -50,4 +50,3 @@ export default () => (
         </div>
     </div>
 )
-

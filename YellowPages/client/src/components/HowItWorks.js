@@ -8,14 +8,14 @@ import videoMobile from '../assets/img/video/mobile_play.svg';
 import '../assets/styles/content.scss'
 
 export default () => {
-    const [showVideo, setShowVideo] = useState(false)    
+    const [showVideo, setShowVideo] = useState(false)
 
     return (
         <div className="video-section-wrapper reverse">
             <div className="video-section-text-wrapper how-it-works">
                 <Text className="title">How it works</Text>
                 <Text>
-                    See how the Semantic Market operates in our video, or explore for yourself {' '}
+                    See how the Industry Marketplace operates in our video, or explore for yourself {' '}
                     <Link to="/scalability">
                         by watching the tutorial
                     </Link>
@@ -25,29 +25,28 @@ export default () => {
                     </Link>
                 </Text>
             </div>
-            <img 
+            <img
                 className="desktop"
                 role="button"
                 onClick={() => setShowVideo(true)}
-                src={videoDesktop} 
+                src={videoDesktop}
                 alt=""
             />
-            <img 
+            <img
                 className="mobile"
                 role="button"
                 onClick={() => setShowVideo(true)}
                 src={videoMobile}
                 alt=""
             />
-            <ModalVideo 
-                channel='youtube' 
+            <ModalVideo
+                channel='youtube'
                 autoplay
                 allowFullScreen
-                isOpen={showVideo} 
-                videoId='guNNqEeu6gY' 
-                onClose={() => setShowVideo(false)} 
+                isOpen={showVideo}
+                videoId='guNNqEeu6gY'
+                onClose={() => setShowVideo(false)}
             />
         </div>
     )
 }
-
