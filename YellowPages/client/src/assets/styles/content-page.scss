@@ -52,12 +52,14 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: 25px 80px;
+    padding: 15px 80px;
+		width: 100px;
     display: inline-block;
-    margin: 15px 30px;
+    margin: 15px 0px;
     outline: none;
     position: relative;
     outline: none;
+		user-select: none;
 
     align-items: flex-start;
     text-indent: 0px;
@@ -67,32 +69,33 @@
     -webkit-writing-mode: horizontal-tb !important;
     text-rendering: auto;
 
-    &:hover {
-        background: #24b662;
-    }
-
     &:before {
         position: absolute;
         height: 100%;
         font-size: 125%;
         line-height: 3.5;
-        color: #fff;
+        color: #FFFFFF;
         transition: all 0.3s;
     }
 
     &.next {
         background: #4140DF;
-        color: #fff;
+        color: #FFFFFF;
 
         &:before {
-            left: 70%;
+            left: 65%;
             opacity: 0;
-            top: 0;
+            bottom: 7px;
+						color: #4140DF;
         }
 
         &:hover {
+						background: #FFFFFF;
+						color: #4140DF;
+						border: 2px solid #4140DF;
+
             &:before {
-                left: 80%;
+                left: 85%;
                 opacity: 1;
             }
         }
@@ -102,10 +105,12 @@
         &:before {
             left: 30%;
             opacity: 0;
-            top: 0;
+            bottom: 7px;
         }
 
         &:hover {
+						background: #4140DF;
+						color: #fff;
             &:before {
                 left: 10%;
                 opacity: 1;
