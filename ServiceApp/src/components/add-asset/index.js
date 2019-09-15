@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import get from 'lodash-es/get';
 import { evaluate, operations, submodel } from 'industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
-import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -177,7 +176,7 @@ export default class extends React.Component {
 
     if (!this.state.operation)
       return alert('Please specify required operation');
-    if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
+    if (!this.state.assetStart || !startDate || !isValid(startDate))
       return alert('Please enter a valid date/time when the request starts');
     if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
       return alert('Please enter a valid date/time when the request ends');
