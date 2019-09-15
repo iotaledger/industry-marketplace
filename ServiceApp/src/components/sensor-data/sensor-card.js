@@ -16,7 +16,8 @@ const SensorCard = ({ schema, packet }) => {
     (async () => {
       // Organize data for layout
       const layout = [];
-      schema.forEach((item, i) => {
+      let schema_json = typeof schema === 'string' ? JSON.parse(schema) : schema;
+      schema_json.forEach((item, i) => {
         if (!layout[Math.floor(i / 2)]) {
           layout[Math.floor(i / 2)] = [];
         }
@@ -59,8 +60,9 @@ const SensorCard = ({ schema, packet }) => {
                 <RowDesc>{item && item.name}:</RowDesc>
                 <RowValue>
                   {(sensorData.data[item.id] !== typeof 'object' &&
-                    (sensorData.data[item.id] || sensorData.data[item.id.toLowerCase()])) ||
-                    JSON.stringify(sensorData.data, null, 2)}
+                    (sensorData.data[item.id].toString() || sensorData.data[item.id.toLowerCase()])) ||
+                    JSON.stringify(sensorData.data, null, 2)
+                  }
                   <RowUnit>{item && item.unit}</RowUnit>
                 </RowValue>
               </RowHalf>
