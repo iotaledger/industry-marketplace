@@ -27,9 +27,7 @@ export default () => {
                     <p>The Industry Marketplace will serve as a vendor- and industry-neutral platform, automating the trading of physical and digital goods / services. Building on specifications developed by the Plattform Industrie 4.0 (Germany’s central network for the advancement of digital transformation in manufacturing), the Industry Marketplace combines distributed ledger technology, immutable audit logs, and standardized, machine-readable contracts with an integrated decentralized identity system, to ensure the authenticity of all participants and enable secure communication and payments across the industry landscape.</p>
                     <p>The Industry Marketplace has been developed as an open source initiative and is free to join. A simple trial can be run at your office to explore its potential. We encourage open innovation with other industry partners to explore new business models and the many possibilities of industrial automation.</p>
 
-
-
-                    <p className="subtitle">Key features</p>
+                    <h3>Key features</h3>
                     <ul>
                         <li>Vendor- and industry-neutral platform and communication </li>
                         <li>Standardised communication for contracts, product data, purchasing, bids, orders, services</li>
@@ -44,7 +42,7 @@ export default () => {
                         <li>Digital trust as design principle through the IOTA Tangle</li>
                     </ul>
                     <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                        <img alt="" src="../static/scalability/blockchain_bottleneck.gif"/>
                     </div>
                 </div>
             </div>
