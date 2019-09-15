@@ -11,7 +11,7 @@ export default () => (
         <div className="key-components-description">
             <Text className="title">Key Components</Text>
             <Text>Industry 4.0 components must be able to talk to each other, offer services and, if necessary, negotiate tasks and offer payment.</Text>
-            <Text>Through the Semantic Marketplace components, Industry 4.0 machine components act as independent service provider and consumer, who pay or are paid for the provided services supported by a common infrastructure.</Text>
+            <Text>Through the Industry Marketplace components, Industry 4.0 machine components act as independent service provider and consumer, who pay or are paid for the provided services supported by a common infrastructure.</Text>
         </div>
         <div className="key-components-list">
             <div className="key-component">
@@ -38,4 +38,3 @@ export default () => (
         </div>
     </div>
 )
-
