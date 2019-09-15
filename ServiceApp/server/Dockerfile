@@ -14,7 +14,7 @@ RUN npm run build
 # Remove unneccesary so the docker image doesn't exceeds max size
 RUN apk del git python make g++
 
-EXPOSE 4001:4001
+EXPOSE 4000:4000
 
 # Serve the prod build from the dist folder
 CMD ["node", "./build/src/index"]

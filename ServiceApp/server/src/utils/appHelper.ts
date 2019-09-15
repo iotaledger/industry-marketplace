@@ -99,7 +99,9 @@ export class AppHelper {
 
         app.post('/data', async (req, res) => {
             try {
+                console.log('/data received');
                 const { conversationId, deviceId, userId, schema } = req.body;
+                console.log(req.body);
                 if (conversationId && deviceId && userId && schema) {
                     await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
                 }
@@ -154,7 +156,7 @@ export class AppHelper {
                 const request = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
-               
+                console.log(request);
                 // 2. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -186,14 +188,14 @@ export class AppHelper {
             try {
                 // 1. Create Tag
                 const request = await generate(req.body);
+
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
                 // 2. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
-
-                console.log('proposal success', hash);
+                console.log('Proposal Sent. Hash: ' + hash );
                 res.send({
                     success: true,
                     tag,
@@ -406,7 +408,7 @@ export class AppHelper {
             }
         });
 
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4001;
+        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
         console.log('port is ' + port);
         if (!customListener) {
             app.listen(port, async err => {
