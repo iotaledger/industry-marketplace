@@ -11,10 +11,10 @@
 }
 
 .chapters-overlay {
-    max-width: 800px;
+    max-width: 750px;
     width: 100%;
     float: right;
-    padding: 200px 100px;
+    padding: 200px 150px 200px 100px;
     min-height: 100vh;
     height: 100%;
     background-color: #ffffff;
@@ -51,31 +51,32 @@
         .title {
             font-size: 48px;
             font-weight: 800;
-            line-height: 32px;
+            line-height: 45px;
             color: inherit;
             margin-right: 50px;
             text-align: right;
+            display: none;
         }
 
         .subtitle {
-            font-size: 25px;
+            font-size: 20px;
             font-weight: 900;
-            line-height: 32px;
-            color: inherit;
-            letter-spacing: 0.15em;
+            line-height: 25px;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            max-width: 525px;
+            text-align: left;
         }
 
         .read {
             font-size: 25px;
             font-weight: 800;
-            line-height: 32px;
+            line-height: 25px;
             color: inherit;
             text-transform: uppercase;
             color: #4140DF;
             position: absolute;
             right: -400px;
-            bottom: 32px;
             transition: 0.55s;
 
             @media (max-width: 768px) {
@@ -87,23 +88,23 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            align-items: baseline;
+            align-items: end;
             padding: 30px 0;
             width: 100%;
             color: #485776;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            opacity: 0.4;
-            transition: opacity 0.75s ease-in-out;
+            opacity: 0.5;
+            transition: opacity 0.55s ease-in-out;
 
             &:hover {
                 opacity: 1;
-                transition: opacity 0.75s ease-in-out;
+                transition: opacity 0.55s ease-in-out;
 
                 & > .read {
                     transition: 0.55s;
-                    right: 100px;
+                    right: 50px;
                 }
             }
 
@@ -115,6 +116,7 @@
                 position: relative;
                 text-align: left;
                 word-wrap: break-word;
+                max-width: 525px;
 
                 &:after {
                     content: '';
@@ -152,7 +154,7 @@
 
             @media (max-width: 580px) {
                 padding: 20px 0;
-                
+
                 .title {
                     font-size: 30px;
                 }
@@ -182,14 +184,15 @@
             }
 
             .subtopic {
-                margin-top: 10px;
+                margin-top: 20px;
+                margin-left: 55px;
                 color: #50545f;
                 cursor: pointer;
                 position: relative;
-                width: 775px;
-                opacity: 0.4;
+                width: 700px;
+                opacity: 0.5;
                 display: flex;
-                transition: opacity 0.75s ease-in-out;
+                transition: opacity 0.55s ease-in-out;
 
                 & > .read {
                     font-size: 16px;
@@ -198,7 +201,7 @@
 
                 &:hover {
                     opacity: 1;
-                    transition: opacity 0.75s ease-in-out;
+                    transition: opacity 0.55s ease-in-out;
 
                     & > .read {
                         transition: 0.55s;
@@ -213,7 +216,7 @@
                 }
 
                 .subtitle {
-                    font-size: 16px;
+                    font-size: 15px;
                 }
 
                 @media (max-width: 768px) {
@@ -243,7 +246,6 @@
 
             .subtitle {
                 font-size: 16px;
-                line-height: 32px;
             }
         }
     }
