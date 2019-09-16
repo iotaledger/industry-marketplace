@@ -147,7 +147,7 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', location, submodelId);
 
                 const userDID = req.body.frame.sender.identification.id;
-
+                
                 const user = await getSpecificUser('id', userDID)
                 const userName = await get(user, 'name')
            

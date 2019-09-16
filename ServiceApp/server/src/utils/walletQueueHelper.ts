@@ -12,7 +12,7 @@ export const initializeWalletQueue = async () => {
     const wallet : any = await readAllData('wallet');
 
     wallet.forEach(async ({ seed, status }) => {
-        if (status === 'reserved' || 'busy') {
+        if (status === 'reserved' || status === 'busy') {
             await updateValue('wallet', 'seed', 'status', seed, 'usable')
         }
     });
@@ -32,7 +32,7 @@ export const initializeWalletQueue = async () => {
 
 
 export const repairWallet = async (seed, keyIndex) => {
-
+try{
     return new Promise(async (resolve, reject) => {
 
         console.log("repairing address", await generateAddress(seed, keyIndex)  )
@@ -53,8 +53,12 @@ export const repairWallet = async (seed, keyIndex) => {
         }
         const wallet = generateNewWallet();
         await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-
+        const balance = await getBalance(wallet.address);
+        await writeData('wallet', { address: wallet.address, balance, keyIndex: wallet.keyIndex, seed: wallet.seed, status: 'usable' });
     });
+} catch (error){
+    console.log("Repair wallet Error", error)
+}
 }
 
 

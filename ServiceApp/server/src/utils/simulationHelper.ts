@@ -10,7 +10,6 @@ import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
 import { createCloseLocation } from './locationHelper';
 
-
 const BASE_URL = 'http://localhost:5000';
 const socket = io('http://localhost:5000');
 
@@ -62,13 +61,12 @@ const simulate = async (role) => {
     });
 
     socket.on('disconnect', (reason) => {
-        console.log("disconnected because of", reason)
+        console.log("disconnected:", reason)
     })   
 
     socket.emit('subscribe', { events: ['tx'] })
 
     socket.on('zmq', async (message) => {
-        console.log("got data from zmq")
         const data = get(message, 'data.data')
         if (typeof data === 'string') {
             JSON.parse(data);
@@ -76,8 +74,6 @@ const simulate = async (role) => {
         const { type } = data.frame;
 
         if (['callForProposal'].includes(type)) {
-
-            console.log("send proposal")
                 const senderLocation = await get(data.frame, 'location')
 
                 //generate message  
@@ -95,7 +91,7 @@ const simulate = async (role) => {
         }
 
         if (['proposal'].includes(type)) {
-            console.log("Sending acceptProposal")
+
             const request = generate({
                 messageType: 'acceptProposal',
                 userId: await get(data.frame.receiver.identification, 'id'),
@@ -117,7 +113,6 @@ const simulate = async (role) => {
         }
 
         if (['informConfirm'].includes(type)) {
-
 
             const request = await generate({
                 messageType: 'informPayment',
@@ -143,7 +138,7 @@ const apiPost = async (messageType, message) => {
             const response = await axios.post(`${BASE_URL}/${messageType}`, message);
             resolve(response.data);
         } catch (error) {
-            console.error('findTransactions catch', error);
+            console.error('API Error', error);
             return error;
         }
     })
