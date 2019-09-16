@@ -23,12 +23,6 @@ import Vocabulary from './pages/en/vocabulary';
 import MessageStructure from './pages/en/message_structure';
 import SemanticInteractionProtocols from './pages/en/semantic_interaction_protocols';
 import ProjectPartners from './pages/en/project_partners';
-import Eclass from './pages/en/eclass';
-import Neoception from './pages/en/neoception';
-import OvGU from './pages/en/ovgu';
-import HSU from './pages/en/hsu';
-import WeWash from './pages/en/wewash';
-import IOTAFoundation from './pages/en/iota_foundation';
 import Join from './pages/en/join';
 import RegisterDID from './pages/en/register_did';
 import IOTATangle from './pages/en/iota_tangle';
@@ -93,12 +87,6 @@ class App extends Component {
                             <Route path="/message_structure" component={MessageStructure} />
                             <Route path="/semantic_interaction_protocols" component={SemanticInteractionProtocols} />
                             <Route path="/project_partners" component={ProjectPartners} />
-                            <Route path="/eclass" component={Eclass} />
-                            <Route path="/neoception" component={Neoception} />
-                            <Route path="/ovgu" component={OvGU} />
-                            <Route path="/hsu" component={HSU} />
-                            <Route path="/wewash" component={WeWash} />
-                            <Route path="/iota_foundation" component={IOTAFoundation} />
                             <Route path="/join" component={Join} />
                             <Route path="/register_did" component={RegisterDID} />
                             <Route path="/iota_tangle" component={IOTATangle} />
