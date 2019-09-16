@@ -79,7 +79,7 @@ class Map extends React.Component {
   renderPopup() {
     const { popupInfo } = this.state;
     if (!popupInfo) return null;
-    
+
     return (
       <Popup
         tipSize={10}
@@ -105,10 +105,6 @@ class Map extends React.Component {
             <div className="popup-data">
               <span className="key">Owner</span>
               <span className="value">{popupInfo.partnerName}</span>
-            </div>
-            <div className="popup-data">
-              <span className="key">Irdi</span>
-              <span className="value">{popupInfo.irdi}</span>
             </div>
             <div className="popup-data">
               <span className="key">Location</span>
