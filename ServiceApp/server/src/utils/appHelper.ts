@@ -174,8 +174,9 @@ export class AppHelper {
 
                 //1.5 Create a DID Authentication Challenge
                 const challenge = GenerateSeed(12);
-                req.body.identification.authenticationChallenge = challenge;
-                await createOutgoingChallenge({id:req.body.frame.conversationId, challenge:challenge});
+                request.identification = {};
+                request.identification.authenticationChallenge = challenge;
+                await createOutgoingChallenge({id:request.frame.conversationId, challenge:challenge});
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -212,17 +213,18 @@ export class AppHelper {
                 const tag = buildTag('proposal', submodelId);
 
                 //1.25 Sign DID Authentication
-                const incomingChallenge : any = await readData('incomingChallenge', req.body.frame.conversationId);
+                const incomingChallenge : any = await readData('incomingChallenge', request.frame.conversationId);
                 const did : any = await readData('did');
                 const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
                 userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
                 const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
-                req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                request.identifcation = {};
+                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 //1.5 Create a DID Authentication Challenge
                 const challenge = GenerateSeed(12);
-                req.body.identification.authenticationChallenge = challenge;
-                await createOutgoingChallenge({id:req.body.frame.conversationId, challenge:challenge});
+                request.identification.authenticationChallenge = challenge;
+                await createOutgoingChallenge({id:request.frame.conversationId, challenge:challenge});
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -246,14 +248,6 @@ export class AppHelper {
 
         app.post('/acceptProposal', async (req, res) => {
             try {
-                //0 Sign DID Authentication
-                const incomingChallenge : any = await readData('incomingChallenge', req.body.frame.conversationId);
-                const did : any = await readData('did');
-                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
-                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
-                req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
@@ -261,8 +255,17 @@ export class AppHelper {
                 const channelId = request.frame.conversationId;
                 const mam = await publish(channelId, request);
 
+                //0 Sign DID Authentication
+                const incomingChallenge : any = await readData('incomingChallenge', request.frame.conversationId);
+                const did : any = await readData('did');
+                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
+                request.identifcation = {};
+                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+
                 // 4. encrypt sensitive data using the public key from the MAM channel
-                const id = req.body.frame.receiver.identification.id;
+                const id = request.frame.receiver.identification.id;
                 mam.secretKey = await encryptWithReceiversPublicKey(id, "keys-1", mam.secretKey);
 
                 // 5. Create Tag
