@@ -28,6 +28,7 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
         if(importVerifiableCredential.EncodeToJSON().credentialSubject["DID"] == user.id && verificationResult == VerificationErrorCodes.SUCCES) {
             //Store the credential in the DB, sorted under the DID of the Issuer
             await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
+            console.log("Credential Stored: ", credentialString);
         } else {
             console.log("Credential Target: ", importVerifiableCredential.EncodeToJSON().credentialSubject["DID"]);
             console.log("VerificationResult: ", verificationResult);
@@ -48,10 +49,10 @@ export async function CreateAuthenticationPresentation(conversationId : string, 
 
     //Add the stored Credential
     const credentialsArray : VerifiableCredential[] = [didAuthCredential];
-    const whiteListCredential = await readData('credentials');
+    const whiteListCredential : any = await readData('credentials');
     if(whiteListCredential) {
-        const decodedProof = await DecodeProofDocument(whiteListCredential[0], provider);
-        credentialsArray.push(VerifiableCredential.DecodeFromJSON(whiteListCredential[0], decodedProof));
+        const decodedProof = await DecodeProofDocument(whiteListCredential.credential, provider);
+        credentialsArray.push(VerifiableCredential.DecodeFromJSON(whiteListCredential.credential, decodedProof));
     }
 
     //Create the presentation
@@ -69,20 +70,15 @@ export enum VERIFICATION_LEVEL {
 
 export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, conversationId : string, provider : string) : Promise<VERIFICATION_LEVEL> {
     //Create objects
-    console.log("1");
     const outgoingChallenge : any = await readData('outgoingChallenge', conversationId);
-    console.log("1.1");
-    console.log(JSON.stringify(presentationData));
-    console.log(provider);
     const proofParameters = await DecodeProofDocument(presentationData.proof, provider);
-    console.log("1.2");
     const verifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
-    console.log("2");
+
     //Verify
     SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").AddTrustedDID(proofParameters.issuer.GetDID());
     const code = verifiablePresentation.Verify();
     SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").RemoveTrustedDID(proofParameters.issuer.GetDID());
-    console.log("3");
+
     //Determine level of trust
     let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
     if(code == VerificationErrorCodes.SUCCES && presentationData.proof.nonce == outgoingChallenge.challenge) {

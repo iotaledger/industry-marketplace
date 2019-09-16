@@ -254,7 +254,7 @@ export class AppHelper {
 
                 //0 Sign DID Authentication
                 const verifiablePresentation = await CreateAuthenticationPresentation(request.frame.conversationId, provider);
-                request.identifcation = {};
+                request.identification = {};
                 request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 // 4. encrypt sensitive data using the public key from the MAM channel

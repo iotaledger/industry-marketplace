@@ -1,5 +1,7 @@
 import { readData } from "./databaseHelper";
 
+//Run from 
+
 function GetDID() : Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
         const user : any = await readData('user');
