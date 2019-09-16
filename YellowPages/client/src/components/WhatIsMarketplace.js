@@ -9,8 +9,8 @@ export default () => (
         <img src={illustration} alt="" />
         <div className="marketplace-text-wrapper">
             <Text className="title">What is the <br />Industry Marketplace?</Text>
-            <Text>The Industry Marketplace is a vendor- and industry-neutral platform, automating the trading of physical and digital goods / services.</Text>
-            <Text>Building on specifications developed by the Plattform Industrie 4.0 (Germany's central network for the advancement of digital transformation in manufacturing), it combines distributed ledger technology, immutable audit logs, and standardised, machine-readable contracts to accelerate industrial automation and enable the "economy of things".</Text>
+            <Text>The Industry Marketplace is a vendor- an industry-neutral platform, automating the trading of physical and digital goods and services.</Text>
+            <Text>Building on specifications developed by the Platform Industrie 4.0 (Germany's central network for the advancement of digital transformation in manufacturing), it combines distributed ledger technology, immutable audit lots and standardized, machine-readable contracts to accelerate industrial automation and enable the "economy of things".</Text>
         </div>
     </div>
 )
