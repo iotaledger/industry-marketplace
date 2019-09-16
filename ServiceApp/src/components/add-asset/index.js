@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import randomIcon from '../../assets/img/random.svg';
 import Loading from '../loading';
-import { waitingTime } from '../../config.json';
+import { waitingTime, datePickerFormat } from '../../config.json';
 import UserContext from '../../context/user-context';
 import {
   generateRandomSubmodelValues, 
@@ -84,11 +84,10 @@ const getInputType = (type) => {
         return 'text';
   }
 }
-
 const initState = {
   loading: false,
-  assetStart: new Date(),
-  assetEnd: new Date(),
+  assetStart: new Date().setTime(new Date().getTime() + 1000 * 60),
+  assetEnd: new Date().setTime(new Date().getTime() + 1000 * 120),
   operation: '',
   description: '',
   operations: [],
@@ -264,7 +263,7 @@ export default class extends React.Component {
                               placeholderText="Click to select a date"
                               timeFormat="HH:mm"
                               timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                              dateFormat= {datePickerFormat}
                               timeCaption="time"
                               minDate={new Date()}
                               selected={this.state.assetStart}
@@ -279,7 +278,7 @@ export default class extends React.Component {
                               placeholderText="Click to select a date"
                               timeFormat="HH:mm"
                               timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                              dateFormat={datePickerFormat}
                               timeCaption="time"
                               minDate={new Date()}
                               selected={this.state.assetEnd}
