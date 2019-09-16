@@ -1,9 +1,16 @@
 const sql = require("mssql");
+
 const config = {
     "user": process.env.SAPP_SERVER_SQL_SERVER_USER,
     "password": process.env.SAPP_SERVER_SQL_SERVER_PASSWORD,
     "server": process.env.SAPP_SERVER_SQL_SERVER_HOSTNAME,
     "database": process.env.SAPP_SERVER_SQL_SERVER_DATABASE_NAME
+}
+if (process.env.SAPP_SERVER_SQL_SERVER_ENCRYPT === "1")
+{
+    config["options"] = {
+        encrypt: true
+    }
 }
 console.log(config);
 let db;
@@ -15,7 +22,7 @@ export const connect = async () => {
         console.log(e);
     }
 };
-
+ 
 export const createUser = async (data) => {
     const delQuery = `
         Delete from [dbo].[user];`;
@@ -69,12 +76,12 @@ export const createWallet = async (data) => {
 };
 
 export const createSensorData = async (data) => {
-
+/*
     const delQuery = `
     Delete from [dbo].[data];`;
     const delRequest = new sql.Request(db);
     await delRequest.query(delQuery);
-
+*/
     const query = `
 		INSERT INTO [dbo].[data] ([id],[deviceId],[userId],[schema])
 		values (@id, @deviceId, @userId, @schema );`;
