@@ -1,16 +1,16 @@
-import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import React, { useContext } from 'react'
+import React from 'react'
+// import React, { useContext } from 'react'
+import { Link } from 'react-router-dom'
+import { withRouter } from 'react-router'
 import Button from './Button'
-import DropSelector from './DropSelector'
-import LanguageContext from '../context/language-context';
-import headerLogo from '../assets/img/landing/logo.svg';
+// import DropSelector from './DropSelector'
+// import LanguageContext from '../context/language-context'
+import headerLogo from '../assets/img/landing/logo.svg'
 
 import '../assets/styles/menu.scss'
 
 const Menu = ({ onClick }) => {
-    const { language, changeLanguage } = useContext(LanguageContext)
-
+    // const { language, changeLanguage } = useContext(LanguageContext)
 
     return (
         <div className="menu">
@@ -21,11 +21,11 @@ const Menu = ({ onClick }) => {
             </div>
 
             <div className="menu-links">
-                <DropSelector
-                    items={['en', 'de']}
-                    selected={language}
-                    callback={changeLanguage}
-                />
+                // <DropSelector
+                //     items={['en', 'de']}
+                //     selected={language}
+                //     callback={changeLanguage}
+                // />
 
                 <Link className="btn mini primary menu-link mobile-only" to="/">
                     Join
