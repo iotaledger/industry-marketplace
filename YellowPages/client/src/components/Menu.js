@@ -21,12 +21,15 @@ const Menu = ({ onClick }) => {
             </div>
 
             <div className="menu-links">
-                // <DropSelector
-                //     items={['en', 'de']}
-                //     selected={language}
-                //     callback={changeLanguage}
-                // />
-
+                {
+                  /*
+                  <DropSelector
+                      items={['en', 'de']}
+                      selected={language}
+                      callback={changeLanguage}
+                  />
+                  */
+                }
                 <Link className="btn mini primary menu-link mobile-only" to="/">
                     Join
                 </Link>
