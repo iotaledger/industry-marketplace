@@ -8,7 +8,9 @@ import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
-import { VerificationErrorCodes, VerifyDIDAuthentication } from 'identity_ts';
+import { VerificationErrorCodes, VerifyDIDAuthentication, DID } from 'identity_ts';
+import { ProcessReceivedCredentialForUser } from '../utils/credentialHelper.js';
+import { SchemaHelper } from '../utils/schemaHelper.js';
 
 /**
  * Class to handle ZMQ service.
@@ -47,6 +49,11 @@ export class ZmqService {
     private readonly _subscriptions;
 
     /**
+     * 
+     */
+    private listenAddress : string | undefined;
+
+    /**
      * Create a new instance of ZmqService.
      * @param config The gateway for the zmq service.
      */
@@ -55,6 +62,13 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
+        this.listenAddress = undefined;
+
+        //Add trusted identities (Initially, the DID of the IOTA Foundation)
+        const schema = SchemaHelper.GetInstance().GetSchema("WhiteListedCredential");
+        for(let i=0; i < this._config.trustedIdentities.length; i++) {
+            schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
+        }
     }
 
     /**
@@ -66,6 +80,11 @@ export class ZmqService {
 
     public processPayments() {
         processPayment();
+    }
+
+    public setAddressToListenTo(address : string | undefined) {
+        this.listenAddress = address;
+        console.log("Set listen address: " + address);
     }
 
     /**
@@ -207,11 +226,13 @@ export class ZmqService {
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
+        const address = messageParams[2];
         const tag = messageParams[12];
 
         const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
+            console.log(tag);
             const messageType = extractMessageType(tag);
             
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
@@ -225,6 +246,7 @@ export class ZmqService {
                         name?: string;
                         role?: string;
                         location?: string;
+                        address ?: string;
                     }
                     const { id, role, location }: IUser = await readData('user');
 
@@ -339,6 +361,16 @@ export class ZmqService {
                                 this.sendEvent(data, messageType, messageParams);
                             }
                     }
+                }
+            }
+            else if(this.listenAddress && address == this.listenAddress) {
+                const bundle = messageParams[8];
+                if (!this.sentBundles.includes(bundle)) {
+                    this.sentBundles.push(bundle);
+
+                    //A message has been received through the ServiceEndpoint of the DID
+                    const unstructuredData = await getPayload(bundle);
+                    ProcessReceivedCredentialForUser(unstructuredData, provider);
                 }
             }
         }

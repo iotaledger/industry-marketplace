@@ -2,7 +2,7 @@
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, SignDIDAuthentication } from 'identity_ts';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, SignDIDAuthentication, Service } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -15,6 +15,7 @@ import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { provider } from '../config.json';
 import { generateNewWallet, getBalance } from './walletHelper';
+import { ServiceFactory } from '../factories/serviceFactory';
 
 /**
  * Class to help with expressjs routing.
@@ -126,7 +127,9 @@ export class AppHelper {
                 const keypair = await GenerateRSAKeypair();
                 const privateKey = keypair.GetPrivateKey();
                 const keyId  = "keys-1";
+                const tangleComsAddress = GenerateSeed(81);
                 userDIDDocument.AddKeypair(keypair, keyId);
+                userDIDDocument.AddServiceEndpoint(new Service(userDIDDocument.GetDID(), "tanglecom", "TangleCommunicationAddress", tangleComsAddress));
                 const publisher = new DIDPublisher(provider, userSeed);
                 const root = await publisher.PublishDIDDocument(userDIDDocument, "SEMARKET", 9);
                 const state = publisher.ExportMAMChannelState();
@@ -134,9 +137,12 @@ export class AppHelper {
 
                 //Store user
                 const id = userDIDDocument.GetDID().GetDID();
-                user = user ? { ...user, id } : { id };
+                user = user ? { ...user, id, address : tangleComsAddress } : { id, address : tangleComsAddress };
                 await writeData('user', user);
             }
+
+            //Set TangleCommunicationService Address
+            ServiceFactory.get('zmq').setAddressToListenTo(user.address);
 
             const wallet: any = await readData('wallet');
             let newWallet;

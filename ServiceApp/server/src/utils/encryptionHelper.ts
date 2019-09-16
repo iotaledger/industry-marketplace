@@ -72,3 +72,25 @@ export const decryptWithReceiversPrivateKey = async (payload) => {
     const decryptedBuffer = await decrypt(did.privateKey, messageBuffer);
     return decryptedBuffer.toString();
 };
+
+const algorithm =  'aes-256-cbc';
+
+export interface EncryptedData {
+    key : Buffer,
+    iv: Buffer,
+    encoded : Buffer
+}
+
+export function encryptWithCipher(text : string) : EncryptedData {
+    const iv = crypto.randomBytes(16);
+    const key = crypto.randomBytes(32);
+    const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+    let encrypted : Buffer = cipher.update(text);
+    return { key: key, iv : iv, encoded: Buffer.concat([encrypted,cipher.final()]) };
+}
+
+export function decryptCipher(data : EncryptedData) : Buffer {
+    const decipher = crypto.createDecipheriv(algorithm, data.key, data.iv);
+    let decoded : Buffer = decipher.update(data.encoded);
+    return Buffer.concat([decoded, decipher.final()]);
+}

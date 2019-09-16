@@ -8,7 +8,7 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
@@ -16,6 +16,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS incomingChallenge (id TEXT, challenge TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS outgoingChallenge (id TEXT, challenge TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
     }
 );
 
@@ -27,8 +28,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name = '', role = '', location = '' }) => {
-    await db.run('REPLACE INTO user (id, name, role, location) VALUES (?, ?, ?, ?)', [id, name, role, location]);
+export const createUser = async ({ id, name = '', role = '', location = '', address = '' }) => {
+    await db.run('REPLACE INTO user (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
@@ -67,6 +68,10 @@ export const createOutgoingChallenge = async ({ id, challenge }) => {
     await db.run('REPLACE INTO outgoingChallenge (id, challenge) VALUES (?, ?)', [id, challenge]);
 };
 
+export const createCredential = async ({ id, credential }) => {
+    await db.run('INSERT INTO credentials (id, credential) VALUES (?, ?)', [id, credential]);
+};
+
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -91,6 +96,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'outgoingChallenge':
                 await createOutgoingChallenge(data);
+                return;
+            case 'credential':
+                await createCredential(data);
                 return;
             case 'mam':
             default:
