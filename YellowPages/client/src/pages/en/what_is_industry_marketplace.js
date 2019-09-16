@@ -1,14 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
+// import React, { useContext } from 'react'
 import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
-import LanguageContext from '../../context/language-context'
-import TranslatedPage from '../de/what_is_industry_marketplace'
+// import LanguageContext from '../../context/language-context'
+// import TranslatedPage from '../de/what_is_industry_marketplace'
 
 export default () => {
-    const { language } = useContext(LanguageContext);
-    return language === 'de' ? <TranslatedPage /> : (
+    window.scrollTo(0, 0);
+    // const { language } = useContext(LanguageContext);
+    // return language === 'de' ? <TranslatedPage /> : (
+    return (
         <Layout>
             <div className="content-header">
                 <Text className="title extra-large">Chapter 1</Text>
@@ -16,7 +19,7 @@ export default () => {
             </div>
             <div className="content scalability">
                 <div className="_markdown_">
-                    <p>IOTA’s goal is to establish a <strong>DLT for the Internet of Things</strong> (IoT). The following characteristics are fundamental to this vision:</p>
+                    <p>IOTA's goal is to establish a <strong>DLT for the Internet of Things</strong> (IoT). The following characteristics are fundamental to this vision:</p>
                     <ul>
                         <li><strong>Scalable.</strong> Process a substantial number of transactions per second across a large network of nodes, with fast confirmation times.</li>
                         <li><strong>Lightweight.</strong> Low-power devices should be able to directly participate in the network.</li>

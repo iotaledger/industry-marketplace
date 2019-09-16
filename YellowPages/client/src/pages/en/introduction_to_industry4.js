@@ -1,15 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
+// import React, { useContext } from 'react'
 import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
-import LanguageContext from '../../context/language-context'
-import TranslatedPage from '../de/introduction_to_industry4'
+// import LanguageContext from '../../context/language-context'
+// import TranslatedPage from '../de/introduction_to_industry4'
 
 export default () => {
     window.scrollTo(0, 0);
-    const { language } = useContext(LanguageContext);
-    return language === 'de' ? <TranslatedPage /> : (
+    // const { language } = useContext(LanguageContext);
+    // return language === 'de' ? <TranslatedPage /> : (
+    return (
         <Layout>
             <div className="content-header">
                 <Text className="title extra-large">Introduction to Industry 4.0</Text>

@@ -1,20 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
+// import React, { useContext } from 'react'
 import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
-import LanguageContext from '../../context/language-context'
-import TranslatedPage from '../de/executive_summary'
+// import LanguageContext from '../../context/language-context'
+// import TranslatedPage from '../de/executive_summary'
 
 export default () => {
     window.scrollTo(0, 0);
-    // try {
-    //     window.scroll({ top: 0, left: 0, behavior: 'smooth' });
-    // } catch (error) {
-    //     window.scrollTo(0, 0);
-    // }
-    const { language } = useContext(LanguageContext);
-    return language === 'de' ? <TranslatedPage /> : (
+    // const { language } = useContext(LanguageContext);
+    // return language === 'de' ? <TranslatedPage /> : (
+    return (
         <Layout>
             <div className="content-header">
                 <Text className="title extra-large">Executive Summary</Text>
