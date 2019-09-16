@@ -52,3 +52,17 @@ exports.getGoogleMapsApiKey = async () => {
   console.log('getGoogleMapsApiKey failed. Setting does not exist', doc);
   throw Error(`The getGoogleMapsApiKey setting doesn't exist.`);
 };
+
+exports.getEmailSettings = async () => {
+  const doc = await admin
+    .firestore()
+    .collection('settings')
+    .doc('settings')
+    .get();
+  if (doc.exists) {
+    const data = doc.data();
+    return data.email || null;
+  }
+  console.error('getEmailSettings failed. Setting does not exist', doc);
+  throw Error(`The getEmailSettings setting doesn't exist.`);
+};

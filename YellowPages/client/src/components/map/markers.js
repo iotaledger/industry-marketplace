@@ -8,9 +8,9 @@ export default class extends React.Component {
     this.state = { assets: props.assets };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.assets.length > 0) {
-      this.setState({ assets: nextProps.assets });
+  componentDidUpdate(prevProps) {
+    if (this.props.assets.length !== prevProps.assets.length) {
+      this.setState({ assets: this.props.assets });
     }
   }
 

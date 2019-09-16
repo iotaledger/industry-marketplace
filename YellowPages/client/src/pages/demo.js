@@ -3,47 +3,27 @@ import ReactGA from 'react-ga';
 import styled from 'styled-components';
 import get from 'lodash-es/get';
 import Map from '../components/map';
-import ScrollToTop from '../components/scroll-to-top';
-import Cookie from '../components/cookie';
+import Layout from '../components/Layout';
 import AssetCards from '../components/asset-cards';
 import AssetList from '../components/asset-list';
 import Zmq from '../components/zmq';
+import Text from '../components/Text';
+import Tabs from '../components/Tabs';
 import { getAll, getByType, removeExpired, writeToStorage } from '../utils/storage';
 import { prepareData } from '../utils/card';
 import { serviceRequester, serviceProvider } from '../config.json';
-
-const Header = ({ changeSection }) => {
-  return (
-    <Container>
-      <Info>
-        <SubLink
-          role="button"
-          onClick={() => changeSection('callForProposal')}
-        >
-          {'Calls for proposal'.toUpperCase()}
-        </SubLink>
-        <SubLink
-          role="button"
-          onClick={() => changeSection('proposal')}
-        >
-          {'Proposals'.toUpperCase()}
-        </SubLink>
-        <SubLink
-          role="button"
-          onClick={() => changeSection('acceptProposal')}
-        >
-          {'Accepted proposals'.toUpperCase()}
-        </SubLink>
-      </Info>
-    </Container>
-  );
-};
+import '../assets/styles/demo.scss';
+import grid from '../assets/img/demo/grid.svg';
+import grid_selected from '../assets/img/demo/grid_selected.svg';
+import list from '../assets/img/demo/list.svg';
+import list_selected from '../assets/img/demo/list_selected.svg';
+import empty from '../assets/img/demo/empty.svg';
+import redirect from '../assets/img/demo/redirect.svg';
 
 export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      anchor: null,
       assets: [],
       allAssets: [],
       activeSection: 'callForProposal',
@@ -52,7 +32,7 @@ export default class extends React.Component {
 
     this.newMessage = this.newMessage.bind(this);
     this.checkExpired = this.checkExpired.bind(this);
-    this.changeSection = this.changeSection.bind(this);
+    this.onTabChange = this.onTabChange.bind(this);
     this.timer = null;
   }
 
@@ -60,10 +40,6 @@ export default class extends React.Component {
     ReactGA.pageview('/demo');
     await this.checkExpired();
     this.timer = setInterval(() => this.checkExpired(), 600000);
-  }
-
-  async changeSection(activeSection) {
-    this.setState({ activeSection, anchor: 'list' }, async () => await this.checkExpired());
   }
 
   async checkExpired() {
@@ -86,278 +62,78 @@ export default class extends React.Component {
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  onTabChange(index) {
+    const sections = ['callForProposal', 'proposal', 'acceptProposal'];
+    this.setState({ activeSection: sections[index] }, async () => await this.checkExpired());
+  }
+
   render() {
-    const { assets, allAssets, activeSection } = this.state;
+    const { assets, allAssets, activeSection, view } = this.state;
     const externalService = activeSection === 'proposal' ? serviceProvider : serviceRequester;
 
     return (
-      <Main id="main">
-        <Zmq callback={this.newMessage} />
-        <Cookie />
-        {
-          assets.length === 0 ? (
-            <NoProposals>
-              There are currently no <strong>&nbsp;{activeSection}</strong>s, create a new one
-              <a
-                href={externalService}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <strong>&nbsp;here</strong>
-              </a>
-            </NoProposals>
-          ) : (
-            <React.Fragment>
-              <ButtonsWrapper>
+      <Layout>
+        <div className="demo-page">
+          <div className="demo-header">
+            <Text className="title">Yellow Pages</Text>
+            <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+          </div>
+          <div className="request-data-wrapper">
+            <div className="demo-page-navigation">
+              <div className="buttons-wrapper">
                 <Button
-                  selected={this.state.view === 'grid'}
+                  selected={view === 'grid'}
                   onClick={() => this.setState({ view: 'grid' })}
                 >
-                  <i className="fas fa-th-large"></i>&nbsp;&nbsp;Grid
+                  <img src={view === 'grid' ? grid_selected : grid} alt="Grid view" />
                 </Button> 
                 <Button 
-                  selected={this.state.view === 'list'}
+                  selected={view === 'list'}
                   onClick={() => this.setState({ view: 'list' })}
                 >
-                  <i className="fas fa-bars"></i>&nbsp;&nbsp;List
+                  <img src={view === 'list' ? list_selected : list} alt="List view" />
                 </Button> 
-              </ButtonsWrapper>
+              </div>
+              <Tabs 
+                view={view} 
+                assets={assets} 
+                activeSection={activeSection} 
+                onTabChange={this.onTabChange}
+              />
+            </div>
+            <div className="assets-wrapper">
               {
-                this.state.view === 'grid'
-                  ? <AssetCards assets={assets} />
-                  : <AssetList assets={allAssets} />
+                assets.length === 0 ? (
+                  <div className="no-assets">
+                    <img src={empty} alt="" />
+                    <Text className="title">No <strong>{activeSection}</strong>s found</Text>
+                    <Text>Test out this feature by clicking the “>” button</Text>
+                    <a
+                        href={externalService}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img src={redirect} alt="Create new request" />
+                    </a>
+                  </div>
+                ) : view === 'grid'
+                  ? <div className="assets"><AssetCards assets={assets} /></div>
+                  : <div className="assets"><AssetList assets={assets} /></div>
               }
-            </React.Fragment>
-          )
-        }
-        <Map assets={allAssets} />
-        <ScrollToTop onClick={this.onScrollToTop} />
-      </Main>
+            </div>
+            <Map assets={allAssets} />
+          </div>
+        </div>
+        <Zmq callback={this.newMessage} />
+      </Layout>
     );
   }
 }
 
-const Main = styled.div`
-  overflow-x: hidden;
-  display: block;
-`;
-
-const ButtonsWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-`;
-
 const Button = styled.button`
-  font-size: 20px;
-  margin: 20px;
+  margin: 5px;
   background: transparent;
-  color: ${props => (props.selected ? '#009fff' : '#000000')};
-`;
-
-const Container = styled.div`
-  display: flex;
-  width: 100%;
-  max-width: 1170px;
-  padding: 0 15px;
-  margin-right: auto;
-  margin-left: auto;
-  margin-bottom: 40px;
-
-  @media (max-width: 820px) {
-    margin-bottom: 80px;
-  }
-
-  @media (max-width: 660px) {
-    background-repeat: no-repeat;
-    background-size: 448px 209px;
-    padding: 48px 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  @media (max-width: 550px) {
-    background-size: 289px 167px;
-    background-position-y: 50px;
-    padding: 38px 0;
-  }
-
-  @media (max-width: 400px) {
-    background-image: none;
-    padding-top: 0;
-  }
-`;
-
-const NoProposals = styled.div`
-  min-height: 100px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  font-size: 22px;
-`;
-
-const Info = styled.div`
-  width: 40%;
-  max-width: 600px;
-  padding: 100px 0 100px 100px;
-  @media (max-width: 1220px) {
-    width: 45%;
-    padding: 90px 0 100px 50px;
-  }
-  @media (max-width: 1120px) {
-    width: 40%;
-    padding: 90px 0 100px 0px;
-  }
-  @media (max-width: 960px) {
-    padding: 60px 0 70px 20px;
-  }
-  @media (max-width: 820px) {
-    width: 55%;
-  }
-  @media (max-width: 760px) {
-    padding: 35px 0 50px 0px;
-  }
-  @media (max-width: 660px) {
-    margin-left: 105px;
-    padding-top: 10px;
-  }
-  @media (max-width: 550px) {
-    margin-left: 30px;
-    padding-top: 45px;
-    padding-bottom: 0;
-    width: 400px;
-  }
-  @media (max-width: 400px) {
-    margin-left: 0;
-    padding-top: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-`;
-
-const SubLink = styled.p`
-  font-size: 14px;
-  letter-spacing: 1.5px;
-  font-weight: 600;
-  line-height: 33px;
-  padding: 7px 15px 0;
-  color: rgba(78, 90, 97, 1);
-  opacity: 0.5;
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  &:hover {
-    opacity: 1;
-  }
-
-  @media (max-width: 660px) {
-    color: #ffffff;
-    opacity: 0.7;
-    line-height: 20px;
-    margin: 15px 0;
-  }
-
-  @media (max-width: 400px) {
-    color: #4e5a61;
-  }
-`;
-
-const Tagline = styled.h2`
-  display: none;
-  font-size: 20px;
-  font-weight: 400;
-
-  @media (max-width: 660px) {
-    display: block;
-    position: absolute;
-    top: 115px;
-    right: 3vw;
-    color: #4e5a61;
-  }
-
-  @media (max-width: 400px) {
-    display: flex;
-    position: static;
-    align-self: center;
-  }
-`;
-
-const Shapes = styled.div`
-  width: 60%;
-
-  background-repeat: no-repeat;
-  background-size: 439px 269px;
-  background-position-x: 187px;
-  display: flex;
-  flex-direction: column;
-
-  @media (max-width: 1220px) {
-    background-position-x: 100px;
-    background-size: 580px 260px;
-  }
-
-  @media (max-width: 1120px) {
-    width: 60%;
-    background-size: 500px 260px;
-  }
-
-  @media (max-width: 970px) {
-    background-size: 478px 202px;
-  }
-
-  @media (max-width: 880px) {
-    width: 70%;
-    background-size: 370px 202px;
-    background-position-x: 50px;
-  }
-
-  @media (max-width: 767px) {
-    background-size: 319px 155px;
-  }
-
-  @media (max-width: 400px) {
-    width: 100%;
-    background-image: none;
-  }
-`;
-
-const Shape = styled.img`
-  position: absolute;
-  z-index: -10;
-`;
-
-const Shape1 = styled(Shape)`
-  transform: skew(75deg, -69deg);
-  top: 300px;
-  right: 73vw;
-  width: 6%;
-
-  @media (max-width: 1220px) {
-    right: 73vw;
-    top: 295px;
-  }
-
-  @media (max-width: 1120px) {
-    top: 254px;
-    right: 78vw;
-  }
-
-  @media (max-width: 970px) {
-    top: 261px;
-    right: 72vw;
-  }
-
-  @media (max-width: 880px) {
-    top: 293px;
-    right: 81vw;
-  }
-
-  @media (max-width: 767px) {
-    display: none;
-  }
+  border-radius: 6px;
+  height: 40px;
+  border: ${props => (props.selected ? '2px solid #4140DF' : '2px solid transparent')};
 `;

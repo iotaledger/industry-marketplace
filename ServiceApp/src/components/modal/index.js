@@ -9,7 +9,7 @@ export default ({ show, type = 'general', notification = null, error = null, cal
   );
 
   const cancelButton = (
-    <Button type="button" onClick={() => callback()}>
+    <Button secondary type="button" onClick={() => callback()}>
       Cancel
     </Button>
   );
@@ -62,7 +62,8 @@ const Modal = styled.div`
   display: ${props => (props.show ? 'block' : 'none')};
   opacity: ${props => (props.show ? 1 : 0)};
   transition: all 0.5s ease;
-  background-color: rgba(14, 56, 160, 0.6);
+  background-color: rgba(246,248,252, 0.97);
+  z-index: 3;
 `;
 
 const AccessBox = styled.div`
@@ -74,11 +75,11 @@ const AccessBox = styled.div`
   top: 50vh;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 360px;
+  width: 400px;
   height: 280px;
   padding: 30px;
   border-radius: 6px;
-  background-color: rgba(10, 32, 86, 0.9);
+  background-color: rgba(195,208,228, 0.6);
   box-shadow: 0 23px 50px 0 rgba(25, 54, 80, 0.1);
 `;
 
@@ -88,13 +89,13 @@ const Heading = styled.p`
   line-height: 42px;
   margin-bottom: 12px;
   text-align: center;
-  color: #009fff;
+  color: #4140DF;
 `;
 
 const Info = styled.p`
-  font-size: 17px;
+  font-size: 18px;
   line-height: 28px;
-  color: #fff;
+  color: #485776;
   text-align: center;
   margin-bottom: auto;
   padding-bottom: 20px;
@@ -104,20 +105,26 @@ const Button = styled.button`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  font: 15px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 20px 38px;
-  border-radius: 100px;
+  outline: none;
+  font: 16px 'Nunito Sans', sans-serif;
+  letter-spacing: 0.15px;
+  line-height: 17px;
+  padding: 12px 20px 10px;
+  border-radius: 6px;
+  color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+  background-color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+  border: ${props => (props.secondary ? '2px solid #4140DF' : 'none')};
+  font-weight: 800;
+  width: 120px;
+  height: 48px;
   text-transform: uppercase;
-  color: #fff;
-  font-size: 12px;
-  letter-spacing: 0.38px;
-  padding: 12px 21px;
-  margin: 15px 0 0;
-  box-shadow: 0 10px 20px 0 #0a2056;
-  font-weight: 700;
-  background-color: #009fff;
-  width: 100px;
+  transition: all 0.3s;
+
+  &:hover {
+    color: ${props => (props.secondary ? '#ffffff' : '#4140DF')};
+    background-color: ${props => (props.secondary ? '#4140DF' : '#ffffff')};
+    border: 2px solid #4140DF;
+  }
 `;
 
 const Internal = styled.div`
@@ -126,6 +133,7 @@ const Internal = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 80%;
 `;
 
 const ButtonsWrapper = styled.div`

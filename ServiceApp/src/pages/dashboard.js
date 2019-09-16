@@ -13,7 +13,6 @@ import Sidebar from '../components/sidebar';
 import Zmq from '../components/zmq';
 import Cookie from '../components/cookie';
 import NoRequests from '../components/no-requests';
-import { generate } from '../Industry_4.0_language';
 import UserContext from '../context/user-context';
 import { waitingTime } from '../config.json';
 import {
@@ -53,7 +52,7 @@ class Dashboard extends React.Component {
       }
     };
 
-    this.handleSidebar =  this.handleSidebar.bind(this)
+    this.handleSidebar =  this.handleSidebar.bind(this);
     this.createRequest = this.createRequest.bind(this);
     this.newMessage = this.newMessage.bind(this);
     this.sendMessage = this.sendMessage.bind(this);
@@ -113,7 +112,7 @@ class Dashboard extends React.Component {
           loading: false,
         });
         if (endpoint !== 'rejectProposal') {
-          await this.newMessage({ data: packet }, true);
+          await this.newMessage({ data: data.request }, true);
         }        
       } else if (data.error) {
         this.setState({
@@ -191,7 +190,7 @@ class Dashboard extends React.Component {
 
   async generateRequest(type, id, partner = null, price = null) {
     const { irdi, originalMessage, partnerName } = await readFromStorage(partner ? `${id}#${partner}` : id);
-    const request = generate({
+    const request = {
       messageType: type,
       userId: this.context.user.id,
       replyTime: waitingTime,
@@ -199,7 +198,7 @@ class Dashboard extends React.Component {
       userName: partnerName,
       irdi,
       price,
-    });
+    };
     console.log('generateRequest', request);
     return request;
   }
@@ -391,13 +390,11 @@ const AssetsWrapper = styled.div`
 `
 
 const Data = styled.section`
-  background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
+  background-color: #F6F8FC;
   width: 100%;
   display: flex;
   height: 100%;
   overflow-y: auto;
-  @media (min-width: 769px) {
-  }
 `;
 
 const LoadingBox = styled.div`

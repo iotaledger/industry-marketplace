@@ -4,9 +4,9 @@ import ExternalMenu from './ExternalMenu'
 import Menu from './Menu'
 import Chapters from './Chapters'
 import Disclaimer from './Disclaimer'
+import Footer from './Footer'
 import '../assets/styles/layout.scss'
-import headerLogo from '../assets/img/landing/logo.svg';
-import footerLogo from '../assets/img/landing/powered_by_iota.svg';
+import headerMobileLogo from '../assets/img/landing/logo_mobile.svg';
 
 export const MenuContext = React.createContext({});
 
@@ -34,7 +34,7 @@ export default ({ children }) => {
                 showOverlay ? <Chapters closeNav={closeNav} /> : (
                     <div className="page">
                         <Link to="/">
-                            <img className="mobile-logo" src={headerLogo} />
+                            <img className="mobile-logo" src={headerMobileLogo} alt="logo" />
                         </Link>
 
                         <div className="show-nav" onClick={showNav} />
@@ -51,11 +51,7 @@ export default ({ children }) => {
 
                         { children }
 
-                        <footer className="footer" id="footer">
-                            <a href="https://iota.org" target="_blank">
-                                <img className="footer-iota-logo" src={footerLogo} />
-                            </a>
-                        </footer>
+                        <Footer />
                     </div>
                 )
             }

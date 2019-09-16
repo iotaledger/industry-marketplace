@@ -16,7 +16,8 @@ const SensorCard = ({ schema, packet }) => {
     (async () => {
       // Organize data for layout
       const layout = [];
-      schema.forEach((item, i) => {
+      let schema_json = typeof schema === 'string' ? JSON.parse(schema) : schema;
+      schema_json.forEach((item, i) => {
         if (!layout[Math.floor(i / 2)]) {
           layout[Math.floor(i / 2)] = [];
         }
@@ -59,8 +60,9 @@ const SensorCard = ({ schema, packet }) => {
                 <RowDesc>{item && item.name}:</RowDesc>
                 <RowValue>
                   {(sensorData.data[item.id] !== typeof 'object' &&
-                    (sensorData.data[item.id] || sensorData.data[item.id.toLowerCase()])) ||
-                    JSON.stringify(sensorData.data, null, 2)}
+                    (sensorData.data[item.id].toString() || sensorData.data[item.id.toLowerCase()])) ||
+                    JSON.stringify(sensorData.data, null, 2)
+                  }
                   <RowUnit>{item && item.unit}</RowUnit>
                 </RowValue>
               </RowHalf>
@@ -119,7 +121,7 @@ const SensorCardWrapper = styled.div`
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #009fff;
+    background-color: #4140DF;
     box-shadow: 0 2px 10px 0 rgba(0, 159, 255, 0.4);
     @media (max-width: 1195px) {
       left: -36px;
@@ -163,7 +165,7 @@ const HeaderAccent = styled.span`
   font-size: 18px;
   line-height: 33px;
   margin-right: 10px;
-  color: #009fff;
+  color: #4140DF;
   @media (max-width: 470px) {
     display: block;
   }

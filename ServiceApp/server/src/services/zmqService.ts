@@ -205,6 +205,7 @@ export class ZmqService {
     private async sendEvent(data, messageType, messageParams) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams);
+        console.log(`Sending ${messageType}`);
 
         //Locally store the challenge received
         if(['callForProposal', 'proposal'].includes(messageType)) {

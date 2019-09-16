@@ -15,13 +15,15 @@ const Heading = ({ id, partner, operation, type }) => {
   return (
     <Full>
       <LinkWrapper to={`/conversation/${id}`}>
-        <Header>{operation}</Header>
-        <Img
-          width={25}
-          src={searchIcon}
-          title="Inspect request transaction history"
-          alt="Inspect request transaction history"
-        />
+        <Header>
+          {operation}
+          <HeaderImg
+            width={25}
+            src={searchIcon}
+            title="Inspect request transaction history"
+            alt="Inspect request transaction history"
+          />
+        </Header>
       </LinkWrapper>
       <StatusWrapper>
         <Status>
@@ -139,8 +141,6 @@ const Asset = props => {
       setConfirmButtonEnabled(false);
     } else if (user.balance <= 0) {
       setConfirmButtonEnabled(false);
-    } if (user.role === 'SR' && asset.type === 'proposal' &&  Date.parse(asset.startTime) < Date.now()) {
-      setConfirmButtonEnabled(false);
     } else {
       setConfirmButtonEnabled(true);
       setPrice(asset.price);
@@ -223,6 +223,7 @@ const Asset = props => {
             </Row>
           ) : null
         }
+        <Hr />
         <Row>
           <RowThird>
             <RowDesc>Requester Location</RowDesc>
@@ -306,6 +307,11 @@ const CardContent = styled.div`
   padding: 20px 0 15px;
 `;
 
+const Hr = styled.hr`
+  border: 1px solid #F2F5FB;
+  margin: 15px 0;
+`;
+
 const Row = styled.div`
   display: flex;
   justify-content: flex-start;
@@ -339,7 +345,8 @@ const Data = styled.p`
 
 const RowDesc = styled.span`
   font: 16px 'Nunito Sans', sans-serif;
-  font-weight: 600;
+  font-weight: bold;
+  letter-spacing: 0.03em;
   color: #B8B8B8;
   text-transform: uppercase;
 `;
@@ -347,7 +354,7 @@ const RowDesc = styled.span`
 const RowLink = styled.a`
   font: 16px 'Nunito Sans', sans-serif;
   font-weight: 600;
-  color: #529FF8;
+  color: #4140DF;
   text-transform: uppercase;
 `;
 
@@ -355,9 +362,10 @@ const Header = styled.h2`
   font-size: 24px;
   font-weight: 600;
   position: relative;
-  color: #009fff;
+  color: #4140DF;
   text-transform: uppercase;
   text-decoration: underline;
+  white-space: nowrap;
 `;
 
 const Full = styled.div`
@@ -368,6 +376,10 @@ const Full = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+  }
+  > * {
+    margin: 10px 0;
   }
 `;
 
@@ -382,60 +394,67 @@ const FootRow = styled.div`
 `;
 
 const FooterButton = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
+  transition: all 0.3s;
   appearance: none;
+  outline: none;
   margin: 5px;
   @media (min-width: 920px) {
-    width: 200px;
+    width: 215px;
   }
   font: 16px 'Nunito Sans', sans-serif;
-  line-height: 16px;
-  letter-spacing: 0.47px;
-  padding: 12px 21px;
-  border-radius: 100px;
-  font-size: 16px;
-  font-weight: normal;
-  letter-spacing: 0.38px;
+  line-height: 17px;
+  letter-spacing: 0.15px;
+  padding: 12px 20px 10px;
+  border-radius: 6px;
+  font-weight: 800;
   width: 100%;
-  height: 45px;
+  height: 48px;
+  text-transform: uppercase;
   cursor: ${p => p.disabled ? 'default' : 'pointer'};
 
-  color: ${p => p.isAccept ? '#ffffff' : '#009fff'};
-  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#009fff') : '#ffffff'};
-  border: ${p => p.isAccept ? 'unset' : '1px solid #009fff'};
+  color: ${p => p.isAccept ? '#ffffff' : '#4140DF'};
+  background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#4140DF') : '#ffffff'};
+  border: ${p => p.isAccept ? 'unset' : '2px solid #4140DF'};
 
   &:hover {
-    color: ${p => p.isAccept && !p.disabled ? '#009fff' : '#ffffff'};
-    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#009fff'};
-    border: ${p => p.isAccept && !p.disabled ? '1px solid #009fff' : 'unset'};
+    color: ${p => p.isAccept && !p.disabled ? '#4140DF' : '#ffffff'};
+    background-color: ${p => p.isAccept ? (p.disabled ? '#C4C4C4' : '#ffffff') : '#4140DF'};
+    border: ${p => p.isAccept && !p.disabled ? '2px solid #4140DF' : 'unset'};
   }
 `;
 
 const StatusWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
+  width: auto;
 `;
 
 const Status = styled.h3`
-  color: #313131;
-  font: 18px 'Nunito Sans', sans-serif;
+  color: #485776;
+  font: 16px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
   text-transform: uppercase;
+  padding: 15px 40px;
+  background-color: #EEF2FA;
   @media (min-width: 769px) {
     text-align: right;
   }
 `;
 
 const CancelHeaderButton = styled.a`
-  font: 14px 'Nunito Sans', sans-serif;
-  padding: 12px 21px;
-  color: #313131;
-  text-decoration: underline;
-  padding: 0;
-  @media (min-width: 769px) {
-    text-align: right;
+  width: 54px;
+  display: flex;
+  background-color: #D9E1EF;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+
+  &:hover {
+    opacity: 0.8;
   }
+}
 `;
 
 const Input = styled.input`
@@ -451,7 +470,11 @@ const Input = styled.input`
 
 const Img = styled.img`
   cursor: pointer;
-  margin-left: 20px;
+  margin-left: 19px;
+`;
+
+const HeaderImg = styled(Img)`
+  margin-bottom: -2px;
 `;
 
 const LinkWrapper = styled(Link)`

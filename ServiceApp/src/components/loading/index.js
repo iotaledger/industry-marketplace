@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Delayed from './delayed';
 
-export default ({ color = '#fff', size = '80', delay = null, text = null }) => (
+export default ({ color = '#4140DF', size = '80', delay = null, text = null }) => (
   <Delayed delay={delay}>
     <Wrapper>
       <svg
@@ -46,10 +46,10 @@ const Wrapper = styled.div`
 `;
 
 const TextWrapper = styled.div`
-  color: #ffffff;
-  font-size: 18px;
+  color: #485776;
+  font-size: 22px;
   margin-top: 40px;
-  width: 275px;
-  line-height: 30px;
+  width: 335px;
+  line-height: 34px;
   text-align: center;
 `;

@@ -4,67 +4,6 @@
     background-color: #ffffff;
     overflow: hidden;
 
-    &.chapter1,
-    &.glossary {
-        background: url('/static/chapters/Chapter_1.png') no-repeat;
-    }
-
-    &.chapter2 {
-        background: url('/static/chapters/Chapter_2.png') no-repeat;
-    }
-
-    &.chapter3 {
-        background: url('/static/chapters/Chapter_3.png') no-repeat;
-    }
-
-    &.chapter4 {
-        background: url('/static/chapters/Chapter_4.png') no-repeat;
-    }
-
-    &.chapter5 {
-        background: url('/static/chapters/Chapter_5.png') no-repeat;
-    }
-
-    &.chapter6 {
-        background: url('/static/chapters/Chapter_6.png') no-repeat;
-    }
-
-    &.module1 {
-        background: url('/static/chapters/Module_1.png') no-repeat;
-    }
-
-    &.module2 {
-        background: url('/static/chapters/Module_2.png') no-repeat;
-    }
-
-    &.module3 {
-        background: url('/static/chapters/Module_3.png') no-repeat;
-    }
-
-    &.module4 {
-        background: url('/static/chapters/Module_4.png') no-repeat;
-    }
-
-    &.module5 {
-        background: url('/static/chapters/Module_5.png') no-repeat;
-    }
-
-    &.module51 {
-        background: url('/static/chapters/Module_5_1.png') no-repeat;
-    }
-
-    &.module511 {
-        background: url('/static/chapters/Module_5_1_1.png') no-repeat;
-    }
-
-    &.module512 {
-        background: url('/static/chapters/Module_5_1_2.png') no-repeat;
-    }
-
-    &.grants {
-        background: url('/static/chapters/Grants.png') no-repeat;
-    }
-
     @media (max-width: 768px) {
         overflow-y: visible;
         overflow-x: visible;
@@ -72,26 +11,35 @@
 }
 
 .chapters-overlay {
-    max-width: 800px;
+    max-width: 750px;
     width: 100%;
     float: right;
-    padding: 200px 100px;
+    padding: 200px 150px 200px 100px;
     min-height: 100vh;
     height: 100%;
     background-color: #ffffff;
 
+    @media (max-width: 920px) {
+        padding: 100px 0;
+        max-width: 750px;
+    }
+
     @media (max-width: 768px) {
-        padding: 50px 100px;
+        padding: 50px 0;
+        max-width: 550px;
+    }
+
+    @media (max-width: 600px) {
+        padding: 50px 0;
+        max-width: 500px;
     }
 
     .label {
-        @media (max-width: 768px) {
-            margin-left: 25px;
-        }
-
-        @media (max-width: 580px) {
-            margin-left: 35px;
-        }
+        font-size: 14px;
+        line-height: 26px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #5067EB;
     }
 
     .chapters-wrapper {
@@ -101,31 +49,34 @@
         align-items: flex-start;
 
         .title {
-            font-size: 55px;
+            font-size: 48px;
             font-weight: 800;
-            line-height: 32px;
+            line-height: 45px;
             color: inherit;
             margin-right: 50px;
             text-align: right;
+            display: none;
         }
 
         .subtitle {
-            font-size: 25px;
-            font-weight: 800;
-            line-height: 32px;
-            color: inherit;
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 25px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            max-width: 525px;
+            text-align: left;
         }
 
         .read {
             font-size: 25px;
             font-weight: 800;
-            line-height: 32px;
+            line-height: 25px;
             color: inherit;
             text-transform: uppercase;
-            color: #2ccfd0;
+            color: #4140DF;
             position: absolute;
             right: -400px;
-            bottom: 30px;
             transition: 0.55s;
 
             @media (max-width: 768px) {
@@ -137,38 +88,39 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            align-items: baseline;
+            align-items: end;
             padding: 30px 0;
             width: 100%;
-            color: #50545f;
+            color: #485776;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            opacity: 0.4;
-            transition: opacity 0.75s ease-in-out;
+            opacity: 0.5;
+            transition: opacity 0.55s ease-in-out;
 
             &:hover {
                 opacity: 1;
-                transition: opacity 0.75s ease-in-out;
+                transition: opacity 0.55s ease-in-out;
 
                 & > .read {
                     transition: 0.55s;
-                    right: 100px;
+                    right: 50px;
                 }
             }
 
             & > .title {
-                width: 110px;
+                width: 75px;
             }
 
             & > .subtitle {
                 position: relative;
                 text-align: left;
                 word-wrap: break-word;
+                max-width: 525px;
 
                 &:after {
                     content: '';
-                    background: #2ccfd0;
+                    background: #4140DF;
                     position: absolute;
                     left: 0;
                     height: 2px;
@@ -187,6 +139,7 @@
 
             @media (max-width: 768px) {
                 align-items: normal;
+                padding: 25px 0;
 
                 .title {
                     font-size: 40px;
@@ -200,6 +153,8 @@
             }
 
             @media (max-width: 580px) {
+                padding: 20px 0;
+
                 .title {
                     font-size: 30px;
                 }
@@ -229,23 +184,24 @@
             }
 
             .subtopic {
-                margin-top: 10px;
+                margin-top: 20px;
+                margin-left: 55px;
                 color: #50545f;
                 cursor: pointer;
                 position: relative;
-                width: 775px;
-                opacity: 0.4;
+                width: 700px;
+                opacity: 0.5;
                 display: flex;
-                transition: opacity 0.75s ease-in-out;
+                transition: opacity 0.55s ease-in-out;
 
                 & > .read {
                     font-size: 16px;
-                    bottom: 0;
+                    bottom: 1px;
                 }
 
                 &:hover {
                     opacity: 1;
-                    transition: opacity 0.75s ease-in-out;
+                    transition: opacity 0.55s ease-in-out;
 
                     & > .read {
                         transition: 0.55s;
@@ -255,13 +211,12 @@
 
                 .title {
                     font-size: 25px;
-                    padding-left: 30px;
-                    margin-right: 55px;
+                    margin-right: 50px;
                     width: 75px;
                 }
 
                 .subtitle {
-                    font-size: 16px;
+                    font-size: 15px;
                 }
 
                 @media (max-width: 768px) {
@@ -272,7 +227,7 @@
                         font-size: 20px;
                         padding-left: 10px;
                         margin-right: 30px;
-                        width: 95px;
+                        width: 80px;
                     }
 
                     .subtitle {
@@ -281,12 +236,24 @@
                         width: 100%;
                     }
                 }
+
+                @media (max-width: 600px) {
+                    .title {
+                        width: 60px;
+                    }
+                }
             }
 
             .subtitle {
                 font-size: 16px;
-                line-height: 32px;
             }
+        }
+    }
+
+    .chapters-wrapper,
+    .submodules-wrapper {
+        a {
+            width: 100%;
         }
     }
 
@@ -299,7 +266,7 @@
         z-index: 10000;
         background: url('/static/quit.svg') center no-repeat;
         cursor: pointer;
-        opacity: 0.4;
+        opacity: 0.5;
 
         &:hover {
             opacity: 1;

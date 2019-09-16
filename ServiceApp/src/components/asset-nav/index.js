@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { Link, withRouter } from 'react-router-dom';
 import UserContext from '../../context/user-context';
-import burgerIcon from '../../assets/img/burger.svg';
-import closeIcon from '../../assets/img/close.svg';
 import backIcon from '../../assets/img/icon-arrow-back-dark.svg';
+import createRequestBtn from '../../assets/img/createRequest.svg';
+import logo from '../../assets/img/logo.svg';
 
 const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarOpen }) => {
   const { user } = useContext(UserContext);
@@ -20,28 +20,34 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
         )
       }
       <Header>
+        <img src={logo} alt="logo"/>
+      </Header>
+      <BurgerIconWrap>
+        <span 
+          className={`menu ${isSideBarOpen ? 'toggled' : ''}`}
+          onClick={handleSidebar}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </BurgerIconWrap>
+      <RightHeader>
         <Block>
           <Desc>{user.role === 'SR' ? 'Service requester' : 'Service provider'}</Desc>
           <Value>{user.name}</Value>
         </Block>
-      </Header>
-      <BurgerIconWrap>
-        <BurgerIcon
-          src={isSideBarOpen ? closeIcon : burgerIcon}
-          onClick={handleSidebar}
-          isSideBarOpen={isSideBarOpen}
-        />
-      </BurgerIconWrap>
-      <RightHeader>
         <Block>
           <Desc>Wallet balance</Desc>
-          <Value>{user.balance}</Value>
+          <WalletValue>{user.balance}</WalletValue>
         </Block>
         {
           user.role === 'SR' && !back ? (
-            <ButtonWrapper>
-              <Button onClick={createRequest}>Create request</Button>
-            </ButtonWrapper>
+            <Block>
+              <Button onClick={createRequest}>
+                <img src={createRequestBtn} alt="Create request"/>
+              </Button>
+            </Block>
           ) : null
         }
       </RightHeader>
@@ -52,23 +58,77 @@ const HeaderWrapper = ({ back, createRequest, handleSidebar, history, isSideBarO
 export default withRouter(HeaderWrapper);
 
 const BurgerIconWrap = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-`
-const BurgerIcon = styled.img`
-  width: ${p => p.isSideBarOpen ? '45px' : 'unset'};
-  position: ${p => p.isSideBarOpen ? 'relative' : 'unset'};
-  left: ${p => p.isSideBarOpen ? '6px' : 'unset'};
-  
-  @media (min-width: 769px) {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+
+  @media (min-width: 840px) {
     display: none;
   }
+
+  .menu {
+    border-radius: 3px;
+    cursor: pointer;
+    user-select: none;
+
+    display: block;
+    padding: 15px 0;
+
+    span {
+      background: #485776;
+      display: block;
+      width: 24px;
+      height: 3px;
+      border-radius: 3px;
+      transform-origin: center;
+      transition: 300ms all cubic-bezier(.4,0,.2,1);
+
+      :nth-child(2) {
+        margin: 4px 0;
+      }
+    }
+
+    &.toggled {
+      span {
+        background: #4140DF !important;
+
+        &:first-child {
+          transform: translateY(6px) rotate(45deg);
+        }
+
+        &:nth-child(2) {
+          opacity: 0;
+        }
+
+        &:last-child {
+          transform: translateY(-8px) rotate(-45deg);
+        }
+      }
+    }
+  }
 `
+
 const Main = styled.nav`
-  padding: 17px;
+  padding: 20px 30px;
   display: flex;
-  height: 92px;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  height: auto;
+  background-color: #FFFFFF;
+  position: relative;
+
+  @media (min-width: 840px) {
+    flex-wrap: unset;
+    padding: 20px 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 90px;
+  }
+
+  @media (min-width: 920px) {
+    padding: 20px 30px;
+  }
 `;
 
 const Header = styled.header`
@@ -77,53 +137,70 @@ const Header = styled.header`
 `;
 
 const Desc = styled.div`
-  font: 15px 'Nunito Sans', sans-serif;
+  font: 14px 'Nunito Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
   color: #808b92;
+  text-transform: uppercase;
 `;
 
 const Block = styled.div`
   display: block;
   white-space: nowrap;
-  margin: 0 20px 0 10px;
-`;
+  margin: 0 10px 0 70px;
 
-const Value = styled.span`
-  color: #529FF8;
-  font-size: 28px;
-`;
+  &:first-child {
+    margin-left: 10px;
+  }
 
-const RightHeader = styled.div`
-  display: none;
-  @media (min-width: 769px) {
-    display: flex;
+  @media (max-width: 1000px) {
+    margin: 0 10px 0 40px;
+  }
+
+  @media (max-width: 920px) {
+    margin: 0 10px;
+  }
+
+  @media (max-width: 839px) {
+    margin: 20px 0 0;
   }
 `;
 
-const ButtonWrapper = styled.div`
+const Value = styled.span`
+  color: #485776;
+  font-size: 28px;
+`;
 
+const WalletValue = styled(Value)`
+  color: #4140DF;
+`;
+
+const RightHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 10px;
+  
+  @media (min-width: 840px) {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 0;
+  }
 `;
 
 const Button = styled.button`
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  font: 15px 'Nunito Sans', sans-serif;
-  letter-spacing: 0.47px;
-  padding: 20px 38px;
-  border-radius: 100px;
-  color: #fff;
-  font-size: 16px;
-  letter-spacing: 0.38px;
-  padding: 12px 21px;
-  margin: 1px 13px 0;
-  font-weight: 700;
-  background-color: #009fff;
-  width: 160px;
+  display: none;
+  @media (min-width: 840px) {
+    display: block;
+    appearance: none;
+    outline: none;
 
-  &:hover {
-    color: #009fff;
-    background-color: #ffffff;
-    border: 1px solid #009fff;
+    &:hover {
+      opacity: 0.9;
+    }
   }
 `;
 
@@ -133,7 +210,7 @@ const Back = styled(Link)`
   height: 100%;
   width: 90px;
   margin-right: 30px;
-  padding-right: 15px;
+  padding-right: 20px;
   cursor: pointer;
   border-right: 1px solid #eaecee;
   

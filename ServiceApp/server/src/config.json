@@ -17,7 +17,7 @@
         "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "maxDistance": 1000,
+    "maxDistance": 2000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
@@ -28,7 +28,8 @@
         "0173-1#01-BAF575#004", 
         "0173-1#01-AAN521#005",
         "0173-1#01-BAF634#008", 
-        "0173-1#01-BAF777#004"
+        "0173-1#01-BAF777#004",
+        "0173-1#01-BAF888#004"
     ],
     "dataRequest": ["0173-1#01-BAF777#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",

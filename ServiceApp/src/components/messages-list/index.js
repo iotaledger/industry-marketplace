@@ -80,7 +80,7 @@ export default List;
 const Panel = styled.div`
   padding: 30px;
   width: 95%;
-  background: #fafafa;
+  background-color: rgba(195,208,228,0.4);
 
   @media (min-width: 760px) {
     width: 80%;

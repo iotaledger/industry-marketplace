@@ -120,7 +120,7 @@ const Wrapper = styled.div`
 `;
 
 const Data = styled.section`
-  background-image: linear-gradient(-189deg, #06236c 1%, #1449c6 95%);
+  background-color: #F6F8FC;
   min-height: 90vh;
   position: relative;
   display: flex;
@@ -136,7 +136,7 @@ const LoadingBox = styled.div`
 `;
 
 const Header = styled.div`
-  color: #ffffff;
+  color: #485776;
   font-size: 24px;
   margin-bottom: 40px;
   text-align: left;

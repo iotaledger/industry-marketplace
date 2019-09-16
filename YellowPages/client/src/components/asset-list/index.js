@@ -145,23 +145,21 @@ function Table({ columns, data }) {
 
   const messageContent = cell => {
     return (
-      <div className="highlightjs-component">
-        <pre className="prettyprint lang-json">
-          <code className="json prettyprint lang-json">
-            {cell.render('Cell')}
-          </code>
-        </pre>
-      </div>
+      <pre className="prettyprint lang-json">
+        <code className="json prettyprint lang-json">
+          {cell.render('Cell')}
+        </code>
+      </pre>
     )
   }
 
   return (
     <>
-      <div>
-        {/* <pre>
+      {/* <div>
+        <pre>
           <code>{JSON.stringify(state[0].filters, null, 2)}</code>
-        </pre> */}
-      </div>
+        </pre>
+      </div> */}
       <table {...getTableProps()}>
         <thead>
           {headerGroups.map(headerGroup => (
@@ -284,66 +282,77 @@ function List({ assets }) {
       <Styles>
         <Table columns={columns} data={assets} />
       </Styles>
-      <Shape src="/static/shapes/shape-main-2.svg" className="shape-accent-2" alt="Shape svg" />
     </Section>
   )
 }
 
 const Section = styled.section`
   position: relative;
-  padding-top: 90px;
-  border-top: 1px solid #eaecee;
-  padding-bottom: 90px;
-  margin-bottom: 120px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  min-height: 600px;
+  min-height: 344px;
+  max-width: 970px;
+  width: 100%;
+  margin: 100px 0;
 
-  @media (max-width: 760px) {
-    padding-top: 40px;
-  }
-
-  @media (max-width: 1120px) {
-    padding-top: 50px;
-  }
-`;
-
-const Shape = styled.img`
-  position: absolute;
-  top: -60px;
-  left: 70vw;
-  z-index: -100;
-  @media (max-width: 1120px) {
-    bottom: 100px;
-    left: 36vw;
-  }
-  @media (max-width: 760px) {
-    display: none;
+  @media (max-width: 1000px) {
+    max-width: 90vw;
   }
 `;
 
 const Styles = styled.div`
-  margin: 4rem;
   overflow: auto;
   background: #fff;
+  padding: 20px;
 
   table {
     border-spacing: 0;
 
+    thead {
+      border-bottom: 1px solid #485776;
+    }
+
     tr {
+      td {
+        &:first-child {
+          font-weight: bold;
+        }
+      }
       :last-child {
         td {
           border-bottom: 0;
         }
       }
-      :nth-child(odd) {
-        background: rgba(0,0,0,.05);
-      }
     }
 
     th {
-      background: rgba(0,0,0,.1);
-      text-align: left;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 17px;
+      text-transform: uppercase;
+      color: #485776;
+
+      > div {
+        margin-top: 10px;
+
+        select, input {
+          background: #EEF2FA;
+          border-radius: 6px;
+          height: 32px;
+          font-size: 14px;
+          line-height: 17px;
+          color: #485776;
+          border: none;
+        }
+
+        input {
+          padding-left: 10px;
+
+          &::placeholder {
+            color: #485776;
+            font-size: 14px;
+            line-height: 17px;
+          }
+        }
+      }
     }
 
     th,

@@ -185,6 +185,11 @@ a.mapboxgl-ctrl-logo {
     display: flex;
     will-change: transform;
     pointer-events: none;
+    z-index: 2;
+
+    @media (max-width: 380px) {
+        display: none;
+    }
 }
 .mapboxgl-popup-anchor-top,
 .mapboxgl-popup-anchor-top-left,
@@ -267,10 +272,9 @@ a.mapboxgl-ctrl-logo {
 }
 .mapboxgl-popup-close-button {
     position: absolute;
-    top: 5px;
-    right: 20px;
+    top: 25px;
+    right: 35px;
     border: none;
-    border-radius: 0 3px 0 0;
     cursor: pointer;
     color: #fff;
     z-index: 99;
@@ -278,7 +282,7 @@ a.mapboxgl-ctrl-logo {
     background: transparent;
 }
 .mapboxgl-popup-close-button:hover {
-    background-color: rgba(0,0,0,0.05);
+    background-color: transparent;
 }
 .mapboxgl-popup-content {
     position: relative;
