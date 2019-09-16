@@ -1,18 +1,7 @@
 const sql = require("mssql");
 
-const config = {
-    "user": process.env.SAPP_SERVER_SQL_SERVER_USER,
-    "password": process.env.SAPP_SERVER_SQL_SERVER_PASSWORD,
-    "server": process.env.SAPP_SERVER_SQL_SERVER_HOSTNAME,
-    "database": process.env.SAPP_SERVER_SQL_SERVER_DATABASE_NAME
-}
-if (process.env.SAPP_SERVER_SQL_SERVER_ENCRYPT === "1")
-{
-    config["options"] = {
-        encrypt: true
-    }
-}
-console.log(config);
+const config = process.env.SAPP_SERVER_SQL_SERVER_CONNECTION_STRING;
+
 let db;
 
 export const connect = async () => {
