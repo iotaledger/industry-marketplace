@@ -134,9 +134,9 @@ export class AppHelper {
                 await writeData('wallet', newWallet);
             }
 
-            res.json({ 
-                ...user, 
-                balance: wallet ? await getBalance(wallet.address) : 0, 
+            res.json({
+                ...user,
+                balance: wallet ? await getBalance(wallet.address) : 0,
                 wallet: wallet ? wallet.address : newWallet.address
             });
         });
@@ -150,10 +150,10 @@ export class AppHelper {
         app.post('/cfp', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
-               
+
                 // 2. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -184,7 +184,7 @@ export class AppHelper {
         app.post('/proposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
@@ -213,7 +213,7 @@ export class AppHelper {
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const channelId = request.frame.conversationId;
                 const mam = await publish(channelId, request);
 
@@ -249,7 +249,7 @@ export class AppHelper {
         app.post('/rejectProposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('rejectProposal', submodelId);
 
@@ -276,7 +276,7 @@ export class AppHelper {
         app.post('/informConfirm', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('informConfirm', submodelId);
 
@@ -289,7 +289,7 @@ export class AppHelper {
 
                 const user: any = await readData('user');
                 const payload = { ...request, walletAddress: address, userName: user.name };
-                
+
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
                     const conversationId = request.frame.conversationId;
@@ -326,9 +326,9 @@ export class AppHelper {
 
         app.post('/informPayment', async (req, res) => {
             try {
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const user: any = await readData('user');
-            
+
                 // 1. Retrieve wallet
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
@@ -374,7 +374,7 @@ export class AppHelper {
 
         app.post('/mqtt', async (req, res) => {
             try {
-                // 1. Create HelperClient 
+                // 1. Create HelperClient
                 // 2. Subscribe to zmq
                 // 3. Post data under mqtt topic
                 if (req.body.message === 'subscribe') {
@@ -387,7 +387,7 @@ export class AppHelper {
                     });
 
                 } else if (req.body.message === 'unsubscribe') {
-                    // 4. Unsubscribe from zmq with ID 
+                    // 4. Unsubscribe from zmq with ID
                     const subscriptionId = req.body.subscriptionId;
                     unsubscribeHelperClient(subscriptionId);
 
