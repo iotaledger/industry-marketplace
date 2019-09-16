@@ -57,6 +57,7 @@ export async function CreateAuthenticationPresentation(conversationId : string, 
     //Create the presentation
     const presentation = Presentation.Create(credentialsArray);
     const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:incomingChallenge.challenge});
+    presentationProof.Sign(presentation.EncodeToJSON());
     return VerifiablePresentation.Create(presentation, presentationProof);
 }
 
@@ -68,15 +69,20 @@ export enum VERIFICATION_LEVEL {
 
 export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, conversationId : string, provider : string) : Promise<VERIFICATION_LEVEL> {
     //Create objects
+    console.log("1");
     const outgoingChallenge : any = await readData('outgoingChallenge', conversationId);
+    console.log("1.1");
+    console.log(JSON.stringify(presentationData));
+    console.log(provider);
     const proofParameters = await DecodeProofDocument(presentationData.proof, provider);
+    console.log("1.2");
     const verifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
-
+    console.log("2");
     //Verify
     SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").AddTrustedDID(proofParameters.issuer.GetDID());
     const code = verifiablePresentation.Verify();
     SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").RemoveTrustedDID(proofParameters.issuer.GetDID());
-
+    console.log("3");
     //Determine level of trust
     let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
     if(code == VerificationErrorCodes.SUCCES && presentationData.proof.nonce == outgoingChallenge.challenge) {

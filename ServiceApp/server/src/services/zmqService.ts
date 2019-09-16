@@ -264,8 +264,9 @@ export class ZmqService {
                                 if (id === receiverID) {
                                     if(messageType == 'proposal') {
                                         //Find the challenge
+                                        console.log("Proposal");
                                         const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, data.frame.conversationId, provider);
-                                        
+                                        console.log("Beep");
                                         //Check if the correct challenge is used and if the signatures are correct
                                         if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
                                             //Only send to UI if the DID Authentication is succesful
