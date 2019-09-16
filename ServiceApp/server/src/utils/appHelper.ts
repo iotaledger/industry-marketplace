@@ -30,13 +30,17 @@ export class AppHelper {
 
         const app = express();
 
-        app.use(cors());
+        app.use(cors({
+            origin: "*",
+            methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
+            allowedHeaders: "content-type"
+        }));
         app.use(bodyParser.json({ limit: '30mb' }));
         app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
         app.use(bodyParser.json());
 
         app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', `*`);
+            res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
             res.setHeader('Connection', 'keep-alive');
