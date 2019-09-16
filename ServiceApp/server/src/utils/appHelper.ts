@@ -3,7 +3,7 @@ import { generate } from '@iota/industry_4.0_language';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, DIDDocument, SignDIDAuthentication, Service } from 'identity_ts';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, Service } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -17,6 +17,7 @@ import { sendMessage } from './transactionHelper';
 import { provider } from '../config.json';
 import { generateNewWallet, getBalance } from './walletHelper';
 import { ServiceFactory } from '../factories/serviceFactory';
+import { CreateAuthenticationPresentation } from './credentialHelper.js';
 
 /**
  * Class to help with expressjs routing.
@@ -213,12 +214,8 @@ export class AppHelper {
                 const tag = buildTag('proposal', submodelId);
 
                 //1.25 Sign DID Authentication
-                const incomingChallenge : any = await readData('incomingChallenge', request.frame.conversationId);
-                const did : any = await readData('did');
-                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
-                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
-                request.identifcation = {};
+                const verifiablePresentation = await CreateAuthenticationPresentation(request.frame.conversationId, provider);
+                request.identification = {};
                 request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 //1.5 Create a DID Authentication Challenge
@@ -256,11 +253,7 @@ export class AppHelper {
                 const mam = await publish(channelId, request);
 
                 //0 Sign DID Authentication
-                const incomingChallenge : any = await readData('incomingChallenge', request.frame.conversationId);
-                const did : any = await readData('did');
-                const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
-                userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-                const verifiablePresentation = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
+                const verifiablePresentation = await CreateAuthenticationPresentation(request.frame.conversationId, provider);
                 request.identifcation = {};
                 request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 

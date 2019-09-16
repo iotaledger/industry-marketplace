@@ -8,9 +8,8 @@ import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
-import { VerificationErrorCodes, VerifyDIDAuthentication, DID } from 'identity_ts';
-import { ProcessReceivedCredentialForUser } from '../utils/credentialHelper.js';
-import { SchemaHelper } from '../utils/schemaHelper.js';
+import { DID, SchemaManager } from 'identity_ts';
+import { ProcessReceivedCredentialForUser, VerifyCredentials, VERIFICATION_LEVEL } from '../utils/credentialHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -65,7 +64,7 @@ export class ZmqService {
         this.listenAddress = undefined;
 
         //Add trusted identities (Initially, the DID of the IOTA Foundation)
-        const schema = SchemaHelper.GetInstance().GetSchema("WhiteListedCredential");
+        const schema = SchemaManager.GetInstance().GetSchema("WhiteListedCredential");
         for(let i=0; i < this._config.trustedIdentities.length; i++) {
             schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
         }
@@ -188,23 +187,25 @@ export class ZmqService {
     /**
      * Build payload for the socket packet
      */
-    private buildPayload(data, messageType, messageParams) {
+    private buildPayload(data, messageType, messageParams, trustLevel) {
         return {
             data,
             messageType,
             tag: messageParams[12],
             hash: messageParams[1],
             address: messageParams[2],
-            timestamp: parseInt(messageParams[5], 10)
+            timestamp: parseInt(messageParams[5], 10),
+            trustLevel
         };
     }
 
     /**
      * Send out an event
      */
-    private async sendEvent(data, messageType, messageParams) {
+    private async sendEvent(data, messageType, messageParams, trustLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
         const event = messageParams[0];
-        const payload = this.buildPayload(data, messageType, messageParams);
+        const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
+        
         console.log(`Sending ${messageType}`);
 
         //Locally store the challenge received
@@ -233,7 +234,6 @@ export class ZmqService {
         const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
-            console.log(tag);
             const messageType = extractMessageType(tag);
             
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
@@ -264,24 +264,13 @@ export class ZmqService {
                                 if (id === receiverID) {
                                     if(messageType == 'proposal') {
                                         //Find the challenge
-                                        const outgoingChallenge : any = await readData('outgoingChallenge', data.frame.conversationId);
-
-                                        //Verify Identity challange completion before sending events
-                                        let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
+                                        const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, data.frame.conversationId, provider);
+                                        
                                         //Check if the correct challenge is used and if the signatures are correct
-                                        if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == outgoingChallenge.challenge) {
+                                        if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
                                             //Only send to UI if the DID Authentication is succesful
-                                            await this.sendEvent(data, messageType, messageParams);
-
-                                            if (messageType === 'informConfirm') {
-                                                const channelId = data.frame.conversationId;
-                                                await publish(channelId, data);
-                                            }
-                                        } else {
-                                            console.log('DIDAuthenticationError', errorCode);
-                                            console.log('SolvedChallenge', data.identification.didAuthenticationPresentation.proof.nonce);
-                                            console.log('RequestedChallenge', outgoingChallenge.challenge);
-                                        }
+                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                        } 
                                     } else {
                                         await this.sendEvent(data, messageType, messageParams);
                                         const channelId = data.frame.conversationId;
@@ -325,13 +314,12 @@ export class ZmqService {
                                     // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
                                     if (id === receiverID) {
                                         if (messageType === 'acceptProposal') {
+                                            //Find the challenge
+                                            const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, data.frame.conversationId, provider);
                                             const channelId = data.frame.conversationId;
-                                            const outgoingChallenge : any = await readData('outgoingChallenge', channelId);
 
-                                            //Verify Identity challange completion before sending events
-                                            let errorCode : VerificationErrorCodes = await VerifyDIDAuthentication(data.identification.didAuthenticationPresentation, provider);
                                             //Check if the correct challenge is used and if the signatures are correct
-                                            if(errorCode == VerificationErrorCodes.SUCCES && data.identification.didAuthenticationPresentation.proof.nonce == outgoingChallenge.challenge) {
+                                            if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
                                                 const secretKey = await decryptWithReceiversPrivateKey(data.mam);
                                                 await writeData('mam', { 
                                                     id: channelId, 
@@ -341,11 +329,7 @@ export class ZmqService {
                                                     side_key: secretKey, 
                                                     start: 0 
                                                 });
-                                                await this.sendEvent(data, messageType, messageParams);
-                                            } else {
-                                                console.log('DIDAuthenticationError', errorCode);
-                                                console.log('SolvedChallenge', data.identification.didAuthenticationPresentation.proof.nonce);
-                                                console.log('RequestedChallenge', outgoingChallenge.challenge);
+                                                await this.sendEvent(data, messageType, messageParams, verificationResult);
                                             }
                                         } else {
                                             await this.sendEvent(data, messageType, messageParams);

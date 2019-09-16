@@ -1,5 +1,5 @@
 import { readData, createCredential } from "./databaseHelper";
-import { RSAKeypair, ProofParameters, VerificationErrorCodes, DecodeProofDocument, VerifiableCredential, VerifiableCredentialDataModel } from "identity_ts";
+import { RSAKeypair, ProofParameters, VerificationErrorCodes, DecodeProofDocument, VerifiableCredential, VerifiableCredentialDataModel, VerifiablePresentation, SignDIDAuthentication, Presentation, BuildRSAProof, DIDDocument, VerifiablePresentationDataModel, SchemaManager } from "identity_ts";
 import { decryptCipher } from "./encryptionHelper";
 
 
@@ -36,4 +36,58 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
     } catch(e) {
         console.log("Credential Verification Error: ", e);
     }
+}
+//request.frame.conversationId
+export async function CreateAuthenticationPresentation(conversationId : string, provider : string) : Promise<VerifiablePresentation> {
+    //1.25 Sign DID Authentication
+    const incomingChallenge : any = await readData('incomingChallenge', conversationId);
+    const did : any = await readData('did');
+    const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+    userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+    const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
+
+    //Add the stored Credential
+    const credentialsArray : VerifiableCredential[] = [didAuthCredential];
+    const whiteListCredential = await readData('credentials');
+    if(whiteListCredential) {
+        const decodedProof = await DecodeProofDocument(whiteListCredential[0], provider);
+        credentialsArray.push(VerifiableCredential.DecodeFromJSON(whiteListCredential[0], decodedProof));
+    }
+
+    //Create the presentation
+    const presentation = Presentation.Create(credentialsArray);
+    const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:incomingChallenge.challenge});
+    return VerifiablePresentation.Create(presentation, presentationProof);
+}
+
+export enum VERIFICATION_LEVEL {
+    UNVERIFIED = 0,
+    DID_OWNER = 1,
+    DID_TRUSTED = 2
+}   
+
+export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, conversationId : string, provider : string) : Promise<VERIFICATION_LEVEL> {
+    //Create objects
+    const outgoingChallenge : any = await readData('outgoingChallenge', conversationId);
+    const proofParameters = await DecodeProofDocument(presentationData.proof, provider);
+    const verifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
+
+    //Verify
+    SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").AddTrustedDID(proofParameters.issuer.GetDID());
+    const code = verifiablePresentation.Verify();
+    SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").RemoveTrustedDID(proofParameters.issuer.GetDID());
+
+    //Determine level of trust
+    let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
+    if(code == VerificationErrorCodes.SUCCES && presentationData.proof.nonce == outgoingChallenge.challenge) {
+        verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
+        if(verifiablePresentation.GetVerifiedTypes().includes("WhiteListedCredential")) {
+            verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
+        }
+    } else {
+        console.log('DIDAuthenticationError', code);
+        console.log('SolvedChallenge', presentationData.proof.nonce);
+        console.log('RequestedChallenge', outgoingChallenge.challenge);
+    }
+    return verificationLevel;
 }
