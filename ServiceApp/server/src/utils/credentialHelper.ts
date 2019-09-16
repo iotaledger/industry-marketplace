@@ -51,8 +51,9 @@ export async function CreateAuthenticationPresentation(conversationId : string, 
     const credentialsArray : VerifiableCredential[] = [didAuthCredential];
     const whiteListCredential : any = await readData('credentials');
     if(whiteListCredential) {
-        const decodedProof = await DecodeProofDocument(whiteListCredential.credential, provider);
-        credentialsArray.push(VerifiableCredential.DecodeFromJSON(whiteListCredential.credential, decodedProof));
+        const parsed = JSON.parse(whiteListCredential.credential);
+        const decodedProof = await DecodeProofDocument(parsed.proof, provider);
+        credentialsArray.push(VerifiableCredential.DecodeFromJSON(parsed, decodedProof));
     }
 
     //Create the presentation
