@@ -1,14 +1,17 @@
-import React, { useContext } from 'react'
+import React from 'react'
+// import React, { useContext } from 'react'
 import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
-import LanguageContext from '../../context/language-context'
-import TranslatedPage from '../de/wewash_prototype'
+// import LanguageContext from '../../context/language-context'
+// import TranslatedPage from '../de/wewash_prototype'
 
 export default () => {
-    const { language } = useContext(LanguageContext);
-    return language === 'de' ? <TranslatedPage /> : (
+    window.scrollTo(0, 0);
+    // const { language } = useContext(LanguageContext);
+    // return language === 'de' ? <TranslatedPage /> : (
+    return (
         <Layout>
             <div className="content-header">
                 <Text className="title extra-large">Chapter 1</Text>

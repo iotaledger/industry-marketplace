@@ -108,28 +108,28 @@
         }
 
         &.cfp {
-          background-image: url('/static/demo/cfp.svg'); 
+          background-image: url('/static/demo/cfp.svg');
         }
-  
+
         &.proposal {
-          background-image: url('/static/demo/proposal.svg'); 
+          background-image: url('/static/demo/proposal.svg');
         }
-  
+
         &.acceptProposal {
-          background-image: url('/static/demo/acceptProposal.svg'); 
+          background-image: url('/static/demo/acceptProposal.svg');
         }
 
         &.md-tab--active {
           &.cfp {
-            background-image: url('/static/demo/cfp_selected.svg'); 
+            background-image: url('/static/demo/cfp_selected.svg');
           }
-    
+
           &.proposal {
-            background-image: url('/static/demo/proposal_selected.svg'); 
+            background-image: url('/static/demo/proposal_selected.svg');
           }
-    
+
           &.acceptProposal {
-            background-image: url('/static/demo/acceptProposal_selected.svg'); 
+            background-image: url('/static/demo/acceptProposal_selected.svg');
           }
         }
       }
@@ -139,7 +139,7 @@
           &:nth-child(2) {
             max-width: 187px;
           }
-  
+
           &:nth-child(4) {
             max-width: 195px;
           }
@@ -177,10 +177,10 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    background-image: url('/static/backgrounds/demo_section_desktop_background.svg'); 
+    background-image: url('/static/backgrounds/demo_section_desktop_background.svg');
 
     @media (max-width: 950px) {
-      background-image: url('/static/backgrounds/demo_section_mobile_background.svg'); 
+      background-image: url('/static/backgrounds/demo_section_mobile_background.svg');
     }
 
     .assets {
@@ -193,7 +193,7 @@
         min-height: 950px;
       }
     }
-  
+
     .no-assets {
       display: flex;
       flex-direction: column;
@@ -202,7 +202,7 @@
       padding: 20px;
       height: 280px;
       width: 280px;
-  
+
       .title {
         font-size: 22px;
         line-height: 21px;
@@ -251,7 +251,7 @@
 
 .popup-card {
   cursor: default;
-  transition: box-shadow 0.19s ease-out;
+  transition: box-shadow 0.2s ease-out;
   width: 300px;
   height: 385px;
   border: 1px solid #F2F5FB;;

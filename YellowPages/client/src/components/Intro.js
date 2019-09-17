@@ -21,7 +21,7 @@ export default () => {
                     <Link to="/demo">
                         <img className="intro-page-btn secondary" alt="Try the demo" src={tryIt} />
                     </Link>
-                    <Link to="/demo">
+                    <Link to="/executive_summary">
                         <Button className="intro-page-btn medium primary">
                             Get started
                         </Button>

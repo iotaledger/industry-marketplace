@@ -78,8 +78,9 @@ class Map extends React.Component {
 
   renderPopup() {
     const { popupInfo } = this.state;
+    const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     if (!popupInfo) return null;
-    
+
     return (
       <Popup
         tipSize={10}
@@ -107,8 +108,8 @@ class Map extends React.Component {
               <span className="value">{popupInfo.partnerName}</span>
             </div>
             <div className="popup-data">
-              <span className="key">Irdi</span>
-              <span className="value">{popupInfo.irdi}</span>
+              <span className="key">Reply By</span>
+              <span className="value">{(new Date(popupInfo.replyBy)).toLocaleDateString('de-DE', dateOptions)}</span>
             </div>
             <div className="popup-data">
               <span className="key">Location</span>
