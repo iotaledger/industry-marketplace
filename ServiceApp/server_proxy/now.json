@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "market-manager-api",
+    "name": "service-requester-proxy",
     "builds": [
         {
             "src": "proxy.js",
