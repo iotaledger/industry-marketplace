@@ -181,74 +181,15 @@ export default ({ closeNav }) => {
                             </Link>
                         </div>
                     </div>
-                    <div className="submodules-wrapper">
-                        <Link to="/project_partners">
-                            <div className="chapter">
-                                <Text className="title">07</Text>
-                                <Text className="subtitle">
-                                    Project Partners
-                                </Text>
-                                <Text className="read">Read</Text>
-                            </div>
-                        </Link>
-
-                        <div className="subtopics enabled">
-                            <Link to="/eclass">
-                                <div className="subtopic">
-                                    <Text className="title">1</Text>
-                                    <Text className="subtitle">
-                                        About ecl@ss
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/neoception">
-                                <div className="subtopic">
-                                    <Text className="title">2</Text>
-                                    <Text className="subtitle">
-                                        About Neoception
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/ovgu">
-                                <div className="subtopic">
-                                    <Text className="title">3</Text>
-                                    <Text className="subtitle">
-                                        About OvGU
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/hsu">
-                                <div className="subtopic">
-                                    <Text className="title">4</Text>
-                                    <Text className="subtitle">
-                                        About HSU
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/wewash">
-                                <div className="subtopic">
-                                    <Text className="title">5</Text>
-                                    <Text className="subtitle">
-                                        About WeWash
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/iota_foundation">
-                                <div className="subtopic">
-                                    <Text className="title">6</Text>
-                                    <Text className="subtitle">
-                                        About IOTA Foundation
-                                    </Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
+                    <Link to="/project_partners">
+                        <div className="chapter">
+                            <Text className="title">07</Text>
+                            <Text className="subtitle">
+                                Project Partners
+                            </Text>
+                            <Text className="read">Read</Text>
                         </div>
-                    </div>
+                    </Link>
                     <div className="submodules-wrapper">
                         <Link to="/join">
                             <div className="chapter">
