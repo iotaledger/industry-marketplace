@@ -7,7 +7,7 @@ import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, Servic
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, createOutgoingChallenge } from './databaseHelper';
+import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
@@ -174,10 +174,9 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', submodelId);
 
                 //1.5 Create a DID Authentication Challenge
-                const challenge = GenerateSeed(12);
+                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
                 request.identification = {};
-                request.identification.authenticationChallenge = challenge;
-                await createOutgoingChallenge({id:request.frame.conversationId, challenge:challenge});
+                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -214,14 +213,9 @@ export class AppHelper {
                 const tag = buildTag('proposal', submodelId);
 
                 //1.25 Sign DID Authentication
-                const verifiablePresentation = await CreateAuthenticationPresentation(request.frame.conversationId, provider);
+                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
                 request.identification = {};
                 request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-
-                //1.5 Create a DID Authentication Challenge
-                const challenge = GenerateSeed(12);
-                request.identification.authenticationChallenge = challenge;
-                await createOutgoingChallenge({id:request.frame.conversationId, challenge:challenge});
 
                 // 2. Send transaction
                 const user: any = await readData('user');
@@ -251,11 +245,6 @@ export class AppHelper {
                 const request = await generate(req.body);
                 const channelId = request.frame.conversationId;
                 const mam = await publish(channelId, request);
-
-                //0 Sign DID Authentication
-                const verifiablePresentation = await CreateAuthenticationPresentation(request.frame.conversationId, provider);
-                request.identification = {};
-                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = request.frame.receiver.identification.id;

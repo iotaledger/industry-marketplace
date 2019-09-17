@@ -39,13 +39,13 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
     }
 }
 //request.frame.conversationId
-export async function CreateAuthenticationPresentation(conversationId : string, provider : string) : Promise<VerifiablePresentation> {
+export async function CreateAuthenticationPresentation(provider : string) : Promise<VerifiablePresentation> {
     //1.25 Sign DID Authentication
-    const incomingChallenge : any = await readData('incomingChallenge', conversationId);
+    const challenge = Date.now().toString();
     const did : any = await readData('did');
     const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
     userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-    const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, incomingChallenge.challenge);
+    const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
 
     //Add the stored Credential
     const credentialsArray : VerifiableCredential[] = [didAuthCredential];
@@ -58,7 +58,7 @@ export async function CreateAuthenticationPresentation(conversationId : string, 
 
     //Create the presentation
     const presentation = Presentation.Create(credentialsArray);
-    const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:incomingChallenge.challenge});
+    const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:challenge});
     presentationProof.Sign(presentation.EncodeToJSON());
     return VerifiablePresentation.Create(presentation, presentationProof);
 }
@@ -69,9 +69,8 @@ export enum VERIFICATION_LEVEL {
     DID_TRUSTED = 2
 }   
 
-export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, conversationId : string, provider : string) : Promise<VERIFICATION_LEVEL> {
+export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, provider : string) : Promise<VERIFICATION_LEVEL> {
     //Create objects
-    const outgoingChallenge : any = await readData('outgoingChallenge', conversationId);
     const proofParameters = await DecodeProofDocument(presentationData.proof, provider);
     const verifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
 
@@ -82,15 +81,13 @@ export async function VerifyCredentials(presentationData : VerifiablePresentatio
 
     //Determine level of trust
     let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-    if(code == VerificationErrorCodes.SUCCES && presentationData.proof.nonce == outgoingChallenge.challenge) {
+    if(code == VerificationErrorCodes.SUCCES && (parseInt(presentationData.proof.nonce) + 60000) < Date.now()) { //Allow 1 minute old Authentications.
         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
         if(verifiablePresentation.GetVerifiedTypes().includes("WhiteListedCredential")) {
             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
         }
     } else {
         console.log('DIDAuthenticationError', code);
-        console.log('SolvedChallenge', presentationData.proof.nonce);
-        console.log('RequestedChallenge', outgoingChallenge.challenge);
     }
     return verificationLevel;
 }

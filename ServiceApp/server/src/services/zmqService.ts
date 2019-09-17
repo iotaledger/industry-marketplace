@@ -208,11 +208,6 @@ export class ZmqService {
         
         console.log(`Sending ${messageType}`);
 
-        //Locally store the challenge received
-        if(['callForProposal', 'proposal'].includes(messageType)) {
-            await writeData('incomingChallenge', {id:data.frame.conversationId, challenge:data.identification.authenticationChallenge});
-        }
-
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
         }
@@ -264,9 +259,8 @@ export class ZmqService {
                                 if (id === receiverID) {
                                     if(messageType == 'proposal') {
                                         //Find the challenge
-                                        console.log("Proposal");
-                                        const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, data.frame.conversationId, provider);
-                                        console.log("Beep");
+                                        const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, provider);
+
                                         //Check if the correct challenge is used and if the signatures are correct
                                         if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
                                             //Only send to UI if the DID Authentication is succesful
@@ -288,24 +282,28 @@ export class ZmqService {
                                 // 3.1 Decode every message of type A, retrieve location.
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
+                                    
+                                    //Find the challenge
+                                    const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, provider);
 
                                     // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                    if (!location || !maxDistance) {
-                                        await this.sendEvent(data, messageType, messageParams);
-                                    }
-
-                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                    if (location && maxDistance) {
-
-                                        try {
-                                            const distance = await calculateDistance(location, senderLocation);
-
-                                            // 3.3.1 If distance within accepted range, send message to UI
-                                            if (distance <= maxDistance) {
-                                                await this.sendEvent(data, messageType, messageParams);
+                                    if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                        if (!location || !maxDistance) {
+                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                        }
+    
+                                        // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                        if (location && maxDistance) {
+                                            try {
+                                                const distance = await calculateDistance(location, senderLocation);
+    
+                                                // 3.3.1 If distance within accepted range, send message to UI
+                                                if (distance <= maxDistance) {
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
+                                            } catch (error) {
+                                                console.error(error);
                                             }
-                                        } catch (error) {
-                                            console.error(error);
                                         }
                                     }
                                 } else {
@@ -315,26 +313,22 @@ export class ZmqService {
                                     // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
                                     if (id === receiverID) {
                                         if (messageType === 'acceptProposal') {
-                                            //Find the challenge
-                                            const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, data.frame.conversationId, provider);
                                             const channelId = data.frame.conversationId;
 
                                             //Check if the correct challenge is used and if the signatures are correct
-                                            if(verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                                await writeData('mam', { 
-                                                    id: channelId, 
-                                                    root: data.mam.root, 
-                                                    seed: '', 
-                                                    next_root: '', 
-                                                    side_key: secretKey, 
-                                                    start: 0 
-                                                });
-                                                await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                            }
-                                        } else {
+                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                            await writeData('mam', { 
+                                                id: channelId, 
+                                                root: data.mam.root, 
+                                                seed: '', 
+                                                next_root: '', 
+                                                side_key: secretKey, 
+                                                start: 0 
+                                            });
                                             await this.sendEvent(data, messageType, messageParams);
                                         }
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }
