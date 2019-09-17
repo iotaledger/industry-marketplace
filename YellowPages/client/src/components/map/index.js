@@ -25,7 +25,6 @@ class Map extends React.Component {
       },
       popupInfo: null,
       mapHeight: 640,
-      assets: props.assets
     };
 
     this.openPopup = this.openPopup.bind(this);
@@ -37,12 +36,6 @@ class Map extends React.Component {
   componentDidMount() {
     window.addEventListener('resize', this.resize);
     this.resize();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.assets.length !== prevProps.assets.length) {
-      this.setState({ assets: this.props.assets });
-    }
   }
 
   componentWillUnmount() {
@@ -130,7 +123,7 @@ class Map extends React.Component {
   }
 
   render() {
-    const { assets, viewport, mapHeight, popupInfo } = this.state;
+    const { viewport, mapHeight, popupInfo } = this.state;
 
     return (
       <Main className="map">
@@ -155,7 +148,7 @@ class Map extends React.Component {
           <div style={{ position: 'absolute', right: 20, top: 10 }}>
             <NavigationControl onViewportChange={this.updateViewport} />
           </div>
-          <Markers assets={assets} openPopup={this.openPopup} />
+          <Markers assets={this.props.assets} openPopup={this.openPopup} />
           {this.renderPopup()}
         </MapGL>
       </Main>
