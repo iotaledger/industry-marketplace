@@ -1,0 +1,138 @@
+{
+    "header": {
+        "button": "",
+        "menu": ""
+    },
+    "chapters": {
+        "chapter1": "Executive Summary",
+        "chapter2": "Introduction to Industry 4.0",
+        "chapter3": {
+            "title": "The Industry Marketplace",
+            "topics": {
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": "",
+                "topic1": ""
+            }
+        },
+        "chapter4": {
+            "title": "Information on Platform Industry 4.0",
+            "topics": {
+            
+            }
+        },
+        "chapter5": "eCl@ss - why are standards important for I4.0?",
+        "chapter4": {
+            "title": "Project Partners",
+            "topics": {
+            
+            }
+        },
+        "chapter7": "",
+        "chapter8": "",
+        "chapter9": "",
+        "chapter10": "",
+        "chapter11": "",
+        "chapter12": "",
+        "chapter13": "",
+        "chapter14": "",
+        "chapter15": "",
+        "chapter16": "",
+        "chapter17": "",
+        "chapter18": ""
+
+    },
+    "disclaimer": {
+        "text": "",
+        "link": "",
+        "button": ""
+    },
+    "landingPage": {
+        "intro": {
+            "subtitle": "",
+            "title": "",
+            "paragraph": "",
+            "btnTry": "",
+            "btnGetStarted": ""
+        },
+        "whyMarketplace": {
+            "title": "",
+            "paragraph1": "",
+            "paragraph2": ""
+        },
+        "features": {
+            "title": "",
+            "paragraph1": "",
+            "paragraph2": "",
+            "feature1": {
+                "title": "",
+                "paragraph": ""
+            },
+            "feature2": {
+                "title": "",
+                "paragraph": ""
+            },
+            "feature3": {
+                "title": "",
+                "paragraph": ""
+            },
+            "feature4": {
+                "title": "",
+                "paragraph": ""
+            },
+            "feature5": {
+                "title": "",
+                "paragraph": ""
+            },
+            "feature6": {
+                "title": "",
+                "paragraph": ""
+            }
+        },
+        "watchLive": {
+            "title": "",
+            "paragraph": ""
+        },
+        "keyComponents": {
+            "title": "",
+            "paragraph1": "",
+            "paragraph2": "",
+            "components": {
+                "component1": {
+                    "title": "",
+                    "paragraph": ""
+                },
+                "component2": {
+                    "title": "",
+                    "paragraph": ""
+                },
+                "component3": {
+                    "title": "",
+                    "paragraph": ""
+                }
+            }
+        },
+        "explore": {
+            "title": "",
+            "paragraph": ""
+        },
+        "getInTouch": {
+            "title": "",
+            "name": "",
+            "email": "",
+            "message": "",
+            "ack": "",
+            "link": "",
+            "newsletter": "",
+            "btnSubmit": "",                    
+            "sending": "",
+            "sent": "",
+            "missingField": ""
+        }
+    }
+}
