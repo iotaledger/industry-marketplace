@@ -53,6 +53,7 @@ export const prepareData = async (payload) => {
             id: conversationId,
             latitude: Number(coordinates[0]),
             longitude: Number(coordinates[1]),
+            partner: get(data.frame, 'sender.identification.id').replace('did:iota:', ''),
             partnerName: get(data, 'userName') || sender,
             originalMessage: JSON.stringify(data, null, 2),
             storageId: type === 'proposal' ? `${conversationId}#${sender}` : conversationId,

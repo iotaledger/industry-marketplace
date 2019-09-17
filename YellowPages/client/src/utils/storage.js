@@ -10,6 +10,7 @@ export const writeToStorage = async item => {
         await removeFromStorage(item.id);
         await localStorage.setItem(`${item.id}#${item.partner}`, JSON.stringify(item));
     } else {
+        await removeProposals(item.id);
         await localStorage.setItem(item.id, JSON.stringify(item));
     }
 };
