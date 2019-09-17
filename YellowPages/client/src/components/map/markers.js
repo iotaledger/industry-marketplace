@@ -2,13 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { Marker } from 'react-map-gl';
 
-export default ({ assets }) => (
+export default ({ assets, openPopup }) => (
   <div>
     {
       assets && assets.map((asset, i) => (
         <Marker latitude={asset.latitude} longitude={asset.longitude} key={`marker-${i}`}>
           <Pin
-            onClick={() => this.props.openPopup(asset)} 
+            onClick={() => openPopup(asset)} 
             type={asset.type}
           >
             { asset.type === 'callForProposal' && <I className="fas fa-euro-sign"></I> }

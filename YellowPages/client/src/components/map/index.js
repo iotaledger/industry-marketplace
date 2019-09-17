@@ -15,9 +15,9 @@ class Map extends React.Component {
     super(props);
     this.state = {
       viewport: {
-        latitude: 52.23,
-        longitude: 11.16,
-        zoom: 3.74,
+        latitude: 51,
+        longitude: 10.5,
+        zoom: 5,
         bearing: 0,
         pitch: 15,
         width: 800,
