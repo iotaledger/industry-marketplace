@@ -30,10 +30,10 @@ const Menu = ({ onClick }) => {
                   />
                   */
                 }
-                <Link className="btn mini primary menu-link mobile-only" to="/">
+                <Link to="/join" className="btn mini primary menu-link mobile-only">
                     Join
                 </Link>
-                <Link className="btn mini primary menu-link mobile-hidden" to="#">
+                <Link to="/join" className="btn mini primary menu-link mobile-hidden">
                     Join & Participate
                 </Link>
                 <Button
