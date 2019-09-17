@@ -81,7 +81,7 @@ export async function VerifyCredentials(presentationData : VerifiablePresentatio
 
     //Determine level of trust
     let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-    if(code == VerificationErrorCodes.SUCCES && (parseInt(presentationData.proof.nonce) + 60000) < Date.now()) { //Allow 1 minute old Authentications.
+    if(code == VerificationErrorCodes.SUCCES && (parseInt(presentationData.proof.nonce) + 60000) > Date.now()) { //Allow 1 minute old Authentications.
         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
         if(verifiablePresentation.GetVerifiedTypes().includes("WhiteListedCredential")) {
             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
