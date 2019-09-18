@@ -80,6 +80,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                 seed = wallet.seed
                 address = wallet.address
                 keyIndex = wallet.keyIndex
+                await updateValue('wallet', 'seed', 'status', seed, 'busy')
             }
         }
 
@@ -175,7 +176,7 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
             console.log('processPayment 2', transfers);
 
             if (transfers.length === 0) return;
-            
+
             //set wallet busy
             await updateValue('wallet', 'seed', 'status', seed, 'busy')
 
