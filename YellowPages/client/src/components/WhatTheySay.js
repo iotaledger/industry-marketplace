@@ -85,7 +85,7 @@ export default () => {
             <img className="desktop face" src={person2} alt="Alexander Fay, Professor and Head of the Institute of Automation Technology, Helmut Schmidt University" />
             <div className="video-section-text-wrapper what-they-say">
                 <Text className="title">Hear from Industry Marketplace participants</Text>
-                <Text className="name">Alexander Fay, Professor and Head of the Institute of Automation Technology, Helmut Schmidt University</Text>
+                <Text className="name">Alexander Fay, Professor and Head of the Institute of Automation Technology, Helmut Schmidt University Hamburg</Text>
                 <Text className="quote">In order for machines in a value chain to communicate with each other, each machine needs to have a common understanding of the orders and needs of other machines. This is why we need semantic descriptions of the machines, orders, processes and services involved. The Industry Marketplace, shows how a common semantic understanding can be implemented based on specific standards such as e-class. Together with IOTA's underlying data and payment layer, machines can communicate autonomously using standard semantics.</Text>
             </div>
         </React.Fragment>,
