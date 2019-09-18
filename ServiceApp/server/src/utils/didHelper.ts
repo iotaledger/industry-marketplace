@@ -1,7 +1,6 @@
 import { readData } from "./databaseHelper";
 
-//Run from 
-
+//Run from "build/src/utils" folder with "node didHelper.js"
 function GetDID() : Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
         const user : any = await readData('user');
