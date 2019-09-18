@@ -103,13 +103,29 @@ export const simulate = async (role, kill = false) => {
             }
 
             if (['proposal'].includes(type)) {
+                
+                const priceModel = data.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
+                const price = priceModel.value
+                console.log(price)
 
-                const request = generate({
-                    messageType: 'acceptProposal',
-                    userId: await get(data.frame.receiver.identification, 'id'),
-                    originalMessage: data,
-                })
-                await apiPost('acceptProposal', request)
+                if (price < 26) {
+                    const request = generate({
+                        messageType: 'acceptProposal',
+                        userId: await get(data.frame.receiver.identification, 'id'),
+                        originalMessage: data,
+                    })
+                    await apiPost('acceptProposal', request)
+                }
+                else{
+                    const request = generate({
+                        messageType: 'rejectProposal',
+                        userId: await get(data.frame.receiver.identification, 'id'),
+                        originalMessage: data,
+                    })
+                    await apiPost('rejectProposal', request)
+
+                }
+
 
             }
 
