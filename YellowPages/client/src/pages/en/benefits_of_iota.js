@@ -29,7 +29,7 @@ export default () => {
                             type="text/html"
                             width="100%"
                             height="350px"
-                            frameborder="0"
+                            frameBorder="0"
                             src={videoSrc}
                         />
                     </div>
