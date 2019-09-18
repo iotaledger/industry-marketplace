@@ -86,17 +86,15 @@
             left: 65%;
             opacity: 0;
             bottom: 7px;
-						color: #4140DF;
         }
 
         &:hover {
-						background: #FFFFFF;
-						color: #4140DF;
-						border: 2px solid #4140DF;
+						opacity: 0.95;
 
             &:before {
                 left: 85%;
                 opacity: 1;
+								color: #FFFFFF;
             }
         }
     }
@@ -109,11 +107,11 @@
         }
 
         &:hover {
-						background: #4140DF;
-						color: #fff;
+						background: #f2f5fb;
             &:before {
                 left: 10%;
                 opacity: 1;
+								color: #4140DF;
             }
         }
     }
