@@ -171,8 +171,6 @@
     animation: fade-in 1s;
     position: relative;
     z-index: 2;
-    max-width: 580px;
-    width: 100%;
     margin: auto;
 
     @media (max-width: 768px) {
@@ -252,10 +250,6 @@
         word-wrap: break-word;
     }
 
-    img {
-        max-width: 580px;
-        width: 100%;
-    }
 
     hr {
         border: none;
