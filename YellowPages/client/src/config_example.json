@@ -1,0 +1,12 @@
+{
+  "domain": "http://localhost:5000",
+  "serviceRequester": "https://service-requester.iota-dev1.now.sh",
+  "serviceProvider": "https://service-provider.iota-dev1.now.sh",
+  "addressApi": "https://api.marketplace.tangle.works/location",
+  "waitingTime": 30,
+  "googleMaps": "https://www.google.com/maps/search/",
+  "googleAnalyticsId": "",
+  "eClassCatalog": "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.0&pridatt=",
+  "mapboxStyles": "",
+  "mapboxApiAccessToken": ""
+}
