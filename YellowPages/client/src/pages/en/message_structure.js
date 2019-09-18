@@ -14,25 +14,19 @@ export default () => {
     return (
         <Layout>
             <div className="content-header">
-                <Text className="title extra-large">XXX</Text>
+                <Text className="title extra-large">Structure of the messages</Text>
             </div>
             <div className="content">
                 <div className="_markdown_">
-                    <p>XXX</p>
+                    <p>Information exchange between I4.0 components is message based. VDI/VDE 2193 defines the structure of these messages. This creates the prerequisites for a common understanding of messages between interacting partners.</p>
                     <div className="image-wrapper">
                         <img src="../static/scalability/blockchain_bottleneck.gif"/>
                     </div>
-                    <p>XXX</p>
-                    <p>XXX</p>
-                    <ul>
-                        <li>XXXXX</li>
-                        <li>XXXXXX</li>
-                    </ul>
                 </div>
             </div>
             <div className="content-footer">
-                <PreviousPage page="" />
-                <NextPage page="" />
+                <PreviousPage page="vocabulary" />
+                <NextPage page="semantic_interaction_protocols" />
             </div>
         </Layout>
     )

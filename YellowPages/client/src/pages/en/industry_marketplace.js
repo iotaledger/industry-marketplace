@@ -14,7 +14,8 @@ export default () => {
     return (
         <Layout>
             <div className="content-header">
-                <Text className="title extra-large">What is the Industry Marketplace?</Text>
+                <Text className="title extra-large">The Industry Marketplace</Text>
+                <Text className="subtitle">What is the Industry Marketplace?</Text>
             </div>
             <div className="content">
                 <div className="_markdown_">
