@@ -117,8 +117,6 @@
             }
         }
     }
-
-
 }
 
 .content-header {
@@ -292,6 +290,21 @@
         -webkit-font-smoothing: antialiased;
         word-wrap: break-word;
     }
+
+		table {
+				border: 1px solid #485776;
+				border-collapse: collapse;
+
+				td {
+						border-bottom: 1px solid #485776;
+						padding: 15px;
+
+						&:first-of-type {
+							width: 30%;
+							font-weight: 600;
+						}
+				}
+		}
 
     .glossary-header {
         font-size: 25px;
