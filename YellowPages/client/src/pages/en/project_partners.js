@@ -18,7 +18,7 @@ export default () => {
             </div>
             <div className="content">
                 <div className="_markdown_">
-                    <h2>About ecl@ss</h2>
+                    <h2>About eCl@ss</h2>
                     <p>eCl@ss is internationally established as the only ISO/IEC-compliant industry standard, and is thus the worldwide reference-data standard for the classification and unambiguous description of products and services. More than 3,500 customers are already successfully using the 44,000 classes and 17,000 features in 16 languages from eCl@ss for digital data exchange. In addition to traditional applications in procurement, controlling, production and distribution, eCl@ss demonstrates its particular strengths when used for cross-enterprise process-data management and in engineering functions. A standardized master-data system is the key to enterprise-wide improvements, producing benefits along the entire value chain. <a href="https://www.eclass.eu/" target="_blank" rel="noopener noreferrer">https://www.eclass.eu/</a></p>
 
                     <h2>About Neoception</h2>
