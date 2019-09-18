@@ -50,6 +50,7 @@ export const getBalance = async address => {
 
 const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) => {
     try {
+        await updateValue('wallet', 'seed', 'status', seed, 'busy')
         console.log(address, seed, keyIndex)
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
         const prepareTransfers = createPrepareTransfers();
