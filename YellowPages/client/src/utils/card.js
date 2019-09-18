@@ -37,7 +37,7 @@ export const prepareData = async (payload) => {
         let receiver = get(data, 'frame.receiver.identification.id') || 'Pending';
         receiver = receiver && receiver.indexOf('did:iota:') === 0 ? `${receiver.substr(9, 15)}...` : receiver;
         const sensorData = get(data, 'sensorData') || null;
-        const coordinates = location.split(',');
+        const coordinates = (location && location.split(',')) || [50, 10];
 
         const card = {
             operation,
