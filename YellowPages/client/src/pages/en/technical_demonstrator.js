@@ -4,6 +4,11 @@ import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
+import image1 from '../../assets/img/content/Page22.png';
+import image2 from '../../assets/img/content/demo1.png';
+import image3 from '../../assets/img/content/demo2.png';
+import image4 from '../../assets/img/content/demo3.png';
+import image5 from '../../assets/img/content/demo4.png';
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/technical_demonstrator'
 
@@ -33,25 +38,27 @@ export default () => {
                         <li>All Information exchanged within the bidding process of the I4.0 demonstrator follows the semantic interaction protocol described in the VDI/VDE 2193 Part 1 Guideline</li>
                     </ul>
                     <p>In this demonstrator, the IOTA Tangle is considered a common vendor neutral, trusted and secure communication and computing infrastructure for the interactions of I4.0 components.</p>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <p>Demonstration Scenario at the Otto-von-Guericke-Universität, Magdeburg</p>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
+                </div>
+                <div className="_markdown_">
+                    <h2>Basic demonstrator structure</h2>
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image1} style={{ width: '95vw' }} />
+                </div>
+                <div className="_markdown_">
+                    <h2>Demonstration Scenario at the Otto-von-Guericke-Universität, Magdeburg</h2>
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image2} style={{ width: '55vw' }} />
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image3} style={{ width: '55vw' }} />
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image4} style={{ width: '55vw' }} />
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image5} style={{ width: '55vw' }} />
                 </div>
             </div>
             <div className="content-footer">

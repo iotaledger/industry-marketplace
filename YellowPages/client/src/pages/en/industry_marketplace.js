@@ -4,6 +4,7 @@ import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
+import image from '../../assets/img/content/Page07.png'
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/industry_marketplace'
 
@@ -20,9 +21,11 @@ export default () => {
             <div className="content">
                 <div className="_markdown_">
                     <p>Intelligent production is a novel concept, where Industry 4.0 components negotiate with each other to fulfill tasks with predefined characteristics in a defined period of time, with a defined quality of service, and a defined cost range. In order for I4.0 components to cooperate in such a way, they must be able to speak a common language within a shared communication and exchange infrastructure.</p>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image} style={{ width: '90vw' }} />
+                </div>
+                <div className="_markdown_">
                     <p>The Industry Marketplace establishes a vendor-neutral marketplace for I4.0 components to buy and sell goods, data and services. Unlike conventional virtual marketplaces, the Industry Marketplace is an autonomous and decentralized platform for offering and searching for data and services, free of charge and open to everyone.</p>
                     <p>A participant in the Industry Marketplace can take one of two roles: the role of Service Requester or Service Provider.</p>
                     <p>The Service Requester searches for some data or services, e.g. charging, transporting, drilling etc., offered by a Service Provider. The Service Requester distributes a call for proposal in which they specify their requested service. The Service Providers can then generate proposals in response.</p>

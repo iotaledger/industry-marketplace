@@ -5,6 +5,8 @@ import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
+import image1 from '../../assets/img/content/Page20.png';
+import image2 from '../../assets/img/content/Page27.png';
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/plattform_industrie4'
 
@@ -24,13 +26,15 @@ export default () => {
                     <p>The basic idea is to provide each asset (individual device or system) at least one AAS, which contains a minimal but sufficient description of the asset along its lifecycle. The AAS makes the asset available for interaction in a secure, standardized, and machine-interpretable form. Every AAS is uniquely identifiable and enables communication with other I4.0 components throughout the world. </p>
                     <p>The basic structure and elements of the administrative shell have already been specified under Plattform Industrie 4.0. In <a href="https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/struktur-der-verwaltungsschale.html" target="_blank" rel="noopener noreferrer">[1]</a> the structure of the AAS is described. In <a href="https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/2018-verwaltungsschale-im-detail.html" target="_blank" rel="noopener noreferrer">[2]</a> a metamodel of the administration shell is defined. <a href="https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/2019-verwaltungsschale-in-der-praxis.html" target="_blank" rel="noopener noreferrer">[3]</a> identifies different forms of administrative shells, describing their components extensively.</p>
                     <p>AAS can be provided in different forms (7). A distinction can be made between passive and active AAS, referring to the role that the AAS plays in the value chain.</p>
-                    <p>Active and passive AAS:</p>
+                    <h2>Active and passive AAS</h2>
+                </div>
                     <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                        <img alt="" src={image1} style={{ width: '75vw' }} />
                     </div>
                     <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                        <img alt="" src={image2} style={{ width: '70vw' }} />
                     </div>
+                <div className="_markdown_">
                     <p>Passive AAS contain a description of properties, parameters, variables, and process capabilities in the form of submodels. This abstraction of assets can be accessed, read, and manipulated by other components. Passive AAS can only respond to external requests and commands; they are not able to take the initiative or make their own decisions.</p>
                     <p>Active AAS, on the other hand, can autonomously activate interaction with external AAS, on the basis of an objective (e.g. to act as economically as possible). The active AAS establish contact with each other and perform cooperative tasks without higher-level, centrally controlling, non-AAS-based applications.</p>
                     <p>I4.0 components with an active AAS can be considered as independent service providers. Similar to the process of creating companies on the traditional free market, the I4.0 components are considered as autonomous economic actors. These act as independent economic agents that cooperate according to market economy principles. The AAS thus forms the digital core for use cases in autonomous systems and automation.</p>

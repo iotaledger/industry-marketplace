@@ -4,6 +4,7 @@ import Layout from '../../components/Layout'
 import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
+import image from '../../assets/img/content/Page01.png'
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/executive_summary'
 
@@ -38,9 +39,9 @@ export default () => {
                         <li>Immutable audit logs for every step (including payments) to be compliant with regulatory requirements</li>
                         <li>Digital trust as a design principle throughout the IOTA Tangle</li>
                     </ul>
-                    <div className="image-wrapper">
-                        <img alt="" src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
+                </div>
+                <div className="image-wrapper">
+                    <img alt="" src={image} style={{ width: '85vw' }} />
                 </div>
             </div>
             <div className="content-footer">
