@@ -1856,9 +1856,9 @@ iconv-lite@0.4.24, iconv-lite@^0.4.4:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
-"identity_ts@git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git":
+identity_ts@iotaledger/identity.ts:
   version "0.1.11"
-  resolved "git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git#c1430292c09f8fa4d6a745ce54777dbc4f192d8a"
+  resolved "https://codeload.github.com/iotaledger/identity.ts/tar.gz/c1430292c09f8fa4d6a745ce54777dbc4f192d8a"
   dependencies:
     "@iota/converter" "^1.0.0-beta.21"
     "@iota/mam" "^0.7.3"

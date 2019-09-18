@@ -30,7 +30,7 @@
         "copyfiles": "^2.1.1",
         "cors": "^2.8.5",
         "express": "^4.17.1",
-        "identity_ts": "git+https://acad141565a561355ffebf7492f7a425faa4c163:x-oauth-basic@github.com/iotaledger/identity.ts.git",
+        "identity_ts": "iotaledger/identity.ts",
         "mqtt": "^3.0.0",
         "socket.io": "^2.2.0",
         "sqlite3": "^4.1.0",
