@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '../config.json';
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import { provider } from '../config.json';
-import { getRandomRow, updateValue, writeData, readDataEquals } from './databaseHelper';
+import { updateValue, writeData, readRow } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 import { generateSeed } from './iotaHelper';
 import { repairWallet } from './walletQueueHelper.js';
@@ -28,7 +28,7 @@ export const getBalance = async address => {
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
         let balance = balances && balances.length > 0 ? balances[0] : 0;
-        
+
         if (balance === 0) {
             let retries = 0;
             while (retries++ < 10) {
@@ -63,27 +63,27 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         // Minimum value on mainnet & spamnet is `14`, `9` on devnet and other testnets.
         const minWeightMagnitude = 9;
 
-        if( balance === 0) {
-            repairWallet(seed, keyIndex); 
+        if (balance === 0) {
+            repairWallet(seed, keyIndex);
         }
-        if (balance < totalAmount && balance != 0 ) {
+        if (balance < totalAmount && balance != 0) {
             const response = await axios.get(`${config.faucet}?address=${address}&amount=${config.faucetAmount}`);
-        if (response.data.success) {
-            const balance = await getBalance(address);
-            console.log("new balance", balance)
-        }
-        else {
-            await updateValue('wallet', 'seed', 'status', seed, 'error')
-            const wallet = generateNewWallet();
-            await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-            seed = wallet.seed
-            address = wallet.address 
-            keyIndex = wallet.keyIndex
-        }
+            if (response.data.success) {
+                const balance = await getBalance(address);
+                console.log("new balance", balance)
+            }
+            else {
+                await updateValue('wallet', 'seed', 'status', seed, 'error')
+                const wallet = generateNewWallet();
+                await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
+                seed = wallet.seed
+                address = wallet.address
+                keyIndex = wallet.keyIndex
+            }
         }
 
-        return new Promise( (resolve, reject) => {
-            const remainderAddress =  generateAddress(seed, keyIndex + 1);
+        return new Promise((resolve, reject) => {
+            const remainderAddress = generateAddress(seed, keyIndex + 1);
             const options = {
                 inputs: [{
                     address,
@@ -101,7 +101,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
                             await updateWallet(seed, remainderAddress, keyIndex + 1, balance - totalAmount);
-                            await updateValue('wallet', 'seed','status', seed,  'busy')
+                            await updateValue('wallet', 'seed', 'status', seed, 'busy')
 
                             const hashes = transactions.map(transaction => transaction.hash);
 
@@ -117,7 +117,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-                            await updateValue('wallet', 'seed','status', seed,  'usable')
+                            await updateValue('wallet', 'seed', 'status', seed, 'usable')
 
                             resolve(transactions);
                         })
@@ -128,7 +128,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                 })
                 .catch(error => {
                     console.error('transferFunds prepareTransfers error', error);
-                 //   reject(error);
+                    //   reject(error);
                 });
         });
     } catch (error) {
@@ -142,7 +142,8 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-        console.log('processPayment');
+
+    console.log('processPayment');
 
     interface IWallet {
         address?: string;
@@ -153,44 +154,41 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
 
     let count = 0;
     const maxTries = 10;
-    while(true) {
-    try{
-    const wallet: IWallet = await getRandomRow('wallet','status','usable');
-    const { address, keyIndex, seed } = wallet;
+    while (true) {
+        try {
+            //check if usable wallet available
+            const wallet: IWallet = await readRow('wallet', 'status', 'usable');
+            const { address, keyIndex, seed } = wallet;
 
-    const user : any = await readDataEquals('user','usePaymentQueue', '1')
-        
-    let transfers = [];
-    let totalAmount = 0;
+            let transfers = [];
+            let totalAmount = 0;
 
-    if(user){
-       const paymentQueue = await processPaymentQueue();
-        console.log('paymentQueue', paymentQueue);
+            const paymentQueue = await processPaymentQueue();
 
-        transfers = paymentQueue.map(({ address, value }) => {
-            totalAmount += value;
-            return { address, value };
-        })
-    } 
-    
-    console.log('processPayment 1', wallet.balance, totalAmount);
-    console.log('processPayment 2', transfers);
+            transfers = paymentQueue.map(({ address, value }) => {
+                totalAmount += value;
+                return { address, value };
+            })
 
-    if (transfers.length === 0) return;
+            console.log('processPayment 1', wallet.balance, totalAmount);
+            console.log('processPayment 2', transfers);
 
-    await updateValue('wallet', 'seed','status', seed,  'busy')
+            if (transfers.length === 0) return;
+            
+            //set wallet busy
+            await updateValue('wallet', 'seed', 'status', seed, 'busy')
 
-    return await transferFunds(
-        address,
-        keyIndex,
-        seed,
-        totalAmount,
-        transfers
-    );
-}catch(e){
-    console.log("No wallet address available")
-    await new Promise(resolve => setTimeout(resolve, 20000));
-    if (++count === maxTries) throw e;
+            return await transferFunds(
+                address,
+                keyIndex,
+                seed,
+                totalAmount,
+                transfers
+            );
+        } catch (e) {
+            console.log("No wallet address available")
+            await new Promise(resolve => setTimeout(resolve, 60000));
+            if (++count === maxTries) throw e;
         }
     }
 };
