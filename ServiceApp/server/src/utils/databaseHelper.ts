@@ -125,23 +125,6 @@ export const readAllData = async (table) => {
 };
 
 
-export const readDataEquals = async (table, column, value) => {
-    return new Promise((resolve, reject) => {
-        try {
-            db.get(`SELECT * FROM ${table} WHERE ${column} = ?`, [value], (err, rows) => {
-                if (err) {
-                    return resolve(err);
-                }
-                else {
-                    return resolve(rows);
-                }
-            });
-        } catch (error) {
-            console.log('readAllData', error);
-            return reject(null);
-        }
-    });
-};
 
 export const removeData = (table) => {
     return new Promise(async resolve => {
@@ -150,7 +133,7 @@ export const removeData = (table) => {
     });
 };
 
-export const getRandomRow = async (table, column, value) => {
+export const readRow = async (table, column, value) => {
     return new Promise((resolve, reject) => {
         try {
             const query = `SELECT * FROM ${table} WHERE ${column} = ? ORDER BY RANDOM() LIMIT 1`;

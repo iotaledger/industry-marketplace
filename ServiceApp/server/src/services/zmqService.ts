@@ -1,13 +1,13 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { operations } from '../config.json';
-import { readData, readDataEquals, writeData } from '../utils/databaseHelper';
+import { readData, readRow, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
 import { getBalance } from '../utils/walletHelper.js';
-import {updateValue} from '../utils/databaseHelper';
+import { updateValue } from '../utils/databaseHelper';
 import { processPayment } from '../utils/walletHelper';
 import { checkAddressBalance } from '../utils/walletQueueHelper';
 
@@ -232,6 +232,7 @@ export class ZmqService {
                         role?: string;
                     }
                     const { role }: IRole = await readData('user', null, 'role')
+                    console.log(role)
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
@@ -255,7 +256,7 @@ export class ZmqService {
                                         role?: string;
                                         location?: string;
                                     }
-                                    const { id }: IUser = await readDataEquals('user', 'id', receiverID)
+                                    const { id }: IUser = await readRow('user', 'id', receiverID)
 
                                     if (id){
 
@@ -289,7 +290,7 @@ export class ZmqService {
                             if (['proposal', 'informConfirm'].includes(messageType)) {
                                 const data = await getPayload(bundle);
                                 const receiverID = data.frame.receiver.identification.id;
-                                const simulationUser = await readDataEquals('user', 'id', receiverID)
+                                const simulationUser = await readRow('user', 'id', receiverID)
 
                                 if (simulationUser) {
                                     // 2.1 Decode every such message and retrieve receiver ID
