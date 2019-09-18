@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import ModalVideo from 'react-modal-video'
-// import { Link } from 'react-router-dom';
 import Text from './Text'
 import Carousel from './Carousel';
-// import videoDesktop from '../assets/img/video/video_section.svg';
-// import videoMobile from '../assets/img/video/mobile_play.svg';
+import videoDesktop from '../assets/img/video/video_section.svg';
+import videoMobile from '../assets/img/video/mobile_play.svg';
 import person1 from '../assets/img/video/person1.png';
 import person2 from '../assets/img/video/person2.png';
 
@@ -14,35 +13,31 @@ export default () => {
     const [showVideo, setShowVideo] = useState(false)
 
     const items = [
-        // <React.Fragment>
-        //     <img
-        //         className="desktop"
-        //         role="button"
-        //         onClick={() => setShowVideo(true)}
-        //         src={videoDesktop}
-        //         alt=""
-        //     />
-        //     <img
-        //         className="mobile"
-        //         role="button"
-        //         onClick={() => setShowVideo(true)}
-        //         src={videoMobile}
-        //         alt=""
-        //     />
-        //     <div className="video-section-text-wrapper what-they-say">
-        //         <Text className="title">What they say</Text>
-        //         <Text className="name">Patrick Placeholder, IOTA Foundation</Text>
-        //         <Text className="quote">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat</Text>
-        //         <Link to="/scalability">
-        //             <Text className="link">See All Testimonioals</Text>
-        //         </Link>
-        //     </div>
-        // </React.Fragment>,
+        <React.Fragment>
+            <img
+                className="desktop"
+                role="button"
+                onClick={() => setShowVideo(true)}
+                src={videoDesktop}
+                alt=""
+            />
+            <img
+                className="mobile"
+                role="button"
+                onClick={() => setShowVideo(true)}
+                src={videoMobile}
+                alt=""
+            />
+            <div className="video-section-text-wrapper what-they-say">
+                <Text className="title">What they say</Text>
+                <Text className="name">Patrick Placeholder, IOTA Foundation</Text>
+            </div>
+        </React.Fragment>,
         <React.Fragment>
             <img className="desktop face" src={person1} alt="Alexander Balyaev, Research Assistant, University of Magdeburg" />
             <div className="video-section-text-wrapper what-they-say">
                 <Text className="title">What they say</Text>
-                <Text className="name">Alexander Balyaev, Research Assistant, University of Magdeburg</Text>
+                <Text className="name">Alexander Belyaev, Research Assistant, Otto von Guericke University Magdeburg</Text>
                 <Text className="quote">The Industry Marketplace opens up a new world of opportunities for industrial machine to machine communication. After connecting to the industry marketplace, machines have their own wallets and can offer their services. The Tangle acts as a secure, trusted data and payment transfer layer enabling direct machine to machine exchanges.</Text>
             </div>
         </React.Fragment>,
