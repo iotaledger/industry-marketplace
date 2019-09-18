@@ -9,10 +9,14 @@ import ExecutiveSummary from './pages/en/executive_summary';
 import IntroductionToIndustry4 from './pages/en/introduction_to_industry4';
 import BenefitsOfIota from './pages/en/benefits_of_iota';
 import IndustryMarketplace from './pages/en/industry_marketplace';
-import WhatIsIndustryMarketplace from './pages/en/what_is_industry_marketplace';
-import Architecture from './pages/en/architecture';
+import MarketManager from './pages/en/market_manager';
+import MarketManagerInteraction from './pages/en/market_manager_interaction';
+import ServiceRequester from './pages/en/service_requester';
+import ServiceProvider from './pages/en/service_provider';
+import YellowPages  from './pages/en/yellow_pages';
 import UseCases from './pages/en/use_cases';
 import DecentralizedIdentification from './pages/en/decentralized_identification';
+import DecentralizedIdentificationTangle from './pages/en/decentralized_identification_tangle';
 import TechnicalDemonstrator from './pages/en/technical_demonstrator';
 import NeoceptionDemonstrator from './pages/en/neoception_demonstrator';
 import WeWashPrototype from './pages/en/wewash_prototype';
@@ -73,10 +77,14 @@ class App extends Component {
                             <Route path="/introduction_to_industry4" component={IntroductionToIndustry4} />
                             <Route path="/benefits_of_iota" component={BenefitsOfIota} />
                             <Route path="/industry_marketplace" component={IndustryMarketplace} />
-                            <Route path="/what_is_industry_marketplace" component={WhatIsIndustryMarketplace} />
-                            <Route path="/architecture" component={Architecture} />
+                            <Route path="/market_manager" component={MarketManager} />
+                            <Route path="/market_manager_interaction" component={MarketManagerInteraction} />
+                            <Route path="/service_requester" component={ServiceRequester} />
+                            <Route path="/service_provider" component={ServiceProvider} />
+                            <Route path="/yellow_pages" component={YellowPages} />
                             <Route path="/use_cases" component={UseCases} />
                             <Route path="/decentralized_identification" component={DecentralizedIdentification} />
+                            <Route path="/decentralized_identification_tangle" component={DecentralizedIdentificationTangle} />
                             <Route path="/technical_demonstrator" component={TechnicalDemonstrator} />
                             <Route path="/neoception_demonstrator" component={NeoceptionDemonstrator} />
                             <Route path="/wewash_prototype" component={WeWashPrototype} />

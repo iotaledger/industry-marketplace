@@ -39,7 +39,7 @@ export default ({ closeNav }) => {
                         <div className="chapter">
                             <Text className="title">03</Text>
                             <Text className="subtitle">
-                                The benefits of IOTA for Industry 4.0
+                                IOTA: the core of Industry 4.0
                             </Text>
                             <Text className="read">Read</Text>
                         </div>
@@ -56,7 +56,7 @@ export default ({ closeNav }) => {
                         </Link>
 
                         <div className="subtopics enabled">
-                            <Link to="/what_is_industry_marketplace">
+                            <Link to="/industry_marketplace">
                                 <div className="subtopic">
                                     <Text className="title">1</Text>
                                     <Text className="subtitle">

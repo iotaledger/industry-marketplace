@@ -5,7 +5,7 @@ import PreviousPage from '../../components/PreviousPage'
 import NextPage from '../../components/NextPage'
 import Text from '../../components/Text'
 // import LanguageContext from '../../context/language-context'
-// import TranslatedPage from '../de/iota_tangle'
+// import TranslatedPage from '../de/market_manager'
 
 export default () => {
     window.scrollTo(0, 0);

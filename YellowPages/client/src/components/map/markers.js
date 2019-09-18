@@ -8,7 +8,7 @@ export default ({ assets, openPopup }) => (
       assets && assets.map((asset, i) => (
         <Marker latitude={asset.latitude} longitude={asset.longitude} key={`marker-${i}`}>
           <Pin
-            onClick={() => openPopup(asset)} 
+            onClick={() => openPopup(asset)}
             type={asset.type}
           >
             { asset.type === 'callForProposal' && <I className="fas fa-euro-sign"></I> }
