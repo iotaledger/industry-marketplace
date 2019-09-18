@@ -303,10 +303,10 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    background-image: url('/static/backgrounds/video_section_desktop_background.svg'); 
+    background-image: url('/static/backgrounds/video_section_desktop_background.svg');
 
     .desktop {
-        width: 560px;
+        width: 360px;
         height: 340px;
         cursor: pointer;
     }
@@ -340,8 +340,8 @@
         }
 
         &.what-they-say {
-            padding-left: 100px;
-            max-width: 410px;
+            padding-left: 70px;
+            max-width: 600px;
 
             .text {
                 margin: 10px 0;
@@ -351,8 +351,8 @@
                 color: rgba(255, 255, 255, 0.7);
                 font-style: italic;
                 font-weight: 600;
-                font-size: 24px;
-                line-height: 32px;
+                font-size: 20px;
+                line-height: 24px;
             }
 
             .name {
@@ -404,7 +404,7 @@
         .video-section-text-wrapper.what-they-say,
         .video-section-text-wrapper.how-it-works {
             padding-left: 0;
-            padding-right: 0; 
+            padding-right: 0;
 
             .text {
                 text-align: center;
@@ -419,7 +419,7 @@
     }
 
     @media (max-width: 680px) {
-        background-image: url('/static/backgrounds/video_section_mobile_background.svg'); 
+        background-image: url('/static/backgrounds/video_section_mobile_background.svg');
         min-height: unset;
         height: 550px;
 
@@ -528,7 +528,7 @@
         text-align: left;
         margin: 5px 0;
 
-        &.title, 
+        &.title,
         &.subtitle {
             color: #FFFFFF;
         }
@@ -585,7 +585,7 @@
                 flex-direction: column;
                 margin: 40px 0;
 
-                .key-component-description { 
+                .key-component-description {
                     padding-left: 0;
 
                     .subtitle {
