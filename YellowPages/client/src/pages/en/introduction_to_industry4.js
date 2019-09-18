@@ -32,7 +32,7 @@ export default () => {
                     <p>At the core of I4.0, will be a global communication and computing infrastructure that facilitates economic relationships between machines. This is where IOTA comes in.</p>
                 </div>
                 <div className="image-wrapper">
-                    <img alt="" src={image2} style={{ width: '75vw' }}/>
+                    <img alt="" src={image2} style={{ width: '65vw' }}/>
                 </div>
             </div>
             <div className="content-footer">
