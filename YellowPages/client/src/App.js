@@ -10,7 +10,7 @@ import IntroductionToIndustry4 from './pages/en/introduction_to_industry4';
 import BenefitsOfIota from './pages/en/benefits_of_iota';
 import IndustryMarketplace from './pages/en/industry_marketplace';
 import MarketManager from './pages/en/market_manager';
-import MarketManagerInteraction from './pages/en/market_manager_interaction';
+import MarketManagerInteractions from './pages/en/market_manager_interactions';
 import ServiceRequester from './pages/en/service_requester';
 import ServiceProvider from './pages/en/service_provider';
 import YellowPages  from './pages/en/yellow_pages';
@@ -78,7 +78,7 @@ class App extends Component {
                             <Route path="/benefits_of_iota" component={BenefitsOfIota} />
                             <Route path="/industry_marketplace" component={IndustryMarketplace} />
                             <Route path="/market_manager" component={MarketManager} />
-                            <Route path="/market_manager_interaction" component={MarketManagerInteraction} />
+                            <Route path="/market_manager_interactions" component={MarketManagerInteractions} />
                             <Route path="/service_requester" component={ServiceRequester} />
                             <Route path="/service_provider" component={ServiceProvider} />
                             <Route path="/yellow_pages" component={YellowPages} />

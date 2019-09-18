@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import Text from './Text'
 import '../assets/styles/chapters.scss'
@@ -65,11 +65,47 @@ export default ({ closeNav }) => {
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/architecture">
+                            <Link to="/market_manager">
                                 <div className="subtopic">
                                     <Text className="title">2</Text>
                                     <Text className="subtitle">
-                                        Industry Marketplace Architecture
+                                        The Market Manager
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/market_manager_interactions">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Market Manager’s interaction with the Tangle
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/service_requester">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Service Requester Role
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/service_provider">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Service Provider Role
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/yellow_pages">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        Yellow Pages
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
