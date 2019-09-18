@@ -30,8 +30,8 @@ export default () => {
                 </div>
             </div>
             <div className="content-footer">
-                <PreviousPage page="" />
-                <NextPage page="" />
+                <PreviousPage page="benefits_of_iota" />
+                <NextPage page="market_manager" />
             </div>
         </Layout>
     )

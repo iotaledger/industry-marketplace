@@ -14,25 +14,16 @@ export default () => {
     return (
         <Layout>
             <div className="content-header">
-                <Text className="title extra-large">XXX</Text>
+                <Text className="title extra-large">Yellow Pages</Text>
             </div>
             <div className="content">
                 <div className="_markdown_">
-                    <p>XXX</p>
-                    <div className="image-wrapper">
-                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
-                    </div>
-                    <p>XXX</p>
-                    <p>XXX</p>
-                    <ul>
-                        <li>XXXXX</li>
-                        <li>XXXXXX</li>
-                    </ul>
+                    <p>The Yellow Pages component provides an overview of activities in the Industry Marketplace and is intended to be used by fleet management and similar systems which primarily listen for activities, or perform statistics and data analytics. The Yellow Pages component can integrate  with existing application and service coordination frameworks to provide an easy visualization of past and ongoing proposals, won/lost bids, and payments.</p>
                 </div>
             </div>
             <div className="content-footer">
-                <PreviousPage page="" />
-                <NextPage page="" />
+                <PreviousPage page="service_provider" />
+                <NextPage page="use_cases" />
             </div>
         </Layout>
     )

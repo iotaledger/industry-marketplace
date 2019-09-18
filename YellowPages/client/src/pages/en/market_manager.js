@@ -25,13 +25,13 @@ export default () => {
                         <li>Translation of received IOTA transactions into I4.0 language messages and filtering those relevant for the connected SR and SP.</li>
                         <li>Authentication of interacting parties by creating and verifying proof of decentralized authentication and identification (DID) ownership.</li>
                     </ul>
-                    <p>By utilizing an open source-developed semantic language, specifically developed by academic bodies for I4.0 (<a href="https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/hm-2018-sprache.html" target="_blank" rel="noopener noreferrer">https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/hm-2018-sprache.html<a/>), standardized machine readable properties from eCl@ss (https://www.eclass.eu/en.html), together withIOTA’s distributed ledger technology and a DID solution, the Industry Marketplace provides an open, easily accessible, secure, and trusted platform. It enables all industries to handle calls for proposal, proposals, and payments and thus enables the direct negotiation and economic relations between autonomous systems.</p>
+                    <p>By utilizing an open source-developed semantic language, specifically developed by academic bodies for I4.0 (<a href="https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/hm-2018-sprache.html" target="_blank" rel="noopener noreferrer">https://www.plattform-i40.de/PI40/Redaktion/DE/Downloads/Publikation/hm-2018-sprache.html</a>), standardized machine readable properties from eCl@ss (https://www.eclass.eu/en.html), together withIOTA’s distributed ledger technology and a DID solution, the Industry Marketplace provides an open, easily accessible, secure, and trusted platform. It enables all industries to handle calls for proposal, proposals, and payments and thus enables the direct negotiation and economic relations between autonomous systems.</p>
                     <p>Payments in the Industry Marketplace utilize the integrated IOTA token. The token is a native part of the protocol, free to transfer without any fees. It can therefore be used in the purchase of larger goods or digital services, as well as in micropayments for small amounts of data (e.g. from weather stations).</p>
                 </div>
             </div>
             <div className="content-footer">
-                <PreviousPage page="" />
-                <NextPage page="" />
+                <PreviousPage page="industry_marketplace" />
+                <NextPage page="market_manager_interactions" />
             </div>
         </Layout>
     )

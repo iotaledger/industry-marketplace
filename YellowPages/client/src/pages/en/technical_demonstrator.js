@@ -14,46 +14,49 @@ export default () => {
     return (
         <Layout>
             <div className="content-header">
-                <Text className="title extra-large">Chapter 1</Text>
-                <Text className="subtitle">IOTA as scalable DLT</Text>
+                <Text className="title extra-large">Technical demonstrator for Service Requester and Service Provider</Text>
             </div>
-            <div className="content scalability">
+            <div className="content">
                 <div className="_markdown_">
-                    <p>IOTA’s goal is to establish a <strong>DLT for the Internet of Things</strong> (IoT). The following characteristics are fundamental to this vision:</p>
+                    <p>The team behind the Chair of Integrated Automation at the Otto-von-Guericke University (OVGU) in Magdeburg is participating within the Industry Marketplace. Their I4.0 demonstrator consists of multiple I4.0 components connected to the IOTA Tangle.</p>
+                    <p>The implemented I4.0 components comprise several drilling and rotary machines, a transportation robot and a product. Each asset is equipped with a digital twin in the form of an Asset Administration Shell (AAS). Together with their AAS the assets form autonomous goal-oriented service units.</p>
+                    <p>After connection to the Industry Marketplace, machines receive their own wallets and can offer their manufacturing capabilities. The AAS of the product knows its production steps and searches for the services from the drill, rotary tool or transportation robot. <br />After the service provider is found, what follows is the transportation, provision of a service and the payment.</p>
                     <ul>
-                        <li><strong>Scalable.</strong> Process a substantial number of transactions per second across a large network of nodes, with fast confirmation times.</li>
-                        <li><strong>Lightweight.</strong> Low-power devices should be able to directly participate in the network.</li>
-                        <li><strong>Feeless.</strong> Sending transactions should not require payment of network fees.</li>
+                        <li>Each active I4.0 component participating in the bidding process of the OVGU demonstrator can either take over the role of the Service Requester (SR) or the Service Provider (SP)</li>
+                        <li>The Digital Twin (AAS) of the product acts as Service Requester (SR)</li>
+                        <li>The SR is the initiator of the bidding process and demands a service by sending a "Call for Proposal" (CfP) with a detailed technical and commercial description of the required service</li>
+                        <li>The SP responds to the CfP and sends a proposal to provide the requested service within the given time</li>
+                        <li>After the SR receives the proposals, it evaluates them and chooses its favoured option</li>
+                        <li>The SP sends an acceptance message, confirming the contract and order placement</li>
+                        <li>After the proposal was accepted, the SP provides the service. After the service was provided the SP sends the confirmation message to the SR</li>
+                        <li>The SR compares the description of the provided Service with the description of the ordered service. If they match, the payment with MIOTA is made</li>
+                        <li>All Information exchanged within the bidding process of the I4.0 demonstrator follows the semantic interaction protocol described in the VDI/VDE 2193 Part 1 Guideline</li>
                     </ul>
-                    <p>Traditional DLTs have limiting factors that make them unsuitable for attaining IOTA’s goal.</p>
-                    <ol>
-                        <li><strong>The blockchain data structure.</strong> The inherent limitation on the speed of blockchain networks is commonly referred to as the <a data-tip="true" data-for="blockchain_bottleneck" currentitem="false">“blockchain bottleneck.”</a> In blockchain, there is only one site where new transactions can be attached — the end of the chain. The resulting negative effect on network throughput is demonstrated in this simple visual:</li>
-                    </ol>
-                    <div className="animation-wrapper">
+                    <p>In this demonstrator, the IOTA Tangle is considered a common vendor neutral, trusted and secure communication and computing infrastructure for the interactions of I4.0 components.</p>
+                    <div className="image-wrapper">
                         <img src="../static/scalability/blockchain_bottleneck.gif"/>
                     </div>
-                    <p>In contrast, the core <strong>data structure</strong> in IOTA is <strong>highly scalable.</strong> This is made possible with one simple rule: each <a data-tip="true" data-for="transaction" currentitem="false">transaction</a> references and approves two existing transactions. This rule defines IOTA’s underlying data structure — the Tangle — which, in mathematical terms, is known as a directed acyclic graph (DAG).</p>
-                    <p>Rather than being limited by a single site for attaching new transactions, DAGs offer multiple sites where transactions can be attached. Users can continue to attach new transactions on various parts of the Tangle without waiting for other transactions to confirm:</p>
-
-                    <div className="animation-wrapper">
-                        <img src="../static/scalability/tangle_bottleneck.gif"/>
+                    <div className="image-wrapper">
+                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
                     </div>
-                    <ol start="2">
-                        <li><strong>The <a data-tip="true" data-for="consensus" currentitem="false">consensus</a> mechanism.</strong> In Blockchain, <a data-tip="true" data-for="nakamoto_consensus" currentitem="false">Nakamoto consensus</a> splits the network into miners and users. Miners consume large amounts of computing power completing the <a data-tip="true" data-for="proof_of_work" currentitem="false">Proof-of-Work</a> (PoW) required to chain the blocks together. Miners are incentivized by the fees users are willing to pay to have their transaction included in a block. This fee-based incentive structure would be a significant barrier in a machine-to-machine economy, in which micropayment values between machines may be lower than the fees incurred.</li>
-                    </ol>
-
-                    <p>In IOTA there is no distinction between miners and users. All nodes can participate in consensus. This means that an IOTA node has a completely different role than a Bitcoin miner. IOTA nodes only perform basic operations that do not require much computational power (e.g. storing the ledger, validating transactions). Users can set up a node with minimal cost and actively participate in network consensus, and thereby bolster the security of the network.</p>
-                    <p>The definition of a <strong>consensus layer</strong> — describing how nodes agree on which transactions are trustworthy — is at the core of IOTA. In the current IOTA implementation, nodes trust transactions which are referenced and approved by <a data-tip="true" data-for="milestones" currentitem="false">milestones</a>, issued by the Coordinator. The use of this centralized “<a data-tip="true" data-for="finality" currentitem="false">finality</a> device” has been necessary to provide security during the network’s infancy.</p>
-
-                    <div className="animation-wrapper">
-                        <img src="../static/scalability/milestones.gif"/>
+                    <p>Demonstration Scenario at the Otto-von-Guericke-Universität, Magdeburg</p>
+                    <div className="image-wrapper">
+                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
                     </div>
-                    <p>The solution to Coordicide will ensure that the network remains feeless, while preserving decentralisation and security, and promoting unprecedented scalability.</p>
+                    <div className="image-wrapper">
+                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                    </div>
+                    <div className="image-wrapper">
+                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                    </div>
+                    <div className="image-wrapper">
+                        <img src="../static/scalability/blockchain_bottleneck.gif"/>
+                    </div>
                 </div>
             </div>
             <div className="content-footer">
-                <PreviousPage page="" title="Introduction" />
-                <NextPage page="post-coordinator" title="Chapter 2" />
+                <PreviousPage page="decentralized_identification_tangle" />
+                <NextPage page="neoception_demonstrator" />
             </div>
         </Layout>
     )
