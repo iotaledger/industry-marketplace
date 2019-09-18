@@ -1,9 +1,8 @@
 import io from 'socket.io-client';
 import get from 'lodash/get';
 import axios from 'axios';
-import yargs from 'yargs';
 import format from 'date-fns/format';
-import { generate, submodel } from '@iota/industry_4.0_language'
+import { generate, submodel } from '@iota/industry_4.0_language';
 import { generateRandomSubmodelValues, getRandomTimestamp, getRandomLocation } from '../utils/randomizer.js';
 import { operations } from '../config.json';
 import { initializeWalletQueue } from './walletQueueHelper';
@@ -14,7 +13,8 @@ const BASE_URL = 'http://localhost:5000';
 const socket = io('http://localhost:5000');
 
 
-const simulate = async (role) => {
+
+export const simulate = async (role) => {
 
     await initializeWalletQueue();
 
@@ -51,10 +51,9 @@ const simulate = async (role) => {
             })
             await apiPost('cfp', request)
         }
-        //sendRandomCFP();
+         //sendRandomCFP();
         setInterval(sendRandomCFP, 180000);
     }
-
 
     //subscribe to ZMQ messages
     socket.on('connect', () => {
@@ -128,6 +127,7 @@ const simulate = async (role) => {
     })
 
 }
+//}
 
 const apiPost = async (messageType, message) => {
     const randomTimeout = (min, max) => {
@@ -149,22 +149,3 @@ const apiPost = async (messageType, message) => {
 const randomValue = array => {
     return array[Math.floor(Math.random() * array.length)]
 }
-
-
-
-const argv = yargs
-    .usage('Simulate SR or SP')
-    .example('$0  --role SR', 'simulate SR')
-    .required('role', 'Mode must be provided').describe('role', 'Simulates SR or SP. Options: ["SR", "SP"]')
-    .describe('role', 'Define user role. Options: ["SR", "SP"]')
-    .help('help')
-    .argv;
-
-if (argv.role === 'SR') {
-    simulate('SR')
-}
-else if (argv.role === 'SP') {
-    simulate('SP')
-}
-
-

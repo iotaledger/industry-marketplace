@@ -13,7 +13,7 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
-
+import { simulate } from './simulationHelper';
 /**
  * Class to help with expressjs routing.
  */
@@ -112,7 +112,32 @@ export class AppHelper {
                         });
                     }
                 });
+
+
+                app.post('/StartSimulation', async (req, res) => {
+                    try {
+                        const { role } = req.body;
+                        simulate(role)
+
+                        await res.send({
+                            success: true
+                        });
+                    } catch (error) {
+                        console.log('Simulation Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
              
+                app.get('/StopSimulation', async (req, res) => {
+                        process.exit(1);
+                   
+                        await res.send({
+                            success: true
+                        });
+                });
 
                 app.get('/user', async (req, res) => {
                     let user: any = await readData('user');
