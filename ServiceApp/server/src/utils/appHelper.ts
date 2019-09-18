@@ -132,8 +132,7 @@ export class AppHelper {
                 });
              
                 app.get('/StopSimulation', async (req, res) => {
-                        process.exit(1);
-                   
+                        simulate('SR', true)
                         await res.send({
                             success: true
                         });
