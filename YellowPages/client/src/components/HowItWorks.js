@@ -15,12 +15,12 @@ export default () => {
             <div className="video-section-text-wrapper how-it-works">
                 <Text className="title">How it works</Text>
                 <Text>
-                    See how the Industry Marketplace operates in our video, or explore for yourself {' '}
-                    <Link to="/scalability">
+                    See how the Industry Marketplace operates in our video, use-cases or explore for yourself {' '}
+                    <Link to="/use-cases">
                         by watching the tutorial
                     </Link>
                     {' '} and {' '}
-                    <Link to="/scalability">
+                    <Link to="/demo">
                         trying out the demo
                     </Link>
                 </Text>

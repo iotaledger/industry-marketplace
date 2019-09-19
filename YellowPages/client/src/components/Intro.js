@@ -15,7 +15,7 @@ export default () => {
                 <div className="intro">
                     <Text className="subtitle">The first autonomous</Text>
                     <Text className="title">Industry Marketplace</Text>
-                    <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+                    <Text>Discover how the Industry Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
                 </div>
                 <div className="intro-buttons-wrapper">
                     <Link to="/demo">
@@ -31,4 +31,3 @@ export default () => {
         </React.Fragment>
     )
 }
-
