@@ -13,7 +13,8 @@ export default () => {
             <img className="asset heading" src={illustration} alt="" />
             <div className="intro-wrapper">
                 <div className="intro">
-                    <Text className="subtitle">The first autonomous</Text>
+                  <Text className="subtitle">The world's first</Text>
+                    <Text className="subtitle">autonomous and decentralized</Text>
                     <Text className="title">Industry Marketplace</Text>
                     <Text>Discover how the Industry Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
                 </div>
