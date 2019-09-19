@@ -71,7 +71,7 @@ export default class extends React.Component {
     const { assets, allAssets, activeSection, view } = this.state;
     const externalService = activeSection === 'proposal' ? serviceProvider : serviceRequester;
     const statusNameMap = {
-      callForProposal: 'Call for Proposals',
+      callForProposal: 'Calls for Proposal',
       proposal: 'Proposals',
       acceptProposal: 'accepted Proposals'
     }
