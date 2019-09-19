@@ -267,7 +267,7 @@ export class ZmqService {
                                             await this.sendEvent(data, messageType, messageParams, verificationResult);
                                         }
                                     } else {
-                                        await this.sendEvent(data, messageType, messageParams);
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);
                                     }
@@ -325,10 +325,10 @@ export class ZmqService {
                                                 side_key: secretKey,
                                                 start: 0
                                             });
-                                            await this.sendEvent(data, messageType, messageParams);
+                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         }
                                     } else {
-                                        await this.sendEvent(data, messageType, messageParams);
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                     }
                                 }
                             }
