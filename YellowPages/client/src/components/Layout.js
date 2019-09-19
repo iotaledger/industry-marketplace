@@ -19,7 +19,9 @@ const externalPages = [
 ]
 
 export default ({ children }) => {
-    ReactGA.pageview(window.location.pathname);
+    if (window.location.pathname !== '/demo') {
+        ReactGA.pageview(window.location.pathname);
+    }
     const [showOverlay, toggleShowOverlay] = useState(false);
 
     function showNav() {
