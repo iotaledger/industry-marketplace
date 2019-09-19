@@ -30,7 +30,7 @@
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-slick": "^0.25.2",
-    "react-table": "next",
+    "react-table": "7.0.0-alpha.16",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^2.2.0",
     "styled-components": "4.3.2"
