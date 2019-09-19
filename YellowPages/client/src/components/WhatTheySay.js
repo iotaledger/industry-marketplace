@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import ModalVideo from 'react-modal-video'
 import Text from './Text'
 import Carousel from './Carousel';
-import videoDesktop from '../assets/img/video/video_section.svg';
 import videoMobile from '../assets/img/video/mobile_play.svg';
 import person1 from '../assets/img/video/person1.png';
 import person2 from '../assets/img/video/person2.png';
