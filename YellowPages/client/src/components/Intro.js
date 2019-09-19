@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Text from './Text'
 import Button from './Button'
 import tryIt from '../assets/img/landing/try_the_demo.svg';
-import illustration from '../assets/img/landing/header_illustration.svg';
+import illustration from '../assets/img/landing/header_illustration.png';
 
 import '../assets/styles/content.scss'
 
