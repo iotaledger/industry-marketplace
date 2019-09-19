@@ -58,14 +58,14 @@ export default () => {
             <img
                 className="desktop"
                 role="button"
-                onClick={() => setVideoId('HFO4cmHd1Ok')}
+                onClick={() => setVideoId('o_bkmuqeQjc')}
                 src={videoDesktop}
                 alt=""
             />
             <img
                 className="mobile"
                 role="button"
-                onClick={() => setVideoId('HFO4cmHd1Ok')}
+                onClick={() => setVideoId('o_bkmuqeQjc')}
                 src={videoMobile}
                 alt=""
             />
