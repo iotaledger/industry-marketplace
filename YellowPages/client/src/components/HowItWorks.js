@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import ModalVideo from 'react-modal-video'
 import { Link } from 'react-router-dom';
 import Text from './Text'
-import videoDesktop from '../assets/img/video/video_section.svg';
 import videoMobile from '../assets/img/video/mobile_play.svg';
+import IMP_explainer from '../assets/img/video/IMP_explainer.jpg';
 
 import '../assets/styles/content.scss'
 
@@ -29,7 +29,7 @@ export default () => {
                 className="desktop"
                 role="button"
                 onClick={() => setShowVideo(true)}
-                src={videoDesktop}
+                src={IMP_explainer}
                 alt=""
             />
             <img

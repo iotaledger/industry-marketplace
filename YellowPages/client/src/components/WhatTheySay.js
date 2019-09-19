@@ -7,6 +7,9 @@ import videoMobile from '../assets/img/video/mobile_play.svg';
 import person1 from '../assets/img/video/person1.png';
 import person2 from '../assets/img/video/person2.png';
 import person3 from '../assets/img/video/person3.png';
+import person4 from '../assets/img/video/kroke.jpg';
+import person5 from '../assets/img/video/nagel.jpg';
+import person6 from '../assets/img/video/allenberg.jpg';
 
 import '../assets/styles/content.scss'
 
@@ -19,7 +22,7 @@ export default () => {
                 className="desktop"
                 role="button"
                 onClick={() => setVideoId('MHlok4zkKgM')}
-                src={videoDesktop}
+                src={person4}
                 alt=""
             />
             <img
@@ -39,7 +42,7 @@ export default () => {
                 className="desktop"
                 role="button"
                 onClick={() => setVideoId('qcLwdCem8mg')}
-                src={videoDesktop}
+                src={person5}
                 alt=""
             />
             <img
@@ -59,7 +62,7 @@ export default () => {
                 className="desktop"
                 role="button"
                 onClick={() => setVideoId('o_bkmuqeQjc')}
-                src={videoDesktop}
+                src={person6}
                 alt=""
             />
             <img
