@@ -76,7 +76,16 @@ export default class extends React.Component {
         <div className="demo-page">
           <div className="demo-header">
             <Text className="title">Yellow Pages</Text>
-            <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+            <Text>Discover how the Industry Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+            <Text>
+              <a href={serviceRequester} target="_blank" rel="noopener noreferrer">
+                  Try it as Service Requester
+              </a>
+              {' | '}
+              <a href={serviceProvider} target="_blank" rel="noopener noreferrer">
+                  Try it as Service Provider
+              </a>
+            </Text>
           </div>
           <div className="request-data-wrapper">
             <div className="demo-page-navigation">
@@ -86,18 +95,18 @@ export default class extends React.Component {
                   onClick={() => this.setState({ view: 'grid' })}
                 >
                   <img src={view === 'grid' ? grid_selected : grid} alt="Grid view" />
-                </Button> 
-                <Button 
+                </Button>
+                <Button
                   selected={view === 'list'}
                   onClick={() => this.setState({ view: 'list' })}
                 >
                   <img src={view === 'list' ? list_selected : list} alt="List view" />
-                </Button> 
+                </Button>
               </div>
-              <Tabs 
-                view={view} 
-                assets={assets} 
-                activeSection={activeSection} 
+              <Tabs
+                view={view}
+                assets={assets}
+                activeSection={activeSection}
                 onTabChange={this.onTabChange}
               />
             </div>
