@@ -259,13 +259,16 @@ export class ZmqService {
                                 if (id === receiverID) {
                                     if (messageType === 'proposal') {
                                         // Find the challenge
-                                        const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, provider);
-
-                                        // Check if the correct challenge is used and if the signatures are correct
-                                        if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                            // Only send to UI if the DID Authentication is succesful
-                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                        }
+                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                        .then(async (verificationResult) => {
+                                            // Check if the correct challenge is used and if the signatures are correct
+                                            if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                // Only send to UI if the DID Authentication is succesful
+                                                await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                            }
+                                        }).catch((err) => {
+                                            console.log("Verification failed, so message is ignored with error: ", err);
+                                        });
                                     } else {
                                         await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         const channelId = data.frame.conversationId;
@@ -284,28 +287,31 @@ export class ZmqService {
                                     const senderLocation = await getLocationFromMessage(data);
 
                                     // Find the challenge
-                                    const verificationResult = await VerifyCredentials(data.identification.didAuthenticationPresentation, provider);
+                                    await VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                    .then(async (verificationResult) => {
+                                        // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                        if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                            if (!location || !maxDistance) {
+                                                await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                            }
 
-                                    // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                    if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                        if (!location || !maxDistance) {
-                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                        }
+                                            // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                            if (location && maxDistance) {
+                                                try {
+                                                    const distance = await calculateDistance(location, senderLocation);
 
-                                        // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                        if (location && maxDistance) {
-                                            try {
-                                                const distance = await calculateDistance(location, senderLocation);
-
-                                                // 3.3.1 If distance within accepted range, send message to UI
-                                                if (distance <= maxDistance) {
-                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                    // 3.3.1 If distance within accepted range, send message to UI
+                                                    if (distance <= maxDistance) {
+                                                        await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                    }
+                                                } catch (error) {
+                                                    console.error(error);
                                                 }
-                                            } catch (error) {
-                                                console.error(error);
                                             }
                                         }
-                                    }
+                                    }).catch((err) => {
+                                        console.log("Verification failed, so message is ignored with error: ", err);
+                                    });                                    
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                     const receiverID = data.frame.receiver.identification.id;

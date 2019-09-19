@@ -178,10 +178,12 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', submodelId);
 
                 // 2. Create a DID Authentication Challenge
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
-                request.identification = {};
-                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-
+                try {
+                    const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                    request.identification = {};
+                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                } catch(err){ console.log("Unable to create DID Authentication, does this instance have a correct DID? ", err) };
+                
                 // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -217,9 +219,11 @@ export class AppHelper {
                 const tag = buildTag('proposal', submodelId);
 
                 // 2. Sign DID Authentication
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
-                request.identification = {};
-                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                try {
+                    const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                    request.identification = {};
+                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                } catch(err){ console.log("Unable to create DID Authentication, does this instance have a correct DID? ", err) };
 
                 // 3. Send transaction
                 const user: any = await readData('user');

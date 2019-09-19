@@ -41,26 +41,32 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
 //request.frame.conversationId
 export async function CreateAuthenticationPresentation(provider : string) : Promise<VerifiablePresentation> {
     //1.25 Sign DID Authentication
-    const challenge = Date.now().toString();
-    const did : any = await readData('did');
-    const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
-    userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-    const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
+    return new Promise<VerifiablePresentation> ( async (resolve, reject) => {
+        const challenge = Date.now().toString();
+        const did : any = await readData('did');
 
-    //Add the stored Credential
-    const credentialsArray : VerifiableCredential[] = [didAuthCredential];
-    const whiteListCredential : any = await readData('credentials');
-    if(whiteListCredential) {
-        const parsed = JSON.parse(whiteListCredential.credential);
-        const decodedProof = await DecodeProofDocument(parsed.proof, provider);
-        credentialsArray.push(VerifiableCredential.DecodeFromJSON(parsed, decodedProof));
-    }
+        //Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
+        DIDDocument.readDIDDocument(provider, did.root)
+        .then(async (userDIDDocument) => {
+            userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+            const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
 
-    //Create the presentation
-    const presentation = Presentation.Create(credentialsArray);
-    const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:challenge});
-    presentationProof.Sign(presentation.EncodeToJSON());
-    return VerifiablePresentation.Create(presentation, presentationProof);
+            //Add the stored Credential
+            const credentialsArray : VerifiableCredential[] = [didAuthCredential];
+            const whiteListCredential : any = await readData('credentials');
+            if(whiteListCredential) {
+                const parsed = JSON.parse(whiteListCredential.credential);
+                const decodedProof = await DecodeProofDocument(parsed.proof, provider);
+                credentialsArray.push(VerifiableCredential.DecodeFromJSON(parsed, decodedProof));
+            }
+
+            //Create the presentation
+            const presentation = Presentation.Create(credentialsArray);
+            const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:challenge});
+            presentationProof.Sign(presentation.EncodeToJSON());
+            resolve(VerifiablePresentation.Create(presentation, presentationProof));
+        }).catch((err) => reject(err));
+    });    
 }
 
 export enum VERIFICATION_LEVEL {
@@ -70,24 +76,29 @@ export enum VERIFICATION_LEVEL {
 }   
 
 export async function VerifyCredentials(presentationData : VerifiablePresentationDataModel, provider : string) : Promise<VERIFICATION_LEVEL> {
-    //Create objects
-    const proofParameters = await DecodeProofDocument(presentationData.proof, provider);
-    const verifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
+    return new Promise<VERIFICATION_LEVEL>( async (resolve, reject) => {
+        //Create objects
+        DecodeProofDocument(presentationData.proof, provider)
+        .then((proofParameters) => {
+            VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters)
+            .then((verifiablePresentation) => {
+                //Verify
+                SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").AddTrustedDID(proofParameters.issuer.GetDID());
+                const code = verifiablePresentation.Verify();
+                SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").RemoveTrustedDID(proofParameters.issuer.GetDID());
 
-    //Verify
-    SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").AddTrustedDID(proofParameters.issuer.GetDID());
-    const code = verifiablePresentation.Verify();
-    SchemaManager.GetInstance().GetSchema("DIDAuthenticationCredential").RemoveTrustedDID(proofParameters.issuer.GetDID());
-
-    //Determine level of trust
-    let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-    if(code == VerificationErrorCodes.SUCCES && (parseInt(presentationData.proof.nonce) + 60000) > Date.now()) { //Allow 1 minute old Authentications.
-        verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
-        if(verifiablePresentation.GetVerifiedTypes().includes("WhiteListedCredential")) {
-            verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
-        }
-    } else {
-        console.log('DIDAuthenticationError', code);
-    }
-    return verificationLevel;
+                //Determine level of trust
+                let verificationLevel : VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
+                if(code == VerificationErrorCodes.SUCCES && (parseInt(presentationData.proof.nonce) + 60000) > Date.now()) { //Allow 1 minute old Authentications.
+                    verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
+                    if(verifiablePresentation.GetVerifiedTypes().includes("WhiteListedCredential")) {
+                        verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
+                    }
+                } else {
+                    console.log('DIDAuthenticationError', code);
+                }
+                resolve(verificationLevel);
+            }).catch((err) => reject(err));            
+        }).catch((err) => reject(err));
+    });
 }
