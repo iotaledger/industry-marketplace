@@ -172,6 +172,7 @@ class Dashboard extends React.Component {
     const { role } = this.context.user;
     console.log('message', message);
     let trustLevel = (get(message, 'trustLevel') !== undefined)?get(message, 'trustLevel'):0;
+    trustLevel = (ownMessage)?2:trustLevel;
     const card = await prepareData(role, { ...get(message, 'data'), trustLevel});
     console.log('card', card, role);
 
