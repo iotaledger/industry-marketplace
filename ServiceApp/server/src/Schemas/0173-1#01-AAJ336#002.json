@@ -1,0 +1,11 @@
+{
+    "type" : "object",
+    "required" : ["id", "total weight (freight) [kg]", "starting point [lat, lng]", "destination [lat, lng]", "price"],
+    "properties" : {
+        "id" : { "type" : "string" },
+        "total weight (freight) [kg]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "starting point [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "destination [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "price" : { "type" : "common.json#/definitions/eClassSubModelElement" }
+    }
+}

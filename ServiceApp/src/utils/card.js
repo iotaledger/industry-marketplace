@@ -43,6 +43,7 @@ export const prepareData = async (role, payload) => {
             params,
             irdi,
             partner,
+            trustLevel : data.trustLevel,
             sensorData,
             startTimestamp,
             id: conversationId,

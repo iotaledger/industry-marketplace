@@ -3,17 +3,21 @@ import { generate } from '@iota/industry_4.0_language';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, Service } from 'identity_ts';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData } from './databaseHelper';
-import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
-import { publish, publishDID } from './mamHelper';
+import { encryptWithReceiversPublicKey } from './encryptionHelper';
+import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
+import { provider } from '../config.json';
 import { generateNewWallet, getBalance } from './walletHelper';
+import { ServiceFactory } from '../factories/serviceFactory';
+import { CreateAuthenticationPresentation } from './credentialHelper.js';
 
 /**
  * Class to help with expressjs routing.
@@ -123,13 +127,28 @@ export class AppHelper {
             let user: any = await readData('user');
 
             if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
+                // Creating a NEW Identity following the DID standard
+                const seed = GenerateSeed();
+                const userDIDDocument = CreateRandomDID(seed);
+                const keypair = await GenerateRSAKeypair();
+                const privateKey = keypair.GetPrivateKey();
+                const keyId  = 'keys-1';
+                const tangleComsAddress = GenerateSeed(81);
+                userDIDDocument.AddKeypair(keypair, keyId);
+                userDIDDocument.AddServiceEndpoint(new Service(userDIDDocument.GetDID(), 'tanglecom', 'TangleCommunicationAddress', tangleComsAddress));
+                const publisher = new DIDPublisher(provider, seed);
+                const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+                const state = publisher.ExportMAMChannelState();
+                await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
+
+                // Store user
+                const id = userDIDDocument.GetDID().GetDID();
+                user = user ? { ...user, id, address : tangleComsAddress } : { id, address : tangleComsAddress };
                 await writeData('user', user);
             }
+
+            // Set TangleCommunicationService Address
+            ServiceFactory.get('zmq').setAddressToListenTo(user.address);
 
             const wallet: any = await readData('wallet');
             let newWallet;
@@ -158,13 +177,18 @@ export class AppHelper {
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
 
-                // 2. Send transaction
+                // 2. Create a DID Authentication Challenge
+                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                request.identification = {};
+                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+
+                // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
-                // 3. Create new MAM channel
-                // 4. Publish first message with payload
-                // 5. Save channel details to DB
+                // 4. Create new MAM channel
+                // 5. Publish first message with payload
+                // 6. Save channel details to DB
                 const channelId = request.frame.conversationId;
                 const mam = await publish(channelId, request);
 
@@ -192,7 +216,12 @@ export class AppHelper {
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
-                // 2. Send transaction
+                // 2. Sign DID Authentication
+                const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                request.identification = {};
+                request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+
+                // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
@@ -223,7 +252,7 @@ export class AppHelper {
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = request.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
+                mam.secretKey = await encryptWithReceiversPublicKey(id, 'keys-1', mam.secretKey);
 
                 // 5. Create Tag
                 const submodelId = request.dataElements.submodels[0].identification.id;

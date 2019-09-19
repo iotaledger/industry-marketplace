@@ -1,0 +1,17 @@
+{
+    "type" : "object",
+    "definitions" : {
+        "eClassSubModelElement" : {
+            "type" : "object",
+            "properties" : {
+                "idShort": { "type" : "string" },
+                "modelType" : { "type" : "string"},
+                "value" : { "type" : "string"},
+                "valueType" : { "type" : "string"},
+                "semanticId" : { "type" : "string" }
+            },
+            "required" : ["idShort", "modelType", "value", "valueType", "semanticId"]
+        }
+        
+    }
+}
