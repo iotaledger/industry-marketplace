@@ -9,9 +9,9 @@ import { getPayload } from '../utils/iotaHelper';
  */
 export class ZmqService {
     /**
-     * Bundlehashes that were already send to not send twice 
+     * Bundlehashes that were already send to not send twice
      *
-     */  
+     */
     public sentBundles = [];
 
     /**
@@ -194,16 +194,10 @@ export class ZmqService {
 
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
-                   
+
                     if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
                         const data = await getPayload(bundle);
                         this.sendEvent(data, messageType, messageParams);
-
-                        try {
-                            await axios.post(this._config.db_endpoint, data);
-                        } catch (error) {
-                            console.log('data error', error);
-                        }
                     }
                 }
             }
