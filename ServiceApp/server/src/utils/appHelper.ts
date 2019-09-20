@@ -120,29 +120,52 @@ export class AppHelper {
         });
 
         app.get('/user', async (req, res) => {
-            let user: any = await readData('user');
+            try {
+                let user: any = await readData('user');
 
-            if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
-                await writeData('user', user);
+                if (!user || !user.id) {
+                    // Generate key pair
+                    const { publicKey, privateKey }: any = await generateKeyPair();
+                    const root = await publishDID(publicKey, privateKey);
+                    const id = `did:iota:${root}`;
+                    user = user ? { ...user, id } : { id };
+                    await writeData('user', user);
+                }
+
+                const wallet: any = await readData('wallet');
+                let newWallet;
+                if (!wallet) {
+                    newWallet = generateNewWallet();
+                    await writeData('wallet', newWallet);
+                }
+
+                res.json({
+                    ...user,
+                    balance: wallet ? await getBalance(wallet.address) : 0,
+                    wallet: wallet ? wallet.address : newWallet.address
+                });
+            } catch (error) {
+                console.log('get user error', error);
+                res.send({ error });
             }
+        });
 
-            const wallet: any = await readData('wallet');
-            let newWallet;
-            if (!wallet) {
-                newWallet = generateNewWallet();
-                await writeData('wallet', newWallet);
+        app.get('/wallet', async (req, res) => {
+            try {
+                const newWallet = generateNewWallet();
+                console.log('Initiated new wallet generation', newWallet);
+                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+                const data = response.data;
+                if (data.success) {
+                    const balance = await getBalance(newWallet.address);
+                    await writeData('wallet', { ...newWallet, balance });
+                }
+                console.log('Finished new wallet generation', newWallet);
+                res.send({ newWallet });
+            } catch (error) {
+                console.log('fund wallet error', error);
+                res.send({ error });
             }
-
-            res.json({
-                ...user,
-                balance: wallet ? await getBalance(wallet.address) : 0,
-                wallet: wallet ? wallet.address : newWallet.address
-            });
         });
 
         app.get('/mam', async (req, res) => {
@@ -337,8 +360,9 @@ export class AppHelper {
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     // 2. Add to payment queue
-                    await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
-
+                    if (Number(priceObject.value) > 0) {
+                        await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
+                    }
                     // 3. Retrieve MAM channel from DB
                     // 4. Attach message with confirmation payload
                     // 5. Update channel details in DB
