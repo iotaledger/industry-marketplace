@@ -1,5 +1,5 @@
 {
-  "domain": "http://localhost:5000",
+  "domain": "https://yellow-pages-backend.iota-dev1.now.sh",
   "serviceRequester": "https://service-requester.iota-dev1.now.sh",
   "serviceProvider": "https://service-provider.iota-dev1.now.sh",
   "addressApi": "https://api.marketplace.tangle.works/location",
