@@ -38,12 +38,12 @@ export async function ProcessReceivedCredentialForUser(unstructuredData: any, pr
         const importVerifiableCredential: VerifiableCredential = await VerifiableCredential.DecodeFromJSON(credentialFormat, proofParameters);
         const user: any = await readData('user');
         const verificationResult = importVerifiableCredential.Verify();
-        if (importVerifiableCredential.EncodeToJSON().credentialSubject.DID === user.id && verificationResult === VerificationErrorCodes.SUCCES) {
+        if (importVerifiableCredential.EncodeToJSON().credentialSubject['DID'] === user.id && verificationResult === VerificationErrorCodes.SUCCES) {
             //Store the credential in the DB, sorted under the DID of the Issuer
             await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
             console.log('Credential Stored: ', credentialString);
         } else {
-            console.log('Credential Target: ', importVerifiableCredential.EncodeToJSON().credentialSubject.DID);
+            console.log('Credential Target: ', importVerifiableCredential.EncodeToJSON().credentialSubject['DID']);
             console.log('VerificationResult: ', verificationResult);
         }
         
