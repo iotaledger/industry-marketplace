@@ -1,0 +1,16 @@
+{
+    "type" : "object",
+    "required" : ["id", "brand", "min. charging voltage [V]", "max. charging voltage [V]", "cables included", "connection type", "cable length [m]", "number of connections", "target location [lat, lng]", "price"],
+    "properties" : {
+        "id" : { "type" : "string" },
+        "brand" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "min. charging voltage [V]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "max. charging voltage [V]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "cables included" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "connection type" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "cable length [m]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "number of connections" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "target location [lat, lng]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "price" : { "type" : "common.json#/definitions/eClassSubModelElement" }
+    }
+}

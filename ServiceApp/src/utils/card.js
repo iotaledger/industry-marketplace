@@ -43,6 +43,7 @@ export const prepareData = async (role, payload) => {
             params,
             irdi,
             partner,
+            trustLevel: data.trustLevel,
             sensorData,
             startTimestamp,
             id: conversationId,
@@ -53,7 +54,7 @@ export const prepareData = async (role, payload) => {
             startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
             endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
         };
-        
+
         return card;
     } catch (error) {
         console.log('Card Error', error);

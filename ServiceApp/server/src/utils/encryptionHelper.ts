@@ -1,6 +1,7 @@
 import crypto from 'crypto';
+import { DID, DIDDocument } from 'identity_ts';
+import { provider } from '../config.json';
 import { readData } from './databaseHelper';
-import { fetchDID } from './mamHelper';
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 
@@ -33,7 +34,7 @@ export const generateKeyPair = async () => {
     });
 };
 
-const encrypt = async (key, message) => {
+/*const encrypt = async (key, message) => {
     return new Promise(async (resolve, reject) => {
         try {
             const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
@@ -44,7 +45,7 @@ const encrypt = async (key, message) => {
             reject();
         }
     });
-};
+};*/
 
 const decrypt = async (key, message) => {
     return new Promise(async (resolve, reject) => {
@@ -59,12 +60,9 @@ const decrypt = async (key, message) => {
     });
 };
 
-export const encryptWithReceiversPublicKey = async (receiverId, payload) => {
-    const partnetId = receiverId.replace('did:iota:', '');
-    const did = await fetchDID(partnetId);
-    const publicKey = did[did.length - 1];
-    const message = Buffer.from(payload, 'utf8');
-    const encryptedBuffer: any = await encrypt(publicKey, message);
+export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
+    const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
+    const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
 
@@ -74,3 +72,25 @@ export const decryptWithReceiversPrivateKey = async (payload) => {
     const decryptedBuffer = await decrypt(did.privateKey, messageBuffer);
     return decryptedBuffer.toString();
 };
+
+const algorithm =  'aes-256-cbc';
+
+export interface IEncryptedData {
+    key: Buffer;
+    iv: Buffer;
+    encoded: Buffer;
+}
+
+export function encryptWithCipher(text: string): IEncryptedData {
+    const iv = crypto.randomBytes(16);
+    const key = crypto.randomBytes(32);
+    const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
+    const encrypted: Buffer = cipher.update(text);
+    return { key: key, iv : iv, encoded: Buffer.concat([encrypted, cipher.final()]) };
+}
+
+export function decryptCipher(data: IEncryptedData): Buffer {
+    const decipher = crypto.createDecipheriv(algorithm, data.key, data.iv);
+    const decoded: Buffer = decipher.update(data.encoded);
+    return Buffer.concat([decoded, decipher.final()]);
+}

@@ -1,0 +1,14 @@
+{
+    "type" : "object",
+    "required" : ["id", "duration [min]", "maximum velocity at rated value [km/h]", "max. monitoring radius [m]", "2,4 GHz", "5 GHz", "energy consumption [kW/h]", "price"],
+    "properties" : {
+        "id" : { "type" : "string" },
+        "duration [min]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "maximum velocity at rated value [km/h]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "max. monitoring radius [m]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "2,4 GHz" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "5 GHz" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "energy consumption [kW/h]" : { "type" : "common.json#/definitions/eClassSubModelElement" },
+        "price" : { "type" : "common.json#/definitions/eClassSubModelElement" }
+    }
+}

@@ -171,7 +171,9 @@ class Dashboard extends React.Component {
   async newMessage(message, ownMessage = false) {
     const { role } = this.context.user;
     console.log('message', message);
-    const card = await prepareData(role, get(message, 'data'));
+    let trustLevel = (get(message, 'trustLevel') !== undefined) ? get(message, 'trustLevel') : 0;
+    trustLevel = (ownMessage) ? 2 : trustLevel;
+    const card = await prepareData(role, { ...get(message, 'data'), trustLevel});
     console.log('card', card, role);
 
     if (card.type !== 'rejectProposal') {
