@@ -1,6 +1,8 @@
+import { DID, SchemaManager } from 'identity_ts';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import { maxDistance, operations, provider } from '../config.json';
+import { ProcessReceivedCredentialForUser, VERIFICATION_LEVEL, VerifyCredentials } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -8,8 +10,6 @@ import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
-import { DID, SchemaManager } from 'identity_ts';
-import { ProcessReceivedCredentialForUser, VerifyCredentials, VERIFICATION_LEVEL } from '../utils/credentialHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -50,7 +50,7 @@ export class ZmqService {
     /**
      *
      */
-    private listenAddress : string | undefined;
+    private listenAddress: string | undefined;
 
     /**
      * Create a new instance of ZmqService.
@@ -61,11 +61,11 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
-        this.listenAddress = undefined;
+        this.listenAddress = null;
 
         // Add trusted identities (Initially, the DID of the IOTA Foundation)
         const schema = SchemaManager.GetInstance().GetSchema('WhiteListedCredential');
-        for (let i=0; i < this._config.trustedIdentities.length; i++) {
+        for (let i = 0; i < this._config.trustedIdentities.length; i++) {
             schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
         }
     }
@@ -259,7 +259,7 @@ export class ZmqService {
                                 if (id === receiverID) {
                                     if (messageType === 'proposal') {
                                         // Find the challenge
-                                        if(data.identification && data.identification.didAuthenticationPresentation) {
+                                        if (data.identification && data.identification.didAuthenticationPresentation) {
                                             VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
                                             .then(async (verificationResult) => {
                                                 // Check if the correct challenge is used and if the signatures are correct
@@ -268,7 +268,7 @@ export class ZmqService {
                                                     await this.sendEvent(data, messageType, messageParams, verificationResult);
                                                 }
                                             }).catch((err) => {
-                                                console.log("Verification failed, so message is ignored with error: ", err);
+                                                console.log('Verification failed, so message is ignored with error: ', err);
                                             });
                                         }
                                     } else {
@@ -289,7 +289,7 @@ export class ZmqService {
                                     const senderLocation = await getLocationFromMessage(data);
 
                                     // Find the challenge
-                                    if(data.identification && data.identification.didAuthenticationPresentation) {
+                                    if (data.identification && data.identification.didAuthenticationPresentation) {
                                         VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
                                         .then(async (verificationResult) => {
                                             // 3.2 If NO own location and NO accepted range are set, send message to UI
@@ -313,7 +313,7 @@ export class ZmqService {
                                                 }
                                             }
                                         }).catch((err) => {
-                                            console.log("Verification failed, so message is ignored with error: ", err);
+                                            console.log('Verification failed, so message is ignored with error: ', err);
                                         });          
                                     }                                    
                                 } else {
@@ -352,8 +352,7 @@ export class ZmqService {
                             }
                     }
                 }
-            }
-            else if (this.listenAddress && address === this.listenAddress) {
+            } else if (this.listenAddress && address === this.listenAddress) {
                 const bundle = messageParams[8];
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);

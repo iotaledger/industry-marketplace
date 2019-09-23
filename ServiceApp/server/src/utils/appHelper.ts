@@ -3,10 +3,12 @@ import { generate } from '@iota/industry_4.0_language';
 import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { DIDPublisher, GenerateSeed, CreateRandomDID, GenerateRSAKeypair, Service } from 'identity_ts';
 import express from 'express';
+import { CreateRandomDID, DIDPublisher, GenerateRSAKeypair, GenerateSeed, Service } from 'identity_ts';
 import packageJson from '../../package.json';
 import config from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
+import { CreateAuthenticationPresentation } from './credentialHelper.js';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
@@ -14,10 +16,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { provider } from '../config.json';
 import { generateNewWallet, getBalance } from './walletHelper';
-import { ServiceFactory } from '../factories/serviceFactory';
-import { CreateAuthenticationPresentation } from './credentialHelper.js';
 
 /**
  * Class to help with expressjs routing.
@@ -35,9 +34,9 @@ export class AppHelper {
         const app = express();
 
         app.use(cors({
-            origin: "*",
-            methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
-            allowedHeaders: "content-type"
+            origin: '*',
+            methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
+            allowedHeaders: 'content-type'
         }));
         app.use(bodyParser.json({ limit: '30mb' }));
         app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
@@ -136,8 +135,15 @@ export class AppHelper {
                     const keyId  = 'keys-1';
                     const tangleComsAddress = GenerateSeed(81);
                     userDIDDocument.AddKeypair(keypair, keyId);
-                    userDIDDocument.AddServiceEndpoint(new Service(userDIDDocument.GetDID(), 'tanglecom', 'TangleCommunicationAddress', tangleComsAddress));
-                    const publisher = new DIDPublisher(provider, seed);
+                    userDIDDocument.AddServiceEndpoint(
+                        new Service(
+                            userDIDDocument.GetDID(), 
+                            'tanglecom', 
+                            'TangleCommunicationAddress', 
+                            tangleComsAddress
+                        )
+                    );
+                    const publisher = new DIDPublisher(config.provider, seed);
                     const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
                     const state = publisher.ExportMAMChannelState();
                     await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
@@ -202,10 +208,10 @@ export class AppHelper {
 
                 // 2. Create a DID Authentication Challenge
                 try {
-                    const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                    const verifiablePresentation = await CreateAuthenticationPresentation(config.provider);
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                } catch(err){ console.log("Unable to create DID Authentication, does this instance have a correct DID? ", err) };
+                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
                 
                 // 3. Send transaction
                 const user: any = await readData('user');
@@ -243,10 +249,10 @@ export class AppHelper {
 
                 // 2. Sign DID Authentication
                 try {
-                    const verifiablePresentation = await CreateAuthenticationPresentation(provider);
+                    const verifiablePresentation = await CreateAuthenticationPresentation(config.provider);
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                } catch(err){ console.log("Unable to create DID Authentication, does this instance have a correct DID? ", err) };
+                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
                 const user: any = await readData('user');
