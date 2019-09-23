@@ -27,6 +27,24 @@
     margin-bottom: 15px;
   }
 
+  .links {
+    margin-top: 10px;
+    font-size: 22px;
+    line-height: 26px;
+    font-weight: 600;
+
+    a {
+      color: #485776;
+      &:hover {
+        text-decoration: underline;
+      }
+
+      &:visited {
+        color: #485776;
+      }
+    }
+  }
+
   @media (max-width: 1000px) {
     margin: 0 30px;
   }

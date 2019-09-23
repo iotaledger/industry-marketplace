@@ -52,7 +52,6 @@ export default class extends React.Component {
 
   async newMessage(message) {
     const card = await prepareData(get(message, 'data'));
-    console.log('card', card);
     await writeToStorage(card);
     await this.checkExpired();
   }
@@ -70,13 +69,27 @@ export default class extends React.Component {
   render() {
     const { assets, allAssets, activeSection, view } = this.state;
     const externalService = activeSection === 'proposal' ? serviceProvider : serviceRequester;
+    const statusNameMap = {
+      callForProposal: 'Calls for Proposal',
+      proposal: 'Proposals',
+      acceptProposal: 'accepted Proposals'
+    }
 
     return (
       <Layout>
         <div className="demo-page">
           <div className="demo-header">
             <Text className="title">Yellow Pages</Text>
-            <Text>Discover how the Sematic Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+            <Text>Discover how the Industry Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
+            <h3 className="links">
+              <a href={serviceRequester} target="_blank" rel="noopener noreferrer">
+                  Try it as Service Requester
+              </a>
+              {'  |  '}
+              <a href={serviceProvider} target="_blank" rel="noopener noreferrer">
+                  Try it as Service Provider
+              </a>
+            </h3>
           </div>
           <div className="request-data-wrapper">
             <div className="demo-page-navigation">
@@ -86,18 +99,18 @@ export default class extends React.Component {
                   onClick={() => this.setState({ view: 'grid' })}
                 >
                   <img src={view === 'grid' ? grid_selected : grid} alt="Grid view" />
-                </Button> 
-                <Button 
+                </Button>
+                <Button
                   selected={view === 'list'}
                   onClick={() => this.setState({ view: 'list' })}
                 >
                   <img src={view === 'list' ? list_selected : list} alt="List view" />
-                </Button> 
+                </Button>
               </div>
-              <Tabs 
-                view={view} 
-                assets={assets} 
-                activeSection={activeSection} 
+              <Tabs
+                view={view}
+                assets={assets}
+                activeSection={activeSection}
                 onTabChange={this.onTabChange}
               />
             </div>
@@ -106,7 +119,7 @@ export default class extends React.Component {
                 assets.length === 0 ? (
                   <div className="no-assets">
                     <img src={empty} alt="" />
-                    <Text className="title">No <strong>{activeSection}</strong>s found</Text>
+                    <Text className="title">No <strong>{statusNameMap[activeSection]}</strong> found</Text>
                     <Text>Test out this feature by clicking the “>” button</Text>
                     <a
                         href={externalService}

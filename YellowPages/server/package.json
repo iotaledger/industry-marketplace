@@ -1,6 +1,6 @@
 {
-    "name": "blue-pages",
-    "description": "Blue Pages",
+    "name": "yellow-pages",
+    "description": "Yellow Pages",
     "version": "1.0.0",
     "author": "Alexey Sobolev <alexey@iota.org>",
     "repository": {
@@ -23,7 +23,6 @@
     "dependencies": {
         "@iota/converter": "^1.0.0-beta.19",
         "@iota/core": "^1.0.0-beta.19",
-        "axios": "^0.19.0",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",

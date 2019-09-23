@@ -124,44 +124,67 @@ export class AppHelper {
         });
 
         app.get('/user', async (req, res) => {
-            let user: any = await readData('user');
+            try {
+                let user: any = await readData('user');
 
-            if (!user || !user.id) {
-                // Creating a NEW Identity following the DID standard
-                const seed = GenerateSeed();
-                const userDIDDocument = CreateRandomDID(seed);
-                const keypair = await GenerateRSAKeypair();
-                const privateKey = keypair.GetPrivateKey();
-                const keyId  = 'keys-1';
-                const tangleComsAddress = GenerateSeed(81);
-                userDIDDocument.AddKeypair(keypair, keyId);
-                userDIDDocument.AddServiceEndpoint(new Service(userDIDDocument.GetDID(), 'tanglecom', 'TangleCommunicationAddress', tangleComsAddress));
-                const publisher = new DIDPublisher(provider, seed);
-                const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
-                const state = publisher.ExportMAMChannelState();
-                await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
+                if (!user || !user.id) {
+                    // Creating a NEW Identity following the DID standard
+                    const seed = GenerateSeed();
+                    const userDIDDocument = CreateRandomDID(seed);
+                    const keypair = await GenerateRSAKeypair();
+                    const privateKey = keypair.GetPrivateKey();
+                    const keyId  = 'keys-1';
+                    const tangleComsAddress = GenerateSeed(81);
+                    userDIDDocument.AddKeypair(keypair, keyId);
+                    userDIDDocument.AddServiceEndpoint(new Service(userDIDDocument.GetDID(), 'tanglecom', 'TangleCommunicationAddress', tangleComsAddress));
+                    const publisher = new DIDPublisher(provider, seed);
+                    const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+                    const state = publisher.ExportMAMChannelState();
+                    await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
 
-                // Store user
-                const id = userDIDDocument.GetDID().GetDID();
-                user = user ? { ...user, id, address : tangleComsAddress } : { id, address : tangleComsAddress };
-                await writeData('user', user);
+                    // Store user
+                    const id = userDIDDocument.GetDID().GetDID();
+                    user = user ? { ...user, id, address : tangleComsAddress } : { id, address : tangleComsAddress };
+                    await writeData('user', user);
+                }
+
+                // Set TangleCommunicationService Address
+                ServiceFactory.get('zmq').setAddressToListenTo(user.address);
+
+                const wallet: any = await readData('wallet');
+                let newWallet;
+                if (!wallet) {
+                    newWallet = generateNewWallet();
+                    await writeData('wallet', newWallet);
+                }
+
+                res.json({
+                    ...user,
+                    balance: wallet ? await getBalance(wallet.address) : 0,
+                    wallet: wallet ? wallet.address : newWallet.address
+                });
+            } catch (error) {
+                console.log('get user error', error);
+                res.send({ error });
             }
+        });
 
-            // Set TangleCommunicationService Address
-            ServiceFactory.get('zmq').setAddressToListenTo(user.address);
-
-            const wallet: any = await readData('wallet');
-            let newWallet;
-            if (!wallet) {
-                newWallet = generateNewWallet();
-                await writeData('wallet', newWallet);
+        app.get('/wallet', async (req, res) => {
+            try {
+                const newWallet = generateNewWallet();
+                console.log('Initiated new wallet generation', newWallet);
+                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+                const data = response.data;
+                if (data.success) {
+                    const balance = await getBalance(newWallet.address);
+                    await writeData('wallet', { ...newWallet, balance });
+                }
+                console.log('Finished new wallet generation', newWallet);
+                res.send({ newWallet });
+            } catch (error) {
+                console.log('fund wallet error', error);
+                res.send({ error });
             }
-
-            res.json({
-                ...user,
-                balance: wallet ? await getBalance(wallet.address) : 0,
-                wallet: wallet ? wallet.address : newWallet.address
-            });
         });
 
         app.get('/mam', async (req, res) => {
@@ -370,8 +393,9 @@ export class AppHelper {
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     // 2. Add to payment queue
-                    await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
-
+                    if (Number(priceObject.value) > 0) {
+                        await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
+                    }
                     // 3. Retrieve MAM channel from DB
                     // 4. Attach message with confirmation payload
                     // 5. Update channel details in DB
