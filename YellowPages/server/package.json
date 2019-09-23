@@ -5,7 +5,7 @@
     "author": "Alexey Sobolev <alexey@iota.org>",
     "repository": {
         "type": "git",
-        "url": "https://github.com/iotaledger/SeMarket.git"
+        "url": "https://github.com/iotaledger/industry-marketplace.git"
     },
     "license": "Apache-2.0",
     "private": true,
