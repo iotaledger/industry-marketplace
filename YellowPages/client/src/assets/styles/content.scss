@@ -63,13 +63,12 @@
         }
 
         .subtitle {
-            font-size: 16px;
+            font-size: 20px;
             line-height: 30px;
-            text-transform: uppercase;
             color: #4140DF;
 
             @media (max-width: 680px) {
-                font-size: 12px;
+                font-size: 16px;
             }
         }
     }
@@ -82,6 +81,25 @@
         height: 125px;
         width: 100%;
         margin: 50px 0 70px;
+
+        .links-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 240px;
+            margin-top: 15px;
+
+            a {
+                font-size: 16px;
+                line-height: 20px;
+                color: #4140DF;
+                text-decoration: underline;
+
+                &:visited {
+                    color: #4140DF;
+                }
+            } 
+        }
 
         @media (max-width: 1200px) {
             align-items: center;
@@ -305,12 +323,39 @@
     background-position: center center;
     background-image: url('/static/backgrounds/video_section_desktop_background.svg');
 
-    .desktop {
-        width: 360px;
-        cursor: pointer;
-        border-radius: 6px;
+    .desktop-player {
+        position: relative;
+
+        .desktop {
+            width: 560px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .play {
+            cursor: pointer;
+            position: absolute;
+            left: calc(50% - 46px);
+            top: calc(50% - 46px);
+            width: 92px;
+            height: 92px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-image: url('/static/backgrounds/play.svg');
+
+            &:hover {
+                background-image: url('/static/backgrounds/play_hover.svg');
+            }
+        }
     }
 
+    .face {
+        display: block;
+        height: 350px;
+        width: 350px;
+    }
+ 
     .mobile {
         width: 80px;
         height: 80px;
@@ -337,6 +382,10 @@
 
         &.how-it-works {
             padding-right: 100px;
+
+            .btn {
+                margin-top: 20px;
+            }
         }
 
         &.what-they-say {
@@ -385,7 +434,6 @@
     position: relative;
     width: 100%;
     display: flex !important;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
 
@@ -397,8 +445,13 @@
         height: 800px;
 
         &.reverse {
-            height: 620px;
             flex-direction: column-reverse;
+        }
+
+        .face {
+            display: block;
+            height: 300px;
+            width: 300px;
         }
 
         .video-section-text-wrapper.what-they-say,
@@ -415,23 +468,23 @@
                 background-position: 325px 6px;
             }
         }
-
     }
 
     @media (max-width: 680px) {
         background-image: url('/static/backgrounds/video_section_mobile_background.svg');
         min-height: unset;
-        height: 550px;
 
-        &.reverse {
-            height: 370px;
-        }
+        .desktop-player {
+            .desktop {
+                width: 80vw;
+            }
 
-        .mobile {
-            display: block;
-        }
-        .desktop {
-            display: none;
+            .play {
+                width: 70px;
+                height: 70px;
+                left: calc(50% - 35px);
+                top: calc(50% - 35px);
+            }
         }
 
         .video-section-text-wrapper.what-they-say .quote  {
@@ -439,17 +492,49 @@
             line-height: 24px;
         }
     }
+
+    @media (max-width: 500px) {
+        &.reverse {
+            height: 500px;
+        }
+        
+        .mobile {
+            display: block;
+        }
+        .desktop, .play {
+            display: none;
+        }
+    }
+}
+
+.what-they-say {
+    flex-direction: column;
+
+    > .title {
+        color: #F6F8FC;
+        margin: 60px 0 30px;
+    }
 }
 
 .slider-content {
     min-height: 460px;
     background-image: none;
+    width: 80vw !important;
+    margin: 0 auto;
 
     @media (max-width: 110px) {
         .face {
             display: block;
             height: 396px;
             width: 396px;
+        }
+    }
+
+    @media (max-width: 840px) {
+        .desktop-player {
+            .desktop {
+                width: 500px;
+            }
         }
     }
 
@@ -461,6 +546,12 @@
             height: 183px;
             width: 183px;
         }
+
+        .desktop-player {
+            .desktop {
+                width: 50vw;
+            }
+        }
     }
 }
 
@@ -469,10 +560,10 @@
     display: flex;
     flex-direction: column;
     align-self: center;
-    margin: 80px 0;
+    margin-bottom: 80px;
 
     @media (max-width: 1100px) {
-
+        margin-bottom: 50px;
     }
 
     @media (max-width: 680px) {
