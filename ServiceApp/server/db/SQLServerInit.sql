@@ -162,15 +162,15 @@ if not exists ( select * from sys.objects where object_id = object_ID( N'[did]' 
 	end
 go
 
-if not exists ( select * from sys.objects where object_id = object_ID( N'[paymentQueue]' ) and type in ( N'U' ) )
+if not exists ( select * from sys.objects where object_id = object_ID( N'[credential]' ) and type in ( N'U' ) )
 	begin
-	  create table [paymentQueue]
+	  create table [credential]
 	  (
 		[internal_id] [bigint] IDENTITY(1,1) NOT NULL,
 		[address] [nvarchar](max) NULL,
 		[value] [bigint] NULL,
 		[timestamp] [datetime2](7) NOT NULL,
-		constraint [PK_paymentQueue] primary key clustered ( [internal_id] asc )
+		constraint [PK_credential] primary key clustered ( [internal_id] asc )
 		with
 		(
 			pad_index = off,
@@ -206,6 +206,27 @@ if not exists ( select * from sys.objects where object_id = object_ID( N'[data]'
 	end
 go
 
+if not exists ( select * from sys.objects where object_id = object_ID( N'[credential]' ) and type in ( N'U' ) )
+	begin
+	  create table [credential]
+	  (
+		[internal_id] [bigint] IDENTITY(1,1) NOT NULL,
+		[id] [nvarchar](max) NULL,
+		[credential] [nvarchar](max) NULL,
+		[timestamp] [datetime2](7) NOT NULL,
+		constraint [PK_credential] primary key clustered ( [internal_id] asc )
+		with
+		(
+			pad_index = off,
+			statistics_norecompute = off,
+			ignore_dup_key = off,
+			allow_row_locks = on,
+			allow_page_locks = on
+		) on [Primary]
+	  ) on [Primary]
+	end
+go
+
 
 if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[data]' ) and type = 'D' )
 begin
@@ -225,9 +246,9 @@ begin
 end
 go
 
-if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[paymentQueue]' ) and type = 'D' )
+if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[credential]' ) and type = 'D' )
 begin
-  alter table [dbo].[paymentQueue] add constraint [df_paymentQueue_timestamp] default ( getdate() ) for [timestamp]
+  alter table [dbo].[credential] add constraint [df_credential_timestamp] default ( getdate() ) for [timestamp]
 end
 go
 
@@ -240,5 +261,11 @@ go
 if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[wallet]' ) and type = 'D' )
 begin
   alter table [dbo].[wallet] add constraint [df_wallet_timestamp] default ( getdate() ) for [timestamp]
+end
+go
+
+if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[credential]' ) and type = 'D' )
+begin
+  alter table [dbo].[credential] add constraint [df_credential_timestamp] default ( getdate() ) for [timestamp]
 end
 go

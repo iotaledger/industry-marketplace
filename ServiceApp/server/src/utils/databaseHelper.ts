@@ -126,10 +126,10 @@ export const createPaymentQueue = async (data) => {
 
 export const createMAMChannel = async (data) => {
     const query = `
-		INSERT INTO [dbo].[mam] ([id],[root],[seed],[next_root],[side_key],[start])
-		values (@id, @root, @seed, @next_root, @side_key, @start );`;
-
+            INSERT INTO [dbo].[mam] ([id],[root],[seed],[next_root],[side_key],[start])
+            values (@id, @root, @seed, @next_root, @side_key, @start );`;
     const request = new sql.Request(db);
+
     const result = await request
         .input("id", data.id)
         .input("root", data.root)
@@ -138,9 +138,24 @@ export const createMAMChannel = async (data) => {
         .input("side_key", data.side_key)
         .input("start", data.start)
         .query(query);
+    return result.rowsAffected === 1;
+}
+
+
+export const createCredential = async (data) => {
+    const query = `
+		INSERT INTO [dbo].[credential] ([id],[credential])
+		values (@id, @credential );`;
+
+    const request = new sql.Request(db);
+    const result = await request
+        .input("id", data.id)
+        .input("credential", data.credential)
+        .query(query);
 
     return result.rowsAffected === 1;
 };
+
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -161,6 +176,11 @@ export const writeData = async (table, data) => {
                 await createPaymentQueue(data);
                 return;
             case 'mam':
+                await createMAMChannel(data);
+            return;
+            case 'credential':
+                await createCredential(date);
+            return;
             default:
                 await createMAMChannel(data);
                 return;
