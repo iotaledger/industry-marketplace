@@ -13,7 +13,6 @@ export const createHelperClient = () => {
                 resolve(data.subscriptionIds[0]);
             });
         } catch (error) {
-            console.log(error);
             reject(error);
         }
     });

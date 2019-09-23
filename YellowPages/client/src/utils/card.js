@@ -34,10 +34,12 @@ export const prepareData = async (payload) => {
         const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
         let sender = get(data.frame, 'sender.identification.id');
         sender = sender && sender.indexOf('did:iota:') === 0 ? `${sender.substr(9, 15)}...` : sender;
+        sender = sender && sender.indexOf('did:IOTA:') === 0 ? `${sender.substr(9, 15)}...` : sender;
         let receiver = get(data, 'frame.receiver.identification.id') || 'Pending';
         receiver = receiver && receiver.indexOf('did:iota:') === 0 ? `${receiver.substr(9, 15)}...` : receiver;
+        receiver = receiver && receiver.indexOf('did:IOTA:') === 0 ? `${receiver.substr(9, 15)}...` : receiver;
         const sensorData = get(data, 'sensorData') || null;
-        const coordinates = location.split(',');
+        const coordinates = (location && location.split(',')) || [50, 10];
 
         const card = {
             operation,
@@ -53,6 +55,7 @@ export const prepareData = async (payload) => {
             id: conversationId,
             latitude: Number(coordinates[0]),
             longitude: Number(coordinates[1]),
+            partner: get(data.frame, 'sender.identification.id').replace('did:iota:', '').replace('did:IOTA:', ''),
             partnerName: get(data, 'userName') || sender,
             originalMessage: JSON.stringify(data, null, 2),
             storageId: type === 'proposal' ? `${conversationId}#${sender}` : conversationId,
@@ -60,7 +63,7 @@ export const prepareData = async (payload) => {
             startTime: (new Date(startTimestamp)).toLocaleDateString('de-DE', dateOptions),
             endTime: (new Date(endTimestamp)).toLocaleDateString('de-DE', dateOptions),
         };
-        
+
         return card;
     } catch (error) {
         console.log('prepareData error', error);

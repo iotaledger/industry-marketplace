@@ -41,7 +41,7 @@ yarn
 <!-- Development -->
 ### Development
 
-This will run the api at <http://localhost:4001>
+This will run the api at <http://localhost:4000>
 
 ```shell
 yarn start-dev
@@ -167,7 +167,7 @@ npm install axios --save
 ```shell 
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:4001';
+const BASE_URL = 'http://localhost:5000';
 
 const params =
 {  
@@ -195,7 +195,7 @@ The implemented websockets are based on socket-io and therefore a [socket-io-cli
 #### Connect to server 
 
 ```javascript
-const socket = require('socket.io-client')('http://localhost:4001');
+const socket = require('socket.io-client')('http://localhost:4000');
 
 socket.on('connect', () => {
     console.log("Connected")

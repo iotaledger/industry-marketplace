@@ -6,7 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, updateUserId } from './databaseHelper';
+import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey, generateKeyPair } from './encryptionHelper';
 import { publish, publishDID } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
@@ -30,13 +30,17 @@ export class AppHelper {
 
         const app = express();
 
-        app.use(cors());
+        app.use(cors({
+            origin: "*",
+            methods: ["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"],
+            allowedHeaders: "content-type"
+        }));
         app.use(bodyParser.json({ limit: '30mb' }));
         app.use(bodyParser.urlencoded({ limit: '30mb', extended: true }));
         app.use(bodyParser.json());
 
         app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', `*`);
+            res.setHeader('Access-Control-Allow-Origin', '*');
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
             res.setHeader('Access-Control-Allow-Headers', 'content-type');
             res.setHeader('Connection', 'keep-alive');
@@ -73,7 +77,6 @@ export class AppHelper {
                     try {
                         const userWallet: any = await readData('wallet');
                         const response = await axios.get(`${config.faucet}?address=${userWallet.address}&amount=${config.faucetAmount}`);
-                        console.log(response);
                         const data = response.data;
                         if (data.success) {
                             const balance = await getBalance(userWallet.address);
@@ -99,9 +102,7 @@ export class AppHelper {
 
         app.post('/data', async (req, res) => {
             try {
-                console.log('/data received');
                 const { conversationId, deviceId, userId, schema } = req.body;
-                console.log(req.body);
                 if (conversationId && deviceId && userId && schema) {
                     await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
                 }
@@ -119,29 +120,52 @@ export class AppHelper {
         });
 
         app.get('/user', async (req, res) => {
-            let user: any = await readData('user');
+            try {
+                let user: any = await readData('user');
 
-            if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
-                await updateUserId(id); 
+                if (!user || !user.id) {
+                    // Generate key pair
+                    const { publicKey, privateKey }: any = await generateKeyPair();
+                    const root = await publishDID(publicKey, privateKey);
+                    const id = `did:iota:${root}`;
+                    user = user ? { ...user, id } : { id };
+                    await writeData('user', user);
+                }
+
+                const wallet: any = await readData('wallet');
+                let newWallet;
+                if (!wallet) {
+                    newWallet = generateNewWallet();
+                    await writeData('wallet', newWallet);
+                }
+
+                res.json({
+                    ...user,
+                    balance: wallet ? await getBalance(wallet.address) : 0,
+                    wallet: wallet ? wallet.address : newWallet.address
+                });
+            } catch (error) {
+                console.log('get user error', error);
+                res.send({ error });
             }
+        });
 
-            const wallet: any = await readData('wallet');
-            let newWallet;
-            if (!wallet) {
-                newWallet = generateNewWallet();
-                await writeData('wallet', newWallet);
+        app.get('/wallet', async (req, res) => {
+            try {
+                const newWallet = generateNewWallet();
+                console.log('Initiated new wallet generation', newWallet);
+                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+                const data = response.data;
+                if (data.success) {
+                    const balance = await getBalance(newWallet.address);
+                    await writeData('wallet', { ...newWallet, balance });
+                }
+                console.log('Finished new wallet generation', newWallet);
+                res.send({ newWallet });
+            } catch (error) {
+                console.log('fund wallet error', error);
+                res.send({ error });
             }
-
-            res.json({ 
-                ...user, 
-                balance: wallet ? await getBalance(wallet.address) : 0, 
-                wallet: wallet ? wallet.address : newWallet.address
-            });
         });
 
         app.get('/mam', async (req, res) => {
@@ -153,10 +177,10 @@ export class AppHelper {
         app.post('/cfp', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
-                console.log(request);
+
                 // 2. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -187,15 +211,15 @@ export class AppHelper {
         app.post('/proposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
-
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
 
                 // 2. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
-                console.log('Proposal Sent. Hash: ' + hash );
+
+                console.log('proposal success', hash);
                 res.send({
                     success: true,
                     tag,
@@ -216,7 +240,7 @@ export class AppHelper {
                 // 1. Retrieve MAM channel from DB
                 // 2. Attach message with confirmation payload
                 // 3. Update channel details in DB
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const channelId = request.frame.conversationId;
                 const mam = await publish(channelId, request);
 
@@ -252,7 +276,7 @@ export class AppHelper {
         app.post('/rejectProposal', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('rejectProposal', submodelId);
 
@@ -279,7 +303,7 @@ export class AppHelper {
         app.post('/informConfirm', async (req, res) => {
             try {
                 // 1. Create Tag
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('informConfirm', submodelId);
 
@@ -292,7 +316,7 @@ export class AppHelper {
 
                 const user: any = await readData('user');
                 const payload = { ...request, walletAddress: address, userName: user.name };
-                
+
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
                     const conversationId = request.frame.conversationId;
@@ -329,15 +353,16 @@ export class AppHelper {
 
         app.post('/informPayment', async (req, res) => {
             try {
-                const request = await generate(req.body);
+                const request: any = await generate(req.body);
                 const user: any = await readData('user');
-            
+
                 // 1. Retrieve wallet
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
                 if (priceObject && priceObject.value) {
                     // 2. Add to payment queue
-                    await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
-
+                    if (Number(priceObject.value) > 0) {
+                        await addToPaymentQueue(request.walletAddress, Number(priceObject.value));
+                    }
                     // 3. Retrieve MAM channel from DB
                     // 4. Attach message with confirmation payload
                     // 5. Update channel details in DB
@@ -377,7 +402,7 @@ export class AppHelper {
 
         app.post('/mqtt', async (req, res) => {
             try {
-                // 1. Create HelperClient 
+                // 1. Create HelperClient
                 // 2. Subscribe to zmq
                 // 3. Post data under mqtt topic
                 if (req.body.message === 'subscribe') {
@@ -390,7 +415,7 @@ export class AppHelper {
                     });
 
                 } else if (req.body.message === 'unsubscribe') {
-                    // 4. Unsubscribe from zmq with ID 
+                    // 4. Unsubscribe from zmq with ID
                     const subscriptionId = req.body.subscriptionId;
                     unsubscribeHelperClient(subscriptionId);
 
@@ -409,7 +434,6 @@ export class AppHelper {
         });
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
-        console.log('port is ' + port);
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {

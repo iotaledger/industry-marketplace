@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
-import { depth, minWeightMagnitude, provider, security } from '../config.json';
+import { depth, faucet, faucetAmount, minWeightMagnitude, provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
@@ -116,6 +117,28 @@ export const processPayment = async () => {
         if (!wallet) {
             console.log('processPayment error. No Wallet');
             return null;
+        }
+
+        const walletBalance = await getBalance(wallet.address);
+        console.log('processPayment check wallet', wallet.address, walletBalance);
+        if (walletBalance === 0) {
+          const newWallet = generateNewWallet();
+          console.log('processPayment generating new wallet', newWallet);
+          try {
+              const response = await axios.get(`${faucet}?address=${newWallet.address}&amount=${faucetAmount}`);
+              const data = response.data;
+              if (data.success) {
+                  const balance = await getBalance(newWallet.address);
+                  await writeData('wallet', { ...newWallet, balance });
+                  return null;
+              }
+          } catch (error) {
+              console.log('fund wallet error', error);
+              throw new Error('Wallet funding error');
+              return null;
+          }
+          console.log('processPayment funding new wallet', newWallet);
+          return null;
         }
 
         let totalAmount = 0;

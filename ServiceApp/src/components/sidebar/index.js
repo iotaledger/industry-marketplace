@@ -116,7 +116,7 @@ const ModifyConfiguration = styled.div`
   justify-content: flex-start;
 
   @media (min-width: 840px) {
-    left: 35px;
+    left: 41px;
   }
   align-items: center;
   width: auto;
@@ -126,7 +126,7 @@ const ModifyConfiguration = styled.div`
 `;
 
 const ConfigText = styled.div`
-  margin-left: 20px;
+  margin-left: 16px;
   font-size: 22px;
   color: #8493AD;
 `;
@@ -135,7 +135,7 @@ const SidebarWrapper = styled.aside`
   position: absolute;
   min-height: 540px;
   width: 100%;
-  height: calc(100% - 92px); 
+  height: calc(100% - 92px);
   overflow-y: auto;
   padding: 20px;
   border-top: 1px solid #F2F5FB;
@@ -148,12 +148,12 @@ const SidebarWrapper = styled.aside`
   z-index: 3;
 
   @media (min-width: 840px) {
-    min-height: calc(100% - 92px); 
+    min-height: calc(100% - 92px);
     height: 100%;
     display: flex;
     position: relative;
     left: -100%;
-    width: 420px;
+    width: 540px;
     padding-left: 45px;
   }
 `;

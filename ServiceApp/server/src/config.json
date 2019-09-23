@@ -4,7 +4,7 @@
         "prefix": "SEMARKET"
     },
     "mqttConfig": {
-        "domain": "localhost:4000",
+        "domain": "http://localhost:4000",
         "broker": "mqtt://test.mosquitto.org"
     },
     "mongoDB": {
@@ -14,7 +14,7 @@
         "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
-    "maxDistance": 10000,
+    "maxDistance": 2000,
     "operations": [
         "0173-1#01-AAJ336#002",
         "0173-1#01-AAP788#001",
@@ -26,11 +26,12 @@
         "0173-1#01-AAN521#005",
         "0173-1#01-BAF634#008", 
         "0173-1#01-BAF777#004",
-        "0173-1#01-BAF888#004"
+        "0173-1#01-BAF888#004",
+        "0173-1#01-BAH005#005"
     ],
-    "dataRequest": ["0173-1#01-BAF888#004"],
+    "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
-    "faucetAmount": 100,
+    "faucetAmount": 1000,
     "provider": "https://nodes.devnet.iota.org:443",
     "security": 2,
     "depth": 5,

@@ -8,7 +8,7 @@ yarn
 
 ### Development
 
-This will run the api at <http://localhost:4001>
+This will run the api at <http://localhost:5000>
 
 ```shell
 yarn start-dev

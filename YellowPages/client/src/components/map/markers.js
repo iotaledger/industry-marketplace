@@ -2,40 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 import { Marker } from 'react-map-gl';
 
-export default class extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { assets: props.assets };
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.assets.length !== prevProps.assets.length) {
-      this.setState({ assets: this.props.assets });
+export default ({ assets, openPopup }) => (
+  <div>
+    {
+      assets && assets.map((asset, i) => (
+        <Marker latitude={asset.latitude} longitude={asset.longitude} key={`marker-${i}`}>
+          <Pin
+            onClick={() => openPopup(asset)}
+            type={asset.type}
+          >
+            { asset.type === 'callForProposal' && <I className="fas fa-euro-sign"></I> }
+            { asset.type === 'proposal' && <I className="fas fa-exclamation"></I> }
+            { asset.type === 'acceptProposal' && <I className="fas fa-check"></I> }
+          </Pin>
+        </Marker>
+      ))
     }
-  }
-
-  render() {
-    const { assets } = this.state;
-
-    return (
-      <div>
-        {assets &&
-          assets.map((asset, i) => (
-            <Marker latitude={asset.latitude} longitude={asset.longitude} key={`marker-${i}`}>
-              <Pin
-                onClick={() => this.props.openPopup(asset)} 
-                type={asset.type}
-              >
-                { asset.type === 'callForProposal' && <I className="fas fa-euro-sign"></I> }
-                { asset.type === 'proposal' && <I className="fas fa-exclamation"></I> }
-                { asset.type === 'acceptProposal' && <I className="fas fa-check"></I> }
-              </Pin>
-            </Marker>
-          ))}
-      </div>
-    );
-  }
-}
+  </div>
+)
 
 const Pin = styled.div`
   background-color: ${props => {

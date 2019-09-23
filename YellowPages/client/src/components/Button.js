@@ -1,8 +1,7 @@
 import React from 'react'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPaperPlane, faChevronCircleRight } from '@fortawesome/pro-light-svg-icons'
-import { faBars } from '@fortawesome/pro-solid-svg-icons'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 
 import '../assets/styles/button.scss'
 
@@ -13,13 +12,7 @@ export default ({ className, onClick, children, icon, type }) => (
         type={type || 'button'}
     >
         {
-            icon && icon === 'send' ? <FontAwesomeIcon icon={faPaperPlane} /> : null
-        }
-        {
             icon && icon === 'menu' ? <FontAwesomeIcon icon={faBars} /> : null
-        }
-        {
-            icon && icon === 'next' ? <FontAwesomeIcon icon={faChevronCircleRight} /> : null
         }
         {children}
     </button>

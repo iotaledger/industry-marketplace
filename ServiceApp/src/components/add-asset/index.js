@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import get from 'lodash-es/get';
 import { evaluate, operations, submodel } from 'industry_4.0_language';
 import compareDesc from 'date-fns/compare_desc';
-import isFuture from 'date-fns/is_future';
 import isValid from 'date-fns/is_valid';
 import format from 'date-fns/format';
 import parse from 'date-fns/parse';
@@ -11,13 +10,14 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import randomIcon from '../../assets/img/random.svg';
 import Loading from '../loading';
-import { waitingTime } from '../../config.json';
+import { waitingTime, datePickerFormat } from '../../config.json';
 import UserContext from '../../context/user-context';
 import {
   generateRandomSubmodelValues, 
   getRandomTimestamp,
   getRandomLocation
 } from '../../utils/randomizer';
+import ProximityFeedback from '../ProximityFeedback';
 
 const Card = props => (
   <CardWrapper data-component="AssetCard">
@@ -84,21 +84,14 @@ const getInputType = (type) => {
         return 'text';
   }
 }
-
 const initState = {
   loading: false,
-  assetStart: addDays(new Date(),1),
-  assetEnd: addDays(new Date(),2),
+  assetStart: new Date().setTime(new Date().getTime() + 1000 * 60),
+  assetEnd: new Date().setTime(new Date().getTime() + 1000 * 120),
   operation: '',
   description: '',
   operations: [],
   submodel: [],
-}
-
-function addDays(date, days) {
-  var result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
 }
 
 export default class extends React.Component {
@@ -182,7 +175,7 @@ export default class extends React.Component {
 
     if (!this.state.operation)
       return alert('Please specify required operation');
-    if (!this.state.assetStart || !startDate || !isValid(startDate) || !isFuture(startDate))
+    if (!this.state.assetStart || !startDate || !isValid(startDate))
       return alert('Please enter a valid date/time when the request starts');
     if (!this.state.assetEnd || !endDate || !isValid(endDate) || compareDesc(startDate, endDate) !== 1)
       return alert('Please enter a valid date/time when the request ends');
@@ -239,7 +232,7 @@ export default class extends React.Component {
             >
               {
                 !loading ? (
-                  <Form>
+                  <Form className="form">
                     <Column>
                       <Label>Select Operation:</Label>
                       <Select
@@ -270,7 +263,7 @@ export default class extends React.Component {
                               placeholderText="Click to select a date"
                               timeFormat="HH:mm"
                               timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                              dateFormat= {datePickerFormat}
                               timeCaption="time"
                               minDate={new Date()}
                               selected={this.state.assetStart}
@@ -285,7 +278,7 @@ export default class extends React.Component {
                               placeholderText="Click to select a date"
                               timeFormat="HH:mm"
                               timeIntervals={15}
-                              dateFormat="MMMM d, yyyy h:mm aa"
+                              dateFormat={datePickerFormat}
                               timeCaption="time"
                               minDate={new Date()}
                               selected={this.state.assetEnd}
@@ -306,7 +299,9 @@ export default class extends React.Component {
                               value={submodel[i].value}
                               checked={submodel[i].value}
                               onChange={e => this.changeSubmodelValue(e, i)}
+                              { ...(valueType !== 'boolean' ? { required: true } : {}) }
                             />
+                            <div className="form__error"></div>
                           </Column>
                         </Row>
                       ))
@@ -324,7 +319,7 @@ export default class extends React.Component {
                     <FooterButton secondary onClick={this.cancel}>
                       Cancel
                     </FooterButton>
-                    <FooterButton onClick={this.submit}>
+                    <FooterButton onClick={this.submit} className="form__button">
                       Submit
                     </FooterButton>
                   </FootRow>
@@ -333,6 +328,7 @@ export default class extends React.Component {
             </Card>
           </AddAsset>
         </Modal>
+        { operation && <ProximityFeedback /> }
       </React.Fragment>
     );
   }
@@ -383,6 +379,7 @@ const Column = styled.div`
   flex-direction: column;
   width: 100%;
   text-align: left;
+  position: relative;
 `;
 
 const Row = styled.div`

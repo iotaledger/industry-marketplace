@@ -218,7 +218,7 @@ const Input = styled.input`
     transform: rotate(-45deg);
     width: 22px;
     height: 10px;
-    border-color: #009688;
+    border-color: #4140DF;
     border-top-style: none;
     border-right-style: none;
   }

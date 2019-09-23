@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import ExternalMenu from './ExternalMenu'
 import Menu from './Menu'
 import Chapters from './Chapters'
@@ -18,12 +19,15 @@ const externalPages = [
 ]
 
 export default ({ children }) => {
+    if (window.location.pathname !== '/demo') {
+        ReactGA.pageview(window.location.pathname);
+    }
     const [showOverlay, toggleShowOverlay] = useState(false);
 
     function showNav() {
         toggleShowOverlay(true)
     }
-    
+
     function closeNav() {
         toggleShowOverlay(false)
     }

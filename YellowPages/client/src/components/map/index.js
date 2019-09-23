@@ -15,9 +15,9 @@ class Map extends React.Component {
     super(props);
     this.state = {
       viewport: {
-        latitude: 52.23,
-        longitude: 11.16,
-        zoom: 3.74,
+        latitude: 51,
+        longitude: 10.5,
+        zoom: 5,
         bearing: 0,
         pitch: 15,
         width: 800,
@@ -25,7 +25,6 @@ class Map extends React.Component {
       },
       popupInfo: null,
       mapHeight: 640,
-      assets: props.assets
     };
 
     this.openPopup = this.openPopup.bind(this);
@@ -37,12 +36,6 @@ class Map extends React.Component {
   componentDidMount() {
     window.addEventListener('resize', this.resize);
     this.resize();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (this.props.assets.length !== prevProps.assets.length) {
-      this.setState({ assets: this.props.assets });
-    }
   }
 
   componentWillUnmount() {
@@ -78,8 +71,9 @@ class Map extends React.Component {
 
   renderPopup() {
     const { popupInfo } = this.state;
+    const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
     if (!popupInfo) return null;
-    
+
     return (
       <Popup
         tipSize={10}
@@ -107,8 +101,8 @@ class Map extends React.Component {
               <span className="value">{popupInfo.partnerName}</span>
             </div>
             <div className="popup-data">
-              <span className="key">Irdi</span>
-              <span className="value">{popupInfo.irdi}</span>
+              <span className="key">Reply By</span>
+              <span className="value">{(new Date(popupInfo.replyBy)).toLocaleDateString('de-DE', dateOptions)}</span>
             </div>
             <div className="popup-data">
               <span className="key">Location</span>
@@ -129,7 +123,7 @@ class Map extends React.Component {
   }
 
   render() {
-    const { assets, viewport, mapHeight, popupInfo } = this.state;
+    const { viewport, mapHeight, popupInfo } = this.state;
 
     return (
       <Main className="map">
@@ -154,7 +148,7 @@ class Map extends React.Component {
           <div style={{ position: 'absolute', right: 20, top: 10 }}>
             <NavigationControl onViewportChange={this.updateViewport} />
           </div>
-          <Markers assets={assets} openPopup={this.openPopup} />
+          <Markers assets={this.props.assets} openPopup={this.openPopup} />
           {this.renderPopup()}
         </MapGL>
       </Main>

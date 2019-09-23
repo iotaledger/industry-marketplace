@@ -1,21 +1,9 @@
-import React, { useState } from 'react'
-import classNames from 'classnames'
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Link } from 'react-router-dom'
 import Text from './Text'
-
 import '../assets/styles/chapters.scss'
 
 export default ({ closeNav }) => {
-    const [showSubmenu, setShowSubmenu] = useState(false)
-
-    function hoverOn() {
-        setShowSubmenu(true)
-    }
-
-    function hoverOff() {
-        setShowSubmenu(false)
-    }
-
     return (
         <div className="chapters-outer-wrapper">
             <div className="chapters-overlay">
@@ -29,115 +17,140 @@ export default ({ closeNav }) => {
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <Link to="/scalability">
+                    <Link to="/executive_summary">
                         <div className="chapter">
                             <Text className="title">01</Text>
                             <Text className="subtitle">
-                                IOTA as scalable DLT
+                                Executive Summary
                             </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <Link to="/post-coordinator">
+                    <Link to="/introduction_to_industry4">
                         <div className="chapter">
                             <Text className="title">02</Text>
                             <Text className="subtitle">
-                                IOTA POST-COORDINATOR
+                                Introduction to Industry 4.0
                             </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <Link to="/modularity">
+                    <Link to="/benefits_of_iota">
                         <div className="chapter">
                             <Text className="title">03</Text>
-                            <Text className="subtitle">Modularity</Text>
+                            <Text className="subtitle">
+                                IOTA: the core of Industry 4.0
+                            </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <div
-                        className="submodules-wrapper"
-                        onMouseEnter={hoverOn}
-                        onMouseLeave={hoverOff}
-                    >
-                        <Link to="/modules">
+                    <div className="submodules-wrapper">
+                        <Link to="/industry_marketplace">
                             <div className="chapter">
                                 <Text className="title">04</Text>
-                                <Text className="subtitle">The Modules</Text>
+                                <Text className="subtitle">
+                                    The Industry Marketplace
+                                </Text>
                                 <Text className="read">Read</Text>
                             </div>
                         </Link>
 
-                        <div
-                            className={classNames('subtopics', {
-                                enabled: showSubmenu
-                            })}
-                        >
-                            <Link to="/module1">
+                        <div className="subtopics enabled">
+                            <Link to="/industry_marketplace">
                                 <div className="subtopic">
                                     <Text className="title">1</Text>
                                     <Text className="subtitle">
-                                        Node identities and mana
+                                        What is the Industry Marketplace?
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module2">
+                            <Link to="/market_manager">
                                 <div className="subtopic">
                                     <Text className="title">2</Text>
                                     <Text className="subtitle">
-                                        Secure Auto-peering
+                                        The Market Manager
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module3">
+                            <Link to="/market_manager_interactions">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Market Manager’s interaction with the Tangle
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/service_requester">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Service Requester Role
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/service_provider">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        The Service Provider Role
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/yellow_pages">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        Yellow Pages
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/use_cases">
                                 <div className="subtopic">
                                     <Text className="title">3</Text>
                                     <Text className="subtitle">
-                                        Spam protection
+                                        Use-Cases
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module4">
+                            <Link to="/decentralized_identification">
                                 <div className="subtopic">
                                     <Text className="title">4</Text>
                                     <Text className="subtitle">
-                                        Tip Selection Algorithm
+                                        Decentralized Identification
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module5">
+                            <Link to="/technical_demonstrator">
                                 <div className="subtopic">
                                     <Text className="title">5</Text>
                                     <Text className="subtitle">
-                                        Proactive conflict resolution
+                                        Technical demonstrator for Service Requester and Service Provider
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module5.1">
+                            <Link to="/neoception_demonstrator">
                                 <div className="subtopic">
-                                    <Text className="title">5.1</Text>
-                                    <Text className="subtitle">Shimmer</Text>
-                                    <Text className="read">Read</Text>
-                                </div>
-                            </Link>
-                            <Link to="/module5.1.1">
-                                <div className="subtopic">
-                                    <Text className="title">5.1.1</Text>
+                                    <Text className="title">6</Text>
                                     <Text className="subtitle">
-                                        Cellular Consensus
+                                        Technical Demonstrator by eCl@ss & Neoception
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
                             </Link>
-                            <Link to="/module5.1.2">
+                            <Link to="/wewash_prototype">
                                 <div className="subtopic">
-                                    <Text className="title">5.1.2</Text>
+                                    <Text className="title">7</Text>
                                     <Text className="subtitle">
-                                        Fast Probabilistic Consensus
+                                        Prototype Implementation by	WeWash
                                     </Text>
                                     <Text className="read">Read</Text>
                                 </div>
@@ -145,31 +158,103 @@ export default ({ closeNav }) => {
                         </div>
                     </div>
 
-                    <Link to="/future">
+                    <Link to="/standards">
                         <div className="chapter">
                             <Text className="title">05</Text>
-                            <Text className="subtitle">The Future</Text>
+                            <Text className="subtitle">
+                                eCl@ss - why are standards important for I4.0?
+                            </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <Link to="/conclusion">
+                    <div className="submodules-wrapper">
+                        <Link to="/plattform_industrie4">
+                            <div className="chapter">
+                                <Text className="title">06</Text>
+                                <Text className="subtitle">
+                                    Information on Plattform Industrie 4.0
+                                </Text>
+                                <Text className="read">Read</Text>
+                            </div>
+                        </Link>
+
+                        <div className="subtopics enabled">
+                            <Link to="/industry4_language">
+                                <div className="subtopic">
+                                    <Text className="title">1</Text>
+                                    <Text className="subtitle">
+                                        Industry 4.0 language
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/vocabulary">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
+                                    <Text className="subtitle">
+                                        Vocabulary
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/message_structure">
+                                <div className="subtopic">
+                                    <Text className="title">3</Text>
+                                    <Text className="subtitle">
+                                        Structure of the messages
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                            <Link to="/semantic_interaction_protocols">
+                                <div className="subtopic">
+                                    <Text className="title">4</Text>
+                                    <Text className="subtitle">
+                                        Semantic interaction protocols
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                    <Link to="/project_partners">
                         <div className="chapter">
-                            <Text className="title">06</Text>
-                            <Text className="subtitle">Conclusion</Text>
+                            <Text className="title">07</Text>
+                            <Text className="subtitle">
+                                Project Partners
+                            </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>
-                    <Link to="/glossary">
-                        <div className="chapter">
-                            <Text className="title"> </Text>
-                            <Text className="subtitle">Glossary</Text>
-                            <Text className="read">Read</Text>
+                    <div className="submodules-wrapper">
+                        <Link to="/join">
+                            <div className="chapter">
+                                <Text className="title">08</Text>
+                                <Text className="subtitle">
+                                    Join the Industry Marketplace
+                                </Text>
+                                <Text className="read">Read</Text>
+                            </div>
+                        </Link>
+
+                        <div className="subtopics enabled">
+                            <Link to="/register_did">
+                                <div className="subtopic">
+                                    <Text className="title">1</Text>
+                                    <Text className="subtitle">
+                                        Register your Decentralized ID
+                                    </Text>
+                                    <Text className="read">Read</Text>
+                                </div>
+                            </Link>
                         </div>
-                    </Link>
-                    <Link to="/grants">
+                    </div>
+                    <Link to="/iota_tangle">
                         <div className="chapter">
-                            <Text className="title"> </Text>
-                            <Text className="subtitle">Grants</Text>
+                            <Text className="title">09</Text>
+                            <Text className="subtitle">
+                                What is The IOTA Tangle?
+                            </Text>
                             <Text className="read">Read</Text>
                         </div>
                     </Link>

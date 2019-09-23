@@ -141,8 +141,6 @@ const Asset = props => {
       setConfirmButtonEnabled(false);
     } else if (user.balance <= 0) {
       setConfirmButtonEnabled(false);
-    } if (user.role === 'SR' && asset.type === 'proposal' &&  Date.parse(asset.startTime) < Date.now()) {
-      setConfirmButtonEnabled(false);
     } else {
       setConfirmButtonEnabled(true);
       setPrice(asset.price);
@@ -401,7 +399,7 @@ const FooterButton = styled.button`
   outline: none;
   margin: 5px;
   @media (min-width: 920px) {
-    width: 200px;
+    width: 215px;
   }
   font: 16px 'Nunito Sans', sans-serif;
   line-height: 17px;
