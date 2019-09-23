@@ -8,7 +8,7 @@ class Disclaimer extends React.Component {
   state = { ack: true }
 
   componentDidMount() {
-    const ack = this.props.cookies.get('semarket-cookie');
+    const ack = this.props.cookies.get('industry-marketplace-cookie');
     if (!ack) {
       document.getElementById('footer').classList.add('cookie-bar-bottom-bar');
       this.setState({ ack: false });
@@ -16,7 +16,7 @@ class Disclaimer extends React.Component {
   }
 
   dismiss = () => {
-    this.props.cookies.set('semarket-cookie', true, { path: '/' });
+    this.props.cookies.set('industry-marketplace-cookie', true, { path: '/' });
     document.getElementById('footer').classList.remove('cookie-bar-bottom-bar');
     this.setState({ ack: true })
   }

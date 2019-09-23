@@ -1,17 +1,14 @@
 {
     "zmq": {
         "endpoint": "tcp://zmq.devnet.iota.org:5556",
-        "prefix": "SEMARKET"
+        "prefix": "SEMARKET",
+        "trustedIdentities" : [
+            "did:IOTA:FO9FJMZEQLYMZSBGXUAAKFTPGNYIWRZRPJOFFPRQIFWH9JVBKRJDVQSVXNCYBSQD9ZZVQXVXOTANSKDAK"
+        ]
     },
     "mqttConfig": {
         "domain": "http://localhost:4000",
         "broker": "mqtt://test.mosquitto.org"
-    },
-    "mongoDB": {
-        "stitchApplicationID": "semarket-pmogr",
-        "stitchServiceName": "mongodb-semarket",
-        "database": "semarket",
-        "collection": "payments"
     },
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 2000,

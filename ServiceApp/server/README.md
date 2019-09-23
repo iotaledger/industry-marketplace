@@ -16,7 +16,7 @@
  
  
 #### Digital Identity and Encryption 
-Within the SeMarket, every entity recieves a decentralized identifiers (DIDs) and a public/private key pair from the Market Manager. 
+Within the Industry Marketplace, every entity recieves a decentralized identifiers (DIDs) and a public/private key pair from the Market Manager. 
 For every entity, a public MAM channel is created with the DID as a root with the purpose to publish the public key. The private key is locally stored within the database of the entity. 
 
  ![keysV2](docs/keysV2.png?raw=true)
@@ -187,8 +187,8 @@ configuration(params);
 
 ### Websocket connection 
 
-Another major task of the Market Manager is to transmit relevant SeMarket Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistent connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistent connection, websockets are used to tackle this task. 
-After the Market Manager receives all incoming SeMarket transactions from the ZMQ, it filters only relevant ones for the client by matching its configuration with the content of the messages provided with the [Semantic I4.0 Language](#industry-4.0-language).
+Another major task of the Market Manager is to transmit relevant Industry Marketplace Messages from the Tangle to the Client. Therefore, the Market Manager needs to build up a persistent connection to the ZMQ node, which fetches all incoming transactions from the Tangle. Since the REST API is in first place not suitable for a persistent connection, websockets are used to tackle this task. 
+After the Market Manager receives all incoming Industry Marketplace transactions from the ZMQ, it filters only relevant ones for the client by matching its configuration with the content of the messages provided with the [Semantic I4.0 Language](#industry-4.0-language).
 The implemented websockets are based on socket-io and therefore a [socket-io-client](https://github.com/socketio/socket.io-client) is required from the client side. 
 
 
@@ -259,7 +259,7 @@ Returns success or failure notification
 
 ### Filter Configuration 
 As mentioned above, the Market Manager filters only messages that are relevant to the client.
-To do so, there are several parameters within the [config.json](https://github.com/iotaledger/SeMarket/blob/master/ServiceApp/server/src/config.json) that can be altered in order to expand/minimize the messages that are received: 
+To do so, there are several parameters within the [config.json](https://github.com/iotaledger/industry-marketplace/blob/master/ServiceApp/server/src/config.json) that can be altered in order to expand/minimize the messages that are received: 
 
 #### maxDistance
 Maximum distance, that a user accepts to a location of a sender of an incoming message. 
@@ -276,7 +276,7 @@ Last 4 digits, that refer to the version identifier of the service are not relev
 <!-- Industry-4.0-Semantic -->
 
 ### Industry 4.0 Semantic
-Payload according to the Industry 4.0 Language can be created with the [SeMarket Industry 4.0 Language Library](https://github.com/iotaledger/SeMarket/tree/master/Industry_4.0_language#get-operations)
+Payload according to the Industry 4.0 Language can be created with the [Industry 4.0 Language Library](https://github.com/iotaledger/industry-marketplace/tree/master/Industry_4.0_language#get-operations)
 
 
 #### config 

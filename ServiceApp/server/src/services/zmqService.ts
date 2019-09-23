@@ -1,6 +1,8 @@
+import { DID, SchemaManager } from 'identity_ts';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { maxDistance, operations } from '../config.json';
+import { maxDistance, operations, provider } from '../config.json';
+import { ProcessReceivedCredentialForUser, VERIFICATION_LEVEL, VerifyCredentials } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -15,9 +17,9 @@ import { processPayment } from '../utils/walletHelper';
 export class ZmqService {
 
     /**
-     * Bundle hashes that were already send to not send twice 
+     * Bundle hashes that were already send to not send twice
      *
-     */  
+     */
     public sentBundles = [];
 
     /**
@@ -29,7 +31,7 @@ export class ZmqService {
      * The interval to frequently delete sentBundle array.
      */
     public _paymentInterval;
-    
+
     /**
      * The configuration for the service.
      */
@@ -46,6 +48,11 @@ export class ZmqService {
     private readonly _subscriptions;
 
     /**
+     *
+     */
+    private listenAddress: string | undefined;
+
+    /**
      * Create a new instance of ZmqService.
      * @param config The gateway for the zmq service.
      */
@@ -54,6 +61,13 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
+        this.listenAddress = null;
+
+        // Add trusted identities (Initially, the DID of the IOTA Foundation)
+        const schema = SchemaManager.GetInstance().GetSchema('WhiteListedCredential');
+        for (let i = 0; i < this._config.trustedIdentities.length; i++) {
+            schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
+        }
     }
 
     /**
@@ -65,6 +79,11 @@ export class ZmqService {
 
     public processPayments() {
         processPayment();
+    }
+
+    public setAddressToListenTo(address: string | undefined) {
+        this.listenAddress = address;
+        console.log('Set listen address: ', address);
     }
 
     /**
@@ -168,23 +187,25 @@ export class ZmqService {
     /**
      * Build payload for the socket packet
      */
-    private buildPayload(data, messageType, messageParams) {
+    private buildPayload(data, messageType, messageParams, trustLevel) {
         return {
             data,
             messageType,
             tag: messageParams[12],
             hash: messageParams[1],
             address: messageParams[2],
-            timestamp: parseInt(messageParams[5], 10)
+            timestamp: parseInt(messageParams[5], 10),
+            trustLevel
         };
     }
 
     /**
      * Send out an event
      */
-    private sendEvent(data, messageType, messageParams) {
+    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
         const event = messageParams[0];
-        const payload = this.buildPayload(data, messageType, messageParams);
+        const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
+
         console.log(`Sending ${messageType}`);
 
         for (let i = 0; i < this._subscriptions[event].length; i++) {
@@ -202,13 +223,14 @@ export class ZmqService {
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
+        const address = messageParams[2];
         const tag = messageParams[12];
 
         const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-            
+
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
 
@@ -220,6 +242,7 @@ export class ZmqService {
                         name?: string;
                         role?: string;
                         location?: string;
+                        address?: string;
                     }
                     const { id, role, location }: IUser = await readData('user');
 
@@ -234,9 +257,22 @@ export class ZmqService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
-                                    this.sendEvent(data, messageType, messageParams);
-
-                                    if (messageType === 'informConfirm') {
+                                    if (messageType === 'proposal') {
+                                        // Find the challenge
+                                        if (data.identification && data.identification.didAuthenticationPresentation) {
+                                            VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                            .then(async (verificationResult) => {
+                                                // Check if the correct challenge is used and if the signatures are correct
+                                                if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                    // Only send to UI if the DID Authentication is succesful
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
+                                            }).catch((err) => {
+                                                console.log('Verification failed, so message is ignored with error: ', err);
+                                            });
+                                        }
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);
                                     }
@@ -252,25 +288,34 @@ export class ZmqService {
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
 
-                                    // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                    if (!location || !maxDistance) {
-                                        this.sendEvent(data, messageType, messageParams);
-                                    }
+                                    // Find the challenge
+                                    if (data.identification && data.identification.didAuthenticationPresentation) {
+                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                        .then(async (verificationResult) => {
+                                            // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                            if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                if (!location || !maxDistance) {
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
 
-                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                    if (location && maxDistance) {
+                                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                                if (location && maxDistance) {
+                                                    try {
+                                                        const distance = await calculateDistance(location, senderLocation);
 
-                                        try {
-                                            const distance = await calculateDistance(location, senderLocation);
-
-                                            // 3.3.1 If distance within accepted range, send message to UI
-                                            if (distance <= maxDistance) {
-                                                this.sendEvent(data, messageType, messageParams);
+                                                        // 3.3.1 If distance within accepted range, send message to UI
+                                                        if (distance <= maxDistance) {
+                                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                        }
+                                                    } catch (error) {
+                                                        console.error(error);
+                                                    }
+                                                }
                                             }
-                                        } catch (error) {
-                                            console.error(error);
-                                        }
-                                    }
+                                        }).catch((err) => {
+                                            console.log('Verification failed, so message is ignored with error: ', err);
+                                        });          
+                                    }                                    
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                     const receiverID = data.frame.receiver.identification.id;
@@ -279,17 +324,21 @@ export class ZmqService {
                                     if (id === receiverID) {
                                         if (messageType === 'acceptProposal') {
                                             const channelId = data.frame.conversationId;
+
+                                            // Check if the correct challenge is used and if the signatures are correct
                                             const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', { 
-                                                id: channelId, 
-                                                root: data.mam.root, 
-                                                seed: '', 
-                                                next_root: '', 
-                                                side_key: secretKey, 
-                                                start: 0 
+                                            await writeData('mam', {
+                                                id: channelId,
+                                                root: data.mam.root,
+                                                seed: '',
+                                                next_root: '',
+                                                side_key: secretKey,
+                                                start: 0
                                             });
+                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         }
-                                        this.sendEvent(data, messageType, messageParams);
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                     }
                                 }
                             }
@@ -302,6 +351,15 @@ export class ZmqService {
                                 this.sendEvent(data, messageType, messageParams);
                             }
                     }
+                }
+            } else if (this.listenAddress && address === this.listenAddress) {
+                const bundle = messageParams[8];
+                if (!this.sentBundles.includes(bundle)) {
+                    this.sentBundles.push(bundle);
+
+                    // A message has been received through the ServiceEndpoint of the DID
+                    const unstructuredData = await getPayload(bundle);
+                    ProcessReceivedCredentialForUser(unstructuredData, provider);
                 }
             }
         }

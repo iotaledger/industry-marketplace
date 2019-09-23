@@ -5,14 +5,14 @@
     "author": "Alexey Sobolev <alexey@iota.org>",
     "repository": {
         "type": "git",
-        "url": "https://github.com/iotaledger/SeMarket.git"
+        "url": "https://github.com/iotaledger/industry-marketplace.git"
     },
     "license": "Apache-2.0",
     "private": true,
     "main": "./build/src/index.js",
     "scripts": {
         "build-clean": "rimraf ./build/*",
-        "build-compile": "tsc",
+        "build-compile": "tsc && copyfiles \"./src/Schemas/*.json\" \"./build\"",
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
@@ -27,11 +27,13 @@
         "@iota/mam": "^0.7.3",
         "axios": "^0.19.0",
         "body-parser": "^1.19.0",
+        "copyfiles": "^2.1.1",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "identity_ts": "iotaledger/identity.ts",
         "mqtt": "^3.0.0",
         "mssql": "^5.1.0",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.3.0",
         "sqlite3": "^4.1.0",
         "uuid": "^3.3.3",
         "yargs": "^13.3.0",
