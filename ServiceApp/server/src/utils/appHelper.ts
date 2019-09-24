@@ -4,11 +4,10 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import { CreateRandomDID, DIDPublisher, GenerateRSAKeypair, GenerateSeed, Service } from 'identity_ts';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
-import { CreateAuthenticationPresentation } from './credentialHelper.js';
+import { CreateAuthenticationPresentation, createNewUser } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
@@ -125,33 +124,12 @@ export class AppHelper {
         app.get('/user', async (req, res) => {
             try {
                 let user: any = await readData('user');
-
                 if (!user || !user.id) {
                     // Creating a NEW Identity following the DID standard
-                    const seed = GenerateSeed();
-                    const userDIDDocument = CreateRandomDID(seed);
-                    const keypair = await GenerateRSAKeypair();
-                    const privateKey = keypair.GetPrivateKey();
-                    const keyId  = 'keys-1';
-                    const tangleComsAddress = GenerateSeed(81);
-                    userDIDDocument.AddKeypair(keypair, keyId);
-                    userDIDDocument.AddServiceEndpoint(
-                        new Service(
-                            userDIDDocument.GetDID(), 
-                            'tanglecom', 
-                            'TangleCommunicationAddress', 
-                            tangleComsAddress
-                        )
-                    );
-                    const publisher = new DIDPublisher(config.provider, seed);
-                    const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
-                    const state = publisher.ExportMAMChannelState();
-                    await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
-
-                    // Store user
-                    const id = userDIDDocument.GetDID().GetDID();
-                    user = user ? { ...user, id, address : tangleComsAddress } : { id, address : tangleComsAddress };
-                    await writeData('user', user);
+                    const name =  user && user.name ? user.name : '';
+                    const role =  user && user.role ? user.role : '';
+                    const location = user && user.location ? user.location : '';
+                    user = createNewUser(name, role, location);
                 }
 
                 // Set TangleCommunicationService Address
@@ -166,8 +144,8 @@ export class AppHelper {
 
                 res.json({
                     ...user,
-                    balance: wallet ? await getBalance(wallet.address) : 0,
-                    wallet: wallet ? wallet.address : newWallet.address
+                    balance: (wallet ? await getBalance(wallet.address) : 0),
+                    wallet: (wallet ? wallet.address : newWallet.address)
                 });
             } catch (error) {
                 console.log('get user error', error);

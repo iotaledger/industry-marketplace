@@ -336,9 +336,9 @@ export class ZmqService {
                                                 start: 0
                                             });
                                             await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
+                                        } else {
+                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         }
-                                    } else {
-                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                     }
                                 }
                             }
