@@ -30,8 +30,8 @@ export interface IUser {
     address : string
 };
 
-export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise<user> {
-    return new Promise<user>(async (resolve, reject)=> {
+export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise <IUser> {
+    return new Promise<IUser>(async (resolve, reject)=> {
         const seed = GenerateSeed();
         const userDIDDocument = CreateRandomDID(seed);
         const keypair = await GenerateRSAKeypair();
