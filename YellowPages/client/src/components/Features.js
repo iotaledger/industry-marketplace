@@ -13,7 +13,7 @@ export default () => (
     <div className="features-wrapper">
         <div className="features-heading-wrapper">
             <Text className="title">Features</Text>
-            <Text>Industry 4.0 (I4.0) delivers new levels of manufacturing management, enabling advanced automated machine to machine operations.</Text>
+            <Text>Industry 4.0 (I4.0) delivers new levels of manufacturing management, enabling advanced automated machine to <br />machine operations.</Text>
             <Text>By utilizing the Tangle and eCl@ss together, all actors in the value chain enjoy increased trust and security, truly enabling I4.0.</Text>
         </div>
         <div className="key-topic-wrapper">
@@ -30,7 +30,7 @@ export default () => (
             <div className="key-topic">
                 <img src={semantic_language} alt="Semantic language" />
                 <Text className="subtitle">Semantic language</Text>
-                <Text>Semantic language, based on open specifications, developed by Plattform Industrie 4.0 and academic institutes</Text>
+                <Text>Semantic language, based <br />on open specifications, developed by Plattform Industrie 4.0 and academic institutes</Text>
             </div>
             <div className="key-topic">
                 <img src={decentralized} alt="Decentralized" />
@@ -40,7 +40,7 @@ export default () => (
             <div className="key-topic">
                 <img src={integrated_id} alt="Integrated ID" />
                 <Text className="subtitle">Integrated ID</Text>
-                <Text>Decentralized Identity, to ensure the authenticity of all participants</Text>
+                <Text>Decentralized Identity, to ensure the authenticity of <br />all participants</Text>
             </div>
             <div className="key-topic">
                 <img src={integrated_payment} alt="Integrated payment" />

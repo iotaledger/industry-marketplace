@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ModalVideo from 'react-modal-video'
 import Text from './Text'
 import Carousel from './Carousel';
+import quote from '../assets/img/video/quote.svg';
 import videoMobile from '../assets/img/video/mobile_play.svg';
 import person1 from '../assets/img/video/person1.png';
 import person2 from '../assets/img/video/person2.png';
@@ -92,15 +93,21 @@ export default () => {
             </div>
         </React.Fragment>,
         <React.Fragment>
-            <img className="desktop face" src={person3} alt="Prof. Dr.-Ing. Christian Diedrich, Institute for Automation Engineering, Otto von Guericke University Magdeburg" />
+            <div className="graphic-wrapper">
+                <img className="desktop face" src={person3} alt="Prof. Dr.-Ing. Christian Diedrich, Institute for Automation Engineering, Otto von Guericke University Magdeburg" />
+                <img className="quote-graphic" src={quote} alt="" />
+            </div>
             <div className="video-section-text-wrapper what-they-say">
                 <Text className="title">Prof. Dr.-Ing. Christian Diedrich</Text>
                 <Text className="name">Institute for Automation Engineering, Otto von Guericke University Magdeburg</Text>
-                <Text className="quote">Our physical demonstrator shows a bidding process where several machines offers their service and the requester selects the best one. The demonstrator apply the I4.0 language which is published as VDI guideline 2193. This bidding process can now be handled via the IOTA Tangle, so that on the one hand I4.0 language dialog let the products and machines understand each other and on the other hand IOTA is used as trusted and reproducible and decentralized acting middleware.</Text>
+                <Text className="quote">Our physical demonstrator shows a bidding process where several machines offers their service and the requester selects the best one. The demonstrator apply the I4.0 language which is published as VDI guideline 2193 and the Asset Administration Shell (AAS). This bidding process can now be handled via the IOTA Tangle, so that on the one hand I4.0 language dialog let the products and machines understand each other and on the other hand IOTA is used as trusted and reproducible and decentralized acting middleware.</Text>
             </div>
         </React.Fragment>,
         <React.Fragment>
-            <img className="desktop face" src={person1} alt="Alexander Balyaev, Research Assistant, University of Magdeburg" />
+            <div className="graphic-wrapper">
+                <img className="desktop face" src={person1} alt="Alexander Balyaev, Research Assistant, University of Magdeburg" />
+                <img className="quote-graphic" src={quote} alt="" />
+            </div>
             <div className="video-section-text-wrapper what-they-say">
                 <Text className="title">Alexander Belyaev</Text>
                 <Text className="name">Research Assistant, Otto von Guericke University Magdeburg</Text>
@@ -108,7 +115,10 @@ export default () => {
             </div>
         </React.Fragment>,
         <React.Fragment>
-            <img className="desktop face" src={person2} alt="Alexander Fay, Professor and Head of the Institute of Automation Technology, Helmut Schmidt University Hamburg" />
+            <div className="graphic-wrapper">
+                <img className="desktop face" src={person2} alt="Alexander Fay, Professor and Head of the Institute of Automation Technology, Helmut Schmidt University Hamburg" />
+                <img className="quote-graphic" src={quote} alt="" />
+            </div>
             <div className="video-section-text-wrapper what-they-say">
                 <Text className="title">Alexander Fay</Text>
                 <Text className="name">Professor and Head of the Institute of Automation Technology, Helmut Schmidt University Hamburg</Text>
