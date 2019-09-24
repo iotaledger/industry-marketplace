@@ -199,12 +199,6 @@ begin
 end
 go
 
-if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[credential]' ) and type = 'D' )
-begin
-  alter table [dbo].[credential] add constraint [df_credential_timestamp] default ( getdate() ) for [timestamp]
-end
-go
-
 if not exists ( select * from dbo.sysobjects where id = object_id( N'[dbo].[user]' ) and type = 'D' )
 begin
   alter table [dbo].[user] add constraint [df_user_timestamp] default ( getdate() ) for [timestamp]
