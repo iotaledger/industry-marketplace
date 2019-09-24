@@ -17,8 +17,8 @@ export const createUser = async data => {
   const delRequest = new sql.Request(db);
   await delRequest.query(delQuery);
   const query = `
-		INSERT INTO [dbo].[user] ([id],[name],[role],[location])
-		values (@id, @name, @role, @location);`;
+		INSERT INTO [dbo].[user] ([id],[name],[role],[location],[address])
+		values (@id, @name, @role, @location, @address);`;
 
   const request = new sql.Request(db);
   const result = await request
@@ -26,6 +26,7 @@ export const createUser = async data => {
     .input("name", data.name)
     .input("role", data.role)
     .input("location", data.location)
+    .input("address", data.address)
     .query(query);
 
   return result.rowsAffected === 1;
@@ -177,7 +178,6 @@ export const writeData = async (table, data) => {
         await createCredential(data);
         return;
       default:
-        await createMAMChannel(data);
         return;
     }
   } catch (error) {
@@ -228,7 +228,7 @@ export const removeData = async table => {
 };
 
 async function parseResults(result) {
-  try {
+    try {
     if (result.recordsets.length === 1) {
       //console.log(result.recordset[0]);
       return result.recordset[0];

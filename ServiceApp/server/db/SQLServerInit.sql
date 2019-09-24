@@ -50,6 +50,7 @@ if not exists ( select * from sys.objects where object_id = object_ID( N'[user]'
 		[name] [nvarchar](MAX) null,
 		[role] [nvarchar](MAX) null,
 		[location] [nvarchar](MAX) null,
+		[address] [nvarchar](MAX) null,
 		[timestamp] [datetime2](7) not null,
 		constraint [PK_user] primary key clustered ( [internal_id] asc )
 		with
@@ -135,54 +136,6 @@ if not exists ( select * from sys.objects where object_id = object_ID( N'[did]' 
 	  ) on [Primary]
 	end
 go
-
-
-
-if not exists ( select * from sys.objects where object_id = object_ID( N'[did]' ) and type in ( N'U' ) )
-	begin
-	  create table [did]
-	  (
-		[internal_id] [bigint] identity(1,1) not null,
-		[root] [nvarchar](MAX) null,
-		[privateKey] [nvarchar](MAX)  null,
-		[seed] [nvarchar](MAX)  null,
-		[next_root] [nvarchar](MAX)  null,
-		[start] bigint not null,
-		[timestamp] [datetime2](7) not null,
-		constraint [PK_did] primary key clustered ( [internal_id] asc )
-		with
-		(
-			pad_index = off,
-			statistics_norecompute = off,
-			ignore_dup_key = off,
-			allow_row_locks = on,
-			allow_page_locks = on
-		) on [Primary]
-	  ) on [Primary]
-	end
-go
-
-if not exists ( select * from sys.objects where object_id = object_ID( N'[credential]' ) and type in ( N'U' ) )
-	begin
-	  create table [credential]
-	  (
-		[internal_id] [bigint] IDENTITY(1,1) NOT NULL,
-		[address] [nvarchar](max) NULL,
-		[value] [bigint] NULL,
-		[timestamp] [datetime2](7) NOT NULL,
-		constraint [PK_credential] primary key clustered ( [internal_id] asc )
-		with
-		(
-			pad_index = off,
-			statistics_norecompute = off,
-			ignore_dup_key = off,
-			allow_row_locks = on,
-			allow_page_locks = on
-		) on [Primary]
-	  ) on [Primary]
-	end
-go
-
 if not exists ( select * from sys.objects where object_id = object_ID( N'[data]' ) and type in ( N'U' ) )
 	begin
 	  create table [data]
