@@ -5,6 +5,7 @@
     cursor: pointer;
     outline: none;
     position: relative;
+    user-select: none;
 
     outline-color: initial;
     outline-style: none;
@@ -73,9 +74,22 @@
         }
     }
 
-    &.secondary {
+    &.transparent {
+        color: #FFFFFF;
+        background-color: transparent;
+        border: 2px solid #FFFFFF;
+
         &:hover {
-            opacity: 0.7;
+            opacity: 0.8;
+        }
+    }
+
+    &.secondary {
+        color: #FFFFFF;
+        background-color: #4140DF;
+
+        &:hover {
+            opacity: 0.9;
         }
     }
 }

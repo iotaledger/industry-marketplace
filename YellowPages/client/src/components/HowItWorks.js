@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import ModalVideo from 'react-modal-video'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import Button from './Button'
 import Text from './Text'
 import videoMobile from '../assets/img/video/mobile_play.svg';
 import IMP_explainer from '../assets/img/video/IMP_explainer.jpg';
@@ -15,23 +16,31 @@ export default () => {
             <div className="video-section-text-wrapper how-it-works">
                 <Text className="title">How it works</Text>
                 <Text>
-                    See how the Industry Marketplace operates in our video, {' '}
+                    See how the Industry Marketplace operates in our video, or explore for yourself {' '}
                     <Link to="/use_cases">
-                        use-cases
+                        <Button className="medium secondary">
+                            Use cases
+                        </Button> 
                     </Link>
-                    {' '} or explore for yourself by watching the tutorial and {' '}
                     <Link to="/demo">
-                        trying out the demo
+                        <Button className="medium transparent">
+                            try the demo
+                        </Button>
                     </Link>
                 </Text>
             </div>
-            <img
-                className="desktop"
-                role="button"
-                onClick={() => setShowVideo(true)}
-                src={IMP_explainer}
-                alt=""
-            />
+            <div className="desktop-player">
+                <img 
+                    className="desktop" src={IMP_explainer} alt="" 
+                    role="button"
+                    onClick={() => setShowVideo(true)}
+                />
+                <div 
+                    className="play"
+                    role="button"
+                    onClick={() => setShowVideo(true)}
+                />
+            </div>
             <img
                 className="mobile"
                 role="button"

@@ -13,8 +13,8 @@ export default () => {
             <img className="asset heading" src={illustration} alt="" />
             <div className="intro-wrapper">
                 <div className="intro">
-                  <Text className="subtitle">The world's first</Text>
-                    <Text className="subtitle">autonomous and decentralized</Text>
+                  <Text className="subtitle">First Autonomous</Text>
+                    <Text className="subtitle">and Decentralized</Text>
                     <Text className="title">Industry Marketplace</Text>
                     <Text>Discover how the Industry Marketplace acts as an integrated hub to enable the Industry 4.0 vision.</Text>
                 </div>
@@ -27,6 +27,18 @@ export default () => {
                             Get started
                         </Button>
                     </Link>
+                    <div className="links-wrapper">
+                        <a 
+                            href="https://github.com/iotaledger/industry-marketplace" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Source code
+                        </a>
+                        <a href="/files/Industry_Marketplace_Technical_Documentation.pdf">
+                            Documentation
+                        </a>
+                    </div>
                 </div>
             </div>
         </React.Fragment>
