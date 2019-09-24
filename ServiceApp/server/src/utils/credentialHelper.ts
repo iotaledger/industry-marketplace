@@ -11,10 +11,54 @@ import {
     VerifiableCredentialDataModel, 
     VerifiablePresentation, 
     VerifiablePresentationDataModel, 
-    VerificationErrorCodes 
+    VerificationErrorCodes, 
+    GenerateSeed,
+    CreateRandomDID,
+    GenerateRSAKeypair,
+    Service,
+    DIDPublisher
 } from 'identity_ts';
-import { createCredential, readData } from './databaseHelper';
+import { createCredential, readData, writeData } from './databaseHelper';
+import { provider } from '../config.json';
 import { decryptCipher } from './encryptionHelper';
+
+export interface IUser {
+    id : string,
+    name : string,
+    role : string,
+    location : string,
+    address : string
+};
+
+export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise<user> {
+    return new Promise<user>(async (resolve, reject)=> {
+        const seed = GenerateSeed();
+        const userDIDDocument = CreateRandomDID(seed);
+        const keypair = await GenerateRSAKeypair();
+        const privateKey = keypair.GetPrivateKey();
+        const keyId  = 'keys-1';
+        const tangleComsAddress = GenerateSeed(81);
+        userDIDDocument.AddKeypair(keypair, keyId);
+        userDIDDocument.AddServiceEndpoint(
+            new Service(
+                userDIDDocument.GetDID(), 
+                'tanglecom', 
+                'TangleCommunicationAddress', 
+                tangleComsAddress
+            )
+        );
+        const publisher = new DIDPublisher(provider, seed);
+        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+        const state = publisher.ExportMAMChannelState();
+        await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
+
+        // Store user
+        const id = userDIDDocument.GetDID().GetDID();
+        const user: IUser = { id, name, role, location, address: tangleComsAddress };
+        await writeData('user', user);
+        resolve(user);
+    });
+}
 
 export async function ProcessReceivedCredentialForUser(unstructuredData: any, provider: string) {
     // Filter out incorrectly structured transactions
@@ -38,6 +82,7 @@ export async function ProcessReceivedCredentialForUser(unstructuredData: any, pr
         const importVerifiableCredential: VerifiableCredential = await VerifiableCredential.DecodeFromJSON(credentialFormat, proofParameters);
         const user: any = await readData('user');
         const verificationResult = importVerifiableCredential.Verify();
+
         if (importVerifiableCredential.EncodeToJSON().credentialSubject['DID'] === user.id && verificationResult === VerificationErrorCodes.SUCCES) {
             //Store the credential in the DB, sorted under the DID of the Issuer
             await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
