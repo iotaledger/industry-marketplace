@@ -2,10 +2,9 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import get from 'lodash/get';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, readDataEquals } from './databaseHelper';
+import { readData, writeData, readRow } from './databaseHelper';
 import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
@@ -14,9 +13,7 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance, processPayment } from './walletHelper';
-import { getSpecificUser } from './multiUserHelper'
-
-//encryptWithReceiversPublicKey,
+import { simulate } from './simulationHelper';
 /**
  * Class to help with expressjs routing.
  */
@@ -47,405 +44,430 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
-                const { location, name, role, wallet, usePaymentQueue } = req.body;
-                interface IUser {
-                    location?: string;
-                    id?: string;
-                    role?: string;
-                    name?: string;
-                    usePaymentQueue?: number;
-                }
-                const existingUser: IUser = await readData('user');
-                const user = { ...existingUser };
-
-                if (role) {
-                    user.role = role;
-                }
-
-                if (name) {
-                    user.name = name;
-                }
-
-                if (location) {
-                    user.location = location;
-                }
-
-                user.usePaymentQueue = usePaymentQueue ? 1 : 0;
-
-                await writeData('user', user);
-
-                if (wallet) {
-                    const response = await axios.get(config.faucet);
-                    const data = response.data;
-                    if (data.success) {
-                        await writeData('wallet', data.wallet);
-                    }
-                }
-
-                await res.send({
-                    success: true
-                });
-            } catch (error) {
-                console.log('config Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/data', async (req, res) => {
-            try {
-                const { conversationId, deviceId, userId, schema } = req.body;
-                if (conversationId && deviceId && userId && schema) {
-                    await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
-                }
-
-                await res.send({
-                    success: true
-                });
-            } catch (error) {
-                console.log('data Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.get('/user', async (req, res) => {
-            let user: any = await readData('user');
-
-            const wallet: any = await readData('wallet');
-            const address = (wallet && wallet.address) || null;
-            const balance = await getBalance(address);
-
-            if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                await writeData('did', { root, privateKey });
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
-                await writeData('user', user);
-            }
-
-            res.json({ ...user, balance, wallet: address });
-        });
-
-        app.get('/mam', async (req, res) => {
-            const channelId = req.query.conversationId;
-            const mam = await readData('mam', channelId);
-            res.json({ ...mam });
-        });
-
-        app.post('/cfp', async (req, res) => {
-            try {
-                // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
-                const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('callForProposal', location, submodelId);
-
-                const userDID = req.body.frame.sender.identification.id;
-                
-                const user = await getSpecificUser('id', userDID)
-                const userName = await get(user, 'name')
-           
-                // 2. Send transaction
-                const hash = await sendMessage({ ...req.body, userName }, tag);
-
-                // 3. Create new MAM channel
-                // 4. Publish first message with payload
-                // 5. Save channel details to DB
-                const channelId = req.body.frame.conversationId;
-                const mam = await publish(channelId, req.body);
-
-                console.log('CfP success', hash);
-                res.send({
-                    success: true,
-                    tag,
-                    hash,
-                    mam
-                });
-            } catch (error) {
-                console.log('CfP Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/proposal', async (req, res) => {
-            try {
-
-                // 1. Create Tag
-                const location = await getLocationFromMessage(req.body);
-                const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = await buildTag('proposal', location, submodelId);
-                const userDID = req.body.frame.sender.identification.id;
-
-                const user = await getSpecificUser('id', userDID)
-                const userName = await get(user, 'name')
-
-                const hash = await sendMessage({ ...req.body, userName }, tag);
-
-                console.log('proposal success', hash);
-                res.send({
-                    success: true,
-                    tag,
-                    hash
-                });
-            } catch (error) {
-                console.log('proposal Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/acceptProposal', async (req, res) => {
-            try {
-                // 1. Retrieve MAM channel from DB
-                // 2. Attach message with confirmation payload
-                // 3. Update channel details in DB
-                const channelId = req.body.frame.conversationId;
-                const mam = await publish(channelId, req.body);
-
-                // 4. encrypt sensitive data using the public key from the MAM channel
-                const id = req.body.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
-
-                // 5. Create Tag
-                const location = getLocationFromMessage(req.body);
-                const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('acceptProposal', location, submodelId);
-
-
-
-                const userDID = req.body.frame.sender.identification.id;
-
-                const user = await getSpecificUser('id', userDID)
-                const userName = await get(user, 'name')
-
-                // 6. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, mam, userName }, tag);
-
-                console.log('acceptProposal success', hash);
-                res.send({
-                    success: true,
-                    tag,
-                    hash,
-                    mam
-                });
-            } catch (error) {
-                console.log('acceptProposal Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/rejectProposal', async (req, res) => {
-            try {
-                // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
-                const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('rejectProposal', location, submodelId);
-
-                const userDID = req.body.frame.sender.identification.id;
-
-                const user = await getSpecificUser('id', userDID)
-                const userName = await get(user, 'name')
-
-                // 2. Send transaction
-                const hash = await sendMessage({ ...req.body, userName }, tag);
-
-                console.log('rejectProposal success', hash);
-                res.send({
-                    success: true,
-                    tag,
-                    hash
-                });
-            } catch (error) {
-                console.log('rejectProposal Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/informConfirm', async (req, res) => {
-            try {
-                // 1. Create Tag
-                const location = getLocationFromMessage(req.body);
-                const submodelId = req.body.dataElements.submodels[0].identification.id;
-                const tag = buildTag('informConfirm', location, submodelId);
-
-                // 2. Retrieve Wallet address from DB
-                interface IWallet {
-                    address?: string;
-                }
-                const wallet: IWallet = await readDataEquals('wallet', 'status', 'reserved')
-                const { address } = wallet;
-
-                const userDID = req.body.frame.sender.identification.id;
-                const user = await getSpecificUser('id', userDID)
-                const userName = await get(user, 'name')
-
-                const payload = { ...req.body, walletAddress: address, userName };
-
-
-                // 3. For data request include access credentials from DB
-                if (config.dataRequest && config.dataRequest.includes(submodelId)) {
-                    const conversationId = req.body.frame.conversationId;
-                    payload.sensorData = await readData('data', conversationId);
-                    if (!payload.sensorData) {
-                        payload.sensorData = { ...config.demoSensorData, conversationId };
-                    }
-                }
-
-                // 4. Retrieve MAM channel from DB
-                // 5. Attach message with confirmation payload
-                // 6. Update channel details in DB
-                const channelId = req.body.frame.conversationId;
-                await publish(channelId, payload);
-
-                // 7. Send transaction, include MAM channel info
-                const hash = await sendMessage(payload, tag);
-
-                console.log('informConfirm success', hash);
-                res.send({
-                    success: true,
-                    tag,
-                    hash
-                });
-            } catch (error) {
-                console.log('informConfirm Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        app.post('/informPayment', async (req, res) => {
-            try {
-                const userDID = req.body.frame.sender.identification.id;
-        
-                const user = await getSpecificUser('id', userDID)
-                const paymentQueue = await get(user, 'usePaymentQueue')
-                // 1. Retrieve wallet
-                const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
-                if (priceObject && priceObject.value) {
-                    const recepientAddress = req.body.walletAddress;
-
-                    if (user && paymentQueue === 1) {
-                        console.log("Add to Payment Queue")
-                        // 2. Add to payment queue
-                        await addToPaymentQueue(recepientAddress, Number(priceObject.value));
-                    } else {
-                        // 2. Process payment
-                        const transactions = await processPayment(recepientAddress, Number(priceObject.value));
-
-                        if (transactions.length < 1) {
-                            throw new Error(`processPayment Error: ${transactions}`);
+                        const { gps, location, name, role, wallet } = req.body;
+                        interface IUser {
+                            location?: string;
+                            id?: string;
+                            role?: string;
+                            name?: string;
                         }
+                        
+                        const user: IUser = {}
+
+                        if (gps || location) {
+                            user.location = gps || location;
+                        }
+
+                        if (role) {
+                            user.role = role;
+                        }
+
+                        if (name) {
+                            user.name = name;
+                        }
+
+                        await writeData('user', user);
+
+                        if (wallet) {
+                            try {
+                                const userWallet: any = await readData('wallet');
+                                const response = await axios.get(`${config.faucet}?address=${userWallet.address}&amount=${config.faucetAmount}`);
+                                const data = response.data;
+                                if (data.success) {
+                                    const balance = await getBalance(userWallet.address);
+                                    await writeData('wallet', { ...userWallet, balance });
+                                }
+                            } catch (error) {
+                                console.log('fund wallet error');
+                                throw new Error('Wallet funding error. \n\nPlease contact industry@iota.org');
+                            }
+                        }
+                        await res.send({
+                            success: true
+                        });
+                    } catch (error) {
+                        console.log('config Error', error.message);
+                        res.send({
+                            success: false,
+                            error: error.message
+                        });
+                    }
+                });
+
+                app.post('/data', async (req, res) => {
+                    try {
+                        const { conversationId, deviceId, userId, schema } = req.body;
+                        if (conversationId && deviceId && userId && schema) {
+                            await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
+                        }
+
+                        await res.send({
+                            success: true
+                        });
+                    } catch (error) {
+                        console.log('data Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+
+                app.post('/StartSimulation', async (req, res) => {
+                    try {
+                        const { role } = req.body;
+                        simulate(role)
+
+                        await res.send({
+                            success: true
+                        });
+                    } catch (error) {
+                        console.log('Simulation Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+             
+                app.get('/StopSimulation', async (req, res) => {
+                        simulate('SR', true)
+                        await res.send({
+                            success: true
+                        });
+                });
+
+                app.get('/user', async (req, res) => {
+                    let user: any = await readData('user');
+
+                    const wallet: any = await readData('wallet');
+                    const address = (wallet && wallet.address) || null;
+                    const balance = await getBalance(address);
+
+                    if (!user || !user.id) {
+                        // Generate key pair
+                        const { publicKey, privateKey }: any = await generateKeyPair();
+                        const root = await publishDID(publicKey, privateKey);
+                        await writeData('did', { root, privateKey });
+                        const id = `did:iota:${root}`;
+                        user = user ? { ...user, id } : { id };
+                        await writeData('user', user);
                     }
 
-                    // 3. Retrieve MAM channel from DB
-                    // 4. Attach message with confirmation payload
-                    // 5. Update channel details in DB
-                    const channelId = req.body.frame.conversationId;
-                    await publish(channelId, req.body);
+                    res.json({ ...user, balance, wallet: address });
+                });
 
-                    // 6. Create Tag
-                    const location = getLocationFromMessage(req.body);
-                    const submodelId = req.body.dataElements.submodels[0].identification.id;
-                    const tag = buildTag('informPayment', location, submodelId);
-                    const userName = get(user, 'name')
+                app.get('/mam', async (req, res) => {
+                    const channelId = req.query.conversationId;
+                    const mam = await readData('mam', channelId);
+                    res.json({ ...mam });
+                });
+
+                app.post('/cfp', async (req, res) => {
+                    try {
+                        // 1. Create Tag
+                        const location = getLocationFromMessage(req.body);
+                        const submodelId = req.body.dataElements.submodels[0].identification.id;
+                        const tag = buildTag('callForProposal', location, submodelId);
+
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { name }: any = await readRow('user', 'id', userDID)
+
+                        // 2. Send transaction
+                        const hash = await sendMessage({ ...req.body, userName: name }, tag);
+
+                        // 3. Create new MAM channel
+                        // 4. Publish first message with payload
+                        // 5. Save channel details to DB
+                        const channelId = req.body.frame.conversationId;
+                        const mam = await publish(channelId, req.body);
+
+                        console.log('CfP success', hash);
+                        res.send({
+                            success: true,
+                            tag,
+                            hash,
+                            mam
+                        });
+                    } catch (error) {
+                        console.log('CfP Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/proposal', async (req, res) => {
+                    try {
+
+                        // 1. Create Tag
+                        const location = await getLocationFromMessage(req.body);
+                        const submodelId = req.body.dataElements.submodels[0].identification.id;
+                        const tag = await buildTag('proposal', location, submodelId);
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { name }: any = await readRow('user', 'id', userDID)
+
+                        const hash = await sendMessage({ ...req.body, userName: name }, tag);
+
+                        console.log('proposal success', hash);
+                        res.send({
+                            success: true,
+                            tag,
+                            hash
+                        });
+                    } catch (error) {
+                        console.log('proposal Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/acceptProposal', async (req, res) => {
+                    try {
+                        // 1. Retrieve MAM channel from DB
+                        // 2. Attach message with confirmation payload
+                        // 3. Update channel details in DB
+                        const channelId = req.body.frame.conversationId;
+                        const mam = await publish(channelId, req.body);
+
+                        // 4. encrypt sensitive data using the public key from the MAM channel
+                        const id = req.body.frame.receiver.identification.id;
+                        mam.secretKey = await encryptWithReceiversPublicKey(id, mam.secretKey);
+
+                        // 5. Create Tag
+                        const location = getLocationFromMessage(req.body);
+                        const submodelId = req.body.dataElements.submodels[0].identification.id;
+                        const tag = buildTag('acceptProposal', location, submodelId);
 
 
-                    // 7. Send transaction
-                    const hash = await sendMessage({ ...req.body, userName }, tag);
 
-                    console.log('informPayment success', hash);
-                    res.send({
-                        success: true,
-                        tag,
-                        hash
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { name }: any = await readRow('user', 'id', userDID)
+
+                        // 6. Send transaction, include MAM channel info
+                        const hash = await sendMessage({ ...req.body, mam, userName: name }, tag);
+
+                        console.log('acceptProposal success', hash);
+                        res.send({
+                            success: true,
+                            tag,
+                            hash,
+                            mam
+                        });
+                    } catch (error) {
+                        console.log('acceptProposal Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/rejectProposal', async (req, res) => {
+                    try {
+                        // 1. Create Tag
+                        const location = getLocationFromMessage(req.body);
+                        const submodelId = req.body.dataElements.submodels[0].identification.id;
+                        const tag = buildTag('rejectProposal', location, submodelId);
+
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { name }: any = await readRow('user', 'id', userDID);
+
+                        // 2. Send transaction
+                        const hash = await sendMessage({ ...req.body, userName: name }, tag);
+
+                        console.log('rejectProposal success', hash);
+                        res.send({
+                            success: true,
+                            tag,
+                            hash
+                        });
+                    } catch (error) {
+                        console.log('rejectProposal Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/informConfirm', async (req, res) => {
+                    try {
+                        // 1. Create Tag
+                        const location = getLocationFromMessage(req.body);
+                        const submodelId = req.body.dataElements.submodels[0].identification.id;
+                        const tag = buildTag('informConfirm', location, submodelId);
+
+                        // 2. Retrieve Wallet address from DB
+                        interface IWallet {
+                            address?: string;
+                        }
+                        const wallet: IWallet = await readRow('wallet', 'status', 'reserved')
+                        const { address } = wallet;
+
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { name }: any = await readRow('user', 'id', userDID)
+
+                        const payload = { ...req.body, walletAddress: address, userName: name };
+
+
+                        // 3. For data request include access credentials from DB
+                        if (config.dataRequest && config.dataRequest.includes(submodelId)) {
+                            const conversationId = req.body.frame.conversationId;
+                            payload.sensorData = await readData('data', conversationId);
+                            if (!payload.sensorData) {
+                                payload.sensorData = { ...config.demoSensorData, conversationId };
+                            }
+                        }
+
+                        // 4. Retrieve MAM channel from DB
+                        // 5. Attach message with confirmation payload
+                        // 6. Update channel details in DB
+                        const channelId = req.body.frame.conversationId;
+                        await publish(channelId, payload);
+
+                        // 7. Send transaction, include MAM channel info
+                        const hash = await sendMessage(payload, tag);
+
+                        console.log('informConfirm success', hash);
+                        res.send({
+                            success: true,
+                            tag,
+                            hash
+                        });
+                    } catch (error) {
+                        console.log('informConfirm Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/informPayment', async (req, res) => {
+                    try {
+                        const userDID = req.body.frame.sender.identification.id;
+
+                        const { usePaymentQueue }: any = await readRow('user', 'id', userDID)
+
+                        // 1. Retrieve wallet
+                        const priceObject = req.body.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));
+                        if (priceObject && priceObject.value) {
+                            const recepientAddress = req.body.walletAddress;
+
+                            if (usePaymentQueue && usePaymentQueue === 1) {
+                                console.log("Add to Payment Queue")
+                                // 2. Add to payment queue
+                                await addToPaymentQueue(recepientAddress, Number(priceObject.value));
+                            } else {
+                                // 2. Process payment
+                                const transactions = await processPayment(recepientAddress, Number(priceObject.value));
+
+                                if (transactions.length < 1) {
+                                    throw new Error(`processPayment Error: ${transactions}`);
+                                }
+                            }
+
+                            // 3. Retrieve MAM channel from DB
+                            // 4. Attach message with confirmation payload
+                            // 5. Update channel details in DB
+                            const channelId = req.body.frame.conversationId;
+                            await publish(channelId, req.body);
+
+                            // 6. Create Tag
+                            const location = getLocationFromMessage(req.body);
+                            const submodelId = req.body.dataElements.submodels[0].identification.id;
+                            const tag = buildTag('informPayment', location, submodelId);
+
+                            const { name }: any = await readRow('user', 'id', userDID)
+
+
+                            // 7. Send transaction
+                            const hash = await sendMessage({ ...req.body, userName: name }, tag);
+
+                            console.log('informPayment success', hash);
+                            res.send({
+                                success: true,
+                                tag,
+                                hash
+                            });
+                        } else {
+                            console.log('informPayment insufficient balance');
+                            res.send({
+                                success: false,
+                                price: priceObject.value
+                            });
+                        }
+                    } catch (error) {
+                        console.log('informPayment', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                app.post('/mqtt', async (req, res) => {
+                    try {
+                        // 1. Create HelperClient 
+                        // 2. Subscribe to zmq
+                        // 3. Post data under mqtt topic
+                        if (req.body.message === 'subscribe') {
+                            const subscriptionId = await createHelperClient();
+                            zmqToMQTT(subscriptionId);
+
+                            res.send({
+                                success: true,
+                                id: subscriptionId
+                            });
+
+                        } else if (req.body.message === 'unsubscribe') {
+                            // 4. Unsubscribe from zmq with ID 
+                            const subscriptionId = req.body.subscriptionId;
+                            unsubscribeHelperClient(subscriptionId);
+
+                            res.send({
+                                success: true,
+                                id: subscriptionId
+                            });
+                        }
+                    } catch (error) {
+                        console.log('MQTT Error', error);
+                        res.send({
+                            success: false,
+                            error
+                        });
+                    }
+                });
+
+                const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
+                if (!customListener) {
+                    app.listen(port, async err => {
+                        if (err) {
+                            throw err;
+                        }
+
+                        console.log(`Started API Server on port ${port} v${packageJson.version}`);
+
+                        if (onComplete) {
+                            onComplete(app, config, port);
+                        }
                     });
                 } else {
-                    console.log('informPayment insufficient balance');
-                    res.send({
-                        success: false,
-                        price: priceObject.value
-                    });
+                    if (onComplete) {
+                        onComplete(app, config, port);
+                    }
                 }
-            } catch (error) {
-                console.log('informPayment', error);
-                res.send({
-                    success: false,
-                    error
-                });
+
+                return app;
             }
-        });
-
-        app.post('/mqtt', async (req, res) => {
-            try {
-                // 1. Create HelperClient 
-                // 2. Subscribe to zmq
-                // 3. Post data under mqtt topic
-                if (req.body.message === 'subscribe') {
-                    const subscriptionId = await createHelperClient();
-                    zmqToMQTT(subscriptionId);
-
-                    res.send({
-                        success: true,
-                        id: subscriptionId
-                    });
-
-                } else if (req.body.message === 'unsubscribe') {
-                    // 4. Unsubscribe from zmq with ID 
-                    const subscriptionId = req.body.subscriptionId;
-                    unsubscribeHelperClient(subscriptionId);
-
-                    res.send({
-                        success: true,
-                        id: subscriptionId
-                    });
-                }
-            } catch (error) {
-                console.log('MQTT Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-        const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
-        if (!customListener) {
-            app.listen(port, async err => {
-                if (err) {
-                    throw err;
-                }
-
-                console.log(`Started API Server on port ${port} v${packageJson.version}`);
-
-                if (onComplete) {
-                    onComplete(app, config, port);
-                }
-            });
-        } else {
-            if (onComplete) {
-                onComplete(app, config, port);
-            }
-        }
-
-        return app;
-    }
 }

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { readDataEquals } from './databaseHelper';
+import { readRow } from './databaseHelper';
 import { fetchDID ,} from './mamHelper';
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
@@ -62,7 +62,7 @@ export const decryptWithReceiversPrivateKey = async (payload, did) => {
         privateKey?: string;
     }
 
-    const encryption: IEncryption = await readDataEquals('did', 'root', did );
+    const encryption: IEncryption = await readRow('did', 'root', did );
     const { privateKey } = encryption
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
     const decryptedBuffer = await decrypt(privateKey, messageBuffer);

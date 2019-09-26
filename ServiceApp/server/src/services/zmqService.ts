@@ -69,7 +69,7 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 2 * 60 * 1000);
-        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 5 * 60 * 1000);
+        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 10 * 60 * 1000);
         this.listenAddress = [];
 
         //Add trusted identities (Initially, the DID of the IOTA Foundation)
@@ -126,6 +126,8 @@ export class ZmqService {
      * Unsubscribe from an event.
      * @param subscriptionId The id to unsubscribe.
      */
+
+
     public unsubscribe(subscriptionId) {
         const keys = Object.keys(this._subscriptions);
         for (let i = 0; i < keys.length; i++) {
@@ -258,6 +260,7 @@ export class ZmqService {
                         role?: string;
                     }
                     const { role }: IRole = await readData('user', null, 'role')
+                    console.log(role)
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
@@ -278,7 +281,7 @@ export class ZmqService {
                                                 }
                                             }).catch((err) => {
                                                 console.log('Verification failed, so message is ignored with error: ', err);
-                                            });
+                                });
                                     }
                                 } else {
                                         // 3.4 Decode every message of type C, D, F and retrieve receiver I
@@ -292,8 +295,6 @@ export class ZmqService {
                                             location?: string;
                                         }
                                         const { id }: IUser = await readRow('user', 'id', receiverID)
-                                    
-
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
                                                 console.log("acceptprop")
@@ -323,10 +324,10 @@ export class ZmqService {
 
                                         }
                                     }
-                                
+                            
                             }
                             break;
-                        case 'SR':
+                            case 'SR':
                             // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                             if (['proposal', 'informConfirm'].includes(messageType)) {
                                 const data = await getPayload(bundle);
