@@ -1,7 +1,8 @@
-import axios from 'axios';
-import config from '../config.json';
+//import axios from 'axios';
+//import config from '../config.json';
 import { readRow, updateValue, readAllData, writeData } from './databaseHelper';
-import { getBalance, getBalanceForSimulator, generateNewWallet } from './walletHelper';
+//import { getBalance, getBalanceForSimulator, generateNewWallet } from './walletHelper';
+import { getBalance, getBalanceForSimulator} from './walletHelper';
 import { generateAddress } from '@iota/core';
 
 
@@ -46,12 +47,15 @@ export const repairWallet = async (seed, keyIndex) => {
                     resolve();
                 }
             }
+               
+            await updateValue('wallet', 'seed', 'status', seed, 'error')
+
             //If it was not possible to repair wallet, generate new one
-            console.log('Wallet', repair, 'could not be repaired. Creating wallet...');
-            const wallet = generateNewWallet();
-            await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-            const balance = await getBalance(wallet.address);
-            await writeData('wallet', { address: wallet.address, balance, keyIndex: wallet.keyIndex, seed: wallet.seed, status: 'usable' });
+           // console.log('Wallet', repair, 'could not be repaired. Creating wallet...');
+           // const wallet = generateNewWallet();
+           // await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
+            //const balance = await getBalance(wallet.address);
+          //  await writeData('wallet', { address: wallet.address, balance, keyIndex: wallet.keyIndex, seed: wallet.seed, status: 'usable' });
         });
     } catch (error) {
         console.log("Repair wallet Error", error)

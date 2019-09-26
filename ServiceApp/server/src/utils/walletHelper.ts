@@ -110,27 +110,27 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                             const hashes = transactions.map(transaction => transaction.hash);
 
                             let retries = 0;
-			    const maxRetries = 100 ;
+			                const maxRetries = 100 ;
                             while (retries++ < maxRetries) {
                                 const statuses = await getLatestInclusion(hashes);
                                 if (statuses.filter(status => status).length === 4) {
                                     console.log("confirmed")
-break;
+                                    break;
                                 }
                                 await new Promise(resolved => setTimeout(resolved, 5000));
 				
-				if (retries === maxRetries ){
+			            	if (retries === maxRetries ){
                                 console.log("MAX REACHED")
                                 await updateValue('wallet', 'seed', 'status', seed, 'pending')
                             };
                             }
-console.log("2nd confirmed")
-if( retries < maxRetries) {
+
+                            if( retries < maxRetries) {
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
                             await updateValue('wallet', 'seed', 'status', seed, 'usable')
-}
+                            }
 
                             resolve(transactions);
                         })
@@ -223,24 +223,3 @@ export const getBalanceForSimulator = async address => {
     }
 };
 
-
-/*
-Example getBalance operation:
-
-import { getBalance } from './walletHelper';
-
-await getBalance(address);
-
-*/
-
-/*
-Example payment operation:
-
-import { processPayment } from './walletHelper';
-
-const transactions = await processPayment(address, amount);
-if (transactions.length > 0) {
-    console.log('Success');
-}
-
-*/

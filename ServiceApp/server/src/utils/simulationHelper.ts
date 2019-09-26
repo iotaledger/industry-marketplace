@@ -62,7 +62,7 @@ export const simulate = async (role, kill = false) => {
                 })
                 await apiPost('cfp', request)
             }	
-sendRandomCFP(); 
+            sendRandomCFP(); 
             IntervalID = setInterval(sendRandomCFP, 180000);
         }
 
@@ -75,7 +75,7 @@ sendRandomCFP();
             console.log("disconnected:", reason)
 		if( reason === 'transport close'){
 		await new Promise(resolve => setTimeout(resolve, 10000));
-	socket.connect();	
+	    socket.connect();	
 		}
         })
 
@@ -162,12 +162,8 @@ sendRandomCFP();
         })
 
     }
-    //}
 
     const apiPost = async (messageType, message) => {
-       // const randomTimeout = (min, max) => {
-         //   return min + Math.random() * (max - min);
-        //}
 
         return new Promise(async (resolve, reject) => {
             try {
