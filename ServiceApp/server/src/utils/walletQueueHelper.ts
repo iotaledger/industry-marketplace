@@ -29,8 +29,8 @@ export const initializeWalletQueue = async () => {
 export const repairWallet = async (seed, keyIndex) => {
     try {
         return new Promise(async (resolve, reject) => {
-
-            console.log("repairing address", await generateAddress(seed, keyIndex))
+		const repair = await generateAddress(seed, keyIndex)
+            console.log("repairing address", repair )
             await updateValue('wallet', 'seed', 'status', seed, 'error')
 
             let iterable = [-2, -1, 0, 1, 2, 3, -3];
@@ -47,7 +47,7 @@ export const repairWallet = async (seed, keyIndex) => {
                 }
             }
             //If it was not possible to repair wallet, generate new one
-            console.log('Wallet could not be repaired. Creating wallet...');
+            console.log('Wallet', repair, 'could not be repaired. Creating wallet...');
             const wallet = generateNewWallet();
             await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
             const balance = await getBalance(wallet.address);
@@ -70,6 +70,9 @@ export const checkAddressBalance = async () => {
         console.log("Wallet", address, balance, status)
         if (balance === 0 && (status === "usable" || status === "reserved")) {
             await repairWallet(seed, keyIndex)
+        }
+ if (balance > 0 && status === "pending") {
+            await updateValue('wallet', 'seed', 'status', seed, 'usable')
         }
     }
 }

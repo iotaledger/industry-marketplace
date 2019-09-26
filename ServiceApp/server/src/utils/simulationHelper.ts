@@ -15,6 +15,10 @@ const socket = io('http://localhost:5000');
 let IntervalID;
 let subscriptionId;
 
+ const randomValue = array => {
+        return array[Math.floor(Math.random() * array.length)]
+    }
+
 export const simulate = async (role, kill = false) => {
 
     if (kill === true) {
@@ -57,8 +61,8 @@ export const simulate = async (role, kill = false) => {
                     location: await getRandomLocation()
                 })
                 await apiPost('cfp', request)
-            }
-
+            }	
+sendRandomCFP(); 
             IntervalID = setInterval(sendRandomCFP, 180000);
         }
 
@@ -67,8 +71,12 @@ export const simulate = async (role, kill = false) => {
             console.log("Connected")
         });
 
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', async(reason) => {
             console.log("disconnected:", reason)
+		if( reason === 'transport close'){
+		await new Promise(resolve => setTimeout(resolve, 10000));
+	socket.connect();	
+		}
         })
 
         socket.emit('subscribe', { events: ['tx'] })
@@ -157,14 +165,13 @@ export const simulate = async (role, kill = false) => {
     //}
 
     const apiPost = async (messageType, message) => {
-        const randomTimeout = (min, max) => {
-            return min + Math.random() * (max - min);
-        }
+       // const randomTimeout = (min, max) => {
+         //   return min + Math.random() * (max - min);
+        //}
 
         return new Promise(async (resolve, reject) => {
             try {
-                await new Promise(resolve => setTimeout(resolve, randomTimeout(10000, 15000)));
-                const response = await axios.post(`${BASE_URL}/${messageType}`, message);
+                const response = await axios.post(`${BASE_URL}/${messageType}`, message, { timeout: 900000});
                 resolve(response.data);
             } catch (error) {
                 console.error('API Error', error);
@@ -173,7 +180,5 @@ export const simulate = async (role, kill = false) => {
         })
     }
 
-    const randomValue = array => {
-        return array[Math.floor(Math.random() * array.length)]
-    }
+   
 }

@@ -25,6 +25,7 @@ export const getBalance = async address => {
         if (!address) {
             return 0;
         }
+console.log("getBalance for", address) 
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
         let balance = balances && balances.length > 0 ? balances[0] : 0;
@@ -37,12 +38,13 @@ export const getBalance = async address => {
                 if (balance > 0) {
                     break;
                 }
-                await new Promise(resolved => setTimeout(resolved, 1000));
+                await new Promise(resolved => setTimeout(resolved, 10000));
             }
         }
 
         return balance;
     } catch (error) {
+	console.log('error balance for address', address) 
         console.error('getBalance error', error);
         return 0;
     }
@@ -108,18 +110,27 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                             const hashes = transactions.map(transaction => transaction.hash);
 
                             let retries = 0;
-                            while (retries++ < 40) {
+			    const maxRetries = 100 ;
+                            while (retries++ < maxRetries) {
                                 const statuses = await getLatestInclusion(hashes);
                                 if (statuses.filter(status => status).length === 4) {
-                                    break;
+                                    console.log("confirmed")
+break;
                                 }
                                 await new Promise(resolved => setTimeout(resolved, 5000));
+				
+				if (retries === maxRetries ){
+                                console.log("MAX REACHED")
+                                await updateValue('wallet', 'seed', 'status', seed, 'pending')
+                            };
                             }
-
+console.log("2nd confirmed")
+if( retries < maxRetries) {
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
                             await updateValue('wallet', 'seed', 'status', seed, 'usable')
+}
 
                             resolve(transactions);
                         })

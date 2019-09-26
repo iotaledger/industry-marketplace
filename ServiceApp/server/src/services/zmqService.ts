@@ -60,8 +60,8 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
-        this._paymentInterval = setInterval(this.processPayments.bind(this), 2*60*1000);
-        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 5*60*1000);
+        this._paymentInterval = setInterval(this.processPayments.bind(this), 5*60*1000);
+        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 10*60*1000);
     }
 
     /**
@@ -105,6 +105,8 @@ export class ZmqService {
      * Unsubscribe from an event.
      * @param subscriptionId The id to unsubscribe.
      */
+
+
     public unsubscribe(subscriptionId) {
         const keys = Object.keys(this._subscriptions);
         for (let i = 0; i < keys.length; i++) {
