@@ -1,15 +1,17 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { operations } from '../config.json';
-import { readData, readDataEquals, writeData } from '../utils/databaseHelper';
+import get from 'lodash/get';
+import { operations, provider } from '../config.json';
+import { readData, readRow, writeData, updateValue } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
-import { getBalance } from '../utils/walletHelper.js';
-import {updateValue} from '../utils/databaseHelper';
-import { processPayment } from '../utils/walletHelper';
+import { getBalance, processPayment } from '../utils/walletHelper.js';
+import { DID, SchemaManager } from 'identity_ts';
 import { checkAddressBalance } from '../utils/walletQueueHelper';
+import { VerifyCredentials, VERIFICATION_LEVEL, ProcessReceivedCredentialForUser } from '../utils/credentialHelper';
+
 
 /**
  * Class to handle ZMQ service.
@@ -31,10 +33,10 @@ export class ZmqService {
      * The interval to frequently execute payments.
      */
     public _paymentInterval;
-    
-     /**
-     * The interval to frequently check and repair wallets.
-     */
+
+    /**
+    * The interval to frequently check and repair wallets.
+    */
     public _checkWalletInterval;
 
     /**
@@ -53,6 +55,12 @@ export class ZmqService {
     private readonly _subscriptions;
 
     /**
+     * 
+     */
+    private readonly listenAddress;
+
+
+    /**
      * Create a new instance of ZmqService.
      * @param config The gateway for the zmq service.
      */
@@ -60,8 +68,16 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
-        this._paymentInterval = setInterval(this.processPayments.bind(this), 2*60*1000);
-        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 5*60*1000);
+        this._paymentInterval = setInterval(this.processPayments.bind(this), 2 * 60 * 1000);
+        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 5 * 60 * 1000);
+        this.listenAddress = [];
+
+        //Add trusted identities (Initially, the DID of the IOTA Foundation)
+        const schema = SchemaManager.GetInstance().GetSchema("WhiteListedCredential");
+
+        for (let i = 0; i < this._config.trustedIdentities.length; i++) {
+            schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
+        }
     }
 
     /**
@@ -79,6 +95,11 @@ export class ZmqService {
 
     public checkWallet() {
         checkAddressBalance();
+    }
+
+    public setAddressToListenTo(address: string | undefined) {
+        this.listenAddress.push(address)
+        console.log("Listening to addresses " + this.listenAddress);
     }
 
     /**
@@ -182,23 +203,26 @@ export class ZmqService {
     /**
      * Build payload for the socket packet
      */
-    private buildPayload(data, messageType, messageParams) {
+    private buildPayload(data, messageType, messageParams, trustLevel) {
         return {
             data,
             messageType,
             tag: messageParams[12],
             hash: messageParams[1],
             address: messageParams[2],
-            timestamp: parseInt(messageParams[5], 10)
+            timestamp: parseInt(messageParams[5], 10),
+            trustLevel
         };
     }
 
     /**
      * Send out an event
      */
-    private sendEvent(data, messageType, messageParams) {
+    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
         const event = messageParams[0];
-        const payload = this.buildPayload(data, messageType, messageParams);
+        const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
+
+        console.log(`Sending ${messageType}`);
 
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
@@ -215,12 +239,14 @@ export class ZmqService {
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
+        let address = messageParams[2];
         const tag = messageParams[12];
 
         const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
+
 
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
@@ -242,46 +268,62 @@ export class ZmqService {
 
                                 // 3.1 Decode every message of type A and send du simulator
                                 if (messageType === 'callForProposal') {
-
-                                    this.sendEvent(data, messageType, messageParams);
-
-                                } else {
-                                    // 3.4 Decode every message of type C, D, F and retrieve receiver I
-                                    const receiverID = data.frame.receiver.identification.id;
-
-                                    interface IUser {
-                                        id?: string;
-                                        name?: string;
-                                        role?: string;
-                                        location?: string;
-                                    }
-                                    const { id }: IUser = await readDataEquals('user', 'id', receiverID)
-
-                                    if (id){
-
-                                    if (messageType === 'acceptProposal') {
-
-                                            const did = id.replace('did:iota:', '');
-                                            const channelId = data.frame.conversationId;
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam, did);
-
-                                            await writeData('mam', {
-                                                id: channelId,
-                                                root: data.mam.root,
-                                                seed: '',
-                                                next_root: '',
-                                                side_key: secretKey,
-                                                start: 0
+                                    console.log(JSON.stringify(data.identification))
+                                    if (data.identification && data.identification.didAuthenticationPresentation) {
+                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                            .then(async (verificationResult) => {
+                                                // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                                if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
+                                            }).catch((err) => {
+                                                console.log('Verification failed, so message is ignored with error: ', err);
                                             });
-                                        }
-                                        if (messageType === 'informPayment') {
-                                            const address = data.walletAddress;
-                                            const balance = await getBalance(address)
-                                            await updateValue('wallet', 'address','balance',address, balance)
-                                        }
-                                    this.sendEvent(data, messageType, messageParams);
                                     }
-                            }
+                                } else {
+                                        // 3.4 Decode every message of type C, D, F and retrieve receiver I
+                                        const receiverID = data.frame.receiver.identification.id;
+                                        
+                                        console.log(receiverID)
+                                        interface IUser {
+                                            id?: string;
+                                            name?: string;
+                                            role?: string;
+                                            location?: string;
+                                        }
+                                        const { id }: IUser = await readRow('user', 'id', receiverID)
+                                    
+
+                                        if (id) {
+                                            if (messageType === 'acceptProposal') {
+                                                console.log("acceptprop")
+                                                const channelId = data.frame.conversationId;
+                                                const id = data.frame.receiver.identification.id
+
+                                                const secretKey = await decryptWithReceiversPrivateKey(data.mam, id.replace('did:IOTA:', ''));
+                                                await writeData('mam', {
+                                                    id: channelId,
+                                                    root: data.mam.root,
+                                                    seed: '',
+                                                    next_root: '',
+                                                    side_key: secretKey,
+                                                    start: 0
+                                                });
+                                                await this.sendEvent(data, messageType, messageParams);
+                                            }
+                                            if (messageType === 'informPayment') {
+                                                const address = data.walletAddress;
+                                                const balance = await getBalance(address)
+                                                await updateValue('wallet', 'address', 'balance', address, balance)
+                                                this.sendEvent(data, messageType, messageParams);
+                                            }
+                                            if (messageType === 'rejectProposal') {
+                                                this.sendEvent(data, messageType, messageParams);
+                                            }
+
+                                        }
+                                    }
+                                
                             }
                             break;
                         case 'SR':
@@ -289,23 +331,62 @@ export class ZmqService {
                             if (['proposal', 'informConfirm'].includes(messageType)) {
                                 const data = await getPayload(bundle);
                                 const receiverID = data.frame.receiver.identification.id;
-                                const simulationUser = await readDataEquals('user', 'id', receiverID)
+                                const simulationUser = await readRow('user', 'id', receiverID)
 
                                 if (simulationUser) {
-                                    // 2.1 Decode every such message and retrieve receiver ID
-                                    this.sendEvent(data, messageType, messageParams);
 
-                                    if (messageType === 'informConfirm') {
-                                        const channelId = data.frame.conversationId;
-                                        await publish(channelId, data);
+                                    if (messageType === 'proposal') {
+
+                                        if (data.identification && data.identification.didAuthenticationPresentation) {
+                                            VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                                .then(async (verificationResult) => {
+                                                    // Check if the correct challenge is used and if the signatures are correct
+                                                    if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                        // Only send to UI if the DID Authentication is succesful
+                                                        await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                    }
+                                                }).catch((err) => {
+                                                    console.log('Verification failed, so message is ignored with error: ', err);
+                                                });
+                                        }
                                     }
+                                        if (messageType === 'informConfirm') {
+                                            const channelId = data.frame.conversationId;
+                                            await publish(channelId, data);
+                                            await this.sendEvent(data, messageType, messageParams);
+                                        }
+                                    
                                 }
                             }
-                            break;
-
                     }
+
+                }
+
+            } else if (this.listenAddress.includes(address)) {
+
+
+                const bundle = messageParams[8];
+                if (!this.sentBundles.includes(bundle)) {
+                    this.sentBundles.push(bundle);
+
+                    const user = await readRow('user', 'address', address)
+                    const id = await get(user, 'id').replace('did:IOTA:', '')
+
+
+                    interface IDid {
+                        root?: string;
+                        privateKey?: string;
+                    }
+                    const did: IDid = await readRow('did', 'root', id)
+
+
+                    //A message has been received through the ServiceEndpoint of the DID
+                    const unstructuredData = await getPayload(bundle);
+                    ProcessReceivedCredentialForUser(unstructuredData, provider, did);
+
                 }
             }
         }
+
     }
 }
