@@ -47,51 +47,11 @@ regulatory requirements
 # Link Consolidation
 * [Landing page](https://industrymarketplace.net)
 * [One-Pager](https://industry.iota.org/files/IOTA_Industry_Marketplace.pdf)
-* [Technical Documentation](https://github.com/iotaledger/industry-marketplace/blob/master/Industry_Marketplace_Technical_Documentation.pdf)
+* [Technical Documentation](Industry_Marketplace_Technical_Documentation.pdf)
 * [Explainer Video](https://www.youtube.com/watch?v=Jnh_9nKkemM)
 * [Use Case Examples](https://industrymarketplace.net/use_cases)
 * [Demo site](https://industrymarketplace.net/demo)
 * [Try as Service Requester](https://service-requester.iota-dev1.now.sh/ (keep requester window open to interact with SP))
 * [Try as Service Provider](https://service-provider.iota-dev1.now.sh/  (keep requester window open to interact with SR))
-
-
-
-# SeMarket MQTT Interface 
-
-* Alternatively, the Market Manager can transmit incoming messages that are relevant to the user via MQTT
-* The Market Manager does not offer an own MQTT Broker, it is suggested to either use an open source MQTT broker such as ‘test.mosquitto.org’ or implement an own MQTT Broker
-* MQTT Option is enabled via the API 
-
-
-### POST /mqtt 
-
-#### Payload to subscribe: 
-
-```sh
-{
-    "message": "subscribe"
-}
-```
-
-
-* Creates helperClient that connects to websockets 
-* HelperClient subscribes to messages from Market Manager and    publishes them under the subscriptionID as topic
-
-Returns success or failure notification and subscriptionID
-
-
-
-#### Payload to unsubscribe:
-
- ```sh
-{
-    "message": "unsubscribe",
-    "subscriptionId": "5742a685-657b-4b94-a704-36e00bc46a5a"
-}
-```
-
-* Unsubscribes to messages from Market Manager 
-
-Returns success or failure notification 
 
 
