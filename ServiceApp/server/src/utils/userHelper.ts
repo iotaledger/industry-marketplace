@@ -1,35 +1,38 @@
 import axios from 'axios';
 import yargs from 'yargs';
 import config from '../config.json';
-import { writeData} from './databaseHelper';
-import { publishDID } from './mamHelper';
-import { generateKeyPair } from './encryptionHelper';
-import {generateNewWallet, getBalance} from './walletHelper';
+import { writeData } from './databaseHelper';
+import { generateNewWallet, getBalance } from './walletHelper';
+import {createNewUser} from './credentialHelper';
 
-const createNewUser = async () => {
-    const { name, role = '', location = ''} = argv;
 
-    if (name && (role === 'SR' || role === 'SP')) {
-        const { publicKey, privateKey }: any = await generateKeyPair();
-        const root = await publishDID(publicKey, privateKey);
-        await writeData('did', { root, privateKey });
-        const id = `did:iota:${root}`;
-        return await writeData('user', { id, name, role, location});
-    } else {
-        console.log('Params are missing or wrong');
-        return;
-    }
+
+
+const createUser = async () => {	
+    const { name, role = '', location = '' } = argv;	
+    if (name && (role === 'SR' || role === 'SP')) {	
+        createNewUser(name, role, location);	
+    } else {	
+        console.log('Params are missing or wrong');	
+        return;	
+    }	
 };
 
+
 const createNewWallet = async () => {
-        console.log('Creating wallet...');
-        const wallet = generateNewWallet();
-        const response = await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-        if (response.data.success) {
-            const balance = await getBalance(wallet.address);
-            await writeData('wallet', { ...wallet, balance });
-        }
-    };
+    console.log('Creating wallet...');
+    try{
+    const wallet = generateNewWallet();
+    const response = await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
+    if (response.data.success) {
+        const balance = await getBalance(wallet.address);
+        await writeData('wallet', { ...wallet, balance });
+    }
+} catch(e){
+    console.log("wallet-error", e)
+}
+   
+};
 
 
 const argv = yargs
@@ -44,7 +47,7 @@ const argv = yargs
     .argv;
 
 if (argv.create === 'user') {
-    createNewUser();
+    createUser();
 } else if (argv.create === 'wallet') {
     createNewWallet();
 } else {

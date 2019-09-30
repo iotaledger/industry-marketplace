@@ -1,61 +1,72 @@
 import crypto from 'crypto';
 import { readRow } from './databaseHelper';
-import { fetchDID ,} from './mamHelper';
+import { DIDDocument, DID } from 'identity_ts';
+import { provider } from '../config.json';
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 
 export const generateKeyPair = async () => {
     return new Promise((resolve, reject) => {
-        crypto.generateKeyPair('rsa', {
-            modulusLength: 2048,
-            publicKeyEncoding: {
-                type: 'spki',
-                format: 'pem'
-            },
-            privateKeyEncoding: {
-                type: 'pkcs8',
-                format: 'pem',
-                cipher: 'aes-256-cbc',
-                passphrase
-            }
-        // tslint:disable-next-line:align
-        }, (err, publicKey, privateKey) => {
-            if (err) {
-                reject(err);
-            } // may signify a bad 'type' name, etc
-            resolve({ publicKey, privateKey });
-        });
+        try {
+            crypto.generateKeyPair('rsa', {
+                modulusLength: 2048,
+                publicKeyEncoding: {
+                    type: 'spki',
+                    format: 'pem'
+                },
+                privateKeyEncoding: {
+                    type: 'pkcs8',
+                    format: 'pem',
+                    cipher: 'aes-256-cbc',
+                    passphrase
+                }
+            // tslint:disable-next-line:align
+            }, (err, publicKey, privateKey) => {
+                if (err) {
+                    reject(err);
+                } // may signify a bad 'type' name, etc
+                resolve({ publicKey, privateKey });
+            });
+        } catch (error) {
+            console.error('generateKeyPair error', error);
+            reject();
+        }
     });
 };
 
-const encrypt = async (key, message) => {
-    return new Promise(async resolve => {
-        const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-        const result = await crypto.publicEncrypt(payload, message);
-        resolve(result);
+/*const encrypt = async (key, message) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
+            const result = await crypto.publicEncrypt(payload, message);
+            resolve(result);
+        } catch (error) {
+            console.error('encrypt error', error);
+            reject();
+        }
     });
-};
+};*/
 
 const decrypt = async (key, message) => {
-    return new Promise(async resolve => {
-        const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-        const result = await crypto.privateDecrypt(payload, message);
-        resolve(result);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
+            const result = await crypto.privateDecrypt(payload, message);
+            resolve(result);
+        } catch (error) {
+            console.error('decrypt error', error);
+            reject();
+        }
     });
 };
 
-export const encryptWithReceiversPublicKey = async (receiverId, payload) => {
-    const partnetId = receiverId.replace('did:iota:', '');
-    const did = await fetchDID(partnetId);
-    const publicKey = did[did.length - 1];
-    const message = Buffer.from(payload, 'utf8');
-    const encryptedBuffer: any = await encrypt(publicKey, message);
+export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
+    const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
+    const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
 
-export const decryptWithReceiversPrivateKey = async (payload, did) => {
-
-    console.log(payload)
+export const decryptWithReceiversPrivateKey = async (payload, did ) => {
 
     interface IEncryption {
         root?: string;
@@ -71,22 +82,22 @@ export const decryptWithReceiversPrivateKey = async (payload, did) => {
 
 const algorithm =  'aes-256-cbc';
 
-export interface IEncryptedData {
-    key: Buffer;
-    iv: Buffer;
-    encoded: Buffer;
+export interface EncryptedData {
+    key : Buffer,
+    iv: Buffer,
+    encoded : Buffer
 }
 
-export function encryptWithCipher(text: string): IEncryptedData {
+export function encryptWithCipher(text : string) : EncryptedData {
     const iv = crypto.randomBytes(16);
     const key = crypto.randomBytes(32);
     const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv);
-    const encrypted: Buffer = cipher.update(text);
-    return { key: key, iv : iv, encoded: Buffer.concat([encrypted, cipher.final()]) };
+    let encrypted : Buffer = cipher.update(text);
+    return { key: key, iv : iv, encoded: Buffer.concat([encrypted,cipher.final()]) };
 }
 
-export function decryptCipher(data: IEncryptedData): Buffer {
+export function decryptCipher(data : EncryptedData) : Buffer {
     const decipher = crypto.createDecipheriv(algorithm, data.key, data.iv);
-    const decoded: Buffer = decipher.update(data.encoded);
+    let decoded : Buffer = decipher.update(data.encoded);
     return Buffer.concat([decoded, decipher.final()]);
 }
