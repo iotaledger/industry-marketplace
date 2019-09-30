@@ -82,7 +82,9 @@ export const simulate = async (role, kill = false) => {
         socket.emit('subscribe', { events: ['tx'] })
 
         socket.on('subscribe', (message) => {
+            if(subscriptionId != message.subscriptionIds){
             subscriptionId = message.subscriptionIds
+            }
         })
 
         socket.on('zmq', async (message) => {

@@ -15,6 +15,7 @@ import { sendMessage } from './transactionHelper';
 import { getBalance} from './walletHelper';
 import { provider } from '../config.json';
 import { CreateAuthenticationPresentation } from './credentialHelper';
+import { simulate } from './simulationHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -111,6 +112,32 @@ export class AppHelper {
                 });
             }
         });
+
+
+        app.post('/StartSimulation', async (req, res) => {
+            try {
+                const { role } = req.body;
+                simulate(role)
+
+                await res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('Simulation Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+     
+        app.get('/StopSimulation', async (req, res) => {
+                simulate('SR', true)
+                await res.send({
+                    success: true
+                });
+        });
+
 
         app.get('/user', async (req, res) => {
             let user: any = await readData('user');
