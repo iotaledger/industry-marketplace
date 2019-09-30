@@ -8,12 +8,13 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT, name TEXT, role TEXT, location TEXT, usePaymentQueue INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, usePaymentQueue INTEGER, address TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER, status TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT, did TEXT)');
     }
 );
 
@@ -25,8 +26,8 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name, role, location = '', usePaymentQueue = 0 }) => {
-    await db.run('REPLACE INTO user (id, name, role, location, usePaymentQueue) VALUES (?, ?, ?, ?, ?)', [id, name, role, location,  usePaymentQueue]);
+export const createUser = async ({ id, name, role, location = '', usePaymentQueue = 0, address = '' }) => {
+    await db.run('REPLACE INTO user (id, name, role, location, usePaymentQueue, address) VALUES (?, ?, ?, ?, ?, ?)', [id, name, role, location, usePaymentQueue, address]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
@@ -41,8 +42,12 @@ export const createPaymentQueue = async ({ address, value }) => {
     await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
 };
 
-export const createDID = async ({ root, privateKey }) => {
-    await db.run('REPLACE INTO did (root, privateKey) VALUES (?, ?)', [root, privateKey]);
+export const createDID = async ({ root, privateKey, keyId, seed, next_root, start }) => {
+    const insert = `
+        INSERT INTO did (
+        root, privateKey, keyId, seed, next_root, start)
+        VALUES (?, ?, ?, ?, ?, ?)`;
+    await db.run(insert, [root, privateKey, keyId, seed, next_root, start]);
 };
 
 export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
@@ -51,6 +56,10 @@ export const createMAMChannel = async ({ id, root, seed, next_root, side_key, st
         id, root, seed, next_root, side_key, start)
         VALUES (?, ?, ?, ?, ?, ?)`;
     await db.run(insert, [id, root, seed, next_root, side_key, start]);
+};
+
+export const createCredential = async ({ id, credential, did }) => {
+    await db.run('INSERT INTO credentials (id, credential, did) VALUES (?, ?, ?)', [id, credential, did]);
 };
 
 export const writeData = async (table, data) => {
@@ -71,6 +80,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'paymentQueue':
                 await createPaymentQueue(data);
+                return;
+            case 'credential':
+                await createCredential(data);
                 return;
             case 'mam':
             default:
@@ -124,11 +136,9 @@ export const readAllData = async (table) => {
     });
 };
 
-
-
 export const removeData = (table) => {
     return new Promise(async resolve => {
-       db.get(`DELETE FROM ${table}`);
+        db.get(`DELETE FROM ${table}`);
         resolve();
     });
 };
@@ -137,8 +147,8 @@ export const readRow = async (table, column, value) => {
     return new Promise((resolve, reject) => {
         try {
             const query = `SELECT * FROM ${table} WHERE ${column} = ? ORDER BY RANDOM() LIMIT 1`;
-        
-            db.get(query,[value], (err, row) => {
+
+            db.get(query, [value], (err, row) => {
                 if (err) {
                     return resolve(null);
                 } else {
@@ -156,18 +166,18 @@ export const readRow = async (table, column, value) => {
 export const updateValue = async (table, searchField, targetField, searchValue, targetValue) => {
     return new Promise((resolve, reject) => {
         try {
-    db.run(`UPDATE ${table} SET ${targetField} = ? WHERE ${searchField} = ?`, [targetValue,searchValue],(err, row) => {
-        if (err) {
-            return resolve(err);
-        } else {
-            return resolve();
+            db.run(`UPDATE ${table} SET ${targetField} = ? WHERE ${searchField} = ?`, [targetValue, searchValue], (err, row) => {
+                if (err) {
+                    return resolve(err);
+                } else {
+                    return resolve();
+                }
+            });
+        } catch (error) {
+            console.log('updateValue', error);
+            return reject(null);
         }
     });
-} catch (error) {
-    console.log('updateValue', error);
-    return reject(null);
-}
-});
 };
 
 

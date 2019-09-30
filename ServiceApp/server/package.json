@@ -26,6 +26,7 @@
         "@iota/core": "1.0.0-beta.21",
         "@iota/industry_4.0_language": "^1.0.4",
         "@iota/mam": "^0.7.3",
+        "identity_ts": "iotaledger/identity.ts",
         "axios": "^0.19.0",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
