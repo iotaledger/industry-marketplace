@@ -311,11 +311,15 @@ export class ZmqService {
                                                         console.error(error);
                                                     }
                                                 }
+                                            } else {
+                                                console.log('Found identification, but verification failed', verificationResult > VERIFICATION_LEVEL.UNVERIFIED, verificationResult, data.identification);
                                             }
                                         }).catch((err) => {
                                             console.log('Verification failed, so message is ignored with error: ', err);
-                                        });          
-                                    }                                    
+                                        });
+                                    } else {
+                                        console.log('No identification found', data);
+                                    }
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                     const receiverID = data.frame.receiver.identification.id;
