@@ -94,6 +94,25 @@ export class AppHelper {
             }
         });
 
+        app.post('/addWallet', async (req, res) => {
+            try {
+                const { seed, address, keyIndex, balance} = await req.body;
+                if(seed && address){
+                    await writeData('wallet', { seed, address, keyIndex, balance});
+                }
+                res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('Wallet Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+
+
         app.post('/data', async (req, res) => {
             try {
                 const { conversationId, deviceId, userId, schema } = req.body;
@@ -101,7 +120,7 @@ export class AppHelper {
                     await writeData('data', { id: conversationId, deviceId, userId, schema: JSON.stringify(schema) });
                 }
 
-                await res.send({
+                res.send({
                     success: true
                 });
             } catch (error) {
@@ -119,7 +138,7 @@ export class AppHelper {
                 const { role } = req.body;
                 simulate(role)
 
-                await res.send({
+                res.send({
                     success: true
                 });
             } catch (error) {
@@ -133,7 +152,7 @@ export class AppHelper {
      
         app.get('/StopSimulation', async (req, res) => {
                 simulate('SR', true)
-                await res.send({
+                res.send({
                     success: true
                 });
         });
