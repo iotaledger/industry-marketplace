@@ -30,26 +30,30 @@ export const initializeWalletQueue = async () => {
 export const repairWallet = async (seed, keyIndex) => {
     try {
         return new Promise(async (resolve, reject) => {
-		const repair = await generateAddress(seed, keyIndex)
+		const repair = await generateAddress(seed, keyIndex, 2, true)
             console.log("repairing address", repair )
             await updateValue('wallet', 'seed', 'status', seed, 'error')
 
-            let iterable = [-2, -1, 0, 1, 2, 3, -3];
+        
+            let iterable = [ -1, 0, 1, 2, 3, -2, -3];
 
             for (let value of iterable) {
+                console.log(value)
+                if((value < 0 && Math.abs(value) <= keyIndex) || value >= 0) {
                 const newIndex = Number(keyIndex) + Number(value)
-                value += 1;
-                const newAddress = await generateAddress(seed, newIndex)
-                const balance = await getBalance(newAddress);
+         //       value += 1;
+                const newAddress = await generateAddress(seed, newIndex, 2, true)
+                const balance = await getBalanceForSimulator(newAddress);
 
                 if (balance > 0) {
                     await writeData('wallet', { address: newAddress, balance, keyIndex: newIndex, seed, status: 'usable' });
                     resolve();
                 }
             }
-               
-            await updateValue('wallet', 'seed', 'status', seed, 'error')
-
+                value +=1;
+              
+            }
+            
             //If it was not possible to repair wallet, generate new one
            // console.log('Wallet', repair, 'could not be repaired. Creating wallet...');
            // const wallet = generateNewWallet();
@@ -58,6 +62,7 @@ export const repairWallet = async (seed, keyIndex) => {
           //  await writeData('wallet', { address: wallet.address, balance, keyIndex: wallet.keyIndex, seed: wallet.seed, status: 'usable' });
         });
     } catch (error) {
+     
         console.log("Repair wallet Error", error)
     }
 }
@@ -70,6 +75,8 @@ export const checkAddressBalance = async () => {
     for (let each of wallet) {
         const { seed, address, keyIndex, status } = await each
         let balance = await getBalanceForSimulator(address);
+        console.log("balance", balance)
+        console.log("sees", seed)
 
         console.log("Wallet", address, balance, status)
         if (balance === 0 && (status === "usable" || status === "reserved")) {

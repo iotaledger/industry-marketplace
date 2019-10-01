@@ -87,7 +87,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
         }
 
         return new Promise((resolve, reject) => {
-            const remainderAddress = generateAddress(seed, keyIndex + 1);
+            const remainderAddress = generateAddress(seed, keyIndex + 1,2, true);
             const options = {
                 inputs: [{
                     address,
