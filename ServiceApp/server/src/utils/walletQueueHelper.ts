@@ -2,7 +2,7 @@
 //import config from '../config.json';
 import { readRow, updateValue, readAllData, writeData } from './databaseHelper';
 //import { getBalance, getBalanceForSimulator, generateNewWallet } from './walletHelper';
-import { getBalance, getBalanceForSimulator} from './walletHelper';
+import {  getBalanceForSimulator} from './walletHelper';
 import { generateAddress } from '@iota/core';
 
 
