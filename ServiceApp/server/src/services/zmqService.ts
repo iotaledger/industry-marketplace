@@ -260,7 +260,6 @@ export class ZmqService {
                         role?: string;
                     }
                     const { role }: IRole = await readData('user', null, 'role')
-                    console.log(role)
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
@@ -271,7 +270,6 @@ export class ZmqService {
 
                                 // 3.1 Decode every message of type A and send du simulator
                                 if (messageType === 'callForProposal') {
-                                    console.log(JSON.stringify(data.identification))
                                     if (data.identification && data.identification.didAuthenticationPresentation) {
                                         VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
                                             .then(async (verificationResult) => {
@@ -287,17 +285,9 @@ export class ZmqService {
                                         // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                         const receiverID = data.frame.receiver.identification.id;
                                         
-                                        console.log(receiverID)
-                                        interface IUser {
-                                            id?: string;
-                                            name?: string;
-                                            role?: string;
-                                            location?: string;
-                                        }
-                                        const { id }: IUser = await readRow('user', 'id', receiverID)
+                                        const id : any = await readRow('user', 'id', receiverID)
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
-                                                console.log("acceptprop")
                                                 const channelId = data.frame.conversationId;
                                                 const id = data.frame.receiver.identification.id
 
