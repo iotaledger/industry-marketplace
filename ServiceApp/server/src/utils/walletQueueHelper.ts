@@ -1,8 +1,8 @@
 //import axios from 'axios';
 //import config from '../config.json';
 import { readRow, updateValue, readAllData, writeData } from './databaseHelper';
-//import { getBalance, getBalanceForSimulator, generateNewWallet } from './walletHelper';
-import {  getBalanceForSimulator} from './walletHelper';
+//import { getBalance, getBalanceSimulator, generateNewWallet } from './walletHelper';
+import {  getBalance} from './walletHelper';
 import { generateAddress } from '@iota/core';
 
 
@@ -43,7 +43,7 @@ export const repairWallet = async (seed, keyIndex) => {
                 const newIndex = Number(keyIndex) + Number(value)
          //       value += 1;
                 const newAddress = await generateAddress(seed, newIndex, 2, true)
-                const balance = await getBalanceForSimulator(newAddress);
+                const balance = await getBalance(newAddress);
 
                 if (balance > 0) {
                     await writeData('wallet', { address: newAddress, balance, keyIndex: newIndex, seed, status: 'usable' });
@@ -74,7 +74,7 @@ export const checkAddressBalance = async () => {
 
     for (let each of wallet) {
         const { seed, address, keyIndex, status } = await each
-        let balance = await getBalanceForSimulator(address);
+        let balance = await getBalance(address);
         console.log("balance", balance)
         console.log("sees", seed)
 

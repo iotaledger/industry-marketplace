@@ -1,7 +1,7 @@
 import axios from 'axios';
 import config from '../config.json';
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
-import { provider } from '../config.json';
+import { depth, minWeightMagnitude, provider, security } from '../config.json';
 import { updateValue, writeData, readRow } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 import { generateSeed } from './iotaHelper';
@@ -25,26 +25,10 @@ export const getBalance = async address => {
         if (!address) {
             return 0;
         }
-console.log("getBalance for", address) 
         const { getBalances } = composeAPI({ provider });
         const { balances } = await getBalances([address], 100);
-        let balance = balances && balances.length > 0 ? balances[0] : 0;
-
-        if (balance === 0) {
-            let retries = 0;
-            while (retries++ < 10) {
-                const response = await getBalances([address], 100);
-                balance = response.balances && response.balances.length > 0 ? response.balances[0] : 0;
-                if (balance > 0) {
-                    break;
-                }
-                await new Promise(resolved => setTimeout(resolved, 10000));
-            }
-        }
-
-        return balance;
+        return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
-	console.log('error balance for address', address) 
         console.error('getBalance error', error);
         return 0;
     }
@@ -53,18 +37,9 @@ console.log("getBalance for", address)
 const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) => {
     try {
         await updateValue('wallet', 'seed', 'status', seed, 'busy')
-        console.log(address, seed, keyIndex)
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
         const prepareTransfers = createPrepareTransfers();
         const balance = await getBalance(address);
-        const security = 2;
-
-        // Depth or how far to go for tip selection entry point
-        const depth = 5;
-
-        // Difficulty of Proof-of-Work required to attach transaction to tangle.
-        // Minimum value on mainnet & spamnet is `14`, `9` on devnet and other testnets.
-        const minWeightMagnitude = 9;
 
         if (balance === 0) {
             repairWallet(seed, keyIndex);
@@ -75,19 +50,10 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                 const balance = await getBalance(address);
                 console.log("new balance", balance)
             }
-            else {
-                await updateValue('wallet', 'seed', 'status', seed, 'error')
-                const wallet = generateNewWallet();
-                await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-                seed = wallet.seed
-                address = wallet.address
-                keyIndex = wallet.keyIndex
-                await updateValue('wallet', 'seed', 'status', seed, 'busy')
-            }
         }
 
         return new Promise((resolve, reject) => {
-            const remainderAddress = generateAddress(seed, keyIndex + 1,2, true);
+            const remainderAddress = generateAddress(seed, keyIndex + 1);
             const options = {
                 inputs: [{
                     address,
@@ -207,19 +173,4 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
 };
 
 
-
-export const getBalanceForSimulator = async address => {
-    try {
-        if (!address) {
-            return 0;
-        }
-        const { getBalances } = composeAPI({ provider });
-        const { balances } = await getBalances([address], 100);
-        const balance = balances && balances.length > 0 ? balances[0] : 0;
-        return balance;
-    } catch (error) {
-        console.error('getBalance error', error);
-        return 0;
-    }
-};
 
