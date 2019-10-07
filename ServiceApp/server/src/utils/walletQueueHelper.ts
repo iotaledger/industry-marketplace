@@ -35,13 +35,10 @@ export const repairWallet = async (seed, keyIndex) => {
             await updateValue('wallet', 'seed', 'status', seed, 'error')
 
         
-            let iterable = [ -1, 0, 1, 2, 3, -2, -3];
-
+            let iterable = [ -4, -3, -2, -1, 0, 1, 2, 3, 4];
             for (let value of iterable) {
-                console.log(value)
                 if((value < 0 && Math.abs(value) <= keyIndex) || value >= 0) {
                 const newIndex = Number(keyIndex) + Number(value)
-         //       value += 1;
                 const newAddress = await generateAddress(seed, newIndex, 2, true)
                 const balance = await getBalance(newAddress);
 
@@ -51,8 +48,10 @@ export const repairWallet = async (seed, keyIndex) => {
                 }
             }
                 value +=1;
-              
             }
+            
+            await updateValue('wallet', 'seed', 'status', seed, 'error')
+            resolve();
             
             //If it was not possible to repair wallet, generate new one
            // console.log('Wallet', repair, 'could not be repaired. Creating wallet...');
@@ -62,7 +61,6 @@ export const repairWallet = async (seed, keyIndex) => {
           //  await writeData('wallet', { address: wallet.address, balance, keyIndex: wallet.keyIndex, seed: wallet.seed, status: 'usable' });
         });
     } catch (error) {
-     
         console.log("Repair wallet Error", error)
     }
 }
