@@ -75,6 +75,9 @@ export const generateSeed = (length = 81) => {
 
 export const getPayload = async (bundle) => {
     try {
+        console.log("PAYLOAD",bundle, typeof(bundle))
+        //Wait for whole bundle 
+		await new Promise(resolve => setTimeout(resolve, 2000));
         const rawTransactions = await findTransactions(bundle);
         if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
             return null;
