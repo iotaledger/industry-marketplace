@@ -35,7 +35,11 @@ export default () => {
                         >
                             Source code
                         </a>
-                        <a href="/files/Industry_Marketplace_Technical_Documentation.pdf">
+                        <a 
+                            href="https://github.com/iotaledger/industry-marketplace/raw/master/Industry_Marketplace_Technical_Documentation.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             Documentation
                         </a>
                     </div>
