@@ -37,6 +37,10 @@ export default () => {
                         <li>Explore new business models with your colleagues via structured experimentation</li>
                         <li>Initiate open innovation initiatives with the rest of the IOTA and eCl@ss ecosystem</li>
                     </ul>
+
+                    <h2>How to join the Industry Marketplace?</h2>
+                    <p>In order to become an entity of the Industry Marketplace, it is necessary to install and run the MarketManager component as a middleman between the user and the IOTA Tangle.</p> 
+                    <p>To find out more about the core component of the Industry Marketplace and install, run and configure your own MarketManager instance please follow our <a href="https://blog.iota.org/how-to-get-started-with-the-iota-industry-marketplace-a-step-by-step-guide-90fa343e4e7e" target="_blank" rel="noopener noreferrer">step-by-step guide</a>.</p>
                 </div>
             </div>
             <div className="content-footer">
