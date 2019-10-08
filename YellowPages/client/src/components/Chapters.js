@@ -238,9 +238,22 @@ export default ({ closeNav }) => {
                         </Link>
 
                         <div className="subtopics enabled">
-                            <Link to="/register_did">
+                            <a 
+                                href="https://blog.iota.org/how-to-get-started-with-the-iota-industry-marketplace-a-step-by-step-guide-90fa343e4e7e"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 <div className="subtopic">
                                     <Text className="title">1</Text>
+                                    <Text className="subtitle">
+                                        Step-by-step guide
+                                    </Text>
+                                    <Text className="read">Visit</Text>
+                                </div>
+                            </a>
+                            <Link to="/register_did">
+                                <div className="subtopic">
+                                    <Text className="title">2</Text>
                                     <Text className="subtitle">
                                         Register your Decentralized ID
                                     </Text>

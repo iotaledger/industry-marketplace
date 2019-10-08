@@ -17,17 +17,24 @@ export default () => {
                 <Text className="title">How it works</Text>
                 <Text>
                     See how the Industry Marketplace operates in our video, or explore for yourself {' '}
-                    <Link to="/use_cases">
-                        <Button className="medium secondary">
-                            Use cases
-                        </Button> 
-                    </Link>
-                    <Link to="/demo">
-                        <Button className="medium transparent">
-                            try the demo
-                        </Button>
-                    </Link>
                 </Text>
+                <Link to="/use_cases">
+                    <Button className="medium secondary">
+                        Use cases
+                    </Button> 
+                </Link>
+                <Link to="/demo">
+                    <Button className="medium transparent">
+                        try the demo
+                    </Button>
+                </Link>
+                <a 
+                    href="https://blog.iota.org/how-to-get-started-with-the-iota-industry-marketplace-a-step-by-step-guide-90fa343e4e7e"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Step-by-step guide
+                </a>
             </div>
             <div className="desktop-player">
                 <img 
