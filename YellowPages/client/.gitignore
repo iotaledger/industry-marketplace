@@ -3,7 +3,6 @@
 # Dependency directories
 node_modules/
 
-.npmrc
 config.json
 config_backup.json
 /build
