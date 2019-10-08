@@ -398,17 +398,16 @@ $hero-height: calc(100% - 174px);
     flex-direction: row !important;
 }
 
-.content a,
-.content-footer a {
+.content a {
     color: $text-light;
     text-decoration: none;
 }
 
 .content-footer a {
-    color: $text-light;
     font-size: 1.4em;
     font-weight: 700;
     z-index: 1000;
+    text-decoration: none;
 }
 
 .content-footer a div {
