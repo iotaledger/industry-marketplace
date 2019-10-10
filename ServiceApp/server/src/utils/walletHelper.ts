@@ -48,7 +48,7 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
             const response = await axios.get(`${config.faucet}?address=${address}&amount=${config.faucetAmount}`);
             if (response.data.success) {
                 const balance = await getBalance(address);
-                console.log("new balance", balance)
+                console.log("New Balance", balance)
             }
         }
 
@@ -76,17 +76,15 @@ const transferFunds = async (address, keyIndex, seed, totalAmount, transfers) =>
                             const hashes = transactions.map(transaction => transaction.hash);
 
                             let retries = 0;
-			                const maxRetries = 100 ;
+			                const maxRetries = 200 ;
                             while (retries++ < maxRetries) {
                                 const statuses = await getLatestInclusion(hashes);
                                 if (statuses.filter(status => status).length === 4) {
-                                    console.log("confirmed")
                                     break;
                                 }
                                 await new Promise(resolved => setTimeout(resolved, 5000));
 				
 			            	if (retries === maxRetries ){
-                                console.log("MAX REACHED")
                                 await updateValue('wallet', 'seed', 'status', seed, 'pending')
                             };
                             }
@@ -121,8 +119,6 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 };
 
 export const processPayment = async (receiveAddress = null, paymentValue = null) => {
-
-    console.log('processPayment');
 
     interface IWallet {
         address?: string;
@@ -165,7 +161,7 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
                 transfers
             );
         } catch (e) {
-            console.log("No wallet address available")
+            console.log("No wallet available")
             await new Promise(resolve => setTimeout(resolve, 60000));
             if (++count === maxTries) throw e;
         }

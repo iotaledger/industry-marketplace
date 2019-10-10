@@ -354,8 +354,6 @@ export class ZmqService {
                 }
 
             } else if (this.listenAddress.includes(address)) {
-
-
                 const bundle = messageParams[8];
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
@@ -363,14 +361,12 @@ export class ZmqService {
                     const user = await readRow('user', 'address', address)
                     const id = await get(user, 'id').replace('did:IOTA:', '')
 
-
                     interface IDid {
                         root?: string;
                         privateKey?: string;
                     }
+                    
                     const did: IDid = await readRow('did', 'root', id)
-
-
                     //A message has been received through the ServiceEndpoint of the DID
                     const unstructuredData = await getPayload(bundle);
                     ProcessReceivedCredentialForUser(unstructuredData, provider, did);

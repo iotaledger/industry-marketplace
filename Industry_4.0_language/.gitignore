@@ -1,7 +1,0 @@
-# dependencies
-/node_modules
-/sample_requests
-
-# build artifacts
-.DS_Store
-*.log

@@ -5,9 +5,6 @@ import { writeData } from './databaseHelper';
 import { generateNewWallet, getBalance } from './walletHelper';
 import {createNewUser} from './credentialHelper';
 
-
-
-
 const createUser = async () => {	
     const { name, role = '', location = '' } = argv;	
     if (name && (role === 'SR' || role === 'SP')) {	
@@ -17,7 +14,6 @@ const createUser = async () => {
         return;	
     }	
 };
-
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
