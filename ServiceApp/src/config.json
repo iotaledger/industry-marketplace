@@ -1,8 +1,0 @@
-{
-  "domain": "http://localhost:5000",
-  "addressApi": "https://api.marketplace.tangle.works/location",
-  "waitingTime": 10,
-  "googleAnalyticsId": "UA-143368819-1",
-  "provider": "https://nodes.devnet.iota.org:443",
-  "sensorDataDomain": "https://us-central1-datamarket-617e1.cloudfunctions.net/stream?"
-}
