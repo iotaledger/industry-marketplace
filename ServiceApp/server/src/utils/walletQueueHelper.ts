@@ -49,7 +49,6 @@ export const repairWallet = async (seed, keyIndex) => {
                 value += 1;
             }
 
-            await updateValue('wallet', 'seed', 'status', seed, 'error')
             resolve();
         });
     } catch (error) {
