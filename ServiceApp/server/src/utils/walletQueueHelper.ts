@@ -34,7 +34,6 @@ export const repairWallet = async (seed, keyIndex) => {
             console.log("Repairing address", repair)
             await updateValue('wallet', 'seed', 'status', seed, 'error')
 
-
             let iterable = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
             for (let value of iterable) {
                 if ((value < 0 && Math.abs(value) <= keyIndex) || value >= 0) {
@@ -73,6 +72,9 @@ export const checkAddressBalance = async () => {
         }
         if (balance > 0 && status === "pending") {
             await updateValue('wallet', 'seed', 'status', seed, 'usable')
+        }
+        if (balance === 0 && status === "pending") {
+            await repairWallet(seed, keyIndex)
         }
     }
 }
