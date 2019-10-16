@@ -63,7 +63,7 @@ export const simulate = async (role, kill = false) => {
                 await apiPost('cfp', request)
             }	
             sendRandomCFP(); 
-            IntervalID = setInterval(sendRandomCFP, 30000);
+            IntervalID = setInterval(sendRandomCFP, 120000);
         }
 
         //subscribe to ZMQ messages
