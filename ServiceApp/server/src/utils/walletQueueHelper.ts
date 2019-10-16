@@ -69,12 +69,13 @@ export const checkAddressBalance = async () => {
         if (balance === 0 && (status === "usable" || status === "reserved")) {
             await repairWallet(seed, keyIndex)
         }
-        if (balance > 0 && status === "pending") {
+        if (balance > 0 && (status === "pending"|| status === "error")) {
             await updateValue('wallet', 'seed', 'status', seed, 'usable')
         }
         if (balance === 0 && status === "pending") {
             await repairWallet(seed, keyIndex)
         }
+       
     }
 }
 
