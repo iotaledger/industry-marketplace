@@ -12,7 +12,7 @@
     "main": "./build/src/index.js",
     "scripts": {
         "build-clean": "rimraf ./build/*",
-        "build-compile": "tsc",
+        "build-compile": "tsc && copyfiles \"./src/Schemas/*.json\" \"./build\"",
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@iota/area-codes": "^0.1.1",
-        "@iota/converter": "^1.0.0-beta.19",
+        "@iota/converter": "^1.0.0-beta.21",
         "@iota/core": "1.0.0-beta.21",
         "@iota/industry_4.0_language": "^1.0.4",
         "@iota/mam": "^0.7.3",
