@@ -5,7 +5,7 @@ import { depth, minWeightMagnitude, provider, security } from '../config.json';
 import { updateValue, writeData, readRow } from './databaseHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 import { generateSeed } from './iotaHelper';
-import { repairWallet } from './walletQueueHelper.js';
+import { repairWallet, checkAddressBalance } from './walletQueueHelper.js';
 
 
 
@@ -163,7 +163,9 @@ export const processPayment = async (receiveAddress = null, paymentValue = null)
         } catch (e) {
             console.log("No wallet available")
             await new Promise(resolve => setTimeout(resolve, 60000));
-            if (++count === maxTries) throw e;
+            if (++count === maxTries) {
+                checkAddressBalance(); 
+            };
         }
     }
 };
