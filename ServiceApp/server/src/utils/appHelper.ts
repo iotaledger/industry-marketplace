@@ -199,18 +199,18 @@ export class AppHelper {
                 const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                
+                console.log(req.body.identification)
 
                 const {name} : any = await readRow('user', 'id', userDID)
                 
                 // 2. Send transaction
                 const hash = await sendMessage({ ...req.body,  userName: name }, tag);
-
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
                 // 5. Save channel details to DB
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
+
 
                 console.log('CfP success', hash);
                 res.send({
@@ -357,17 +357,20 @@ export class AppHelper {
 
                 
                 const {name} : any = await readRow('user', 'id', userDID)
+                console.log(name)
 
                 const payload = { ...req.body, walletAddress: address,  userName: name};
-
+               
 
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
                     const conversationId = req.body.frame.conversationId;
                     payload.sensorData = await readData('data', conversationId);
                     if (!payload.sensorData) {
+                        console.log("add sensor data")
                         payload.sensorData = { ...config.demoSensorData, conversationId };
                     }
+                    console.log(JSON.stringify(payload))
                 }
 
                 // 4. Retrieve MAM channel from DB
