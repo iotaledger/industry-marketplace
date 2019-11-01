@@ -75,11 +75,9 @@ export const generateSeed = (length = 81) => {
 
 export const getPayload = async (bundle) => {
     try {
-        console.log("PAYLOAD",bundle, typeof(bundle))
         //Wait for whole bundle 
-	//	await new Promise(resolve => setTimeout(resolve, 2000));
+		await new Promise(resolve => setTimeout(resolve, 2000));
         const rawTransactions = await findTransactions(bundle);
-        console.log("rawTransactions", rawTransactions)
         if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
             return null;
         }
@@ -93,7 +91,6 @@ export const getPayload = async (bundle) => {
             }
         }
 
-        console.log("transactions", transactions )
         let message = '';
         transactions
             .sort((a, b) => a.currentIndex - b.currentIndex)
