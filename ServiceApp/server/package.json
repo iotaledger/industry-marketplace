@@ -17,6 +17,7 @@
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
         "start-dev": "run-p serve-mon build-watch",
+        "start-metric": "node ./build/src/utils/metricHelper.js",
         "start": "node ./build/src/index",
         "deploy": "now --docker"
     },

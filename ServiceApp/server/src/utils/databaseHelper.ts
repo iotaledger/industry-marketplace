@@ -8,13 +8,8 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS metric (context INT, counter INT)');
+    
     }
 );
 
@@ -26,67 +21,20 @@ export const close = async () => {
     });
 };
 
-export const createUser = async ({ id, name = '', role = '', location = '', address = '' }) => {
-    await db.run('REPLACE INTO user (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
+export const createMetric = async ({ context, counter }) => {
+    await db.run('REPLACE INTO metric (context, counter) VALUES (?, ?)', [context, counter]);
 };
 
-export const createWallet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
-};
-
-export const createSensorData = async ({ id, deviceId, userId, schema }) => {
-    await db.run('REPLACE INTO data (id, deviceId, userId, schema) VALUES (?, ?, ?, ?)', [id, deviceId, userId, schema]);
-};
-
-export const createPaymentQueue = async ({ address, value }) => {
-    await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
-};
-
-export const createDID = async ({ root, privateKey, keyId, seed, next_root, start }) => {
-    const insert = `
-        INSERT INTO did (
-        root, privateKey, keyId, seed, next_root, start)
-        VALUES (?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [root, privateKey, keyId, seed, next_root, start]);
-};
-
-export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
-    const insert = `
-        REPLACE INTO mam (
-        id, root, seed, next_root, side_key, start)
-        VALUES (?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [id, root, seed, next_root, side_key, start]);
-};
-
-export const createCredential = async ({ id, credential }) => {
-    await db.run('INSERT INTO credentials (id, credential) VALUES (?, ?)', [id, credential]);
-};
 
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
         switch (table) {
-            case 'user':
-                await createUser(data);
-                return;
-            case 'wallet':
-                await createWallet(data);
-                return;
-            case 'data':
-                await createSensorData(data);
-                return;
-            case 'did':
-                await createDID(data);
-                return;
-            case 'paymentQueue':
-                await createPaymentQueue(data);
-                return;
-            case 'credential':
-                await createCredential(data);
+            default:
+            case 'metric':
+                await createMetric(data);
                 return;
             case 'mam':
-            default:
-                await createMAMChannel(data);
                 return;
         }
     } catch (error) {
@@ -139,6 +87,45 @@ export const removeData = (table) => {
         resolve();
     });
 };
+
+
+export const readRow = async (table, column, value) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const query = `SELECT * FROM ${table} WHERE ${column} = ? ORDER BY RANDOM() LIMIT 1`;
+
+            db.get(query, [value], (err, row) => {
+                if (err) {
+                    return resolve(null);
+                } else {
+                    return resolve(row || null);
+                }
+            });
+        } catch (error) {
+            console.log('readData', error);
+            return reject(null);
+        }
+    });
+};
+
+
+export const updateValue = async (table, searchField, targetField, searchValue, targetValue) => {
+    return new Promise((resolve, reject) => {
+        try {
+            db.run(`UPDATE ${table} SET ${targetField} = ? WHERE ${searchField} = ?`, [targetValue, searchValue], (err, row) => {
+                if (err) {
+                    return resolve(err);
+                } else {
+                    return resolve();
+                }
+            });
+        } catch (error) {
+            console.log('updateValue', error);
+            return reject(null);
+        }
+    });
+};
+
 
 /*
 Example write operation:

@@ -1,15 +1,9 @@
-import { DID, SchemaManager } from 'identity_ts';
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import { maxDistance, operations, provider } from '../config.json';
-import { ProcessReceivedCredentialForUser, VERIFICATION_LEVEL, VerifyCredentials } from '../utils/credentialHelper';
-import { readData, writeData } from '../utils/databaseHelper';
-import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
-import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
+import {  simulationUsers } from '../config.json';
+import {  extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
-import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
-import { publish } from '../utils/mamHelper';
-import { processPayment } from '../utils/walletHelper';
+import { readRow, updateValue, writeData } from '../utils/databaseHelper';
 
 /**
  * Class to handle ZMQ service.
@@ -28,11 +22,6 @@ export class ZmqService {
     public _bundleInterval;
 
     /**
-     * The interval to frequently delete sentBundle array.
-     */
-    public _paymentInterval;
-
-    /**
      * The configuration for the service.
      */
     private readonly _config;
@@ -47,10 +36,6 @@ export class ZmqService {
      */
     private readonly _subscriptions;
 
-    /**
-     *
-     */
-    private listenAddress: string | undefined;
 
     /**
      * Create a new instance of ZmqService.
@@ -60,14 +45,6 @@ export class ZmqService {
         this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
-        this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
-        this.listenAddress = null;
-
-        // Add trusted identities (Initially, the DID of the IOTA Foundation)
-        const schema = SchemaManager.GetInstance().GetSchema('WhiteListedCredential');
-        for (let i = 0; i < this._config.trustedIdentities.length; i++) {
-            schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));
-        }
     }
 
     /**
@@ -75,15 +52,6 @@ export class ZmqService {
      */
     public emptyBundleArray() {
         this.sentBundles = [];
-    }
-
-    public processPayments() {
-        processPayment();
-    }
-
-    public setAddressToListenTo(address: string | undefined) {
-        this.listenAddress = address;
-        console.log('Set listen address: ', address);
     }
 
     /**
@@ -185,35 +153,6 @@ export class ZmqService {
     }
 
     /**
-     * Build payload for the socket packet
-     */
-    private buildPayload(data, messageType, messageParams, trustLevel) {
-        return {
-            data,
-            messageType,
-            tag: messageParams[12],
-            hash: messageParams[1],
-            address: messageParams[2],
-            timestamp: parseInt(messageParams[5], 10),
-            trustLevel
-        };
-    }
-
-    /**
-     * Send out an event
-     */
-    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
-        const event = messageParams[0];
-        const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
-
-        console.log(`Sending ${messageType}`);
-
-        for (let i = 0; i < this._subscriptions[event].length; i++) {
-            this._subscriptions[event][i].callback(event, payload);
-        }
-    }
-
-    /**
      * Handle a message and send to any callbacks.
      * @param message The message to handle.
      */
@@ -223,147 +162,56 @@ export class ZmqService {
         const messageParams = messageContent.split(' ');
 
         const event = messageParams[0];
-        const address = messageParams[2];
         const tag = messageParams[12];
-
-        const operationList = await convertOperationsList(operations);
+    
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-
-            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
+   
+            if (tag.startsWith(this._config.prefix) && messageType) {
                 const bundle = messageParams[8];
+           
 
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
 
-                    interface IUser {
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        location?: string;
-                        address?: string;
-                    }
-                    const { id, role, location }: IUser = await readData('user');
+                    const data = await getPayload(bundle);
 
-                    // 1. Check user role (SR, SP, YP)
-                    switch (role) {
-                        case 'SR':
-                            // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                            if (['proposal', 'informConfirm'].includes(messageType)) {
-                                // 2.1 Decode every such message and retrieve receiver ID
-                                const data = await getPayload(bundle);
-                                const receiverID = data.frame.receiver.identification.id;
+                    const senderID = data.frame.sender.identification.id
+             
+                    if (!simulationUsers.includes(senderID)) {
+                        switch (messageType) {
+                            case 'callForProposal':
+                                let cfpCounter: any = await readRow('metric','context', 'cfp');
 
-                                // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
-                                if (id === receiverID) {
-                                    if (messageType === 'proposal') {
-                                        // Find the challenge
-                                        if (data.identification && data.identification.didAuthenticationPresentation) {
-                                            VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
-                                            .then(async (verificationResult) => {
-                                                // Check if the correct challenge is used and if the signatures are correct
-                                                if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                    // Only send to UI if the DID Authentication is succesful
-                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                }
-                                            }).catch((err) => {
-                                                console.log('Verification failed, so message is ignored with error: ', err);
-                                            });
-                                        }
-                                    } else {
-                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        const channelId = data.frame.conversationId;
-                                        await publish(channelId, data);
-                                    }
+                                if(cfpCounter === null ){
+                                   await writeData('metric', {'context': 'cfp', 'counter':0}); 
+                                   cfpCounter = {'context': 'cfp', 'counter':0}
                                 }
-                            }
-                            break;
-                        case 'SP':
-                            // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                            if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
-                                const data = await getPayload(bundle);
 
-                                // 3.1 Decode every message of type A, retrieve location.
-                                if (messageType === 'callForProposal') {
-                                    const senderLocation = await getLocationFromMessage(data);
+                                cfpCounter.counter = cfpCounter.counter + 1
 
-                                    // Find the challenge
-                                    if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
-                                        .then(async (verificationResult) => {
-                                            // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                            if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                if (!location || !maxDistance) {
-                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                }
+                                await updateValue('metric', 'context', 'counter','cfp', cfpCounter.counter )
+                                break;
 
-                                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                                if (location && maxDistance) {
-                                                    try {
-                                                        const distance = await calculateDistance(location, senderLocation);
 
-                                                        // 3.3.1 If distance within accepted range, send message to UI
-                                                        if (distance <= maxDistance) {
-                                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                        }
-                                                    } catch (error) {
-                                                        console.error(error);
-                                                    }
-                                                }
-                                            } else {
-                                                console.log('Found identification, but verification failed', verificationResult > VERIFICATION_LEVEL.UNVERIFIED, verificationResult, data.identification);
-                                            }
-                                        }).catch((err) => {
-                                            console.log('Verification failed, so message is ignored with error: ', err);
-                                        });
-                                    } else {
-                                        console.log('No identification found', data);
-                                    }
-                                } else {
-                                    // 3.4 Decode every message of type C, D, F and retrieve receiver ID
-                                    const receiverID = data.frame.receiver.identification.id;
+                            case 'proposal':
+                                let proposalCounter: any = await readRow('metric','context', 'proposal');
 
-                                    // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
-                                    if (id === receiverID) {
-                                        if (messageType === 'acceptProposal') {
-                                            const channelId = data.frame.conversationId;
+                                if(proposalCounter === null){
 
-                                            // Check if the correct challenge is used and if the signatures are correct
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', {
-                                                id: channelId,
-                                                root: data.mam.root,
-                                                seed: '',
-                                                next_root: '',
-                                                side_key: secretKey,
-                                                start: 0
-                                            });
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        } else {
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        }
-                                    }
+                                   await writeData('metric', {'context': 'proposal', 'counter':0}); 
+                                   proposalCounter= {'context': 'proposal', 'counter':0}
+                                    
                                 }
-                            }
-                            break;
-                        default:
-                            // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                            if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                                const data = await getPayload(bundle);
-                                // 4.1 Send every such message to UI
-                                this.sendEvent(data, messageType, messageParams);
-                            }
-                    }
-                }
-            } else if (this.listenAddress && address === this.listenAddress) {
-                const bundle = messageParams[8];
-                if (!this.sentBundles.includes(bundle)) {
-                    this.sentBundles.push(bundle);
 
-                    // A message has been received through the ServiceEndpoint of the DID
-                    const unstructuredData = await getPayload(bundle);
-                    ProcessReceivedCredentialForUser(unstructuredData, provider);
+                                proposalCounter.counter = proposalCounter.counter + 1
+                                await updateValue('metric', 'context', 'counter','proposal', proposalCounter.counter )
+                                break;
+                        }
+
+                    }
+
                 }
             }
         }
