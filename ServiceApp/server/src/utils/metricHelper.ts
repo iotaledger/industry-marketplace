@@ -17,13 +17,3 @@ socket.on('zmq', async (message) => {
     }
 })
 
-export const getMetric = () =>{
-
-
-}
-
-export const updateMetric = () =>{
-
-  
-}
-

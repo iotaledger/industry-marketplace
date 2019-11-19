@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import {  simulationUsers } from '../config.json';
-import {  extractMessageType } from '../utils/eclassHelper';
+import { simulationUsers } from '../config.json';
+import { extractMessageType } from '../utils/eclassHelper';
 import { getPayload } from '../utils/iotaHelper';
 import { readRow, updateValue, writeData } from '../utils/databaseHelper';
 
@@ -163,14 +163,14 @@ export class ZmqService {
 
         const event = messageParams[0];
         const tag = messageParams[12];
-    
+
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
-   
+
             if (tag.startsWith(this._config.prefix) && messageType) {
                 const bundle = messageParams[8];
-           
+
 
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
@@ -178,36 +178,46 @@ export class ZmqService {
                     const data = await getPayload(bundle);
 
                     const senderID = data.frame.sender.identification.id
-             
+
                     if (!simulationUsers.includes(senderID)) {
                         switch (messageType) {
                             case 'callForProposal':
-                                let cfpCounter: any = await readRow('metric','context', 'cfp');
+                                let cfpCounter: any = await readRow('metric', 'context', 'cfp');
 
-                                if(cfpCounter === null ){
-                                   await writeData('metric', {'context': 'cfp', 'counter':0}); 
-                                   cfpCounter = {'context': 'cfp', 'counter':0}
+                                if (cfpCounter === null) {
+                                    await writeData('metric', { 'context': 'cfp', 'counter': 0 });
+                                    cfpCounter = { 'context': 'cfp', 'counter': 0 }
                                 }
 
                                 cfpCounter.counter = cfpCounter.counter + 1
-
-                                await updateValue('metric', 'context', 'counter','cfp', cfpCounter.counter )
+                                await updateValue('metric', 'context', 'counter', 'cfp', cfpCounter.counter)
                                 break;
 
 
                             case 'proposal':
-                                let proposalCounter: any = await readRow('metric','context', 'proposal');
+                                let proposalCounter: any = await readRow('metric', 'context', 'proposal');
 
-                                if(proposalCounter === null){
-
-                                   await writeData('metric', {'context': 'proposal', 'counter':0}); 
-                                   proposalCounter= {'context': 'proposal', 'counter':0}
-                                    
+                                if (proposalCounter === null) {
+                                    await writeData('metric', { 'context': 'proposal', 'counter': 0 });
+                                    proposalCounter = { 'context': 'proposal', 'counter': 0 }
                                 }
 
                                 proposalCounter.counter = proposalCounter.counter + 1
-                                await updateValue('metric', 'context', 'counter','proposal', proposalCounter.counter )
+                                await updateValue('metric', 'context', 'counter', 'proposal', proposalCounter.counter)
                                 break;
+
+                            case 'informPayment':
+                                let informPaymentCounter: any = await readRow('metric', 'context', 'informPayment');
+
+                                if (informPaymentCounter === null) {
+                                    await writeData('metric', { 'context': 'informPayment', 'counter': 0 });
+                                    informPaymentCounter = { 'context': 'informPayment', 'counter': 0 }
+                                }
+
+                                informPaymentCounter.counter = informPaymentCounter.counter + 1
+                                await updateValue('metric', 'context', 'counter', 'informPayment', informPaymentCounter.counter)
+                                break;
+
                         }
 
                     }
