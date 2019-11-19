@@ -43,10 +43,13 @@ export class AppHelper {
 
             let cfpCounter: any = await readRow('metric','context', 'cfp');
             let proposalCounter: any = await readRow('metric','context', 'proposal');
+            let informPaymentCounter: any = await readRow('metric','context', 'informPayment');
+
             await removeData('metric')
             await writeData('metric', {"context": "cfp", "counter": 0})
             await writeData('metric', {"context": "proposal", "counter": 0})
-            res.json({ 'success': true,  'previousCFPCounter': cfpCounter, 'previousProposalCounter': proposalCounter});
+            await writeData('metric', {"context": "informPayment", "counter": 0})
+            res.json({ 'success': true,  'previousCFPCounter': cfpCounter, 'previousProposalCounter': proposalCounter, 'previousInformPaymentCounter': informPaymentCounter});
         });
 
         app.post('/getMetric', async (req, res) => {
