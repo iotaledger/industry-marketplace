@@ -53,8 +53,9 @@ export class AppHelper {
         
             let cfpCounter: any = await readRow('metric','context', 'cfp');
             let proposalCounter: any = await readRow('metric','context', 'proposal');
+            let informPaymentCounter: any = await readRow('metric','context', 'informPayment');
           
-            res.send({cfpCounter , proposalCounter })
+            res.send({cfpCounter , proposalCounter, informPaymentCounter })
             
         });
 
