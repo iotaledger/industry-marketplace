@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import { readRow, updateValue, writeData } from '../utils/databaseHelper';
 
 
-const socket = io('http://localhost:4000');
+const socket = io('http://localhost:3000');
 
 socket.emit('subscribe', { events: ['tx'] })
 
