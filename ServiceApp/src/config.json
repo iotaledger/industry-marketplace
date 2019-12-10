@@ -4,7 +4,7 @@
   "googleMaps": "https://www.google.com/maps/search/",
   "waitingTime": 10,
   "googleAnalyticsId": "UA-143368819-1",
-  "provider": "https://nodes.devnet.iota.org:443",
+  "provider": "https://bare01.devnet.iota.cafe:14265",
   "sensorDataDomain": "https://us-central1-datamarket-617e1.cloudfunctions.net/stream?",
   "eClassCatalog": "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.0&pridatt=",
   "datePickerFormat": "dd-MM-yyyy HH:mm"
