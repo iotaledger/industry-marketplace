@@ -3,5 +3,5 @@
         "endpoint": "tcp://zmq.devnet.iota.org:5556",
         "prefix": "SEMARKET"
     },
-    "provider": "https://bare01.devnet.iota.cafe:14265"
+    "provider": "https://iri01.bare01.devnet.iota.cafe"
 }
