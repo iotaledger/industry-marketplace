@@ -15,7 +15,6 @@ import { sendMessage } from './transactionHelper';
 import { getBalance} from './walletHelper';
 import { provider } from '../config.json';
 import { CreateAuthenticationPresentation } from './credentialHelper';
-import { simulate } from './simulationHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -130,31 +129,6 @@ export class AppHelper {
                     error
                 });
             }
-        });
-
-
-        app.post('/StartSimulation', async (req, res) => {
-            try {
-                const { role } = req.body;
-                simulate(role)
-
-                res.send({
-                    success: true
-                });
-            } catch (error) {
-                console.log('Simulation Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-     
-        app.get('/StopSimulation', async (req, res) => {
-                simulate('SR', true)
-                res.send({
-                    success: true
-                });
         });
 
 
@@ -349,15 +323,18 @@ export class AppHelper {
                 // 2. Retrieve Wallet address from DB
                 interface IWallet {
                     address?: string;
+                    balance?: number;
+                    keyIndex?: number;
+                    seed?: string;
                 }
-                const wallet: IWallet = await readRow('wallet', 'status', 'reserved')
+        
+                const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
                 const userDID = req.body.frame.sender.identification.id;
 
                 
                 const {name} : any = await readRow('user', 'id', userDID)
-                console.log(name)
 
                 const payload = { ...req.body, walletAddress: address,  userName: name};
                

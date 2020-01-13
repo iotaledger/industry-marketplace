@@ -9,7 +9,6 @@ import { getPayload } from '../utils/iotaHelper';
 import { publish } from '../utils/mamHelper';
 import { getBalance, processPayment } from '../utils/walletHelper.js';
 import { DID, SchemaManager } from 'identity_ts';
-import { checkAddressBalance } from '../utils/walletQueueHelper';
 import { VerifyCredentials, VERIFICATION_LEVEL, ProcessReceivedCredentialForUser } from '../utils/credentialHelper';
 
 
@@ -33,11 +32,6 @@ export class ZmqService {
      * The interval to frequently execute payments.
      */
     public _paymentInterval;
-
-    /**
-    * The interval to frequently check and repair wallets.
-    */
-    public _checkWalletInterval;
 
     /**
      * The configuration for the service.
@@ -69,7 +63,6 @@ export class ZmqService {
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 2 * 60 * 1000);
-        this._checkWalletInterval = setInterval(this.checkWallet.bind(this), 10 * 60 * 1000);
         this.listenAddress = [];
 
         //Add trusted identities (Initially, the DID of the IOTA Foundation)
@@ -91,10 +84,6 @@ export class ZmqService {
      */
     public processPayments() {
         processPayment();
-    }
-
-    public checkWallet() {
-        checkAddressBalance();
     }
 
     public setAddressToListenTo(address: string | undefined) {

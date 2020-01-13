@@ -8,8 +8,8 @@ const db = new sqlite3.Database(
         if (error) {
             return console.error('New database Error', error);
         }
-        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, usePaymentQueue INTEGER, address TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER, status TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
@@ -27,11 +27,11 @@ export const close = async () => {
 };
 
 export const createUser = async ({ id, name, role, location = '', usePaymentQueue = 0, address = '' }) => {
-    await db.run('REPLACE INTO user (id, name, role, location, usePaymentQueue, address) VALUES (?, ?, ?, ?, ?, ?)', [id, name, role, location, usePaymentQueue, address]);
+    await db.run('REPLACE INTO user (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
 };
 
 export const createWallet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex, status) VALUES (?, ?, ?, ?,?)', [seed, address, balance, keyIndex, 'usable']);
+    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
 };
 
 export const createSensorData = async ({ id, deviceId, userId, schema }) => {

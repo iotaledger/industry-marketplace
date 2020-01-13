@@ -2,32 +2,27 @@ import io from 'socket.io-client';
 import get from 'lodash/get';
 import axios from 'axios';
 import format from 'date-fns/format';
+import yargs from 'yargs';
 import { generate, submodel } from '@iota/industry_4.0_language';
 import { generateRandomSubmodelValues, getRandomTimestamp, getRandomLocation } from '../utils/randomizer.js';
 import { operations } from '../config.json';
-import { initializeWalletQueue } from './walletQueueHelper';
 import { createCloseLocation } from './locationHelper';
 import { readRow } from './databaseHelper';
+
 
 const BASE_URL = 'http://localhost:5000';
 const socket = io('http://localhost:5000');
 
-let IntervalID;
 let subscriptionId;
+
+
+
 
  const randomValue = array => {
         return array[Math.floor(Math.random() * array.length)]
     }
 
-export const simulate = async (role, kill = false) => {
-
-    if (kill === true) {
-        clearInterval(IntervalID)
-        socket.emit('unsubscribe', { subscriptionIds: subscriptionId });
-        return;
-    } else {
-
-        await initializeWalletQueue();
+const simulate = async (role) => {
 
         //For SR send out random CFPs 
         if (role === 'SR') {
@@ -63,7 +58,7 @@ export const simulate = async (role, kill = false) => {
                 await apiPost('cfp', request)
             }	
             sendRandomCFP(); 
-            IntervalID = setInterval(sendRandomCFP, 120000);
+            setInterval(sendRandomCFP, 12000);
         }
 
         //subscribe to ZMQ messages
@@ -73,10 +68,6 @@ export const simulate = async (role, kill = false) => {
 
         socket.on('disconnect', async(reason) => {
             console.log("disconnected:", reason)
-		if( reason === 'transport close'){
-		await new Promise(resolve => setTimeout(resolve, 10000));
-	    socket.connect();	
-		}
         })
 
         socket.emit('subscribe', { events: ['tx'] })
@@ -178,4 +169,19 @@ export const simulate = async (role, kill = false) => {
     }
 
    
+
+
+const argv = yargs
+.usage('Simulate SR or SP')
+.example('$0  --role SR', 'simulate SR')
+.required('role', 'Mode must be provided').describe('role', 'Simulates SR or SP. Options: ["SR", "SP"]')
+.describe('role', 'Define user role. Options: ["SR", "SP"]')
+.help('help')
+.argv;
+
+if (argv.role === 'SR') {
+    simulate('SR')
+}
+else if (argv.role === 'SP') {
+    simulate('SP')
 }

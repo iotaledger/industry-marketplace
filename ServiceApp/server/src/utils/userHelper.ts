@@ -6,7 +6,7 @@ import { generateNewWallet, getBalance } from './walletHelper';
 import {createNewUser} from './credentialHelper';
 
 const createUser = async () => {	
-    const { name, role = '', location = '' } = argv;	
+    const { name, role = '', location = '' } = argv;
     if (name && (role === 'SR' || role === 'SP')) {	
         createNewUser(name, role, location);	
     } else {	
