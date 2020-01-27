@@ -7,4 +7,4 @@
  node ./build/src/utils/userHelper.js --create wallet &&
  node ./build/src/utils/userHelper.js --create wallet &&
  node ./build/src/utils/userHelper.js --create wallet &&
- node ./build/src/utils/userHelper.js --simulate --role SR
+ node ./build/src/utils/yargsHelper.js --simulate --role SR
