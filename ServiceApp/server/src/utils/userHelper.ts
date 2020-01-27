@@ -41,7 +41,8 @@ const argv = yargs
     .describe('paymentQueue', 'Define if cloud-based payment queue should be used to speed up multiple payments')
     .help('help')
     .argv;
-
+console.log(argv)
+console.log("create", argv.create)
 if (argv.create === 'user') {
     createUser();
 } else if (argv.create === 'wallet') {
