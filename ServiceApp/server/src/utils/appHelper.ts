@@ -154,7 +154,7 @@ export class AppHelper {
 
         app.get('/mam', async (req, res) => {
             const channelId = req.query.conversationId;
-            const mam = await readData('mam', channelId);
+            const mam: any = await readData('mam', channelId);
             res.json({ ...mam });
         });
 
