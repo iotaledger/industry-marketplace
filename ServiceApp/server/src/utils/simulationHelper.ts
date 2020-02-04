@@ -17,7 +17,9 @@ let subscriptionId;
 
 const simulate = async (role, port) => {
 
-const socket = io(`http://localhost:${port}/`);
+const socket = io(`http://0.0.0.0:${port}/`);
+
+
 
         //For SR send out random CFPs 
         if (role === 'SR') {
