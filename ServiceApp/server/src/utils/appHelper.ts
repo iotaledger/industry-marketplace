@@ -459,9 +459,7 @@ export class AppHelper {
                 });
             }
         });
-        console.log("env port", process.env.PORT )
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
-        console.log("chose port", port)
         if (!customListener) {
             app.listen(port, async err => {
                 if (err) {

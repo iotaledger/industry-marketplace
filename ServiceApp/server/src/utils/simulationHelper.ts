@@ -19,7 +19,6 @@ const simulate = async (role, port) => {
 
 const socket = io(`http://localhost:${port}/`);
 
-console.log("sim running on socket",`http://localhost:${port}/` )
         //For SR send out random CFPs 
         if (role === 'SR') {
 
@@ -155,7 +154,6 @@ console.log("sim running on socket",`http://localhost:${port}/` )
 
         return new Promise(async (resolve, reject) => {
             try {
-                console.log("api to", `http://localhost:${argv.port}/${messageType}`)
                 const response = await axios.post(`http://localhost:${argv.port}/${messageType}`, message, { timeout: 900000});
                 resolve(response.data);
             } catch (error) {
