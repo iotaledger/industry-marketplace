@@ -8,13 +8,13 @@ import { AppHelper } from './utils/appHelper';
 
 
 AppHelper.build(
-    (app, config, port) => {
+    (app, config) => {
         ServiceFactory.register('zmq', () => new ZmqService(config.zmq));
 
         const server = new Server(app);
         const socketServer = SocketIO(server,  { pingTimeout: 60000});
 
-        server.listen(port);
+        server.listen(process.env.PORT);
 
         socketServer.on('connection', (socket) => {
             socket.on('subscribe', (data) => socket.emit('subscribe', zmqSubscribe(config, socket, data)));
