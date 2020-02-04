@@ -5,7 +5,7 @@
     "author": "Alexey Sobolev <alexey@iota.org>",
     "repository": {
         "type": "git",
-        "url": "https://github.com/iotaledger/SeMarket.git"
+        "url": "https://github.com/iotaledger/industry-marketplace.git"
     },
     "license": "Apache-2.0",
     "private": true,
@@ -21,16 +21,15 @@
         "deploy": "now --docker"
     },
     "dependencies": {
-        "@iota/area-codes": "^0.1.1",
         "@iota/converter": "^1.0.0-beta.21",
         "@iota/core": "1.0.0-beta.21",
         "@iota/industry_4.0_language": "^1.0.4",
         "@iota/mam": "^0.7.3",
-        "identity_ts": "iotaledger/identity.ts",
         "axios": "^0.19.0",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
+        "identity_ts": "iotaledger/identity.ts#910ebdb01496f7a1abf115d9b272ca4456aa00ba",
         "mongodb-stitch-server-sdk": "^4.5.0",
         "mqtt": "^3.0.0",
         "socket.io": "^2.2.0",
@@ -51,7 +50,7 @@
         "tslint": "^5.18.0",
         "tslint-eslint-rules": "^5.4.0",
         "tslint-microsoft-contrib": "^6.2.0",
-        "typescript": "^3.5.3"
+        "typescript": "^3.6.3"
     },
     "engines": {
         "node": ">=10.0"
