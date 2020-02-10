@@ -177,9 +177,8 @@ export class ZmqService {
 
                     const data = await getPayload(bundle);
 
-                    const senderID = data.frame.sender.identification.id
 
-                    if (!simulationUsers.includes(senderID)) {
+                    if (!simulationUsers.includes(data.userName)) {
                         switch (messageType) {
                             case 'callForProposal':
                                 await updateMetric('cfp')
