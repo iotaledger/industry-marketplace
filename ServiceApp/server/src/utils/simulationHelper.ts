@@ -9,8 +9,10 @@ import { initializeWalletQueue } from './walletQueueHelper';
 import { createCloseLocation } from './locationHelper';
 import { readRow } from './databaseHelper';
 
-const BASE_URL = 'http://localhost:3000';
-const socket = io('http://localhost:3000');
+
+
+const BASE_URL = `http://localhost:${process.env.PORT}`;
+const socket = io(`http://localhost:${process.env.PORT}`);
 
 let IntervalID;
 let subscriptionId;
