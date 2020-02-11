@@ -23,6 +23,7 @@ import { decryptCipher } from './encryptionHelper';
 
 
 const provider = process.env.provider
+console.log("provider", provider)
 
 export interface IUser {
     id : string,
