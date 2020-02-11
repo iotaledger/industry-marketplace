@@ -15,9 +15,9 @@ let subscriptionId;
         return array[Math.floor(Math.random() * array.length)]
     }
 
-const simulate = async (role, port) => {
+const simulate = async (role) => {
 
-const socket = io(`http://localhost:${port}/`);
+const socket = io(`http://localhost:${process.env.PORT}/`);
 
         //For SR send out random CFPs 
         if (role === 'SR') {
@@ -154,7 +154,7 @@ const socket = io(`http://localhost:${port}/`);
 
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await axios.post(`http://localhost:${argv.port}/${messageType}`, message, { timeout: 900000});
+                const response = await axios.post(`http://localhost:${process.env.PORT}/${messageType}`, message, { timeout: 900000});
                 resolve(response.data);
             } catch (error) {
                 console.error('API Error', error);
@@ -168,17 +168,15 @@ const socket = io(`http://localhost:${port}/`);
 
 const argv = yargs
 .usage('Simulate SR or SP')
-.example('$0  --role SR $1 --port 5000', 'simulate SR 5000')
+.example('$0  --role SR', 'simulate SR')
 .required('role', 'Mode must be provided').describe('role', 'Simulates SR or SP. Options: ["SR", "SP"]')
-.required('port', 'Mode must be provided').describe('port', 'Connects to Market Manager on Port. Options: ["4000", "5000", "..."]')
 .describe('role', 'Define user role. Options: ["SR", "SP"]')
-.describe('port', 'Define port. Options: ["4000", "5000", "..."]')
 .help('help')
 .argv;
 
 if (argv.role === 'SR') {
-    simulate('SR', argv.port)
+    simulate('SR')
 }
 else if (argv.role === 'SP') {
-    simulate('SP', argv.port)
+    simulate('SP')
 }
