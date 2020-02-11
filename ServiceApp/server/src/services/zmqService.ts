@@ -11,7 +11,7 @@ import { getBalance, processPayment } from '../utils/walletHelper.js';
 import { DID, SchemaManager } from 'identity_ts';
 import { VerifyCredentials, VERIFICATION_LEVEL, ProcessReceivedCredentialForUser } from '../utils/credentialHelper';
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 
 /**

@@ -3,7 +3,7 @@ import { readRow } from './databaseHelper';
 import { DIDDocument, DID } from 'identity_ts';
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 

@@ -22,7 +22,7 @@ import { createCredential, readRow, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 console.log("provider", provider)
 
 export interface IUser {

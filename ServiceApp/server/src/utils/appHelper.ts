@@ -17,7 +17,7 @@ import { CreateAuthenticationPresentation } from './credentialHelper';
 
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 /**
  * Class to help with expressjs routing.

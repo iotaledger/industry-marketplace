@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { readData, writeData } from './databaseHelper';
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 // Initialise MAM State
 const cleanMAMState = Mam.init(provider);

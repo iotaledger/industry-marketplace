@@ -6,7 +6,7 @@ import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 
 export const generateNewWallet = () => {

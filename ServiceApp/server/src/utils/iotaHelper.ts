@@ -3,7 +3,7 @@ import axios from 'axios';
 import crypto from 'crypto';
 import { fromTrytes } from './trytesHelper';
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 const iota = composeAPI({ provider });
 

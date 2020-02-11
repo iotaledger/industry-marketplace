@@ -4,7 +4,7 @@ import { defaultAddress} from '../config.json';
 import { generateSeed } from './iotaHelper';
 
 
-const provider = process.env.provider
+const provider = process.env.PROVIDER
 
 const iota = composeAPI({ provider });
 
