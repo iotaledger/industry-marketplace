@@ -19,8 +19,10 @@ import {
     DIDPublisher
 } from 'identity_ts';
 import { createCredential, readRow, writeData } from './databaseHelper';
-import { provider } from '../config.json';
 import { decryptCipher } from './encryptionHelper';
+
+
+const provider = process.env.provider
 
 export interface IUser {
     id : string,

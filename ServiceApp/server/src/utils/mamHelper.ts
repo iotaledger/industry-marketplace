@@ -1,8 +1,10 @@
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import Mam, { MamMode } from '@iota/mam';
 import crypto from 'crypto';
-import { provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
+
+
+const provider = process.env.provider
 
 // Initialise MAM State
 const cleanMAMState = Mam.init(provider);

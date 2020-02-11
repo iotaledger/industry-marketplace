@@ -1,7 +1,10 @@
 import { asciiToTrytes } from '@iota/converter';
 import { composeAPI } from '@iota/core';
-import { defaultAddress, provider } from '../config.json';
+import { defaultAddress} from '../config.json';
 import { generateSeed } from './iotaHelper';
+
+
+const provider = process.env.provider
 
 const iota = composeAPI({ provider });
 

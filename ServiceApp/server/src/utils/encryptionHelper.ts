@@ -1,7 +1,9 @@
 import crypto from 'crypto';
 import { readRow } from './databaseHelper';
 import { DIDDocument, DID } from 'identity_ts';
-import { provider } from '../config.json';
+
+
+const provider = process.env.provider
 
 const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
 

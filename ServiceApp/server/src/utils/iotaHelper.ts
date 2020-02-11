@@ -1,8 +1,9 @@
 import { composeAPI } from '@iota/core';
 import axios from 'axios';
 import crypto from 'crypto';
-import { provider } from '../config.json';
 import { fromTrytes } from './trytesHelper';
+
+const provider = process.env.provider
 
 const iota = composeAPI({ provider });
 

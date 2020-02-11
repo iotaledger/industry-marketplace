@@ -13,8 +13,11 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance} from './walletHelper';
-import { provider } from '../config.json';
 import { CreateAuthenticationPresentation } from './credentialHelper';
+
+
+
+const provider = process.env.provider
 
 /**
  * Class to help with expressjs routing.

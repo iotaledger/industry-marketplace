@@ -1,9 +1,12 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
 import axios from 'axios';
-import { depth, faucet, faucetAmount, minWeightMagnitude, provider, security } from '../config.json';
+import { depth, faucet, faucetAmount, minWeightMagnitude, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
+
+
+const provider = process.env.provider
 
 
 export const generateNewWallet = () => {

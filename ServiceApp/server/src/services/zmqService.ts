@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
 import get from 'lodash/get';
-import { operations, provider } from '../config.json';
+import { operations} from '../config.json';
 import { readData, readRow, writeData, updateValue } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -10,6 +10,8 @@ import { publish } from '../utils/mamHelper';
 import { getBalance, processPayment } from '../utils/walletHelper.js';
 import { DID, SchemaManager } from 'identity_ts';
 import { VerifyCredentials, VERIFICATION_LEVEL, ProcessReceivedCredentialForUser } from '../utils/credentialHelper';
+
+const provider = process.env.provider
 
 
 /**
