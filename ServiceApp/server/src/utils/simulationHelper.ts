@@ -50,6 +50,7 @@ const socket = io(`http://localhost:${process.env.PORT}/`);
                     endTimestamp: randomTimestamp[1],
                     location: await getRandomLocation()
                 })
+                console.log("send cfp to MM API")
                 await apiPost('cfp', request)
             }	
             sendRandomCFP(); 
