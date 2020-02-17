@@ -163,31 +163,41 @@ export class AppHelper {
 
         app.post('/cfp', async (req, res) => {
             try {
+                console.log("cfp arrived at MM")
                 // 1. Create Tag
                 const location = getLocationFromMessage(req.body);
+                console.log("1")
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
+                console.log("2")
                 const tag = buildTag('callForProposal', location, submodelId);
+                console.log("3")
                 const userDID = req.body.frame.sender.identification.id;
+                console.log("4")
                 const id = userDID.replace('did:IOTA:', '')
+                console.log("5")
          
                 const did: any = await readRow('did', 'root', id)
-            
+                console.log(did)
+                 
 
                 const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+                console.log(verifiablePresentation.EncodeToJSON())
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
                 console.log(req.body.identification)
 
                 const {name} : any = await readRow('user', 'id', userDID)
-                
+                console.log(name)
                 // 2. Send transaction
                 const hash = await sendMessage({ ...req.body,  userName: name }, tag);
+                console.log(hash)
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
                 // 5. Save channel details to DB
                 const channelId = req.body.frame.conversationId;
+                console.log(channelId)
                 const mam = await publish(channelId, req.body);
-
+                console.log(mam)
 
                 console.log('CfP success', hash);
                 res.send({
