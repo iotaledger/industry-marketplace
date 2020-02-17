@@ -1,4 +1,5 @@
 #!/bin/bash
+ sleep 90
  node ./build/src/utils/userHelper.js --create user --role SR --name SR1  --location 52.507339,13.377982 &&
  node ./build/src/utils/userHelper.js --create user --role SR --name SR2  --location 52.507339,13.377982 &&
  node ./build/src/utils/userHelper.js --create user --role SR --name SR3  --location 52.507339,13.377982 &&
