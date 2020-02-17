@@ -23,7 +23,6 @@ import { decryptCipher } from './encryptionHelper';
 
 
 const provider = process.env.PROVIDER
-console.log("provider", provider)
 
 export interface IUser {
     id : string,
@@ -104,11 +103,14 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
 //request.frame.conversationId
 export async function CreateAuthenticationPresentation(provider : string, did ) : Promise<VerifiablePresentation> {
     //1.25 Sign DID Authentication
+    console.log("createauthpre")
     const challenge = Date.now().toString();
-    const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+    console.log(challenge)
     console.log("DIDROOT",did.root)
+    const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
     console.log("userDIDdoc", userDIDDocument)
     userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+    console.log("n")
     const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
 
     //Add the stored Credential
@@ -124,6 +126,7 @@ export async function CreateAuthenticationPresentation(provider : string, did ) 
 
     //Create the presentation
     const presentation = Presentation.Create(credentialsArray);
+    console.log(presentation)
     const presentationProof = BuildRSAProof({issuer:userDIDDocument, issuerKeyId:"keys-1", challengeNonce:challenge});
     presentationProof.Sign(presentation.EncodeToJSON());
     return VerifiablePresentation.Create(presentation, presentationProof);
