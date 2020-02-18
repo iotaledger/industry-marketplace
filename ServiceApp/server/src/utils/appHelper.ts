@@ -167,6 +167,8 @@ export class AppHelper {
                 const location = getLocationFromMessage(req.body);
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
+                const hash1 = await sendMessage("hallo", tag);
+                console.log(hash1)
                 const userDID = req.body.frame.sender.identification.id;
                 const id = userDID.replace('did:IOTA:', '')
          
