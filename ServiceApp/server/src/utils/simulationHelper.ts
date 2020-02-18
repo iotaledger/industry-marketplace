@@ -17,7 +17,7 @@ let subscriptionId;
 
 const simulate = async (role) => {
 
-const socket = io(`http://localhost:${process.env.ZMQPORT}/`);
+const socket = io(`http://localhost:${process.env.PORT}/`);
 
         //For SR send out random CFPs 
         if (role === 'SR') {
