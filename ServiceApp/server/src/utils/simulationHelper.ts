@@ -17,7 +17,7 @@ let subscriptionId;
 
 const simulate = async (role) => {
 
-const socket = io(`http://localhost:${process.env.PORT}/`);
+const socket = io(`http://localhost:${process.env.ZMQPORT}/`);
 
         //For SR send out random CFPs 
         if (role === 'SR') {
@@ -154,7 +154,7 @@ const socket = io(`http://localhost:${process.env.PORT}/`);
 
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await axios.post(`http://localhost:${process.env.PORT}/${messageType}`, message, { timeout: 900000});
+                const response = await axios.post(`http://localhost:${process.env.APIPORT}/${messageType}`, message, { timeout: 900000});
                 resolve(response.data);
             } catch (error) {
                 console.error('API Error', error);
