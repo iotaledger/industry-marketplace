@@ -1,3 +1,3 @@
 #!/bin/bash
- sleep 90
+ sleep 70
  node ./build/src/index
