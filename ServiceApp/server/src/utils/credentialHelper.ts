@@ -53,7 +53,6 @@ export function createNewUser(name: string = '', role: string = '', location: st
         );
         const publisher = new DIDPublisher(provider, seed);
         const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
-        console.log(root)
         const state = publisher.ExportMAMChannelState();
         await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
 
@@ -86,8 +85,6 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
         let importVerifiableCredential : VerifiableCredential = await VerifiableCredential.DecodeFromJSON(credentialFormat, proofParameters);
 
         const verificationResult = importVerifiableCredential.Verify();
-        console.log("verificationResult", verificationResult)
-        console.log("error", VerificationErrorCodes.SUCCES)
         if(importVerifiableCredential.EncodeToJSON().credentialSubject["DID"] == `did:IOTA:${did.root}` && verificationResult == VerificationErrorCodes.SUCCES) {
             //Store the credential in the DB, sorted under the DID of the Issuer
             await createCredential({ id: credentialFormat.proof.creator, credential : credentialString, did: `did:IOTA:${did.root}`});
