@@ -53,6 +53,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
         );
         const publisher = new DIDPublisher(provider, seed);
         const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+        console.log(root)
         const state = publisher.ExportMAMChannelState();
         await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
 
@@ -103,14 +104,11 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
 //request.frame.conversationId
 export async function CreateAuthenticationPresentation(provider : string, did ) : Promise<VerifiablePresentation> {
     //1.25 Sign DID Authentication
-    console.log("createauthpre")
     const challenge = Date.now().toString();
-    console.log(challenge)
-    console.log("DIDROOT",did.root)
+    console.log("createAuthpr", challenge, provider, did.root, DIDDocument)
     const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
-    console.log("userDIDdoc", userDIDDocument)
+    console.log("userDIDDocument", userDIDDocument)
     userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-    console.log("n")
     const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
 
     //Add the stored Credential

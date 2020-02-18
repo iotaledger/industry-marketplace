@@ -163,21 +163,15 @@ export class AppHelper {
 
         app.post('/cfp', async (req, res) => {
             try {
-                console.log("cfp arrived at MM")
                 // 1. Create Tag
                 const location = getLocationFromMessage(req.body);
-                console.log("1")
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
-                console.log("2")
                 const tag = buildTag('callForProposal', location, submodelId);
-                console.log("3")
                 const userDID = req.body.frame.sender.identification.id;
-                console.log("4")
                 const id = userDID.replace('did:IOTA:', '')
-                console.log("5")
          
                 const did: any = await readRow('did', 'root', id)
-                console.log(did)
+                console.log(did, provider)
                  
 
                 const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
