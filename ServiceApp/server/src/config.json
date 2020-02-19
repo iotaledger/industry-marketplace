@@ -1,6 +1,6 @@
 {
     "zmq": {
-        "endpoint": "tcp://zmq.devnet.iota.org:5556",
+        "endpoint": "tcp://localhost:5556",
         "prefix": "SEMARKET",
         "trustedIdentities" : [
             "did:IOTA:FO9FJMZEQLYMZSBGXUAAKFTPGNYIWRZRPJOFFPRQIFWH9JVBKRJDVQSVXNCYBSQD9ZZVQXVXOTANSKDAK"
