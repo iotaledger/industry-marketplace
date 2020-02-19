@@ -154,7 +154,7 @@ const socket = io(`http://localhost:${process.env.PORT}/`);
 
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await axios.post(`http://localhost:${process.env.APIPORT}/${messageType}`, message, { timeout: 900000});
+                const response = await axios.post(`http://localhost:${process.env.PORT}/${messageType}`, message, { timeout: 900000});
                 resolve(response.data);
             } catch (error) {
                 console.error('API Error', error);
