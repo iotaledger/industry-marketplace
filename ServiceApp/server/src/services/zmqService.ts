@@ -215,8 +215,6 @@ export class ZmqService {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
 
-        console.log(`Sending ${messageType}`);
-
         for (let i = 0; i < this._subscriptions[event].length; i++) {
             this._subscriptions[event][i].callback(event, payload);
         }
