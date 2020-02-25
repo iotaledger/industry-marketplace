@@ -13,7 +13,8 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance} from './walletHelper';
-import { CreateAuthenticationPresentation } from './credentialHelper';
+import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
+
 
 
 
@@ -74,7 +75,10 @@ export class AppHelper {
 
                 user.usePaymentQueue = usePaymentQueue ? 1 : 0;
 
-                await writeData('user', user);
+                if (name && (role === 'SR' || role === 'SP')) {	
+                    createNewUser(name, role, location);
+                }
+               // await writeData('user', user);
 
                 if (wallet) {
                     const response = await axios.get(config.faucet);
