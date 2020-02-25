@@ -102,7 +102,10 @@ export async function ProcessReceivedCredentialForUser(unstructuredData : any, p
 export async function CreateAuthenticationPresentation(provider : string, did ) : Promise<VerifiablePresentation> {
     //1.25 Sign DID Authentication
     const challenge = Date.now().toString();
+    console.log(challenge)
+    console.log(provider, did, did.root)
     const userDIDDocument = await DIDDocument.readDIDDocument(provider, did.root);
+    console.log(userDIDDocument)
     userDIDDocument.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
     const didAuthCredential = SignDIDAuthentication(userDIDDocument, did.keyId, challenge);
 
