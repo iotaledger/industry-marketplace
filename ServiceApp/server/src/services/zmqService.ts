@@ -176,9 +176,10 @@ export class ZmqService {
                     this.sentBundles.push(bundle);
 
                     const data = await getPayload(bundle);
+                    console.log(data.userName)
 
 
-                    if (!simulationUsers.includes(data.userName)) {
+                    if (!simulationUsers.includes(data.userName) || !data.userName ) {
                         switch (messageType) {
                             case 'callForProposal':
                                 await updateMetric('cfp')
@@ -192,7 +193,6 @@ export class ZmqService {
                         }
 
                     }
-
                 }
             }
         }
