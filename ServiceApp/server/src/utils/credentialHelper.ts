@@ -1,37 +1,38 @@
 import { 
     BuildRSAProof, 
+    CreateRandomDID, 
     DecodeProofDocument, 
     DIDDocument, 
+    DIDPublisher, 
+    GenerateRSAKeypair, 
+    GenerateSeed, 
     Presentation, 
     ProofParameters, 
     RSAKeypair, 
     SchemaManager, 
+    Service, 
     SignDIDAuthentication, 
-    VerifiableCredential, 
-    VerifiableCredentialDataModel, 
-    VerifiablePresentation, 
-    VerifiablePresentationDataModel, 
-    VerificationErrorCodes, 
-    GenerateSeed,
-    CreateRandomDID,
-    GenerateRSAKeypair,
-    Service,
-    DIDPublisher
+    VerifiableCredential,
+    VerifiableCredentialDataModel,
+    VerifiablePresentation,
+    VerifiablePresentationDataModel,
+    VerificationErrorCodes
 } from 'identity_ts';
-import { createCredential, readData, writeData } from './databaseHelper';
 import { provider } from '../config.json';
+import { createCredential, readData, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
 export interface IUser {
-    id : string,
-    name : string,
-    role : string,
-    location : string,
-    address : string
-};
+    id: string;
+    name: string;
+    role: string;
+    location: string;
+    address: string;
+}
 
 export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise <IUser> {
-    return new Promise<IUser>(async (resolve, reject)=> {
+    return new Promise<IUser>(async (resolve, reject) => {
+        try {
         const seed = GenerateSeed();
         const userDIDDocument = CreateRandomDID(seed);
         const keypair = await GenerateRSAKeypair();
@@ -57,6 +58,10 @@ export function createNewUser(name: string = '', role: string = '', location: st
         const user: IUser = { id, name, role, location, address: tangleComsAddress };
         await writeData('user', user);
         resolve(user);
+        } catch (error) {
+            console.error('Credential create user', error);
+            reject(error);
+        }
     });
 }
 

@@ -1,5 +1,5 @@
 {
-  "domain": "http://localhost:4000",
+  "domain": "https://provider-dot-semarket-iota.appspot.com",
   "addressApi": "https://us-central1-semarket-iota.cloudfunctions.net/location",
   "googleMaps": "https://www.google.com/maps/search/",
   "waitingTime": 10,
