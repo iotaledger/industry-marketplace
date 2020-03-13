@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "name": "service-provider-proxy",
+    "builds": [
+        {
+            "src": "proxy.js",
+            "use": "@now/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/proxy.js"
+        }
+    ]
+} 
