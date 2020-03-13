@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import hljs from 'highlightjs';
-import 'highlightjs/styles/github.css';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 
 class MessageContent extends Component {
   componentDidMount() {
