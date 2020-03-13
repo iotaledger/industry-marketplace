@@ -1,5 +1,5 @@
 import { DID, SchemaManager } from 'identity_ts';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import zmq from 'zeromq';
 import { maxDistance, operations, provider } from '../config.json';
 import { ProcessReceivedCredentialForUser, VERIFICATION_LEVEL, VerifyCredentials } from '../utils/credentialHelper';
