@@ -11,3 +11,5 @@ config_backup.json
 # DS_Store
 .DS_Store
 */**/.DS_Store
+
+.now

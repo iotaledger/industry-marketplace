@@ -23,6 +23,7 @@
     "react-cookie": "^4.0.3",
     "react-dom": "16.13.0",
     "react-ga": "^2.7.0",
+    "react-is": "^16.13.0",
     "react-map-gl": "^5.2.3",
     "react-md": "^1.16.0",
     "react-modal-video": "^1.2.3",
@@ -38,7 +39,7 @@
     "concurrently": "^5.1.0",
     "node-sass": "^4.13.1",
     "nodemon": "^2.0.2",
-    "react-scripts": "2.1.8"
+    "react-scripts": "^3.4.0"
   },
   "scripts": {
     "install-all": "yarn && cd server && yarn",
@@ -53,7 +54,7 @@
     "extends": "react-app"
   },
   "engines": {
-    "node": ">=8.0"
+    "node": ">=10.0"
   },
   "proxy": "https://yellow-pages-dot-semarket-iota.appspot.com/",
   "browserslist": [
