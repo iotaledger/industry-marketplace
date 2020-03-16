@@ -1,33 +1,42 @@
-import axios from 'axios';
 import yargs from 'yargs';
-import config from '../config.json';
-import { writeData } from './databaseHelper';
-import { generateNewWallet, getBalance } from './walletHelper';
-import {createNewUser} from './credentialHelper';
+import { writeData, readData } from './databaseHelper';
+import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
+import { createNewUser } from './credentialHelper';
 
-const createUser = async () => {	
+const createUser = async () => {
     const { name, role = '', location = '' } = argv;
-    if (name && (role === 'SR' || role === 'SP')) {	
-        createNewUser(name, role, location);	
-    } else {	
-        console.log('Params are missing or wrong');	
-        return;	
-    }	
+    if (name && (role === 'SR' || role === 'SP')) {
+        createNewUser(name, role, location);
+    } else {
+        console.log('Params are missing or wrong');
+        return;
+    }
 };
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    try{
-    const wallet = generateNewWallet();
-    const response = await axios.get(`${config.faucet}?address=${wallet.address}&amount=${config.faucetAmount}`);
-    if (response.data.success) {
+    try {
+        const wallet = generateNewWallet();
+
+        interface IFaucet {
+            address?: string;
+            balance?: number;
+            keyIndex?: number;
+            seed?: string;
+        }
+
+        const faucet: IFaucet = await readData('faucet');
+        const transfer = { address: wallet.address, value: 250000 }
+
+        await transferFunds(faucet, 250000, transfer)
         const balance = await getBalance(wallet.address);
-        await writeData('wallet', { ...wallet, balance });
+        if(balance != 0){
+           await writeData('wallet', { ...wallet, balance });
+        }
+    } catch (e) {
+        console.log("wallet-error", e)
     }
-} catch(e){
-    console.log("wallet-error", e)
-}
-   
+
 };
 
 
@@ -41,6 +50,7 @@ const argv = yargs
     .describe('paymentQueue', 'Define if cloud-based payment queue should be used to speed up multiple payments')
     .help('help')
     .argv;
+
 
 if (argv.create === 'user') {
     createUser();

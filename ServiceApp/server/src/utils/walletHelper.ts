@@ -6,7 +6,7 @@ import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
 
-const provider = process.env.PROVIDER
+const provider =  process.env.PROVIDER
 
 
 export const generateNewWallet = () => {
@@ -57,7 +57,8 @@ const repairWallet = async (seed, keyIndex) => {
 }
 
 
-const transferFunds = async (wallet, totalAmount, transfers) => {
+export const transferFunds = async (wallet, totalAmount, transfers) => {
+    console.log("TRANSFERS", transfers)
     try {
         const { address, keyIndex, seed } = wallet;
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
