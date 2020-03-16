@@ -58,5 +58,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "resolutions": {
+    "acorn": "^7.1.1"
+  }
 }
