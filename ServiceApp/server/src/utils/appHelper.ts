@@ -4,7 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, readRow } from './databaseHelper';
+import { readData, writeData, readRow, readAllData } from './databaseHelper';
 import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
@@ -158,6 +158,19 @@ export class AppHelper {
 
             res.json({ ...user, balance, wallet: address });
         });
+
+
+
+
+        app.get('/allUsers', async (req, res) => {
+            let user: any = await readAllData('user');
+
+            const wallet: any = await readAllData('wallet');
+
+
+            res.json({ ...user, wallet});
+        });
+
 
         app.get('/mam', async (req, res) => {
             const channelId = req.query.conversationId;
