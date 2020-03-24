@@ -15,7 +15,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT, did TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS faucet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS faucet (seed TEXT, address TEXT, keyIndex INTEGER, balance INTEGER)');
 
         db.all('SELECT * FROM faucet', (err, row)=>{
             if(err){
