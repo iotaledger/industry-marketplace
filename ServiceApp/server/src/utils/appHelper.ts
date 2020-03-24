@@ -173,27 +173,13 @@ export class AppHelper {
             res.json({ ...mam });
         });
 
-        app.get('/clearUsers', async (req, res) => {
 
-            await removeData('user');
-            await removeData('did');
-            await removeData('credentials');
-            let user: any = await readAllData('user');
-            let did: any = await readAllData('did')
-            let credentials: any = await readAllData('credentials')
-            res.json({ ...user, did, credentials});
+        app.post('/clear', async (req, res) => {
+            const { table } = req.body;
+            await removeData(table);
+            let data: any = await readAllData(table);
+            res.json({ ...data});
         });
-
-
-
-        app.get('/clearWallets', async (req, res) => {
-
-            await removeData('user');
-            let user: any = await readAllData('user');
-            res.json({ ...user});
-        });
-
-
 
 
         app.get('/allWallets', async (req, res) => {
