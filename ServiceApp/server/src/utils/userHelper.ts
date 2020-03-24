@@ -26,7 +26,7 @@ const createNewWallet = async () => {
         }
 
         const faucet: IFaucet = await readData('faucet');
-        const transfer = { address: wallet.address, value: 250000 }
+        const transfer = [{ address: wallet.address, value: 250000 }]
 
         await transferFunds(faucet, 250000, transfer)
         const balance = await getBalance(wallet.address);
