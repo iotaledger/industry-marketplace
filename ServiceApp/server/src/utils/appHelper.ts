@@ -159,16 +159,27 @@ export class AppHelper {
             res.json({ ...user, balance, wallet: address });
         });
 
-
-
-
         app.get('/allUsers', async (req, res) => {
+
             let user: any = await readAllData('user');
 
+            res.json({ ...user});
+        });
+
+
+        app.get('/mam', async (req, res) => {
+            const channelId = req.query.conversationId;
+            const mam: any = await readData('mam', channelId);
+            res.json({ ...mam });
+        });
+
+
+
+        app.get('/allWallets', async (req, res) => {
+        
             const wallet: any = await readAllData('wallet');
 
-
-            res.json({ ...user, wallet});
+            res.json({ ...wallet});
         });
 
 
