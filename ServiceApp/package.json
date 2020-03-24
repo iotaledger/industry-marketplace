@@ -60,6 +60,7 @@
     "not op_mini all"
   ],
   "resolutions": {
-    "acorn": "^7.1.1"
+    "acorn": "^7.1.1",
+    "minimist": "^1.2.2"
   }
 }

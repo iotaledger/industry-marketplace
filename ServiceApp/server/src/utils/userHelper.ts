@@ -38,6 +38,12 @@ const argv = yargs
     .describe('name', 'Define user name')
     .describe('location', 'Define location')
     .help('help')
+    .options({
+        create: { type: 'string', demandOption: true },
+        name: { type: 'string', demandOption: true },
+        role: { type: 'string' },
+        location: { type: 'string' }
+    })
     .argv;
 
 if (argv.create === 'user') {
