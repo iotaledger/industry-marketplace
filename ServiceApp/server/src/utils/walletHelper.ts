@@ -6,7 +6,7 @@ import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
 
-const provider =  process.env.PROVIDER
+const provider = process.env.PROVIDER
 
 
 export const generateNewWallet = () => {
@@ -57,7 +57,7 @@ const repairWallet = async (seed, keyIndex) => {
 }
 
 
-export const transferFunds = async (wallet, totalAmount, transfers) => {
+export const transferFunds = async (wallet, totalAmount, transfers, faucet?) => {
     console.log("TRANSFERS", transfers)
     try {
         const { address, keyIndex, seed } = wallet;
@@ -91,9 +91,9 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
                     sendTrytes(trytes, depth, minWeightMagnitude)
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
-                            await updateWallet(seed, remainderAddress, keyIndex + 1, balance - totalAmount);
+                            await updateWallet(seed, remainderAddress, keyIndex + 1, balance - totalAmount, faucet);
                             const hashes = transactions.map(transaction => transaction.hash);
-
+ 
                             let retries = 0;
                             while (retries++ < 40) {
                                 const statuses = await getLatestInclusion(hashes);
@@ -105,7 +105,7 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
-                            await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
+                            await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance, faucet);
 
                             resolve(transactions);
                         })
@@ -125,7 +125,10 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
     }
 };
 
-const updateWallet = async (seed, address, keyIndex, balance) => {
+const updateWallet = async (seed, address, keyIndex, balance, faucet?) => {
+    if (faucet) {
+        await writeData('faucet', { address, balance, keyIndex, seed });
+    }
     await writeData('wallet', { address, balance, keyIndex, seed });
 };
 
