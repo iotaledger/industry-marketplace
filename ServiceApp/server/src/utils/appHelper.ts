@@ -4,7 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { readData, writeData, readRow, readAllData } from './databaseHelper';
+import { readData, writeData, readRow, readAllData, removeData } from './databaseHelper';
 import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
@@ -172,6 +172,27 @@ export class AppHelper {
             const mam: any = await readData('mam', channelId);
             res.json({ ...mam });
         });
+
+        app.get('/clearUsers', async (req, res) => {
+
+            await removeData('user');
+            await removeData('did');
+            await removeData('credentials');
+            let user: any = await readAllData('user');
+            let did: any = await readAllData('did')
+            let credentials: any = await readAllData('credentials')
+            res.json({ ...user, did, credentials});
+        });
+
+
+
+        app.get('/clearWallets', async (req, res) => {
+
+            await removeData('user');
+            let user: any = await readAllData('user');
+            res.json({ ...user});
+        });
+
 
 
 
