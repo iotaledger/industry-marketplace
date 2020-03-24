@@ -173,8 +173,12 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
                 const id = userDID.replace('did:IOTA:', '')
+                console.log("ID", id)
                 const did: any = await readRow('did', 'root', id)
+                console.log("did", did)
+                console.log(provider)
                 const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+                console.log(verifiablePresentation)
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
