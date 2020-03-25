@@ -40,7 +40,7 @@ const argv = yargs
     .help('help')
     .options({
         create: { type: 'string', demandOption: true },
-        name: { type: 'string', demandOption: true },
+        name: { type: 'string' },
         role: { type: 'string' },
         location: { type: 'string' }
     })
