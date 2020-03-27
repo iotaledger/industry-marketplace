@@ -36,7 +36,7 @@ const createNewWallet = async () => {
         if (newBalance > 0) {
             const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
             const transfers = [{ address: wallet.address, value: 250000 }]
-            await transferFunds(faucet, 250000, transfers, true)
+            await transferFunds(faucet, 250000, transfers)
         }
     }
 
