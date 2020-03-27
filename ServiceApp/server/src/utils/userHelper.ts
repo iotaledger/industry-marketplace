@@ -1,5 +1,5 @@
 import yargs from 'yargs';
-import { writeData, readData } from './databaseHelper';
+import { generateAddress } from '@iota/core';
 import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
 import { createNewUser } from './credentialHelper';
 
@@ -15,41 +15,34 @@ const createUser = async () => {
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    try {
-        const wallet = generateNewWallet();
+    const walletDelay = Number(process.env.WALLETDELAY)
+    await new Promise(resolved => setTimeout(resolved, walletDelay ));
+    console.log('Start creating wallet...');
+    const wallet = generateNewWallet();
 
-        interface IFaucet {
-            address?: string;
-            balance?: number;
-            keyIndex?: number;
-            seed?: string;
+    interface IFaucet {
+        address?: string;
+        balance?: number;
+        keyIndex?: number;
+        seed?: string;
+    }
+
+    for (let index of [0,20]) {
+        const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
+
+        const newAddress = await generateAddress(seed, index)
+        const newBalance = await getBalance(newAddress);
+
+        if (newBalance > 0) {
+            const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
+            const transfers = [{ address: wallet.address, value: 250000 }]
+            await transferFunds(faucet, 250000, transfers, true)
         }
-
-
-        const faucet: IFaucet = await readData('faucet');
-
-
-        let retries = 0;
-        while (retries++ < 50) {
-            const faucetBalance = await getBalance(faucet.address);
-            if(faucetBalance === 0){
-                break;
-            }
-            await new Promise(resolved => setTimeout(resolved, 15000));
-        }
-
-        const transfer = [{ address: wallet.address, value: 250000 }]
-
-        await transferFunds(faucet, 250000, transfer, true)
-        const balance = await getBalance(wallet.address);
-        if(balance != 0){
-           await writeData('wallet', { ...wallet, balance });
-        }
-    } catch (e) {
-        console.log("wallet-error", e)
     }
 
 };
+
+
 
 
 const argv = yargs
