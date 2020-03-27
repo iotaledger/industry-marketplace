@@ -2,6 +2,7 @@ import yargs from 'yargs';
 import { generateAddress } from '@iota/core';
 import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
 import { createNewUser } from './credentialHelper';
+import { ILLEGAL_TRANSACTION_INDEX } from '@iota/core/typings/errors';
 
 const createUser = async () => {
     const { name, role = '', location = '' } = argv;
@@ -27,11 +28,12 @@ const createNewWallet = async () => {
         seed?: string;
     }
 
-    for (let index of [0,20]) {
+    for (let index of [0,1,2,3,4,5,6,7,8,9,10, 20]) {
         const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
 
         const newAddress = await generateAddress(seed, index)
         const newBalance = await getBalance(newAddress);
+        console.log(newAddress, newBalance, index)
 
         if (newBalance > 0) {
             const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
