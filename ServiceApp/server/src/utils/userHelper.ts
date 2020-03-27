@@ -2,7 +2,6 @@ import yargs from 'yargs';
 import { generateAddress } from '@iota/core';
 import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
 import { createNewUser } from './credentialHelper';
-import { ILLEGAL_TRANSACTION_INDEX } from '@iota/core/typings/errors';
 
 const createUser = async () => {
     const { name, role = '', location = '' } = argv;
