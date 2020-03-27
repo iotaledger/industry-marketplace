@@ -126,6 +126,7 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
 
 const updateWallet = async (seed, address, keyIndex, balance) => {
     await writeData('wallet', { address, balance, keyIndex, seed });
+    console.log("new wallet",  { address, balance, keyIndex, seed } )
 };
 
 export const processPayment = async () => {
