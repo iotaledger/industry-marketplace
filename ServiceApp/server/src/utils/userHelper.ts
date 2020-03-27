@@ -25,7 +25,19 @@ const createNewWallet = async () => {
             seed?: string;
         }
 
+
         const faucet: IFaucet = await readData('faucet');
+
+
+        let retries = 0;
+        while (retries++ < 50) {
+            const faucetBalance = await getBalance(faucet.address);
+            if(faucetBalance === 0){
+                break;
+            }
+            await new Promise(resolved => setTimeout(resolved, 15000));
+        }
+
         const transfer = [{ address: wallet.address, value: 250000 }]
 
         await transferFunds(faucet, 250000, transfer, true)
