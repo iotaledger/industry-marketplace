@@ -57,7 +57,7 @@ const repairWallet = async (seed, keyIndex) => {
 }
 
 
-export const transferFunds = async (wallet, totalAmount, transfers) => {
+export const transferFunds = async (wallet, totalAmount, transfers, faucet?) => {
     try {
         const { address, keyIndex, seed } = wallet;
         const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
@@ -90,7 +90,9 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
                     sendTrytes(trytes, depth, minWeightMagnitude)
                         .then(async transactions => {
                             // Before the payment is confirmed update the wallet with new address and index, calculate expected balance
+                            if(!faucet){
                             await updateWallet(seed, remainderAddress, keyIndex + 1, balance - totalAmount);
+                            }
                             const hashes = transactions.map(transaction => transaction.hash);
  
                             let retries = 0;
@@ -104,7 +106,9 @@ export const transferFunds = async (wallet, totalAmount, transfers) => {
 
                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
                             const newBalance = await getBalance(remainderAddress);
+                            if(!faucet){
                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
+                            }
 
                             resolve(transactions);
                         })

@@ -1,6 +1,8 @@
 import yargs from 'yargs';
 import { generateAddress } from '@iota/core';
+import { writeData} from './databaseHelper';
 import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
+
 import { createNewUser } from './credentialHelper';
 
 const createUser = async () => {
@@ -38,8 +40,13 @@ const createNewWallet = async () => {
             const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
             console.log("use faucet", faucet)
             const transfers = [{ address: wallet.address, value: 250000 }]
-            await transferFunds(faucet, 250000, transfers)
+            await transferFunds(faucet, 250000, transfers, faucet?)
+            const balance = await getBalance(wallet.address);
+            if(balance != 0){
+               await writeData('wallet', { ...wallet, balance });
+            }
         }
+        //WRITE TO WALLE TNOT TO FAUCET
     }
 
 };
