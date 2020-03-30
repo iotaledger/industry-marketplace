@@ -1,7 +1,6 @@
 import yargs from 'yargs';
-import { generateAddress } from '@iota/core';
-import { writeData} from './databaseHelper';
-import { generateNewWallet, getBalance, transferFunds } from './walletHelper';
+import { writeData } from './databaseHelper';
+import { generateNewWallet, getBalance,funding } from './walletHelper';
 
 import { createNewUser } from './credentialHelper';
 
@@ -16,39 +15,31 @@ const createUser = async () => {
 };
 
 const createNewWallet = async () => {
-    console.log('Creating wallet...');
     const walletDelay = Number(process.env.WALLETDELAY)
-    await new Promise(resolved => setTimeout(resolved, walletDelay ));
-    console.log('Start creating wallet...');
+    await new Promise(resolved => setTimeout(resolved, walletDelay));
+    console.log('Creating wallet...');
     const wallet = generateNewWallet();
 
-    interface IFaucet {
-        address?: string;
-        balance?: number;
-        keyIndex?: number;
-        seed?: string;
+    const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
+    const transfers = [{ address: wallet.address, value: 250000 }]
+    await funding(seed, transfers)
+
+    // for (let index of [0,1,2,3,4,5,6,7 ,8 ,9 ,10 ,11 , 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
+    //     const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
+
+    //     const newAddress = await generateAddress(seed, index)
+    //     const newBalance = await getBalance(newAddress);
+    //     console.log(newAddress, newBalance, index)
+
+    //     if (newBalance > 0) {
+    //      const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
+    //   console.log("use faucet", faucet)
+    //   const transfers = [{ address: wallet.address, value: 250000 }]
+    //  await transferFunds(faucet, 250000, transfers, true)
+    const balance = await getBalance(wallet.address);
+    if (balance != 0) {
+        await writeData('wallet', { ...wallet, balance });
     }
-    
-    for (let index of [0,1,2,3,4,5,6,7,8,9,10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
-        const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
-
-        const newAddress = await generateAddress(seed, index)
-        const newBalance = await getBalance(newAddress);
-        console.log(newAddress, newBalance, index)
-
-        if (newBalance > 0) {
-            const faucet: IFaucet = { address: newAddress, balance: newBalance, keyIndex: index, seed: seed }
-            console.log("use faucet", faucet)
-            const transfers = [{ address: wallet.address, value: 250000 }]
-            await transferFunds(faucet, 250000, transfers, true)
-            const balance = await getBalance(wallet.address);
-            if(balance != 0){
-               await writeData('wallet', { ...wallet, balance });
-            }
-            break;
-        }
-    }
-
 };
 
 
