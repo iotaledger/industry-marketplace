@@ -198,20 +198,30 @@ export const processPayment = async () => {
 
 
 
-/*
-Example getBalance operation:
+export const funding = (seed, transfers) => {
 
-import { getBalance } from './walletHelper';
+return new Promise(async (resolve, reject) => {
+const { sendTrytes, getLatestInclusion, prepareTransfers } = composeAPI({ provider });
 
-await getBalance(address);
-
-*/
-
-/*
-Example payment operation:
-
-import { processPayment } from './walletHelper';
-
-await processPayment();
-
-*/
+prepareTransfers(seed, transfers)
+.then(async trytes => {
+    sendTrytes(trytes, depth, minWeightMagnitude)
+        .then(async transactions => {
+            const hashes = transactions.map(transaction => transaction.hash);
+            let retries = 0;
+            while (retries++ < 40) {
+                const statuses = await getLatestInclusion(hashes);
+                if (statuses.filter(status => status).length === 4) {
+                    break;
+                }
+                await new Promise(resolved => setTimeout(resolved, 5000));
+            }
+            resolve();
+        })
+        .catch(error => {
+            console.error('transferFunds sendTrytes error', error);
+            reject(error);
+        });
+});
+});
+}
