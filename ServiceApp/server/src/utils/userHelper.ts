@@ -28,8 +28,8 @@ const createNewWallet = async () => {
         keyIndex?: number;
         seed?: string;
     }
-
-    for (let index of [0,1,2,3,4,5,6,7,8,9,10, 20]) {
+    
+    for (let index of [0,1,2,3,4,5,6,7,8,9,10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
         const seed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
 
         const newAddress = await generateAddress(seed, index)
@@ -45,8 +45,8 @@ const createNewWallet = async () => {
             if(balance != 0){
                await writeData('wallet', { ...wallet, balance });
             }
+            break;
         }
-        //WRITE TO WALLE TNOT TO FAUCET
     }
 
 };
