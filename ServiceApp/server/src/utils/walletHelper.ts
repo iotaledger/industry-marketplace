@@ -1,6 +1,5 @@
 import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
-import axios from 'axios';
-import { depth, faucet, faucetAmount, minWeightMagnitude, security } from '../config.json';
+import { depth, minWeightMagnitude, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
@@ -9,7 +8,7 @@ import { processPaymentQueue } from './paymentQueueHelper';
 const provider = process.env.PROVIDER
 
 
-export const generateNewWallet = () => {
+export const generateNewWallet = async() => {
     try {
         const seed = generateSeed();
         const address = generateAddress(seed, 0, 2, true);
@@ -19,6 +18,29 @@ export const generateNewWallet = () => {
         return {};
     }
 };
+
+export const fundWallet = async(wallet) => {
+    try {
+        const walletDelay = Number(process.env.WALLETDELAY)
+        await new Promise(resolved => setTimeout(resolved, walletDelay));
+        console.log('Creating wallet...');
+    
+        const faucetSeed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
+        const transfers = [{ address: wallet.address, value: 250000 }]
+        await transferFaucetFunds(faucetSeed, transfers)
+
+        const balance = await getBalance(wallet.address);
+        if (balance != 0) {
+            await writeData('wallet', { ...wallet, balance });
+        }
+    } catch (error) {
+        console.error('Funding error', error);
+        return {};
+    }
+};
+
+
+
 
 export const getBalance = async address => {
     try {
@@ -158,13 +180,7 @@ export const processPayment = async () => {
                 const newWallet = generateNewWallet();
                 console.log('processPayment generating new wallet', newWallet);
                 try {
-                    const response = await axios.get(`${faucet}?address=${newWallet.address}&amount=${faucetAmount}`);
-                    const data = response.data;
-                    if (data.success) {
-                        const balance = await getBalance(newWallet.address);
-                        await writeData('wallet', { ...newWallet, balance });
-                        return null;
-                    }
+                    await fundWallet(newWallet);
                 } catch (error) {
                     console.log('fund wallet error', error);
                     throw new Error('Wallet funding error');
@@ -198,7 +214,7 @@ export const processPayment = async () => {
 
 
 
-export const funding = (seed, transfers) => {
+export const transferFaucetFunds = (seed, transfers) => {
 
 return new Promise(async (resolve, reject) => {
 const { sendTrytes, getLatestInclusion, prepareTransfers } = composeAPI({ provider });

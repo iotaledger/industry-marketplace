@@ -14,9 +14,7 @@ import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance} from './walletHelper';
 import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
-
-
-
+import { generateNewWallet, fundWallet } from './walletHelper';
 
 const provider = process.env.PROVIDER
 
@@ -50,6 +48,7 @@ export class AppHelper {
 
         app.post('/config', async (req, res) => {
             try {
+
                 const { location, name, role, wallet, usePaymentQueue } = req.body;
                 interface IUser {
                     location?: string;
@@ -99,6 +98,30 @@ export class AppHelper {
                 });
             }
         });
+
+        app.post('/createUser', async (req, res) => {
+            try {
+                const {role, name, location} = await req.body;
+                if (name && (role === 'SR' || role === 'SP') && location) {	
+                    const user = createNewUser(name, role, location);
+                    await writeData('wallet', {...user});
+                }
+          
+                const wallet = generateNewWallet(); 
+                await fundWallet(wallet)
+
+                res.send({
+                    success: true
+                });
+            } catch (error) {
+                console.log('Wallet Error', error);
+                res.send({
+                    success: false,
+                    error
+                });
+            }
+        });
+
 
         app.post('/addWallet', async (req, res) => {
             try {
@@ -175,6 +198,7 @@ export class AppHelper {
 
 
         app.post('/clear', async (req, res) => {
+            console.log("req.body", req.body)
             const { table } = req.body;
             await removeData(table);
             let data: any = await readAllData(table);
