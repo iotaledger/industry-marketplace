@@ -12,7 +12,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { getBalance} from './walletHelper';
+import { getBalance } from './walletHelper';
 import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
 import { generateNewWallet, fundWallet } from './walletHelper';
 
@@ -74,12 +74,9 @@ export class AppHelper {
 
                 user.usePaymentQueue = usePaymentQueue ? 1 : 0;
 
-                if (name && (role === 'SR' || role === 'SP')) {	
+                if (name && (role === 'SR' || role === 'SP')) {
                     createNewUser(name, role, location);
-                    await writeData('user', {...user});
                 }
-               // await writeData('user', user);
-
                 if (wallet) {
                     const response = await axios.get(config.faucet);
                     const data = response.data;
@@ -103,14 +100,13 @@ export class AppHelper {
         app.post('/createUser', async (req, res) => {
             try {
                 console.log(req.body)
-                const {role, name, location} = await req.body;
-                if (name && (role === 'SR' || role === 'SP') && location) {	
-                    const user = createNewUser(name, role, location);
-                    await writeData('user', {...user});
+                const { role, name, location } = req.body;
+                if (name && (role === 'SR' || role === 'SP') && location) {
+                    createNewUser(name, role, location);
                 }
-          
-                const wallet = generateNewWallet(); 
-                await fundWallet(wallet)
+
+                const wallet = generateNewWallet();
+              await fundWallet(wallet)
 
                 res.send({
                     success: true
@@ -126,9 +122,9 @@ export class AppHelper {
 
         app.post('/addWallet', async (req, res) => {
             try {
-                const { seed, address, keyIndex, balance} = await req.body;
-                if(seed && address){
-                    await writeData('wallet', { seed, address, keyIndex, balance});
+                const { seed, address, keyIndex, balance } = await req.body;
+                if (seed && address) {
+                    await writeData('wallet', { seed, address, keyIndex, balance });
                 }
                 res.send({
                     success: true
@@ -187,7 +183,7 @@ export class AppHelper {
 
             let user: any = await readAllData('user');
 
-            res.json({ ...user});
+            res.json({ ...user });
         });
 
 
@@ -203,15 +199,15 @@ export class AppHelper {
             const { table } = req.body;
             await removeData(table);
             let data: any = await readAllData(table);
-            res.json({ ...data});
+            res.json({ ...data });
         });
 
 
         app.get('/allWallets', async (req, res) => {
-        
+
             const wallet: any = await readAllData('wallet');
 
-            res.json({ ...wallet});
+            res.json({ ...wallet });
         });
 
 
@@ -234,9 +230,9 @@ export class AppHelper {
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
-                const {name} : any = await readRow('user', 'id', userDID)
+                const { name }: any = await readRow('user', 'id', userDID)
                 // 2. Send transaction
-                const hash = await sendMessage({ ...req.body,  userName: name }, tag);
+                const hash = await sendMessage({ ...req.body, userName: name }, tag);
                 // 3. Create new MAM channel
                 // 4. Publish first message with payload
                 // 5. Save channel details to DB
@@ -267,7 +263,7 @@ export class AppHelper {
                 const tag = await buildTag('proposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id
                 const id = userDID.replace('did:IOTA:', '')
-          
+
 
                 interface IDid {
                     root?: string;
@@ -280,11 +276,11 @@ export class AppHelper {
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
-                const {name} : any = await readRow('user', 'id', userDID)
-      
+                const { name }: any = await readRow('user', 'id', userDID)
+
                 const payload = { ...req.body, userName: name }
                 const hash = await sendMessage(payload, tag);
-           
+
 
                 console.log('proposal success', hash);
                 res.send({
@@ -309,7 +305,7 @@ export class AppHelper {
                 const channelId = req.body.frame.conversationId;
                 const mam = await publish(channelId, req.body);
 
-            
+
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = req.body.frame.receiver.identification.id;
                 mam.secretKey = await encryptWithReceiversPublicKey(id, "keys-1", mam.secretKey);
@@ -320,10 +316,10 @@ export class AppHelper {
                 const tag = buildTag('acceptProposal', location, submodelId);
 
                 const userDID = req.body.frame.sender.identification.id;
-                const {name} : any = await readRow('user', 'id', userDID)
+                const { name }: any = await readRow('user', 'id', userDID)
 
                 // 6. Send transaction, include MAM channel info
-                const hash = await sendMessage({ ...req.body, mam,  userName: name }, tag);
+                const hash = await sendMessage({ ...req.body, mam, userName: name }, tag);
 
                 console.log('acceptProposal success', hash);
                 res.send({
@@ -350,10 +346,10 @@ export class AppHelper {
 
                 const userDID = req.body.frame.sender.identification.id;
 
-                const {name} : any = await readRow('user', 'id', userDID)
+                const { name }: any = await readRow('user', 'id', userDID)
 
                 // 2. Send transaction
-                const hash = await sendMessage({ ...req.body,  userName: name }, tag);
+                const hash = await sendMessage({ ...req.body, userName: name }, tag);
 
                 console.log('rejectProposal success', hash);
                 res.send({
@@ -384,17 +380,17 @@ export class AppHelper {
                     keyIndex?: number;
                     seed?: string;
                 }
-        
+
                 const wallet: IWallet = await readData('wallet');
                 const { address } = wallet;
 
                 const userDID = req.body.frame.sender.identification.id;
 
-                
-                const {name} : any = await readRow('user', 'id', userDID)
 
-                const payload = { ...req.body, walletAddress: address,  userName: name};
-               
+                const { name }: any = await readRow('user', 'id', userDID)
+
+                const payload = { ...req.body, walletAddress: address, userName: name };
+
 
                 // 3. For data request include access credentials from DB
                 if (config.dataRequest && config.dataRequest.includes(submodelId)) {
@@ -440,10 +436,10 @@ export class AppHelper {
                 if (priceObject && priceObject.value) {
                     const recepientAddress = req.body.walletAddress;
 
-                        console.log("Add to Payment Queue")
-                        // 2. Add to payment queue
-                        await addToPaymentQueue(recepientAddress, Number(priceObject.value));
-                  
+                    console.log("Add to Payment Queue")
+                    // 2. Add to payment queue
+                    await addToPaymentQueue(recepientAddress, Number(priceObject.value));
+
 
                     // 3. Retrieve MAM channel from DB
                     // 4. Attach message with confirmation payload
@@ -455,12 +451,12 @@ export class AppHelper {
                     const location = getLocationFromMessage(req.body);
                     const submodelId = req.body.dataElements.submodels[0].identification.id;
                     const tag = buildTag('informPayment', location, submodelId);
-                  
-                   const {name} : any = await readRow('user', 'id', userDID)
+
+                    const { name }: any = await readRow('user', 'id', userDID)
 
 
                     // 7. Send transaction
-                    const hash = await sendMessage({ ...req.body,  userName: name }, tag);
+                    const hash = await sendMessage({ ...req.body, userName: name }, tag);
 
                     console.log('informPayment success', hash);
                     res.send({
