@@ -76,6 +76,7 @@ export class AppHelper {
 
                 if (name && (role === 'SR' || role === 'SP')) {	
                     createNewUser(name, role, location);
+                    await writeData('user', {...user});
                 }
                // await writeData('user', user);
 
@@ -101,10 +102,11 @@ export class AppHelper {
 
         app.post('/createUser', async (req, res) => {
             try {
+                console.log(req.body)
                 const {role, name, location} = await req.body;
                 if (name && (role === 'SR' || role === 'SP') && location) {	
                     const user = createNewUser(name, role, location);
-                    await writeData('wallet', {...user});
+                    await writeData('user', {...user});
                 }
           
                 const wallet = generateNewWallet(); 
@@ -121,7 +123,6 @@ export class AppHelper {
                 });
             }
         });
-
 
         app.post('/addWallet', async (req, res) => {
             try {
@@ -228,12 +229,8 @@ export class AppHelper {
                 const tag = buildTag('callForProposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
                 const id = userDID.replace('did:IOTA:', '')
-                console.log("ID", id)
                 const did: any = await readRow('did', 'root', id)
-                console.log("did", did)
-                console.log(provider)
                 const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
-                console.log(verifiablePresentation)
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
