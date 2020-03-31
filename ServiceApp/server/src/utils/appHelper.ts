@@ -102,11 +102,11 @@ export class AppHelper {
                 console.log(req.body)
                 const { role, name, location } = req.body;
                 if (name && (role === 'SR' || role === 'SP') && location) {
-                    createNewUser(name, role, location);
+                    await createNewUser(name, role, location);
                 }
 
                 const wallet = generateNewWallet();
-              await fundWallet(wallet)
+                await fundWallet(wallet)
 
                 res.send({
                     success: true

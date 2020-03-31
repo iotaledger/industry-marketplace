@@ -22,7 +22,8 @@ import { createCredential, readRow, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
 
-const provider = process.env.PROVIDER
+//const provider = process.env.PROVIDER
+const provider = "https://nodes.devnet.iota.org:443"
 
 export interface IUser {
     id : string,
@@ -60,6 +61,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
         const id = userDIDDocument.GetDID().GetDID();
         const user: IUser = { id, name, role, location, address: tangleComsAddress };
         await writeData('user', user);
+        console.log("user", user)
         resolve(user);
     });
 }
