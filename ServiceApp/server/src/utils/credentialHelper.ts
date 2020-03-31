@@ -20,18 +20,9 @@ import {
 } from 'identity_ts';
 import { createCredential, readRow, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
+import { IUser } from '../models/user';
 
-
-//const provider = process.env.PROVIDER
-const provider = "https://nodes.devnet.iota.org:443"
-
-export interface IUser {
-    id : string,
-    name : string,
-    role : string,
-    location : string,
-    address : string
-};
+const provider = process.env.PROVIDER
 
 export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise <IUser> {
     
