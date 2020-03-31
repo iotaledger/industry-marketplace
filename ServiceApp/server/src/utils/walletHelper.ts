@@ -23,13 +23,16 @@ export const fundWallet = async(wallet) => {
     try {
         const walletDelay = Number(process.env.WALLETDELAY)
         await new Promise(resolved => setTimeout(resolved, walletDelay));
-        console.log('Creating wallet...');
+        console.log('Funding wallet...');
     
         const faucetSeed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
         const transfers = [{ address: wallet.address, value: 250000 }]
+        console.log(transfers)
         await transferFaucetFunds(faucetSeed, transfers)
+        console.log("transfer successful")
 
         const balance = await getBalance(wallet.address);
+        console.log("balance", balance)
         if (balance != 0) {
             await writeData('wallet', { ...wallet, balance });
         }
@@ -218,11 +221,13 @@ export const transferFaucetFunds = (seed, transfers) => {
 
 return new Promise(async (resolve, reject) => {
 const { sendTrytes, getLatestInclusion, prepareTransfers } = composeAPI({ provider });
-
+console.log("1")
 prepareTransfers(seed, transfers)
 .then(async trytes => {
+    console.log("2")
     sendTrytes(trytes, depth, minWeightMagnitude)
         .then(async transactions => {
+            console.log("3")
             const hashes = transactions.map(transaction => transaction.hash);
             let retries = 0;
             while (retries++ < 40) {
@@ -230,8 +235,10 @@ prepareTransfers(seed, transfers)
                 if (statuses.filter(status => status).length === 4) {
                     break;
                 }
+                console.log("4")
                 await new Promise(resolved => setTimeout(resolved, 5000));
             }
+            console.log("done")
             resolve();
         })
         .catch(error => {
