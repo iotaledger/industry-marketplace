@@ -1,6 +1,8 @@
 import yargs from 'yargs';
 import { generateNewWallet, fundWallet } from './walletHelper';
 import { createNewUser } from './credentialHelper';
+import { IWallet } from '../models/wallet';
+
 
 const createUser = async () => {
     const { name, role = '', location = '' } = argv;
@@ -13,7 +15,7 @@ const createUser = async () => {
 };
 
 const createNewWallet = async () => {
-    const wallet = generateNewWallet();
+    const wallet: IWallet = await generateNewWallet();
     await fundWallet(wallet)
 };
 

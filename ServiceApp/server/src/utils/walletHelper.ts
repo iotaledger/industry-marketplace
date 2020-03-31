@@ -3,27 +3,31 @@ import { depth, minWeightMagnitude, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
-
+import { IWallet } from '../models/wallet';
 
 const provider = process.env.PROVIDER
 
 
 export const generateNewWallet = async() => {
     try {
-        const seed = generateSeed();
+        const seed: string = generateSeed();
         const address = generateAddress(seed, 0, 2, true);
-        return { seed, address, keyIndex: 0, balance: 0 };
+        const wallet: IWallet = { seed, address, keyIndex: 0, balance: 0 }
+        console.log("wallet", wallet)
+        return wallet;
     } catch (error) {
         console.error('generateNewWallet error', error);
-        return {};
+        return ;
     }
 };
 
-export const fundWallet = async(wallet) => {
+export const fundWallet = async( wallet: IWallet) => {
     try {
         const walletDelay = Number(process.env.WALLETDELAY)
         await new Promise(resolved => setTimeout(resolved, walletDelay));
         console.log('Funding wallet...');
+     
+        console.log(wallet)
     
         const faucetSeed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
         const transfers = [{ address: wallet.address, value: 250000 }]
@@ -58,29 +62,6 @@ export const getBalance = async address => {
         return 0;
     }
 };
-
-const repairWallet = async (seed, keyIndex) => {
-    try {
-        return new Promise(async (resolve, reject) => {
-            //Iterating through keyIndex ordered by likelyhood
-            for (let value of [-2, -1, 1, 2, 3, 4, -3, -4, -5, -6, -7, 5, 6, 7]) {
-                const newIndex = Number(keyIndex) + Number(value)
-                if (newIndex >= 0) {
-                    const newAddress = await generateAddress(seed, newIndex)
-                    const newBalance = await getBalance(newAddress);
-
-                    if (newBalance > 0) {
-                        await writeData('wallet', { address: newAddress, balance: newBalance, keyIndex: newIndex, seed });
-                        resolve();
-                    }
-                }
-            }
-        });
-    } catch (error) {
-        console.log("Repair wallet Error", error)
-    }
-}
-
 
 export const transferFunds = async (wallet, totalAmount, transfers, faucet?) => {
     try {
@@ -161,44 +142,18 @@ const updateWallet = async (seed, address, keyIndex, balance) => {
 export const processPayment = async () => {
     try {
         console.log('processPayment start');
-        interface IWallet {
-            address?: string;
-            balance?: number;
-            keyIndex?: number;
-            seed?: string;
-        }
 
-        const wallet: IWallet = await readData('wallet');
+        const wallet: any = await readData('wallet');
 
         if (!wallet) {
             console.log('processPayment error. No Wallet');
             return null;
         }
 
-        const walletBalance = await getBalance(wallet.address);
-        console.log('processPayment check wallet', wallet.address, walletBalance);
-        if (walletBalance === 0) {
-            let status = await repairWallet(wallet.seed, wallet.keyIndex)
-            if (status) {
-                const newWallet = generateNewWallet();
-                console.log('processPayment generating new wallet', newWallet);
-                try {
-                    await fundWallet(newWallet);
-                } catch (error) {
-                    console.log('fund wallet error', error);
-                    throw new Error('Wallet funding error');
-                    return null;
-                }
-                console.log('processPayment funding new wallet', newWallet);
-                return null;
-            }
-        }
-
         let totalAmount = 0;
         const paymentQueue: any = await processPaymentQueue();
         console.log('processPayment paymentQueue', paymentQueue);
         paymentQueue.forEach(({ value }) => totalAmount += value);
-        console.log('processPayment', totalAmount, wallet);
 
         if (paymentQueue.length === 0 || totalAmount === 0) {
             return null;

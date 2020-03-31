@@ -15,6 +15,7 @@ import { sendMessage } from './transactionHelper';
 import { getBalance } from './walletHelper';
 import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
 import { generateNewWallet, fundWallet } from './walletHelper';
+import { IWallet } from '../models/wallet';
 
 const provider = process.env.PROVIDER
 
@@ -99,14 +100,12 @@ export class AppHelper {
 
         app.post('/createUser', async (req, res) => {
             try {
-                console.log(req.body)
                 const { role, name, location } = req.body;
                 if (name && (role === 'SR' || role === 'SP') && location) {
                     await createNewUser(name, role, location);
                 }
-
-                const wallet = generateNewWallet();
-                await fundWallet(wallet)
+                const wallet: IWallet = await generateNewWallet();
+                fundWallet(wallet)
 
                 res.send({
                     success: true
