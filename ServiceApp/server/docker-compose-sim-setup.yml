@@ -33,7 +33,7 @@ services:
  client2:
   build: 
     context: .
-    dockerfile: Dockerfiles/client1/Dockerfile
+    dockerfile: Dockerfiles/client2/Dockerfile
   command: sh /usr/src/ServiceApp/server/scripts/setupSP.sh
   network_mode: host
   volumes:

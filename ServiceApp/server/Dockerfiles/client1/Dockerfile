@@ -16,6 +16,6 @@ RUN yarn
 RUN yarn build
 # Remove unneccesary so the docker image doesn't exceeds max size
 RUN apk del git python make g++
-RUN chmod +x /usr/src/ServiceApp/server/setupSR.sh
+RUN chmod +x /usr/src/ServiceApp/server/scripts/setupSR.sh
 
 

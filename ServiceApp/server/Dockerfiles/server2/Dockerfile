@@ -18,5 +18,5 @@ RUN yarn build
 
 # Remove unneccesary so the docker image doesn't exceeds max size
 RUN apk del git python make g++
-RUN chmod +x /usr/src/ServiceApp/server/startMarketManager.sh
+RUN chmod +x /usr/src/ServiceApp/server/scripts/startMarketManager.sh
 
