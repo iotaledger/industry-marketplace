@@ -13,7 +13,6 @@ export const generateNewWallet = async() => {
         const seed: string = generateSeed();
         const address = generateAddress(seed, 0, 2, true);
         const wallet: IWallet = { seed, address, keyIndex: 0, balance: 0 }
-        console.log("wallet", wallet)
         return wallet;
     } catch (error) {
         console.error('generateNewWallet error', error);
@@ -26,17 +25,13 @@ export const fundWallet = async( wallet: IWallet) => {
         const walletDelay = Number(process.env.WALLETDELAY)
         await new Promise(resolved => setTimeout(resolved, walletDelay));
         console.log('Funding wallet...');
-     
-        console.log(wallet)
+
     
         const faucetSeed = 'SEED99999999999999999999999999999999999999999999999999999999999999999999999'
         const transfers = [{ address: wallet.address, value: 250000 }]
-        console.log(transfers)
         await transferFaucetFunds(faucetSeed, transfers)
-        console.log("transfer successful")
 
         const balance = await getBalance(wallet.address);
-        console.log("balance", balance)
         if (balance != 0) {
             await writeData('wallet', { ...wallet, balance });
         }
@@ -136,7 +131,6 @@ export const transferFunds = async (wallet, totalAmount, transfers, faucet?) => 
 
 const updateWallet = async (seed, address, keyIndex, balance) => {
     await writeData('wallet', { address, balance, keyIndex, seed });
-    console.log("new wallet",  { address, balance, keyIndex, seed } )
 };
 
 export const processPayment = async () => {
@@ -176,13 +170,10 @@ export const transferFaucetFunds = (seed, transfers) => {
 
 return new Promise(async (resolve, reject) => {
 const { sendTrytes, getLatestInclusion, prepareTransfers } = composeAPI({ provider });
-console.log("1")
 prepareTransfers(seed, transfers)
 .then(async trytes => {
-    console.log("2")
     sendTrytes(trytes, depth, minWeightMagnitude)
         .then(async transactions => {
-            console.log("3")
             const hashes = transactions.map(transaction => transaction.hash);
             let retries = 0;
             while (retries++ < 40) {
@@ -190,10 +181,8 @@ prepareTransfers(seed, transfers)
                 if (statuses.filter(status => status).length === 4) {
                     break;
                 }
-                console.log("4")
                 await new Promise(resolved => setTimeout(resolved, 5000));
             }
-            console.log("done")
             resolve();
         })
         .catch(error => {

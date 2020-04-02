@@ -15,14 +15,6 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT, did TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS faucet (seed TEXT, address TEXT, keyIndex INTEGER, balance INTEGER)');
-
-        db.all('SELECT * FROM faucet', (err, row)=>{
-            if(err){
-                console.log("Activating Faucet...")
-                createFaucet({ seed: 'SEED99999999999999999999999999999999999999999999999999999999999999999999999999999', address: 'FJHSSHBZTAKQNDTIKJYCZBOZDGSZANCZSWCNWUOCZXFADNOQSYAHEJPXRLOVPNOQFQXXGEGVDGICLMOXX', balance: 2779530283277761, keyIndex: 0 })
-            }
-          });
     }
 );
 
@@ -70,11 +62,6 @@ export const createCredential = async ({ id, credential, did }) => {
     await db.run('INSERT INTO credentials (id, credential, did) VALUES (?, ?, ?)', [id, credential, did]);
 };
 
-const createFaucet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('INSERT INTO faucet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
-};
-
-
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -96,9 +83,6 @@ export const writeData = async (table, data) => {
                 return;
             case 'credential':
                 await createCredential(data);
-                return;
-            case 'faucet':
-                await createFaucet(data);
                 return;
             case 'mam':
             default:

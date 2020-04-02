@@ -8,7 +8,6 @@ import { readData, writeData, readRow, readAllData, removeData } from './databas
 import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
 import { publish, publishDID } from './mamHelper';
-import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
@@ -16,6 +15,7 @@ import { getBalance } from './walletHelper';
 import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
 import { generateNewWallet, fundWallet } from './walletHelper';
 import { IWallet } from '../models/wallet';
+import { IUser } from '../models/user';
 
 const provider = process.env.PROVIDER
 
@@ -51,13 +51,7 @@ export class AppHelper {
             try {
 
                 const { location, name, role, wallet, usePaymentQueue } = req.body;
-                interface IUser {
-                    location?: string;
-                    id?: string;
-                    role?: string;
-                    name?: string;
-                    usePaymentQueue?: number;
-                }
+        
                 const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
 
@@ -119,25 +113,6 @@ export class AppHelper {
             }
         });
 
-        app.post('/addWallet', async (req, res) => {
-            try {
-                const { seed, address, keyIndex, balance } = await req.body;
-                if (seed && address) {
-                    await writeData('wallet', { seed, address, keyIndex, balance });
-                }
-                res.send({
-                    success: true
-                });
-            } catch (error) {
-                console.log('Wallet Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
-
-
         app.post('/data', async (req, res) => {
             try {
                 const { conversationId, deviceId, userId, schema } = req.body;
@@ -178,14 +153,6 @@ export class AppHelper {
             res.json({ ...user, balance, wallet: address });
         });
 
-        app.get('/allUsers', async (req, res) => {
-
-            let user: any = await readAllData('user');
-
-            res.json({ ...user });
-        });
-
-
         app.get('/mam', async (req, res) => {
             const channelId = req.query.conversationId;
             const mam: any = await readData('mam', channelId);
@@ -199,14 +166,6 @@ export class AppHelper {
             await removeData(table);
             let data: any = await readAllData(table);
             res.json({ ...data });
-        });
-
-
-        app.get('/allWallets', async (req, res) => {
-
-            const wallet: any = await readAllData('wallet');
-
-            res.json({ ...wallet });
         });
 
 
@@ -479,38 +438,7 @@ export class AppHelper {
             }
         });
 
-        app.post('/mqtt', async (req, res) => {
-            try {
-                // 1. Create HelperClient 
-                // 2. Subscribe to zmq
-                // 3. Post data under mqtt topic
-                if (req.body.message === 'subscribe') {
-                    const subscriptionId = await createHelperClient();
-                    zmqToMQTT(subscriptionId);
-
-                    res.send({
-                        success: true,
-                        id: subscriptionId
-                    });
-
-                } else if (req.body.message === 'unsubscribe') {
-                    // 4. Unsubscribe from zmq with ID 
-                    const subscriptionId = req.body.subscriptionId;
-                    unsubscribeHelperClient(subscriptionId);
-
-                    res.send({
-                        success: true,
-                        id: subscriptionId
-                    });
-                }
-            } catch (error) {
-                console.log('MQTT Error', error);
-                res.send({
-                    success: false,
-                    error
-                });
-            }
-        });
+   
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
         if (!customListener) {
             app.listen(port, async err => {

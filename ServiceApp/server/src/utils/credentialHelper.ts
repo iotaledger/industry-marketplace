@@ -52,7 +52,6 @@ export function createNewUser(name: string = '', role: string = '', location: st
         const id = userDIDDocument.GetDID().GetDID();
         const user: IUser = { id, name, role, location, address: tangleComsAddress };
         await writeData('user', user);
-        console.log("user", user)
         resolve(user);
     });
 }
