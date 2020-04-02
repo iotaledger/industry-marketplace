@@ -1,0 +1,37 @@
+version: '3'
+services:
+  compass:
+    image: "iotacafe/compass:coordinator-1264e19"
+    network_mode: host
+    depends_on: 
+      - 'hornet'
+    volumes: 
+      - ./state:/state
+      - ./layers:/layers
+    command: coordinator_deploy.jar
+      ${EXTRA_COMPASS_FLAGS}
+      -broadcast
+      -layers /layers
+      -sigMode CURLP27
+      -powMode CURLP81
+      -mwm ${MWM}
+      -security ${SECURITY_LEVEL}
+      -seed MYSEEDHEREPLEASEREPLACEMEIMMEDIATELYWITHSOMETHINGSECURE99999999999999999999999999
+      -tick ${TICK_RATE}
+      -host http://localhost:${IRI_PORT}
+      -statePath /state/statefile
+  hornet:
+    network_mode: host
+    image: "gohornet/hornet:latest"
+    ports:
+      - "14265:14265"
+      - "5556:5556"
+      - "8081:8081"
+      - "8083:8083"
+      - "4434:4434"
+      - "4433:4433"
+    volumes: 
+      - ./config/snapshot.txt:/app/snapshot.txt
+      - ./config/hornet/config.json:/app/config.json
+      - ./config/hornet/neighbors.json:/app/neighbors.json
+      - ./hornet-db:/app/mainnetdb

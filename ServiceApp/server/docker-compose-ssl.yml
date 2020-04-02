@@ -1,0 +1,12 @@
+version: '3'
+services:
+  proxy:
+    network_mode: host
+    environment:
+      - ACME_AGREE=true
+    image: "abiosoft/caddy:latest"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/ssl/Caddyfile:/etc/Caddyfile

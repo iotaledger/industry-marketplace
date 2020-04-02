@@ -1,0 +1,48 @@
+version: '3'
+services:
+ server1:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/server1/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/startMarketManager.sh
+  network_mode: host
+  ports:
+   - "4010:4010"
+  volumes:
+   - dbSR1:/usr/src/ServiceApp/server/db
+ client1:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/client1/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/setupSR.sh
+  network_mode: host
+  depends_on:
+   - server1
+  volumes:
+   - dbSR1:/usr/src/ServiceApp/server/db
+ server2:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/server2/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/startMarketManager.sh
+  network_mode: host
+  ports:
+   - "5000:5000"
+  volumes:
+   - dbSP2:/usr/src/ServiceApp/server/db
+ client2:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/client1/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/setupSP.sh
+  network_mode: host
+  volumes:
+   - dbSP2:/usr/src/ServiceApp/server/db
+  depends_on:
+   - server2
+
+volumes:
+  dbSR1:
+  dbSP2:
+
+

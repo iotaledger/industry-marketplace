@@ -1,0 +1,21 @@
+version: '3'
+services:
+  tools_api:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: ./config/tools/Dockerfile-tools-api
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./config/tools/tools-api-config.json:/usr/src/app/api/dist/data/config.local.json
+
+  tools_client:
+    network_mode: host
+    build:
+      context: .
+      dockerfile: ./config/tools/Dockerfile-tools
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./config/tools/tools-config.json:/usr/src/app/client/build/data/config.local.json
