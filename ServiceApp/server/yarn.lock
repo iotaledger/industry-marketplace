@@ -87,10 +87,10 @@
     cross-fetch "^3.0.0"
     url-parse "^1.4.7"
 
-"@iota/industry_4.0_language@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@iota/industry_4.0_language/-/industry_4.0_language-1.0.4.tgz#b233a0f7bacad3d9f308864ec823c6e05f03a10f"
-  integrity sha512-8U8tuntlWre+M7/BmIqPqQ9NL/E+wlDMarUtVNFNndI0Ky6exy5lmwdElMwhzfFFNPh+FdYI7kHBxZf2Ozf6Jw==
+"@iota/industry_4.0_language@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@iota/industry_4.0_language/-/industry_4.0_language-1.0.6.tgz#e27165c8bdd2734cc7b06f167ea4dfcb913920a0"
+  integrity sha512-UYT/m+QAyYLj/D7TX52OidBsJ3nyFvwR6spbs9jKOaMhCQTXetjM8LbP+ES8iyhyGpbKKL8ESF3mCH3xpsdSmw==
   dependencies:
     uuid "^3.3.3"
 
