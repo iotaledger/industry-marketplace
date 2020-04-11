@@ -95,7 +95,7 @@ export const publishDID = async (publicKey, privateKey) => {
         const { channel: { next_root, start }, seed } = message.state;
       
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, 3, 9);
+        const bundle = await Mam.attach(message.payload, message.address, 3, minWeightMagnitude);
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
             await writeData('did', { root, privateKey, seed, next_root, start });
