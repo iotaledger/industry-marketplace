@@ -1,7 +1,7 @@
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import Mam, { MamMode } from '@iota/mam';
 import crypto from 'crypto';
-import { provider } from '../config.json';
+import { minWeightMagnitude, provider } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
 interface IMamState {
@@ -55,7 +55,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
         const { channel: { next_root, side_key, start }, seed } = message.state;
       
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, 3, 9, tag);
+        const bundle = await Mam.attach(message.payload, message.address, 3, minWeightMagnitude, tag);
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
             await writeData('mam', { id, root, seed, next_root, side_key, start });
@@ -95,7 +95,7 @@ export const publishDID = async (publicKey, privateKey) => {
         const { channel: { next_root, start }, seed } = message.state;
       
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, 3, 9);
+        const bundle = await Mam.attach(message.payload, message.address, 3, minWeightMagnitude);
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
             await writeData('did', { root, privateKey, seed, next_root, start });

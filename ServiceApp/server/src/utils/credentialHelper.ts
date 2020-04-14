@@ -18,7 +18,7 @@ import {
     VerifiablePresentationDataModel,
     VerificationErrorCodes
 } from 'identity_ts';
-import { provider } from '../config.json';
+import { minWeightMagnitude, provider } from '../config.json';
 import { createCredential, readData, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
@@ -49,7 +49,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
             )
         );
         const publisher = new DIDPublisher(provider, seed);
-        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude);
         const state = publisher.ExportMAMChannelState();
         await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
 
