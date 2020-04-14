@@ -19,7 +19,7 @@ import {
     DIDPublisher
 } from 'identity_ts';
 import { createCredential, readRow, writeData } from './databaseHelper';
-import { provider } from '../config.json';
+import { provider, minWeightMagnitude } from '../config.json';
 import { decryptCipher } from './encryptionHelper';
 
 export interface IUser {
@@ -50,7 +50,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
             )
         );
         const publisher = new DIDPublisher(provider, seed);
-        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', 9);
+        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude);
         const state = publisher.ExportMAMChannelState();
         await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.channelStart });
 

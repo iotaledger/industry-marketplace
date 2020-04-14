@@ -32,10 +32,10 @@
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "faucetAmount": 5000,
-    "provider": "https://nodes.devnet.iota.org:443",
+    "provider": "https://nodes.comnet.thetangle.org:443/",
     "security": 2,
     "depth": 5,
-    "minWeightMagnitude": 9,
+    "minWeightMagnitude": 10,
     "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD",
     "demoSensorData": {
         "conversationId": "",
