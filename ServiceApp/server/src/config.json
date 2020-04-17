@@ -31,7 +31,7 @@
     "faucetAmount": 2000,
     "provider": "https://iri01.bare01.devnet.iota.cafe",
     "security": 2,
-    "depth": 5,
+    "depth": 3,
     "minWeightMagnitude": 9,
     "defaultAddress": "HELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDHELLOWORLDD",
     "demoSensorData": {
