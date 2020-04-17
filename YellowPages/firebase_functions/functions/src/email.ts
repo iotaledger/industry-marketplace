@@ -2,23 +2,26 @@ const mailgun = require('mailgun-js');
 const { getEmailSettings } = require('./firebase');
 // const { checkRecaptcha } = require('./helpers');
 
-const getDoubleOptIn = (packet, emailSettings) => {
-    const { emailRecepient } = emailSettings;
-    const { newsletter } = packet;
-    if (newsletter.toString() === 'true') {
-        //Add to pending list and send out confirmation email 
-        axios.post('https://newsletter-api.iota.org/api/signup',
-            {
+const getDoubleOptIn = async (packet: any, emailSettings: any) => {
+    return new Promise((resolve, reject) => {
+        const { emailRecepient } = emailSettings;
+        const { newsletter } = packet;
+        if (newsletter.toString() === 'true') {
+         //Add to pending list and send out confirmation email 
+            axios.post('https://newsletter-api.iota.org/api/signup',
+                {
                 email: emailRecepient,
                 projectID: 'IMP'
-            },
-            (error) => {
-                if (error) {
-                    console.log('DoubleOptIn error', error);
+                })
+                .then( response => {
+                    resolve(response)
+                },(error) => {
+                reject(error)
                 }
-            });
-    }
-};
+            );
+        }
+    });
+}
 
 const mailgunSendEmail = async (packet: any, emailSettings: any) => {
     const {
@@ -61,7 +64,7 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
     if (packet.newsletter.toString() === 'true') {
 
         //Get opt-in 
-        getDoubleOptIn(packet, emailSettings)
+        await getDoubleOptIn(packet, emailSettings)
 
         const list = mg.lists(emailList);
         const user = {
