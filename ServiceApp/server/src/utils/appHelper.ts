@@ -15,7 +15,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { generateNewWallet, getBalance } from './walletHelper';
+import { generateNewWallet, getBalance, fundWallet } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -76,18 +76,7 @@ export class AppHelper {
                 await writeData('user', user);
 
                 if (wallet) {
-                    try {
-                        const userWallet: any = await readData('wallet');
-                        const response = await axios.get(`${config.faucet}?address=${userWallet.address}&amount=${config.faucetAmount}`);
-                        const data = response.data;
-                        if (data.success) {
-                            const balance = await getBalance(userWallet.address);
-                            await writeData('wallet', { ...userWallet, balance });
-                        }
-                    } catch (error) {
-                        console.log('fund wallet error');
-                        throw new Error('Wallet funding error. \n\nPlease contact industry@iota.org');
-                    }
+                    fundWallet();
                 }
 
                 await res.send({
