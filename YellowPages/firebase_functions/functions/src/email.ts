@@ -2,12 +2,30 @@ const mailgun = require('mailgun-js');
 const { getEmailSettings } = require('./firebase');
 // const { checkRecaptcha } = require('./helpers');
 
+const getDoubleOptIn = (packet, emailSettings) => {
+    const { emailRecepient } = emailSettings;
+    const { newsletter } = packet;
+    if (newsletter.toString() === 'true') {
+        //Add to pending list and send out confirmation email 
+        axios.post('https://newsletter-api.iota.org/api/signup',
+            {
+                email: emailRecepient,
+                projectID: 'IMP'
+            },
+            (error) => {
+                if (error) {
+                    console.log('DoubleOptIn error', error);
+                }
+            });
+    }
+};
+
 const mailgunSendEmail = async (packet: any, emailSettings: any) => {
     const {
         apiKey, domain, emailRecipient, emailBcc, emailReplyTo, emailSender, emailList,
     } = emailSettings;
     const mg = mailgun({ apiKey, domain });
-    const result: any = {}; 
+    const result: any = {};
 
     const messapeP = new Promise((resolve, reject) => {
         mg.messages().send({
@@ -41,6 +59,10 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
 
     let messapeListP;
     if (packet.newsletter.toString() === 'true') {
+
+        //Get opt-in 
+        getDoubleOptIn(packet, emailSettings)
+
         const list = mg.lists(emailList);
         const user = {
             subscribed: true,
@@ -64,12 +86,13 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
     }
 
     const replyP = new Promise((resolve, reject) => {
-        mg.messages().send({
-            from: `Industry Marketplace <${emailSender}>`,
-            to: packet.email,
-            'h:Reply-To': emailReplyTo,
-            subject: 'Message Received - Industry Marketplace',
-            html: `Hi
+        if (packet.newsletter.toString() === 'false') {
+            mg.messages().send({
+                from: `Industry Marketplace <${emailSender}>`,
+                to: packet.email,
+                'h:Reply-To': emailReplyTo,
+                subject: 'Message Received - Industry Marketplace',
+                html: `Hi
                 <br/>
                 <br/>
                 Many thanks for your interest in the IOTA Industry Marketplace.
@@ -87,16 +110,19 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
                 IOTA Foundation
                 <br/>
                 www.iota.org`,
-        }, (error: any, response: any) => {
-            if (error) {
-                console.error('Email automatic reply error', error);
-                result.emailReplyError = error;
-                reject(error);
-            }
-            result.emailReply = response;
-            resolve(response);
+            }, (error: any, response: any) => {
+                if (error) {
+                    console.error('Email automatic reply error', error);
+                    result.emailReplyError = error;
+                    reject(error);
+                }
+                result.emailReply = response;
+                resolve(response);
+            });
+        } else{
+            resolve()
+        }
         });
-    });
 
     return Promise.all([messapeP, messapeListP, replyP]).then(() => result);
 };
@@ -104,11 +130,11 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
 exports.sendEmail = async (packet: any) => {
     const emailSettings = await getEmailSettings();
     // Check Recaptcha
-        //   const recaptcha = await checkRecaptcha(packet.captcha, emailSettings);
-        //   if (!recaptcha || !recaptcha.success) {
-        //     console.log('sendEmail failed. Recaptcha is incorrect. ', recaptcha['error-codes']);
-        //     return 'Malformed Request';
-        //   }
+    //   const recaptcha = await checkRecaptcha(packet.captcha, emailSettings);
+    //   if (!recaptcha || !recaptcha.success) {
+    //     console.log('sendEmail failed. Recaptcha is incorrect. ', recaptcha['error-codes']);
+    //     return 'Malformed Request';
+    //   }
 
     // Send message
     const result = await mailgunSendEmail(packet, emailSettings);
