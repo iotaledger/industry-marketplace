@@ -28,6 +28,7 @@
     "node": "8"
   },
   "resolutions": {
-    "minimist": "^1.2.3"
+    "https-proxy-agent": "^2.2.4",
+    "minimist": "^1.2.5"
   }
 }

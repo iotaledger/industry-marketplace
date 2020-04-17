@@ -1,7 +1,7 @@
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import Mam, { MamMode } from '@iota/mam';
 import crypto from 'crypto';
-import { minWeightMagnitude, provider } from '../config.json';
+import { depth, minWeightMagnitude, provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 
 interface IMamState {
@@ -33,7 +33,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
                     side_key: mamStateFromDB.side_key,
                     mode,
                     next_root: mamStateFromDB.next_root,
-                    security: 2,
+                    security,
                     start: mamStateFromDB.start,
                     count: 1,
                     next_count: 1,
@@ -55,7 +55,7 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
         const { channel: { next_root, side_key, start }, seed } = message.state;
       
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, 3, minWeightMagnitude, tag);
+        const bundle = await Mam.attach(message.payload, message.address, depth, minWeightMagnitude, tag);
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
             await writeData('mam', { id, root, seed, next_root, side_key, start });
@@ -80,7 +80,7 @@ export const publishDID = async (publicKey, privateKey) => {
                     side_key: null,
                     mode: 'public',
                     next_root: mamStateFromDB.next_root,
-                    security: 2,
+                    security,
                     start: mamStateFromDB.start,
                     count: 1,
                     next_count: 1,
@@ -95,7 +95,7 @@ export const publishDID = async (publicKey, privateKey) => {
         const { channel: { next_root, start }, seed } = message.state;
       
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, 3, minWeightMagnitude);
+        const bundle = await Mam.attach(message.payload, message.address, depth, minWeightMagnitude);
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
             await writeData('did', { root, privateKey, seed, next_root, start });

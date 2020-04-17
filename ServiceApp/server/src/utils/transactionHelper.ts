@@ -1,6 +1,6 @@
 import { asciiToTrytes } from '@iota/converter';
 import { composeAPI } from '@iota/core';
-import { defaultAddress, minWeightMagnitude, provider } from '../config.json';
+import { defaultAddress, depth, minWeightMagnitude, provider } from '../config.json';
 import { generateSeed } from './iotaHelper';
 
 const iota = composeAPI({ provider });
@@ -19,7 +19,7 @@ export const sendMessage = (payload, tag) => {
     return new Promise((resolve, reject) => {
         iota.prepareTransfers(seed, transfers)
             .then(trytes => {
-                iota.sendTrytes(trytes, 3, minWeightMagnitude)
+                iota.sendTrytes(trytes, depth, minWeightMagnitude)
                     .then(bundle => {
                         // console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
                         // console.log(`Bundle: ${JSON.stringify(bundle, null, 1)}`);
