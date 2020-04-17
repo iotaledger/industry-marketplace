@@ -119,22 +119,22 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
                 result.emailReply = response;
                 resolve(response);
             });
-        } else{
-            resolve()
+        } else {
+            resolve();
         }
-        });
-
+    });
+    
     return Promise.all([messapeP, messapeListP, replyP]).then(() => result);
 };
 
 exports.sendEmail = async (packet: any) => {
     const emailSettings = await getEmailSettings();
-    // Check Recaptcha
-    //   const recaptcha = await checkRecaptcha(packet.captcha, emailSettings);
-    //   if (!recaptcha || !recaptcha.success) {
-    //     console.log('sendEmail failed. Recaptcha is incorrect. ', recaptcha['error-codes']);
-    //     return 'Malformed Request';
-    //   }
+        // Check Recaptcha
+        //   const recaptcha = await checkRecaptcha(packet.captcha, emailSettings);
+        //   if (!recaptcha || !recaptcha.success) {
+        //     console.log('sendEmail failed. Recaptcha is incorrect. ', recaptcha['error-codes']);
+        //     return 'Malformed Request';
+        //   }
 
     // Send message
     const result = await mailgunSendEmail(packet, emailSettings);
