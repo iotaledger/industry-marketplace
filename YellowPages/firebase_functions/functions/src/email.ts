@@ -25,7 +25,7 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
         apiKey, domain, emailRecipient, emailBcc, emailReplyTo, emailSender, emailList,
     } = emailSettings;
     const mg = mailgun({ apiKey, domain });
-    const result: any = {};
+    const result: any = {}; 
 
     const messapeP = new Promise((resolve, reject) => {
         mg.messages().send({
@@ -123,13 +123,12 @@ const mailgunSendEmail = async (packet: any, emailSettings: any) => {
             resolve();
         }
     });
-    
     return Promise.all([messapeP, messapeListP, replyP]).then(() => result);
 };
 
 exports.sendEmail = async (packet: any) => {
     const emailSettings = await getEmailSettings();
-        // Check Recaptcha
+    // Check Recaptcha
         //   const recaptcha = await checkRecaptcha(packet.captcha, emailSettings);
         //   if (!recaptcha || !recaptcha.success) {
         //     console.log('sendEmail failed. Recaptcha is incorrect. ', recaptcha['error-codes']);
