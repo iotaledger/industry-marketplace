@@ -29,7 +29,7 @@
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "faucetAmount": 2000,
-    "provider": "http://bare01.devnet.iota.cafe:14265",
+    "provider": "https://iri01.bare01.devnet.iota.cafe",
     "security": 2,
     "depth": 3,
     "minWeightMagnitude": 9,
