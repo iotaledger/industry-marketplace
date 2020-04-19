@@ -1,8 +1,8 @@
 import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
 import zmq from 'zeromq';
-import { maxDistance, operations, provider } from '../config.json';
-import { ProcessReceivedCredentialForUser, VERIFICATION_LEVEL, VerifyCredentials } from '../utils/credentialHelper';
+import { maxDistance, operations } from '../config.json';
+import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentials } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -260,7 +260,7 @@ export class ZmqService {
                                     if (messageType === 'proposal') {
                                         // Find the challenge
                                         if (data.identification && data.identification.didAuthenticationPresentation) {
-                                            VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                            verifyCredentials(data.identification.didAuthenticationPresentation)
                                             .then(async (verificationResult) => {
                                                 // Check if the correct challenge is used and if the signatures are correct
                                                 if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -290,7 +290,7 @@ export class ZmqService {
 
                                     // Find the challenge
                                     if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                        verifyCredentials(data.identification.didAuthenticationPresentation)
                                         .then(async (verificationResult) => {
                                             // 3.2 If NO own location and NO accepted range are set, send message to UI
                                             if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -312,6 +312,7 @@ export class ZmqService {
                                                     }
                                                 }
                                             } else {
+                                                // tslint:disable-next-line:max-line-length
                                                 console.log('Found identification, but verification failed', verificationResult > VERIFICATION_LEVEL.UNVERIFIED, verificationResult, data.identification);
                                             }
                                         }).catch((err) => {
@@ -363,7 +364,7 @@ export class ZmqService {
 
                     // A message has been received through the ServiceEndpoint of the DID
                     const unstructuredData = await getPayload(bundle);
-                    ProcessReceivedCredentialForUser(unstructuredData, provider);
+                    processReceivedCredentialForUser(unstructuredData);
                 }
             }
         }
