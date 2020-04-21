@@ -40,7 +40,7 @@
     },
     "devDependencies": {
         "@types/express": "^4.17.6",
-        "@types/node": "^13.11.1",
+        "@types/node": "^13.13.1",
         "@types/socket.io": "^2.1.4",
         "@types/yargs": "^15.0.4",
         "@types/zeromq": "^4.6.3",
