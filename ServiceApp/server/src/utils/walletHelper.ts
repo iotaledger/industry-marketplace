@@ -5,6 +5,21 @@ import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
 
+export const fundWallet = async () => {
+    try {
+        const userWallet: any = await readData('wallet');
+        const response = await axios.get(`${faucet}?address=${userWallet.address}&amount=${faucetAmount}`);
+        const data = response.data;
+        if (data.success) {
+            const balance = await getBalance(userWallet.address);
+            await writeData('wallet', { ...userWallet, balance });
+        }
+    } catch (error) {
+        console.log('fund wallet error');
+        throw new Error('Wallet funding error. \n\nPlease contact industry@iota.org');
+    }
+};
+
 export const generateNewWallet = () => {
     try {
         const seed = generateSeed();

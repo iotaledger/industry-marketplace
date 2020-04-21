@@ -13,7 +13,8 @@ WORKDIR /usr/src/ServiceApp/server
 # Running required steps to prepare the api prod build
 RUN npm install
 RUN npm run build
-RUN cd build/src/utils/ && node userHelper.js --create user --role SP --name user-SP-cloud --location 52.507339,13.377982 && node userHelper.js --create wallet
+RUN cd build/src/utils/ && node userHelper.js --create user --role SP --name user-SP-cloud --location 52.507339,13.377982
+# && node userHelper.js --create wallet
 
 # Remove unneccesary so the docker image doesn't exceeds max size
 RUN apk del git python make g++
