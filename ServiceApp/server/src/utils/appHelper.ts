@@ -7,7 +7,7 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
-import { CreateAuthenticationPresentation, createNewUser } from './credentialHelper';
+import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
@@ -186,7 +186,7 @@ export class AppHelper {
 
                 // 2. Create a DID Authentication Challenge
                 try {
-                    const verifiablePresentation = await CreateAuthenticationPresentation(config.provider);
+                    const verifiablePresentation = await createAuthenticationPresentation();
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
@@ -227,7 +227,7 @@ export class AppHelper {
 
                 // 2. Sign DID Authentication
                 try {
-                    const verifiablePresentation = await CreateAuthenticationPresentation(config.provider);
+                    const verifiablePresentation = await createAuthenticationPresentation();
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
