@@ -15,7 +15,7 @@ export const fundWallet = async () => {
             await writeData('wallet', { ...userWallet, balance });
         }
     } catch (error) {
-        console.log('fund wallet error');
+        console.log('fund wallet error', error);
         throw new Error('Wallet funding error. \n\nPlease contact industry@iota.org');
     }
 };
