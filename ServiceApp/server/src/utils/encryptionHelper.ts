@@ -1,64 +1,7 @@
 import crypto from 'crypto';
-import { DID, DIDDocument } from 'identity_ts';
+import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
 import { provider } from '../config.json';
 import { readData } from './databaseHelper';
-
-const passphrase = 'Semantic Market runs on IOTA! @(^_^)@';
-
-export const generateKeyPair = async () => {
-    return new Promise((resolve, reject) => {
-        try {
-            crypto.generateKeyPair('rsa', {
-                modulusLength: 2048,
-                publicKeyEncoding: {
-                    type: 'spki',
-                    format: 'pem'
-                },
-                privateKeyEncoding: {
-                    type: 'pkcs8',
-                    format: 'pem',
-                    cipher: 'aes-256-cbc',
-                    passphrase
-                }
-            // tslint:disable-next-line:align
-            }, (err, publicKey, privateKey) => {
-                if (err) {
-                    reject(err);
-                } // may signify a bad 'type' name, etc
-                resolve({ publicKey, privateKey });
-            });
-        } catch (error) {
-            console.error('generateKeyPair error', error);
-            reject();
-        }
-    });
-};
-
-/*const encrypt = async (key, message) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-            const result = await crypto.publicEncrypt(payload, message);
-            resolve(result);
-        } catch (error) {
-            console.error('encrypt error', error);
-            reject();
-        }
-    });
-};*/
-
-const decrypt = async (key, message) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const payload: any = { key, passphrase, padding: crypto.constants.RSA_PKCS1_PADDING };
-            const result = await crypto.privateDecrypt(payload, message);
-            resolve(result);
-        } catch (error) {
-            console.error('decrypt error', error);
-            reject();
-        }
-    });
-};
 
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
@@ -69,7 +12,8 @@ export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) 
 export const decryptWithReceiversPrivateKey = async (payload) => {
     const did: any = await readData('did');
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
-    const decryptedBuffer = await decrypt(did.privateKey, messageBuffer);
+    const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
+    const decryptedBuffer = await encryptionKeypair.PrivateDecrypt(messageBuffer);
     return decryptedBuffer.toString();
 };
 
