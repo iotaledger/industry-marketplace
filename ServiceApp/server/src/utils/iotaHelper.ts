@@ -75,6 +75,7 @@ export const generateSeed = (length = 81) => {
 
 export const getPayload = async (bundle) => {
     try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const rawTransactions = await findTransactions(bundle);
         if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
             return null;
@@ -95,7 +96,15 @@ export const getPayload = async (bundle) => {
             .forEach(({ signatureMessageFragment }) => {
                 message += signatureMessageFragment;
             });
-        return JSON.parse(decodeURI(fromTrytes(message)));
+
+        try {
+            const uriToDecode = fromTrytes(message);
+            const decodedURI = decodeURI(uriToDecode);
+            return JSON.parse(decodedURI);
+        } catch (error) {
+            console.error('uriToDecode', fromTrytes(message), message, error);
+            throw new Error(`Can't decode URI and parse JSON from ${fromTrytes(message)}. Message trytes: ${message}. Error: ${error}`);
+        }
     } catch (error) {
         console.error('getPayload catch', error, bundle);
         return error;

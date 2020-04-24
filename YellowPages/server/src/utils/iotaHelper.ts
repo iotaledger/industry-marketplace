@@ -27,6 +27,7 @@ export const findTransactions = async (bundle) => {
 
 export const getPayload = async (bundle) => {
     try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const rawTransactions = await findTransactions(bundle);
         if (!rawTransactions.length || !rawTransactions[0].signatureMessageFragment) {
             return null;
