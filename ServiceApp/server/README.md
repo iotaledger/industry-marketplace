@@ -1,34 +1,62 @@
-# IOTA Industry Marketplace Simulator
+# IOTA Industry Marketplace Simulation
  
-<!-- Pre-requisites -->
-### About the Project
- ![architecture](docs/architecture.png?raw=true)
+ The Industry Marketplace Simulation provides the opportunity to simulate a Service Requester or a Service Provider Instance of the Industry Marketplace. 
+
 
 <!-- Pre-requisites -->
-### Pre-requisites
+### Set up 
 
-* regular pre-requisites for the Industry Marketplace
-* Create as many users as required for the simulator all with one role 
-* Create as many wallets as required for the wallet queue
+```sh
+git clone --branch Simulation https://github.com/iotaledger/industry-marketplace.git
+cd industry-marketplace/ServiceApp/server/
+yarn
+```
+### Configuration 
 
-<!-- Development -->
-### Development
-Activate Simulator from ServiceApp folder with 
+Before running the simulation, it is necessary to create users and wallets. 
+It is only possible to run either a Service Requester or a Service Provider Simulation. 
+However, it is possible to create multiple Users for the same role. 
 
-```shell
-yarn simulate SR 
+Create wallets with
+
+```sh
+cd ServiceApp
+yarn new-wallet
+```
+and users with
+
+```sh
+cd ServiceApp
+yarn new-user 'SR' 'TestSR' '52.51069641113281,13.372206687927246'
 ```
 
-or 
+### Run Simulation 
 
-```shell
-yarn simulate SP
+Start MarketManager in one terminal via 
+
+```sh
+cd ServiceApp/server/
+yarn start-dev
 ```
+
+Start Simulation with
+
+```sh
+cd ServiceApp/
+yarn simulate SR
+```
+
 ### Wallet Queue
 
-Wallets can have 4 statuses: 
+The wallet queue is a special feature for the simulation. 
+It derives from the fact that transactions might be pending for a longer time. 
+During that time, it is not possible to perform further transactions from the same wallet. 
 
-* 'reserved': wallet reserved for incoming payment 
+The wallet queue makes it possible to use multiple wallets. 
+
+Wallets may have 4 statuses: 
+
+* 'reserved': wallet reserved for incoming payments 
 * 'busy': wallets involved in payment process
 * 'usable': wallets available for payment processes
 * 'error': wallet with an error or wallet that gets repaired 
