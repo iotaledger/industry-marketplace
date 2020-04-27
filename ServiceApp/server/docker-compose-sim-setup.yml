@@ -40,9 +40,30 @@ services:
    - dbSP2:/usr/src/ServiceApp/server/db
   depends_on:
    - server2
+ server3:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/server3/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/startMarketManager.sh
+  network_mode: host
+  ports:
+   - "5300:5300"
+  volumes:
+   - dbSP3:/usr/src/ServiceApp/server/db
+ server4:
+  build: 
+    context: .
+    dockerfile: Dockerfiles/server4/Dockerfile
+  command: sh /usr/src/ServiceApp/server/scripts/startMarketManager.sh
+  network_mode: host
+  ports:
+   - "4300:4300"
+  volumes:
+   - dbSP4:/usr/src/ServiceApp/server/db
 
-volumes:
-  dbSR1:
+volumes: 
+  dbSR1: 
   dbSP2:
-
+  dbSP3: 
+  dbSP4:
 

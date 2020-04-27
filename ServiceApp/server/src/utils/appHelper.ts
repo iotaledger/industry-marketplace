@@ -94,16 +94,15 @@ export class AppHelper {
 
         app.post('/createUser', async (req, res) => {
             try {
+                let user
                 const { role, name, location } = req.body;
                 if (name && (role === 'SR' || role === 'SP') && location) {
-                    await createNewUser(name, role, location);
+                   user = await createNewUser(name, role, location);
                 }
                 const wallet: IWallet = await generateNewWallet();
                 fundWallet(wallet)
 
-                res.send({
-                    success: true
-                });
+                res.send({ ...user});
             } catch (error) {
                 console.log('Wallet Error', error);
                 res.send({
