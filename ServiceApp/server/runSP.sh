@@ -1,2 +1,3 @@
 #!/bin/bash
- node ./build/src/utils/yargsHelper.js --simulate --role SP 
+ node ./build/src/utils/simulationHelper.js --simulate --role SP 
+
