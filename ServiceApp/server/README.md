@@ -56,10 +56,10 @@ The wallet queue makes it possible to use multiple wallets.
 
 Wallets may have 4 statuses: 
 
-* 'reserved': wallet reserved for incoming payments 
-* 'busy': wallets involved in payment process
-* 'usable': wallets available for payment processes
-* 'error': wallet with an error or wallet that gets repaired 
+* reserved: wallet reserved for incoming payments 
+* busy: wallets involved in payment process
+* usable: wallets available for payment processes
+* error: wallet with an error or wallet that gets repaired 
 
 Only 'usable' wallets can be used for payments. After successful payment wallets are reset to 'usable'. 
 In case of a balance of 0 of an Address, a walletRepair function checks if the balance can be found at a different index 
