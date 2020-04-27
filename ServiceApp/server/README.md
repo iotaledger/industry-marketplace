@@ -5,7 +5,7 @@
 This IOTA Industry Marketplace Testing Environment will let you test your application on a private Industry Marketplace instance running on a Private Tangle. Within the testing environment, you can either connect to one of the provided MarketManagers or join with your own MarketManager instance. Two simulation instances imitate ongoing bidding processes.
 
 
-### Clone Testing Environment
+### Clone
 
 ```sh
 git clone --branch simulation-w/o-walletqueue https://github.com/iotaledger/industry-marketplace.git
@@ -13,7 +13,7 @@ cd industry-marketplace/
 git clone https://github.com/iota-community/one-command-tangle.git
 ```
 
-### Set up and run Testing Environment
+### Set up and run
 
 ```sh
 bash ./industry-marketplace/IMP_Setup_Environment.sh
@@ -42,7 +42,7 @@ For further interactions with the MarketManager please follow the directions in 
  
 
 
-#### Restart the Testing Environment with 
+### Restart
 
 ```sh
 bash ./industry-marketplace/IMP_Run_Environment.sh
