@@ -60,11 +60,11 @@ const getRandomBigInteger = () => {
 };
 
 const getRandomDecimal = () => {
-    return Number((getRandomInt(integerMaxValue) + Math.random()).toFixed(2, 10));
+    return Number((getRandomInt(integerMaxValue) + Math.random()).toFixed(2));
 };
 
 const getRandomBigDecimal = () => {
-    return Number((getRandomInt(bigIntegerMaxValue) + Math.random()).toFixed(2, 10));
+    return Number((getRandomInt(bigIntegerMaxValue) + Math.random()).toFixed(10));
 };
 
 const getRandomBoolean = () => {
