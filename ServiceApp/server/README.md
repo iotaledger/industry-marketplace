@@ -1,50 +1,57 @@
-#  Summary
-The next generation of industrial automation, Industry 4.0 (I4.0), is rapidly approaching. In
-tomorrow's world, devices will contain not only asset information, but proactive decision and
-optimization algorithms to enable goal-oriented behavior among their components. Such I4.0
-devices can be viewed as autonomous independent economic agents that cooperate
-according to market economy principles.
+#### Description
 
-The highly flexible value creation networks that result from I4.0 will require new forms of
-collaboration between companies - both at the national and global level. And the successful
-implementation of I4.0 will depend on the creation of a common global communication and
-computing infrastructure that allows economic relationships between machines.
-By combining the latest technology with established standards and openly-developed
-specifications, the Industry Marketplace will provide this platform and enable the economy of
-things.
-
-The Industry Marketplace will serve as a vendor and industry-neutral platform, automating
-the trading of physical and digital goods / services. Building on specifications developed by
-the Plattform Industrie 4.0 (Germany’s central network for the advancement of digital
-transformation in manufacturing), the Industry Marketplace combines distributed ledger
-technology, immutable audit logs, and standardized, machine-readable contracts with an
-integrated decentralized identity system, to ensure the authenticity of all participants and
-enable secure communication and payments across the industry landscape.
-The Industry Marketplace has been developed as an open source initiative and is free to
-join. A simple trial can be run at your office to explore its potential. We encourage open
-innovation with other industry partners to explore new business models and the many
-possibilities of industrial automation.
+This IOTA Industry Marketplace Testing Environment will let you test your application on a private Industry Marketplace instance running on a Private Tangle. Within the testing environment, you can either connect to one of the provided MarketManagers or join with your own MarketManager instance. Two simulation instances imitate ongoing bidding processes.
 
 
-Key features
+#### Clone Testing Environment
 
-* Vendor and industry-neutral platform and communication
-* Standardised communication for contracts, product data, purchasing, bids, orders,
-services
-* Implementation of the I4.0 principles for driving forward digitalization and
-manufacturing
-* Semantic language, based on open specifications, developed by Plattform Industrie 4.0 and academic institutions
-* A decentralized and globally accessible protocol with paramount security
-* Low system requirements
-* Open source software
-* Integrated, decentralized ID, to ensure the authenticity of all participants
-* Integrated payment option for goods and services, without transaction fees
-* Payment queues to execute outgoing payments in high frequency environments, e.g. buying many individual data sets, like weather data
-* Immutable audit logs for every step (including payments) to be compliant with
-regulatory requirements
-* Digital trust as a design principle throughout the IOTA Tangle
+```sh
+git clone --branch simulation-w/o-walletqueue https://github.com/iotaledger/industry-marketplace.git
+cd industry-marketplace/
+git clone https://github.com/iota-community/one-command-tangle.git
+```
 
-# Link Consolidation
+#### Set up and run Testing Environment
+
+```sh
+bash ./industry-marketplace/IMP_Setup_Environment.sh
+```
+
+This will set up the Private Tangle as well as the Testing Environment with 2 simulation instances and 2 MarketManagers to connect with. The setup might take up to 5 minutes. 
+
+Available Connections: 
+
+Private Tangle: http://localhost:14265/
+MarketManager instance 1: http://localhost:4300/
+MarketManager instance 2:http://localhost:5300/
+
+
+To create a user and wallet for the provided MarketManager instances please perform an API POST request to http://localhost:5300/createUser or http://localhost:4300/createUser  With the following request format:
+
+```sh
+{  
+  name: testSR,
+  role: SR,
+  location: 52.507339,13.377982 
+}  
+```
+
+For further interactions with the MarketManager please follow the directions in our [Technical documentation](https://industry.iota.org/files/Industry_Marketplace_Technical_Documentation.pdf)
+ 
+
+
+#### Restart the Testing Environment with 
+
+```sh
+bash ./industry-marketplace/IMP_Run_Environment.sh
+```
+This avoids the creation of new users and wallets. 
+
+Keep in mind, that the -bootstrap extra flag from the .env configuration file of the Private Tangle has to be removed before restarting the Private Tangle. For more information check out the [Private Tangle Readme](https://github.com/iota-community/one-command-tangle)
+
+
+
+#### Link Consolidation
 * [Landing page](https://industrymarketplace.net)
 * [One-Pager](https://industry.iota.org/files/IOTA_Industry_Marketplace.pdf)
 * [Technical Documentation](Industry_Marketplace_Technical_Documentation.pdf)
@@ -53,4 +60,4 @@ regulatory requirements
 * [Demo site](https://industrymarketplace.net/demo)
 * [Try as Service Requester](https://service-requester.iota-dev1.now.sh/ (keep requester window open to interact with SP))
 * [Try as Service Provider](https://service-provider.iota-dev1.now.sh/  (keep requester window open to interact with SR))
-
+* [Private Tangle](https://github.com/iota-community/one-command-tangle)
