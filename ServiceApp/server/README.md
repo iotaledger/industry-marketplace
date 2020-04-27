@@ -1,9 +1,11 @@
-#### Description
+# Industry Marketplace Testing Environment
+
+### Description
 
 This IOTA Industry Marketplace Testing Environment will let you test your application on a private Industry Marketplace instance running on a Private Tangle. Within the testing environment, you can either connect to one of the provided MarketManagers or join with your own MarketManager instance. Two simulation instances imitate ongoing bidding processes.
 
 
-#### Clone Testing Environment
+### Clone Testing Environment
 
 ```sh
 git clone --branch simulation-w/o-walletqueue https://github.com/iotaledger/industry-marketplace.git
@@ -11,7 +13,7 @@ cd industry-marketplace/
 git clone https://github.com/iota-community/one-command-tangle.git
 ```
 
-#### Set up and run Testing Environment
+### Set up and run Testing Environment
 
 ```sh
 bash ./industry-marketplace/IMP_Setup_Environment.sh
@@ -21,9 +23,9 @@ This will set up the Private Tangle as well as the Testing Environment with 2 si
 
 Available Connections: 
 
-Private Tangle: http://localhost:14265/
-MarketManager instance 1: http://localhost:4300/
-MarketManager instance 2:http://localhost:5300/
+* Private Tangle: http://localhost:14265/
+* MarketManager instance 1: http://localhost:4300/
+* MarketManager instance 2:http://localhost:5300/
 
 
 To create a user and wallet for the provided MarketManager instances please perform an API POST request to http://localhost:5300/createUser or http://localhost:4300/createUser  With the following request format:
@@ -47,11 +49,11 @@ bash ./industry-marketplace/IMP_Run_Environment.sh
 ```
 This avoids the creation of new users and wallets. 
 
-Keep in mind, that the -bootstrap extra flag from the .env configuration file of the Private Tangle has to be removed before restarting the Private Tangle. For more information check out the [Private Tangle Readme](https://github.com/iota-community/one-command-tangle)
+Keep in mind, that the -bootstrap extra flag from the .env configuration file of the Private Tangle has to be removed before restarting the Private Tangle. For more information check out the Private Tangle [Readme](https://github.com/iota-community/one-command-tangle)
 
 
 
-#### Link Consolidation
+### Link Consolidation
 * [Landing page](https://industrymarketplace.net)
 * [One-Pager](https://industry.iota.org/files/IOTA_Industry_Marketplace.pdf)
 * [Technical Documentation](Industry_Marketplace_Technical_Documentation.pdf)
