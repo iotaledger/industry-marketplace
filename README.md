@@ -1,39 +1,65 @@
-# SeMarket MQTT Interface 
+# Industry Marketplace Testing Environment
 
-* Alternatively, the Market Manager can transmit incoming messages that are relevant to the user via MQTT
-* The Market Manager does not offer an own MQTT Broker, it is suggested to either use an open source MQTT broker such as ‘test.mosquitto.org’ or implement an own MQTT Broker
-* MQTT Option is enabled via the API 
+### Description
+
+This IOTA Industry Marketplace Testing Environment will let you test your application on a private Industry Marketplace instance running on a Private Tangle. Within the testing environment, you can either connect to one of the provided MarketManagers or join with your own MarketManager instance. Two simulation instances imitate ongoing bidding processes.
 
 
-### POST /mqtt 
-
-#### Payload to subscribe: 
+### Clone
 
 ```sh
-{
-    "message": "subscribe"
-}
+git clone --branch simulation-w/o-walletqueue https://github.com/iotaledger/industry-marketplace.git
+cd industry-marketplace/
+git clone https://github.com/iota-community/one-command-tangle.git
 ```
 
+### Set up and run
 
-* Creates helperClient that connects to websockets 
-* HelperClient subscribes to messages from Market Manager and    publishes them under the subscriptionID as topic
-
-Returns success or failure notification and subscriptionID
-
-
-
-#### Payload to unsubscribe:
-
- ```sh
-{
-    "message": "unsubscribe",
-    "subscriptionId": "5742a685-657b-4b94-a704-36e00bc46a5a"
-}
+```sh
+bash ./industry-marketplace/IMP_Setup_Environment.sh
 ```
 
-* Unsubscribes to messages from Market Manager 
+This will set up the Private Tangle as well as the Testing Environment with 2 simulation instances and 2 MarketManagers to connect with. The setup might take up to 5 minutes. 
 
-Returns success or failure notification 
+Available Connections: 
+
+* Private Tangle: http://localhost:14265/
+* MarketManager instance 1: http://localhost:4300/
+* MarketManager instance 2:http://localhost:5300/
 
 
+To create a user and wallet for the provided MarketManager instances please perform an API POST request to http://localhost:5300/createUser or http://localhost:4300/createUser  With the following request format:
+
+```sh
+{  
+  name: testSR,
+  role: SR,
+  location: 52.507339,13.377982 
+}  
+```
+
+For further interactions with the MarketManager please follow the directions in our [Technical documentation](https://industry.iota.org/files/Industry_Marketplace_Technical_Documentation.pdf)
+ 
+
+
+### Restart
+
+```sh
+bash ./industry-marketplace/IMP_Run_Environment.sh
+```
+This avoids the creation of new users and wallets. 
+
+Keep in mind, that the -bootstrap extra flag from the .env configuration file of the Private Tangle has to be removed before restarting the Private Tangle. For more information check out the Private Tangle [Readme](https://github.com/iota-community/one-command-tangle)
+
+
+
+### Link Consolidation
+* [Landing page](https://industrymarketplace.net)
+* [One-Pager](https://industry.iota.org/files/IOTA_Industry_Marketplace.pdf)
+* [Technical Documentation](Industry_Marketplace_Technical_Documentation.pdf)
+* [Explainer Video](https://www.youtube.com/watch?v=Jnh_9nKkemM)
+* [Use Case Examples](https://industrymarketplace.net/use_cases)
+* [Demo site](https://industrymarketplace.net/demo)
+* [Try as Service Requester](https://service-requester.iota-dev1.now.sh/ (keep requester window open to interact with SP))
+* [Try as Service Provider](https://service-provider.iota-dev1.now.sh/  (keep requester window open to interact with SR))
+* [Private Tangle](https://github.com/iota-community/one-command-tangle)
