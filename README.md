@@ -1,39 +1,65 @@
-# SeMarket MQTT Interface 
-
-* Alternatively, the Market Manager can transmit incoming messages that are relevant to the user via MQTT
-* The Market Manager does not offer an own MQTT Broker, it is suggested to either use an open source MQTT broker such as ‘test.mosquitto.org’ or implement an own MQTT Broker
-* MQTT Option is enabled via the API 
+# IOTA Industry Marketplace Simulation
+ 
+ The Industry Marketplace Simulation provides the opportunity to simulate a Service Requester or a Service Provider Instance of the Industry Marketplace. 
 
 
-### POST /mqtt 
-
-#### Payload to subscribe: 
+<!-- Pre-requisites -->
+### Set up 
 
 ```sh
-{
-    "message": "subscribe"
-}
+git clone --branch Simulation https://github.com/iotaledger/industry-marketplace.git
+cd industry-marketplace/ServiceApp/server/
+yarn
+```
+### Configuration 
+
+Before running the simulation, it is necessary to create users and wallets. 
+It is only possible to run either a Service Requester or a Service Provider Simulation. 
+However, it is possible to create multiple Users for the same role. 
+
+Create wallets with
+
+```sh
+cd ServiceApp
+yarn new-wallet
+```
+and users with
+
+```sh
+cd ServiceApp
+yarn new-user 'SR' 'TestSR' '52.51069641113281,13.372206687927246'
 ```
 
+### Run Simulation 
 
-* Creates helperClient that connects to websockets 
-* HelperClient subscribes to messages from Market Manager and    publishes them under the subscriptionID as topic
+Start MarketManager in one terminal via 
 
-Returns success or failure notification and subscriptionID
-
-
-
-#### Payload to unsubscribe:
-
- ```sh
-{
-    "message": "unsubscribe",
-    "subscriptionId": "5742a685-657b-4b94-a704-36e00bc46a5a"
-}
+```sh
+cd ServiceApp/server/
+yarn start-dev
 ```
 
-* Unsubscribes to messages from Market Manager 
+Start Simulation with
 
-Returns success or failure notification 
+```sh
+cd ServiceApp/
+yarn simulate SR
+```
 
+### Wallet Queue
 
+The wallet queue is a special feature for the simulation. 
+It derives from the fact that transactions might be pending for a longer time. 
+During that time, it is not possible to perform further transactions from the same wallet. 
+
+The wallet queue makes it possible to use multiple wallets. 
+
+Wallets may have 4 statuses: 
+
+* reserved: wallet reserved for incoming payments 
+* busy: wallets involved in payment process
+* usable: wallets available for payment processes
+* error: wallet with an error or wallet that gets repaired 
+
+Only 'usable' wallets can be used for payments. After successful payment wallets are reset to 'usable'. 
+In case of a balance of 0 of an Address, a walletRepair function checks if the balance can be found at a different index 
