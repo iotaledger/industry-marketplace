@@ -26,7 +26,7 @@
         "@iota/core": "1.0.0-beta.21",
         "@iota/industry_4.0_language": "^1.0.4",
         "@iota/mam": "^0.7.3",
-        "identity_ts": "iotaledger/identity.ts#910ebdb01496f7a1abf115d9b272ca4456aa00ba",
+        "identity_ts": "iotaledger/identity.ts",
         "axios": "^0.19.0",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
@@ -40,12 +40,12 @@
         "zeromq": "^5.1.0"
     },
     "devDependencies": {
-        "@types/express": "^4.17.0",
-        "@types/node": "^12.6.8",
+        "@types/express": "^4.17.4",
+        "@types/node": "^13.13.1",
         "@types/socket.io": "^2.1.2",
         "@types/zeromq": "^4.6.2",
         "concurrently": "^4.1.1",
-        "nodemon": "^1.19.1",
+        "nodemon": "^2.0.3",
         "npm-run-all": "^4.1.5",
         "rimraf": "^2.6.3",
         "tslint": "^5.18.0",
@@ -55,5 +55,8 @@
     },
     "engines": {
         "node": ">=10.0"
+    },
+    "resolutions": {
+        "minimist": "^1.2.5"
     }
 }

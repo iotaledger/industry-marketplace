@@ -12,7 +12,7 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 import { getBalance } from './walletHelper';
-import { createNewUser, CreateAuthenticationPresentation } from './credentialHelper';
+import { createNewUser, createAuthenticationPresentation } from './credentialHelper';
 import { generateNewWallet, fundWallet } from './walletHelper';
 import { IWallet } from '../models/wallet';
 import { IUser } from '../models/user';
@@ -73,11 +73,8 @@ export class AppHelper {
                     createNewUser(name, role, location);
                 }
                 if (wallet) {
-                    const response = await axios.get(config.faucet);
-                    const data = response.data;
-                    if (data.success) {
-                        await writeData('wallet', data.wallet);
-                    }
+                    const wallet: IWallet = await generateNewWallet();
+                    fundWallet(wallet);
                 }
 
                 await res.send({
@@ -183,7 +180,7 @@ export class AppHelper {
                 const userDID = req.body.frame.sender.identification.id;
                 const id = userDID.replace('did:IOTA:', '')
                 const did: any = await readRow('did', 'root', id)
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+                const verifiablePresentation = await createAuthenticationPresentation();
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
@@ -229,7 +226,7 @@ export class AppHelper {
                 const did: IDid = await readRow('did', 'root', id)
 
                 //1.25 Sign DID Authentication
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+                const verifiablePresentation = await createAuthenticationPresentation();
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 
