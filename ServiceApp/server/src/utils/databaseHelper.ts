@@ -58,8 +58,8 @@ export const createMAMChannel = async ({ id, root, seed, next_root, side_key, st
     await db.run(insert, [id, root, seed, next_root, side_key, start]);
 };
 
-export const createCredential = async ({ id, credential, did }) => {
-    await db.run('INSERT INTO credentials (id, credential, did) VALUES (?, ?, ?)', [id, credential, did]);
+export const createCredential = async ({ id, credential }) => {
+    await db.run('INSERT INTO credentials (id, credential) VALUES (?, ?)', [id, credential]);
 };
 
 export const writeData = async (table, data) => {

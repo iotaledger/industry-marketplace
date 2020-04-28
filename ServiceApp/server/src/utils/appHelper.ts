@@ -4,17 +4,17 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { readData, writeData, readRow } from './databaseHelper';
-import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
+import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
-import { publish, publishDID } from './mamHelper';
+import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { getBalance} from './walletHelper';
-import { provider } from '../config.json';
-import { CreateAuthenticationPresentation } from './credentialHelper';
+import { getBalance, generateNewWallet} from './walletHelper';
+import { createAuthenticationPresentation,  createNewUser } from './credentialHelper';
 
 
 /**
@@ -132,26 +132,39 @@ export class AppHelper {
             }
         });
 
-
         app.get('/user', async (req, res) => {
-            let user: any = await readData('user');
+            try {
+                let user: any = await readData('user');
+                if (!user || !user.id) {
+                    // Creating a NEW Identity following the DID standard
+                    const name =  user && user.name ? user.name : '';
+                    const role =  user && user.role ? user.role : '';
+                    const location = user && user.location ? user.location : '';
+                    user = createNewUser(name, role, location);
+                }
 
-            const wallet: any = await readData('wallet');
-            const address = (wallet && wallet.address) || null;
-            const balance = await getBalance(address);
+                // Set TangleCommunicationService Address
+                ServiceFactory.get('zmq').setAddressToListenTo(user.address);
 
-            if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                await writeData('did', { root, privateKey });
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
-                await writeData('user', user);
+                const wallet: any = await readData('wallet');
+                let newWallet;
+                if (!wallet) {
+                    newWallet = generateNewWallet();
+                    await writeData('wallet', newWallet);
+                }
+
+                res.json({
+                    ...user,
+                    balance: (wallet ? await getBalance(wallet.address) : 0),
+                    wallet: (wallet ? wallet.address : newWallet.address)
+                });
+            } catch (error) {
+                console.log('get user error', error);
+                res.send({ error });
             }
-
-            res.json({ ...user, balance, wallet: address });
         });
+
+
 
         app.get('/mam', async (req, res) => {
             const channelId = req.query.conversationId;
@@ -166,12 +179,8 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
-                const id = userDID.replace('did:IOTA:', '')
-         
-                const did: any = await readRow('did', 'root', id)
-            
-
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+        
+                const verifiablePresentation = await createAuthenticationPresentation();
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
                 console.log(req.body.identification)
@@ -210,17 +219,9 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = await buildTag('proposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id
-                const id = userDID.replace('did:IOTA:', '')
-          
-
-                interface IDid {
-                    root?: string;
-                    privateKey?: string;
-                }
-                const did: IDid = await readRow('did', 'root', id)
 
                 //1.25 Sign DID Authentication
-                const verifiablePresentation = await CreateAuthenticationPresentation(provider, did);
+                const verifiablePresentation = await createAuthenticationPresentation();
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
 

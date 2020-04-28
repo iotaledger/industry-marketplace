@@ -32,7 +32,7 @@
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://api.marketplace.tangle.works/semarket",
     "faucetAmount": 5000,
-    "provider": "https://nodes.comnet.thetangle.org:443/",
+    "provider":  "http://bare01.devnet.iota.cafe:14265",
     "security": 2,
     "depth": 5,
     "minWeightMagnitude": 10,
@@ -48,5 +48,6 @@
                 "unit": "C"
             }
         ]
-    }
+    },
+    "keyId": "keys-1"
 }

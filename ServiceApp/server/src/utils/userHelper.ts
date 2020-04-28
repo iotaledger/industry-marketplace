@@ -6,14 +6,19 @@ import { generateNewWallet, getBalance } from './walletHelper';
 import {createNewUser} from './credentialHelper';
 
 const createUser = async () => {	
+    try {
     const { name, role = '', location = '' } = argv;	
     if (name && (role === 'SR' || role === 'SP')) {	
         createNewUser(name, role, location);	
     } else {	
         console.log('Params are missing or wrong');	
         return;	
-    }	
+    } 
+} catch (error) {
+    console.error('Create user error', error);
+}
 };
+
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
@@ -33,16 +38,21 @@ const createNewWallet = async () => {
 
 const argv = yargs
     .usage('Create new user or wallet')
-    .example('$0 --create user --role SR --name user-SR-123 --location 47.934438,10.340688')
+    .example('$0 --create user --role SR --name user-SR-123 --location 47.934438,10.340688',  'Creates a new Service Requester with name user-SR-123')
     .required('create', 'Mode must be provided').describe('create', 'Create new user or wallet. Options: ["user", "wallet"]')
     .describe('role', 'Define user role. Options: ["SR", "SP"]')
     .describe('name', 'Define user name')
     .describe('location', 'Define location')
     .describe('paymentQueue', 'Define if cloud-based payment queue should be used to speed up multiple payments')
     .help('help')
+    .options({
+        create: { type: 'string', demandOption: true },
+        name: { type: 'string' },
+        role: { type: 'string' },
+        location: { type: 'string' }
+    })
     .argv;
-console.log(argv)
-console.log("create", argv.create)
+    
 if (argv.create === 'user') {
     createUser();
 } else if (argv.create === 'wallet') {

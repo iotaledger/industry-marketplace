@@ -1,7 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import get from 'lodash/get';
-import { operations, provider } from '../config.json';
+import { operations } from '../config.json';
 import { readData, readRow, writeData, updateValue } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -10,7 +9,7 @@ import { publish } from '../utils/mamHelper';
 import { getBalance, processPayment } from '../utils/walletHelper.js';
 import { DID, SchemaManager } from 'identity_ts';
 import { checkAddressBalance } from '../utils/walletQueueHelper';
-import { VerifyCredentials, VERIFICATION_LEVEL, ProcessReceivedCredentialForUser } from '../utils/credentialHelper';
+import {  processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentials } from '../utils/credentialHelper';
 
 
 /**
@@ -271,7 +270,7 @@ export class ZmqService {
                                 // 3.1 Decode every message of type A and send du simulator
                                 if (messageType === 'callForProposal') {
                                     if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                        verifyCredentials(data.identification.didAuthenticationPresentation)
                                             .then(async (verificationResult) => {
                                                 // 3.2 If NO own location and NO accepted range are set, send message to UI
                                                 if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -289,9 +288,8 @@ export class ZmqService {
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
                                                 const channelId = data.frame.conversationId;
-                                                const id = data.frame.receiver.identification.id
 
-                                                const secretKey = await decryptWithReceiversPrivateKey(data.mam, id.replace('did:IOTA:', ''));
+                                                const secretKey = await decryptWithReceiversPrivateKey(data.mam);
                                                 await writeData('mam', {
                                                     id: channelId,
                                                     root: data.mam.root,
@@ -329,7 +327,7 @@ export class ZmqService {
                                     if (messageType === 'proposal') {
 
                                         if (data.identification && data.identification.didAuthenticationPresentation) {
-                                            VerifyCredentials(data.identification.didAuthenticationPresentation, provider)
+                                            verifyCredentials(data.identification.didAuthenticationPresentation)
                                                 .then(async (verificationResult) => {
                                                     // Check if the correct challenge is used and if the signatures are correct
                                                     if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -358,18 +356,9 @@ export class ZmqService {
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
 
-                    const user = await readRow('user', 'address', address)
-                    const id = await get(user, 'id').replace('did:IOTA:', '')
-
-                    interface IDid {
-                        root?: string;
-                        privateKey?: string;
-                    }
-                    
-                    const did: IDid = await readRow('did', 'root', id)
                     //A message has been received through the ServiceEndpoint of the DID
                     const unstructuredData = await getPayload(bundle);
-                    ProcessReceivedCredentialForUser(unstructuredData, provider, did);
+                    processReceivedCredentialForUser(unstructuredData);
 
                 }
             }
