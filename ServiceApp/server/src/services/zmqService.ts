@@ -278,8 +278,10 @@ export class ZmqService {
                                                 }
                                             }).catch((err) => {
                                                 console.log('Verification failed, so message is ignored with error: ', err);
-                                });
-                                    }
+                                            });
+                                        } else {
+                                            console.log('No identification found', data);
+                                        }
                                 } else {
                                         // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                         const receiverID = data.frame.receiver.identification.id;
@@ -288,8 +290,9 @@ export class ZmqService {
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
                                                 const channelId = data.frame.conversationId;
-
+                                                console.log("Before secretkey")
                                                 const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                                console.log("secretkey", secretKey)
                                                 await writeData('mam', {
                                                     id: channelId,
                                                     root: data.mam.root,
