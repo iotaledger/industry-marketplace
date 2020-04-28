@@ -266,6 +266,7 @@ export class ZmqService {
                             // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                             if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                                 const data = await getPayload(bundle);
+                                console.log("Arrived")
 
                                 // 3.1 Decode every message of type A and send du simulator
                                 if (messageType === 'callForProposal') {
@@ -285,8 +286,9 @@ export class ZmqService {
                                 } else {
                                         // 3.4 Decode every message of type C, D, F and retrieve receiver I
                                         const receiverID = data.frame.receiver.identification.id;
-                                        
+                                        console.log("rec", receiverID)
                                         const id : any = await readRow('user', 'id', receiverID)
+                                        console.log("ID", id)
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
                                                 const channelId = data.frame.conversationId;
