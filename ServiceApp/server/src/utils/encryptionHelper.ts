@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
 import { provider } from '../config.json';
-import { readData } from './databaseHelper';
+import { readRow } from './databaseHelper';
 
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
@@ -9,8 +9,9 @@ export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) 
     return encryptedBuffer.toString('base64');
 };
 
-export const decryptWithReceiversPrivateKey = async (payload) => {
-    const did: any = await readData('did');
+export const decryptWithReceiversPrivateKey = async (payload, id) => {
+    id = id.id.replace("did:IOTA:", "");
+    const did : any = await readRow('did', 'root', id)
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
     const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
     const decryptedBuffer = await encryptionKeypair.PrivateDecrypt(messageBuffer);
