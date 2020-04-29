@@ -17,7 +17,7 @@ import {
     VerifiablePresentation,
     VerifiablePresentationDataModel
 } from 'identity_ts';
-import { depth, keyId, minWeightMagnitude, provider } from '../config.json';
+import { depth, keyId, minWeightMagnitude } from '../config.json';
 import { createCredential, readData, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 

@@ -30,8 +30,14 @@ const argv = yargs
     .describe('location', 'Define location')
     .describe('paymentQueue', 'Define if cloud-based payment queue should be used to speed up multiple payments')
     .help('help')
+    .options({
+        create: { type: 'string', demandOption: true },
+        name: { type: 'string' },
+        role: { type: 'string' },
+        location: { type: 'string' }
+    })
     .argv;
-
+    
 if (argv.create === 'user') {
     createUser();
 } else if (argv.create === 'wallet') {

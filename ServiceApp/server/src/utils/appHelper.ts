@@ -1,13 +1,12 @@
-import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { readData, writeData, readRow, readAllData, removeData } from './databaseHelper';
-import { generateKeyPair, encryptWithReceiversPublicKey } from './encryptionHelper';
+import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { getLocationFromMessage } from './locationHelper';
-import { publish, publishDID } from './mamHelper';
+import { publish } from './mamHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
@@ -17,7 +16,6 @@ import { generateNewWallet, fundWallet } from './walletHelper';
 import { IWallet } from '../models/wallet';
 import { IUser } from '../models/user';
 
-const provider = process.env.PROVIDER
 
 /**
  * Class to help with expressjs routing.
@@ -137,13 +135,11 @@ export class AppHelper {
             const balance = await getBalance(address);
 
             if (!user || !user.id) {
-                // Generate key pair
-                const { publicKey, privateKey }: any = await generateKeyPair();
-                const root = await publishDID(publicKey, privateKey);
-                await writeData('did', { root, privateKey });
-                const id = `did:iota:${root}`;
-                user = user ? { ...user, id } : { id };
-                await writeData('user', user);
+                // Creating a NEW Identity following the DID standard
+                const name =  user && user.name ? user.name : '';
+                const role =  user && user.role ? user.role : '';
+                const location = user && user.location ? user.location : '';
+                user = createNewUser(name, role, location);
             }
 
             res.json({ ...user, balance, wallet: address });
@@ -178,8 +174,6 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id;
-                const id = userDID.replace('did:IOTA:', '')
-                const did: any = await readRow('did', 'root', id)
                 const verifiablePresentation = await createAuthenticationPresentation();
                 req.body.identification = {};
                 req.body.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
@@ -216,14 +210,6 @@ export class AppHelper {
                 const submodelId = req.body.dataElements.submodels[0].identification.id;
                 const tag = await buildTag('proposal', location, submodelId);
                 const userDID = req.body.frame.sender.identification.id
-                const id = userDID.replace('did:IOTA:', '')
-
-
-                interface IDid {
-                    root?: string;
-                    privateKey?: string;
-                }
-                const did: IDid = await readRow('did', 'root', id)
 
                 //1.25 Sign DID Authentication
                 const verifiablePresentation = await createAuthenticationPresentation();

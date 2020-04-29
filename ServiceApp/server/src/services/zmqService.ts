@@ -1,7 +1,6 @@
 import uuid from 'uuid/v4';
 import zmq from 'zeromq';
-import get from 'lodash/get';
-import { maxDistance, operations } from '../config.json';
+import {  operations } from '../config.json';
 import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentials } from '../utils/credentialHelper';
 import { readData, readRow, writeData, updateValue } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
@@ -11,7 +10,6 @@ import { publish } from '../utils/mamHelper';
 import { getBalance, processPayment } from '../utils/walletHelper.js';
 import { DID, SchemaManager } from 'identity_ts';
 
-const provider = process.env.PROVIDER
 
 
 /**
@@ -346,16 +344,7 @@ export class ZmqService {
                 const bundle = messageParams[8];
                 if (!this.sentBundles.includes(bundle)) {
                     this.sentBundles.push(bundle);
-
-                    const user = await readRow('user', 'address', address)
-                    const id = await get(user, 'id').replace('did:IOTA:', '')
-
-                    interface IDid {
-                        root?: string;
-                        privateKey?: string;
-                    }
-                    
-                    const did: IDid = await readRow('did', 'root', id)
+        
                     //A message has been received through the ServiceEndpoint of the DID
                     const unstructuredData = await getPayload(bundle);
                     processReceivedCredentialForUser(unstructuredData);
