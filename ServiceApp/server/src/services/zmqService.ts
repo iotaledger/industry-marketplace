@@ -276,11 +276,7 @@ export class ZmqService {
                                         if (id) {
                                             if (messageType === 'acceptProposal') {
                                                 const channelId = data.frame.conversationId;
-                                                const id = data.frame.receiver.identification.id
-
-                                                console.log("before secretkey")
                                                 const secretKey = await decryptWithReceiversPrivateKey(data.mam, id);
-                                                console.log("after secretkey", secretKey)
 
                                                 await writeData('mam', {
                                                     id: channelId,

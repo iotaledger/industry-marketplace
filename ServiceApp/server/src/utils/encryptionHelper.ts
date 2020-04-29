@@ -12,9 +12,7 @@ export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) 
 
 export const decryptWithReceiversPrivateKey = async (payload, id) => {
     id = id.id.replace("did:IOTA:", "");
-    console.log("ID", id)
     const did : any = await readRow('did', 'root', id)
-    console.log("DID", did)
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
     const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
     const decryptedBuffer = await encryptionKeypair.PrivateDecrypt(messageBuffer);
