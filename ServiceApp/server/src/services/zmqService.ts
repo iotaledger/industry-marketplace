@@ -176,29 +176,21 @@ export class ZmqService {
                     this.sentBundles.push(bundle);
 
                     const data = await getPayload(bundle);
-                    console.log(data.userName)
 
 
                     if (!simulationUsers.includes(data.userName) || !data.userName ) {
-                        console.log(data.userName, messageType)
+
                         switch (messageType) {
                             case 'callForProposal':
-                                console.log("Count cfp")
                                 await updateMetric('cfp')
                                 break;
                             case 'proposal':
-                                console.log("Count proposal")
                                 await updateMetric('proposal')
                                 break;
                             case 'informPayment':
-                                console.log("Count informPayment")
                                 await updateMetric('informPayment')
                                 break;
                         }
-
-                    }
-                    else{
-                        console.log("simulation, don't count")
                     }
                 }
             }
