@@ -13,7 +13,7 @@ AppHelper.build(
         const server = new Server(app);
         const socketServer = SocketIO(server);
 
-        server.listen(port);
+        server.listen(process.env.PORT);
 
         socketServer.on('connection', (socket) => {
             socket.on('subscribe', (data) => socket.emit('subscribe', zmqSubscribe(config, socket, data)));
