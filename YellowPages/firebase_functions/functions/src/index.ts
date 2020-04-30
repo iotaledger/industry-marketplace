@@ -76,8 +76,8 @@ exports.location = functions.https.onRequest((req, res) => {
       const params = req.query;
       let result = null;
       if (params.address) {
-        result = await addressToGPS(decodeURI(params.address));
-        console.log(`Converted address "${decodeURI(params.address)}" to "${result}"`);
+        result = await addressToGPS(decodeURI(params.address.toString()));
+        console.log(`Converted address "${decodeURI(params.address.toString())}" to "${result}"`);
       }
       return res.json(result);
     } catch (e) {
