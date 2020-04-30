@@ -29,7 +29,7 @@ exports.sendEmail = functions.https.onRequest((req, res) => {
       return res.json({ success: true });
     } catch (e) {
       console.error('sendEmail failed. Error: ', e.message);
-      return res.status(403).json({ error: e.message });
+      return res.json({ error: e.message });
     }
   });
 });
