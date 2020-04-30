@@ -26,11 +26,15 @@ docker-compose up
 
 ### Fetch counts 
 
+If port is running on 3000 fetch counts with 
+
 ```sh
 curl -X POST http://localhost:3000/getMetric
 ```
 
 ### Reset counts to zero 
+
+If port is running on 3000 reset counts with
 
 ```sh
 curl -X POST http://localhost:3000/restartMetric
