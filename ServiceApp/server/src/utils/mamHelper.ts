@@ -32,6 +32,7 @@ interface IMamState {
     nextCount?: number;
     index?: number;
     keyIndex?: number;
+    keyId?: string;
 }
 
 // Publish to tangle
@@ -43,7 +44,6 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         if (mamStateFromDB) {
             secretKey = mamStateFromDB.sideKey;
             mamState = mamStateFromDB;
-            mamState.index = mamStateFromDB.keyIndex;
         } else {
             // Set channel mode & update key
             secretKey = generateSeed(81);
@@ -103,7 +103,6 @@ export const publishDID = async (publicKey, privateKey) => {
         const mamStateFromDB: IMamState = await readData('did');
         if (mamStateFromDB) {
             mamState = mamStateFromDB;
-            mamState.index = mamStateFromDB.keyIndex;
         }
 
         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
