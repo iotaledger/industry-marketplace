@@ -1,9 +1,11 @@
+import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import { asciiToTrytes } from '@iota/converter';
-import { composeAPI } from '@iota/core';
-import { defaultAddress, depth, minWeightMagnitude, provider } from '../config.json';
+import { defaultAddress, depth, minWeightMagnitude } from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { generateSeed } from './iotaHelper';
 
-const iota = composeAPI({ provider });
+const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+const iota = composeAPI(loadBalancerSettings);
 
 export const sendMessage = (payload, tag) => {
     const seed = generateSeed();

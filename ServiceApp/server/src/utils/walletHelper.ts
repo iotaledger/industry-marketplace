@@ -1,6 +1,8 @@
-import { composeAPI, createPrepareTransfers, generateAddress } from '@iota/core';
+import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
+import { createPrepareTransfers, generateAddress } from '@iota/core';
 import axios from 'axios';
-import { depth, faucet, faucetAmount, minWeightMagnitude, provider, security } from '../config.json';
+import { depth, faucet, faucetAmount, minWeightMagnitude, security } from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
@@ -23,7 +25,7 @@ export const fundWallet = async () => {
 export const generateNewWallet = () => {
     try {
         const seed = generateSeed();
-        const address = generateAddress(seed, 0, 2, true);
+        const address = generateAddress(seed, 0, security, true);
         return { seed, address, keyIndex: 0, balance: 0 };
     } catch (error) {
         console.error('generateNewWallet error', error);
@@ -36,7 +38,8 @@ export const getBalance = async address => {
         if (!address) {
             return 0;
         }
-        const { getBalances } = composeAPI({ provider });
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const { getBalances } = composeAPI(loadBalancerSettings);
         const { balances } = await getBalances([address], 100);
         return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
@@ -48,7 +51,8 @@ export const getBalance = async address => {
 const transferFunds = async (wallet, totalAmount, transfers) => {
     try {
         const { address, keyIndex, seed } = wallet;
-        const { sendTrytes, getLatestInclusion } = composeAPI({ provider });
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const { sendTrytes, getLatestInclusion } = composeAPI(loadBalancerSettings);
         const prepareTransfers = createPrepareTransfers();
         const balance = await getBalance(address);
 
