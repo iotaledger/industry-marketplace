@@ -4,9 +4,6 @@ import { defaultAddress, depth, minWeightMagnitude } from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { generateSeed } from './iotaHelper';
 
-const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-const iota = composeAPI(loadBalancerSettings);
-
 export const sendMessage = (payload, tag) => {
     const seed = generateSeed();
     const message = asciiToTrytes(encodeURI(JSON.stringify(payload)));
@@ -17,6 +14,9 @@ export const sendMessage = (payload, tag) => {
         message,
         tag
     }];
+
+    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+    const iota = composeAPI(loadBalancerSettings);
 
     return new Promise((resolve, reject) => {
         iota.prepareTransfers(seed, transfers)
