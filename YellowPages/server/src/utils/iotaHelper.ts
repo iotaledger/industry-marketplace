@@ -1,8 +1,20 @@
-import { composeAPI } from '@iota/core';
-import { provider } from '../config.json';
+import { composeAPI, FailMode, RandomWalkStrategy, SuccessMode } from '@iota/client-load-balancer';
+import { depth, minWeightMagnitude, providers } from '../config.json';
 import { fromTrytes } from './trytesHelper';
 
-const iota = composeAPI({ provider });
+const iota = composeAPI({
+    nodeWalkStrategy: new RandomWalkStrategy(
+        providers.map(provider => ({ provider }))
+    ),
+    depth,
+    mwm: minWeightMagnitude,
+    successMode: SuccessMode.keep,
+    failMode: FailMode.all,
+    timeoutMs: 10000,
+    failNodeCallback: (node, err) => {
+        console.log(`Failed node ${node.provider}, ${err.message}`);
+    }
+});
 
 /**
  * Find transaction objects from the given bundle
