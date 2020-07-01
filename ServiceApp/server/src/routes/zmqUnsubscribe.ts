@@ -1,4 +1,5 @@
 import { ServiceFactory } from '../factories/serviceFactory';
+import { ZmqService } from '../services/zmqService';
 
 /**
  * Unsubscribe from zmq events.
@@ -12,7 +13,7 @@ export function zmqUnsubscribe(config, socket, request) {
 
     try {
         if (request.subscriptionIds && request.subscriptionIds.length > 0) {
-            const zmqService = ServiceFactory.get('zmq');
+            const zmqService = ServiceFactory.get<ZmqService>('zmq');
 
             for (let i = 0; i < request.subscriptionIds.length; i++) {
                 zmqService.unsubscribe(request.subscriptionIds[i]);
