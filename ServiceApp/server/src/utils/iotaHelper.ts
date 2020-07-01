@@ -1,7 +1,7 @@
 import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import axios from 'axios';
 import crypto from 'crypto';
-import { providers } from '../config.json';
+import { onlineNodeConfig, onlineNodeConfigURL, providers } from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { fromTrytes } from './trytesHelper';
 
@@ -114,8 +114,18 @@ export const getPayload = async (bundle) => {
 };
 
 export const getAvailableProvider = async () => {
+    let providerCandidates = providers;
+
+    if (onlineNodeConfig) {
+        const response = await axios.get(onlineNodeConfigURL);
+        const data = response.data;
+        if (data && data.nodes) {
+            providerCandidates = data.nodes;
+        }
+    }
+
     let provider;
-    for (const providerCandidate of providers) {
+    for (const providerCandidate of providerCandidates) {
         const isAvailable = await isNodeAvailable(providerCandidate);
         if (isAvailable) {
             provider = providerCandidate;
