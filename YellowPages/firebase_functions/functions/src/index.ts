@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 const cors = require('cors')({ origin: true });
 const { sendEmail } = require('./email');
 
-const { getMessages, storeMessage } = require('./firebase');
+const { getMessages, storeMessage, getNodeSettings } = require('./firebase');
 const { addressToGPS } = require('./helpers');
 
 exports.sendEmail = functions.https.onRequest((req, res) => {
@@ -82,6 +82,17 @@ exports.location = functions.https.onRequest((req, res) => {
       return res.json(result);
     } catch (e) {
       console.error('location failed. Error: ', e.message);
+      return res.status(403).json({ error: e.message });
+    }
+  });
+});
+
+exports.getNodeSettings = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    try {
+      return res.json(await getNodeSettings());
+    } catch (e) {
+      console.error('getNodeSettings failed. Error: ', e);
       return res.status(403).json({ error: e.message });
     }
   });
