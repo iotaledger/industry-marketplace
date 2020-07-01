@@ -27,7 +27,7 @@
         "0173-1#01-BAH005#005"
     ],
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
-    "faucet": "https://api.marketplace.tangle.works/semarket",
+    "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
     "faucetAmount": 2000,
     "providers": [
         "https://altnodes.devnet.iota.org:443",
@@ -48,5 +48,7 @@
             "unit": "C"
         }]
     },
-    "keyId": "keys-1"
+    "keyId": "keys-1",
+    "onlineNodeConfig": true,
+    "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
 }
