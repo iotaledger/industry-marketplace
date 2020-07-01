@@ -25,10 +25,11 @@
     "typescript": "^3.8.3"
   },
   "engines": {
-    "node": "8"
+    "node": "10"
   },
   "resolutions": {
     "https-proxy-agent": "^2.2.4",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "websocket-extensions": "^0.1.4"
   }
 }
