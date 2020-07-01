@@ -10,5 +10,7 @@
     ],
     "security": 2,
     "depth": 3,
-    "minWeightMagnitude": 9
+    "minWeightMagnitude": 9,
+    "onlineNodeConfig": true,
+    "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
 }
