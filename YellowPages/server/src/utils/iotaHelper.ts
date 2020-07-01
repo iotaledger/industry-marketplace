@@ -2,20 +2,6 @@ import { composeAPI, FailMode, RandomWalkStrategy, SuccessMode } from '@iota/cli
 import { depth, minWeightMagnitude, providers } from '../config.json';
 import { fromTrytes } from './trytesHelper';
 
-const iota = composeAPI({
-    nodeWalkStrategy: new RandomWalkStrategy(
-        providers.map(provider => ({ provider }))
-    ),
-    depth,
-    mwm: minWeightMagnitude,
-    successMode: SuccessMode.keep,
-    failMode: FailMode.all,
-    timeoutMs: 10000,
-    failNodeCallback: (node, err) => {
-        console.log(`Failed node ${node.provider}, ${err.message}`);
-    }
-});
-
 /**
  * Find transaction objects from the given bundle
  * @param bundle The bundle to process.
@@ -23,6 +9,20 @@ const iota = composeAPI({
  */
 export const findTransactions = async (bundle) => {
     try {
+        const iota = composeAPI({
+            nodeWalkStrategy: new RandomWalkStrategy(
+                config.providers.map(provider => ({ provider }))
+            ),
+            depth: config.depth,
+            mwm: config.minWeightMagnitude,
+            successMode: SuccessMode.keep,
+            failMode: FailMode.all,
+            timeoutMs: 10000,
+            failNodeCallback: (node, err) => {
+                console.log(`Failed node ${node.provider}, ${err.message}`);
+            }
+        });
+
         return new Promise((resolve, reject) => {
             iota.findTransactionObjects({ bundles: [bundle] })
                 .then(resolve)
