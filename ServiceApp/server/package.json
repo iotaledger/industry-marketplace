@@ -55,7 +55,7 @@
         "typescript": "^3.8.3"
     },
     "engines": {
-        "node": ">=10.0"
+        "node": ">=13.0"
     },
     "resolutions": {
         "minimist": "^1.2.5"
