@@ -16,7 +16,7 @@
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
-        "start-dev": "run-p serve-mon build-watch",
+        "start-dev": "NODE_OPTIONS=--enable-source-maps run-p serve-mon build-watch",
         "start": "node ./build/src/index",
         "deploy": "now --docker"
     },
