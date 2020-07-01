@@ -33,9 +33,6 @@ interface IMamState {
     index?: number;
 }
 
-const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-const api = composeAPI(loadBalancerSettings);
-
 // Publish to tangle
 export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMAM') => {
     try {
@@ -56,12 +53,15 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         const message: IMamMessage = createMessage(mamState, trytes);
 
         // Attach the payload
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const api = composeAPI(loadBalancerSettings);
+
         const bundle = await mamAttach(api, message, depth, minWeightMagnitude, tag);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
       
         if (bundle && bundle.length && bundle[0].hash) {
             // Check if the message was attached
-            await checkAttachedMessage(root, secretKey, mode);
+            await checkAttachedMessage(api, root, secretKey, mode);
 
             // Save new mamState
             await writeData('mam', { ...mamState, id, root });
@@ -74,7 +74,7 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
     }
 };
 
-const checkAttachedMessage = async (root, secretKey, mode) => {
+const checkAttachedMessage = async (api, root, secretKey, mode) => {
     let retries = 0;
 
     while (retries++ < 10) {
@@ -106,6 +106,9 @@ export const publishDID = async (publicKey, privateKey) => {
         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
 
         // Attach the payload
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const api = composeAPI(loadBalancerSettings);
+
         const bundle = await mamAttach(api, message, depth, minWeightMagnitude);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         
@@ -122,6 +125,9 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
+    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+    const api = composeAPI(loadBalancerSettings);
+
     const fetched = await mamFetchAll(api, root, 'public', null, 20);
     const result = [];
     
