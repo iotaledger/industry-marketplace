@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import format from 'date-fns/format'
 import { trytesToAscii } from '@iota/converter';
-import Mam from '@iota/mam';
-import { provider } from '../../config.json';
+import { mamFetch } from '@iota/mam.js';
+import { composeAPI } from '@iota/client-load-balancer';
+import { ServiceFactory } from '../../factories/serviceFactory';
 
-Mam.init(provider);
+const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
+const iota = composeAPI(loadBalancerSettings);
 
 const SensorCard = ({ schema, packet }) => {
   const [sensorData, setSensorData] = useState({});
@@ -27,8 +29,8 @@ const SensorCard = ({ schema, packet }) => {
 
       return new Promise(async (resolve, reject) => {
         try {
-          const result = await Mam.fetchSingle(packet.root, 'restricted', packet.sidekey);
-          const newData = await JSON.parse(trytesToAscii(result.payload));
+          const result = await mamFetch(iota, packet.root, 'restricted', packet.sidekey);
+          const newData = await JSON.parse(trytesToAscii(result.message));
           setSensorData(newData);
           setTimeout(() => toggleVisible(true), 300);
           return resolve();
