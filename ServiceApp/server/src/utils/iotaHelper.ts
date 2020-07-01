@@ -5,9 +5,6 @@ import { providers } from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { fromTrytes } from './trytesHelper';
 
-const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-const iota = composeAPI(loadBalancerSettings);
-
 /**
  * Find transaction objects from the given bundle
  * @param bundle The bundle to process.
@@ -15,6 +12,9 @@ const iota = composeAPI(loadBalancerSettings);
  */
 export const findTransactions = async (bundle) => {
     try {
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const iota = composeAPI(loadBalancerSettings);
+
         return new Promise((resolve, reject) => {
             iota.findTransactionObjects({ bundles: [bundle] })
                 .then(resolve)
