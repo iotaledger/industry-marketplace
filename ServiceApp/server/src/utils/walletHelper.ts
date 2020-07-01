@@ -40,7 +40,7 @@ export const getBalance = async address => {
         }
         const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
         const { getBalances } = composeAPI(loadBalancerSettings);
-        const { balances } = await getBalances([address], 100);
+        const { balances } = await getBalances([address]);
         return balances && balances.length > 0 ? balances[0] : 0;
     } catch (error) {
         console.error('getBalance error', error);
@@ -52,7 +52,7 @@ const transferFunds = async (wallet, totalAmount, transfers) => {
     try {
         const { address, keyIndex, seed } = wallet;
         const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const { sendTrytes, getLatestInclusion } = composeAPI(loadBalancerSettings);
+        const { getInclusionStates, sendTrytes } = composeAPI(loadBalancerSettings);
         const prepareTransfers = createPrepareTransfers();
         const balance = await getBalance(address);
 
@@ -88,7 +88,7 @@ const transferFunds = async (wallet, totalAmount, transfers) => {
 
                             let retries = 0;
                             while (retries++ < 40) {
-                                const statuses = await getLatestInclusion(hashes);
+                                const statuses = await getInclusionStates(hashes);
                                 if (statuses.filter(status => status).length === 4) {
                                     break;
                                 }
