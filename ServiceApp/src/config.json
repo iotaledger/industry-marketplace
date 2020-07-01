@@ -4,8 +4,15 @@
   "googleMaps": "https://www.google.com/maps/search/",
   "waitingTime": 10,
   "googleAnalyticsId": "UA-143368819-1",
-  "provider": "https://iri01.bare01.devnet.iota.cafe",
   "sensorDataDomain": "https://us-central1-datamarket-617e1.cloudfunctions.net/stream?",
   "eClassCatalog": "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.0&pridatt=",
-  "datePickerFormat": "dd-MM-yyyy HH:mm"
+  "datePickerFormat": "dd-MM-yyyy HH:mm",
+  "providers": [
+    "https://altnodes.devnet.iota.org:443",
+    "https://nodes.devnet.iota.org:443",
+    "http://bare01.devnet.iota.cafe:14265"
+  ],
+  "security": 2,
+  "depth": 3,
+  "minWeightMagnitude": 9
 }
