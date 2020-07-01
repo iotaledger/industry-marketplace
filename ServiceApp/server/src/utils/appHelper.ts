@@ -157,7 +157,7 @@ export class AppHelper {
                 res.send({ newWallet });
             } catch (error) {
                 console.log('fund wallet error', error);
-                res.send({ error });
+                res.send({ error: 'fund wallet error' });
             }
         });
 
