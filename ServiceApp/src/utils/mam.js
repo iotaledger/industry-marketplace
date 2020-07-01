@@ -3,13 +3,13 @@ import { composeAPI } from '@iota/client-load-balancer';
 import { mamFetchAll } from '@iota/mam.js';
 import { ServiceFactory } from '../factories/serviceFactory';
 
-const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
-const iota = composeAPI(loadBalancerSettings);
-
 export const fetch = (root, key, reportEvent, onFetchComplete) => {
   if (!root) return;
   const promise = new Promise(async (resolve, reject) => {
     try {
+      const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
+      const iota = composeAPI(loadBalancerSettings);
+
       const convertAndReport = event => reportEvent(JSON.parse(decodeURI(trytesToAscii(event))));
 
       const fetched = await mamFetchAll(iota, root, 'restricted', key, 20);

@@ -6,9 +6,6 @@ import { mamFetch } from '@iota/mam.js';
 import { composeAPI } from '@iota/client-load-balancer';
 import { ServiceFactory } from '../../factories/serviceFactory';
 
-const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
-const iota = composeAPI(loadBalancerSettings);
-
 const SensorCard = ({ schema, packet }) => {
   const [sensorData, setSensorData] = useState({});
   const [visible, toggleVisible] = useState(false);
@@ -29,6 +26,9 @@ const SensorCard = ({ schema, packet }) => {
 
       return new Promise(async (resolve, reject) => {
         try {
+          const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
+          const iota = composeAPI(loadBalancerSettings);
+
           const result = await mamFetch(iota, packet.root, 'restricted', packet.sidekey);
           const newData = await JSON.parse(trytesToAscii(result.message));
           setSensorData(newData);
