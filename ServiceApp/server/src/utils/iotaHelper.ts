@@ -1,10 +1,12 @@
-import { composeAPI } from '@iota/core';
+import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import axios from 'axios';
 import crypto from 'crypto';
-import { provider } from '../config.json';
+import { providers } from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { fromTrytes } from './trytesHelper';
 
-const iota = composeAPI({ provider });
+const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+const iota = composeAPI(loadBalancerSettings);
 
 /**
  * Find transaction objects from the given bundle
@@ -29,11 +31,11 @@ export const findTransactions = async (bundle) => {
 
 /**
  * Check to see if there is connectivity to a node.
- * @param _provider The provider to check for connectivity.
+ * @param provider The provider to check for connectivity.
  * @param throwIfNoConnectivity Throw an exception if there is no tangle connectivity.
  * @returns True if there is connectivity.
  */
-export const isNodeAvailable = async (_provider, throwIfNoConnectivity = false) => {
+export const isNodeAvailable = async (provider: string, throwIfNoConnectivity: boolean = false): Promise<boolean> => {
     let hasConnectivity;
 
     try {
@@ -109,4 +111,17 @@ export const getPayload = async (bundle) => {
         console.error('getPayload catch', error, bundle);
         return error;
     }
+};
+
+export const getAvailableProvider = async () => {
+    let provider;
+    for (const providerCandidate of providers) {
+        const isAvailable = await isNodeAvailable(providerCandidate);
+        if (isAvailable) {
+            provider = providerCandidate;
+            break;
+        }
+    }
+    console.log('getAvailableProvider', provider);
+    return provider;
 };
