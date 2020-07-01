@@ -21,6 +21,7 @@
         "deploy": "now --docker"
     },
     "dependencies": {
+        "@iota/client-load-balancer": "^1.0.1",
         "@iota/converter": "^1.0.0-beta.23",
         "@iota/core": "^1.0.0-beta.29",
         "body-parser": "^1.19.0",
