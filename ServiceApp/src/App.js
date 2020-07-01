@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FailMode, LinearWalkStrategy, SuccessMode } from '@iota/client-load-balancer';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ServiceFactory } from './factories/serviceFactory';
 import { ApiClient } from './services/apiClient';
@@ -22,6 +23,21 @@ class App extends Component {
     async componentDidMount() {
         try {
             ServiceFactory.register('api', () => new ApiClient(config.domain));
+
+            const loadBalancerSettings = {
+                nodeWalkStrategy: new LinearWalkStrategy(
+                    config.providers.map(provider => ({ provider }))
+                ),
+                depth: config.depth,
+                mwm: config.minWeightMagnitude,
+                successMode: SuccessMode.keep,
+                failMode: FailMode.all,
+                timeoutMs: 10000,
+                failNodeCallback: (node, err) => {
+                    console.log(`Failed node ${node.provider}, ${err.message}`);
+                }
+            };
+            ServiceFactory.register('load-balancer-settings', () => loadBalancerSettings);
 
             this._configuration = config;
 
