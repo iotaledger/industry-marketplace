@@ -341,7 +341,7 @@ export class ZmqService {
                                                 start: 0,
                                                 mode: '',
                                                 security,
-                                                count: 0,
+                                                count: 1,
                                                 nextCount: 1,
                                                 index: 0
                                             });

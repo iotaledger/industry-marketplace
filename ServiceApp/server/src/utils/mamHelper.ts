@@ -44,6 +44,7 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         if (mamStateFromDB) {
             secretKey = mamStateFromDB.sideKey;
             mamState = mamStateFromDB;
+            mamState.index = mamStateFromDB.keyIndex;
         } else {
             // Set channel mode & update key
             secretKey = generateSeed(81);
@@ -52,7 +53,7 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
 
         // Create MAM Payload - STRING OF TRYTES
         const trytes = asciiToTrytes(encodeURI(JSON.stringify(packet)));
-        const message: IMamMessage = createMessage(mamState, trytes);
+        const message = createMessage(mamState, trytes);
 
         // Attach the payload
         const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
