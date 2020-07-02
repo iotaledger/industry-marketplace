@@ -7,6 +7,7 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
+import { ZmqService } from '../services/zmqService';
 import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
@@ -15,7 +16,7 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { generateNewWallet, getBalance, fundWallet } from './walletHelper';
+import { fundWallet, generateNewWallet, getBalance } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -28,7 +29,7 @@ export class AppHelper {
      * @returns The express js application.
      */
     public static build(onComplete, customListener) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
         const app = express();
 
@@ -122,7 +123,7 @@ export class AppHelper {
                 }
 
                 // Set TangleCommunicationService Address
-                ServiceFactory.get('zmq').setAddressToListenTo(user.address);
+                ServiceFactory.get<ZmqService>('zmq').setAddressToListenTo(user.address);
 
                 const wallet: any = await readData('wallet');
                 let newWallet;
@@ -156,7 +157,7 @@ export class AppHelper {
                 res.send({ newWallet });
             } catch (error) {
                 console.log('fund wallet error', error);
-                res.send({ error });
+                res.send({ error: 'fund wallet error' });
             }
         });
 

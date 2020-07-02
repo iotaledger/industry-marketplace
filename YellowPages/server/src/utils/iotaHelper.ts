@@ -1,8 +1,7 @@
-import { composeAPI } from '@iota/core';
-import { provider } from '../config.json';
+import { composeAPI, FailMode, RandomWalkStrategy, SuccessMode } from '@iota/client-load-balancer';
+import axios from 'axios';
+import { depth, minWeightMagnitude, onlineNodeConfig, onlineNodeConfigURL, providers } from '../config.json';
 import { fromTrytes } from './trytesHelper';
-
-const iota = composeAPI({ provider });
 
 /**
  * Find transaction objects from the given bundle
@@ -11,6 +10,30 @@ const iota = composeAPI({ provider });
  */
 export const findTransactions = async (bundle) => {
     try {
+        let config = { depth, minWeightMagnitude, providers };
+
+        if (onlineNodeConfig) {
+            const response = await axios.get(onlineNodeConfigURL);
+            const data = response.data;
+            if (data) {
+                config = data;
+            }
+        }
+
+        const iota = composeAPI({
+            nodeWalkStrategy: new RandomWalkStrategy(
+                config.providers.map(provider => ({ provider }))
+            ),
+            depth: config.depth,
+            mwm: config.minWeightMagnitude,
+            successMode: SuccessMode.keep,
+            failMode: FailMode.all,
+            timeoutMs: 10000,
+            failNodeCallback: (node, err) => {
+                console.log(`Failed node ${node.provider}, ${err.message}`);
+            }
+        });
+
         return new Promise((resolve, reject) => {
             iota.findTransactionObjects({ bundles: [bundle] })
                 .then(resolve)

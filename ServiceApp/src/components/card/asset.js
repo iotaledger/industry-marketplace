@@ -139,7 +139,7 @@ const Asset = props => {
   useEffect(() => {
     if (user.role === 'SP' && asset.price === 'Pending') {
       setConfirmButtonEnabled(false);
-    } else if (user.balance <= 0) {
+    } else if (user.role === 'SR' && user.balance <= 0) {
       setConfirmButtonEnabled(false);
     } else {
       setConfirmButtonEnabled(true);

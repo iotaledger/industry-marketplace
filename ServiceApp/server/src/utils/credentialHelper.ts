@@ -17,9 +17,10 @@ import {
     VerifiablePresentation,
     VerifiablePresentationDataModel
 } from 'identity_ts';
-import { depth, keyId, minWeightMagnitude, provider } from '../config.json';
+import { depth, keyId, minWeightMagnitude, security } from '../config.json';
 import { createCredential, readData, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
+import { getAvailableProvider } from './iotaHelper';
 
 export interface IUser {
     id: string;
@@ -46,10 +47,11 @@ export function createNewUser(name: string = '', role: string = '', location: st
                 tangleComsAddress
             )
         );
+        const provider = await getAvailableProvider();
         const publisher = new DIDPublisher(provider, seed);
         const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude, depth);
         const state = publisher.ExportMAMChannelState();
-        await writeData('did', { root, privateKey, keyId, seed, next_root: state.nextRoot , start: state.start });
+        await writeData('did', { root, privateKey, keyId, seed, security, start: state.start, nextRoot: state.nextRoot });
 
         // Store user
         const id = userDIDDocument.GetDID().GetDID();
@@ -74,10 +76,15 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
     const did: any = await readData('did');
     const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
     data.key = await encryptionKeypair.PrivateDecrypt(Buffer.from(data.key, 'hex'));
-    const credentialString = decryptCipher({key : Buffer.from(data.key, 'hex'), iv: Buffer.from(data.iv, 'hex'), encoded: Buffer.from(data.data, 'hex')}).toString('utf8');
+    const credentialString = decryptCipher({
+        key : Buffer.from(data.key, 'hex'), 
+        iv: Buffer.from(data.iv, 'hex'), 
+        encoded: Buffer.from(data.data, 'hex')
+    }).toString('utf8');
 
     // Verify the credential is valid and for this user
     try {
+        const provider = await getAvailableProvider();
         const credentialJSON = JSON.parse(credentialString);
         const credentialFormat = <VerifiableCredentialDataModel>credentialJSON;
         
@@ -108,6 +115,7 @@ export async function createAuthenticationPresentation(): Promise<VerifiablePres
         try {
             const challenge = Date.now().toString();
             const did: any = await readData('did');
+            const provider = await getAvailableProvider();
 
             // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
             const issuerDID = await DIDDocument.readDIDDocument(provider, did.root);
@@ -152,9 +160,10 @@ export async function verifyCredentials(presentationData: VerifiablePresentation
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             // Create objects
+            const provider = await getAvailableProvider();
             const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.proof, provider);
             const verifiablePresentation: VerifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
-
+            
             // Verify
             SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(proofParameters.issuer.GetDID());
             

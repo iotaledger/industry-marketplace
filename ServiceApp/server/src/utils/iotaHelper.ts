@@ -1,10 +1,9 @@
-import { composeAPI } from '@iota/core';
+import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import axios from 'axios';
 import crypto from 'crypto';
-import { provider } from '../config.json';
+import { onlineNodeConfig, onlineNodeConfigURL, providers } from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { fromTrytes } from './trytesHelper';
-
-const iota = composeAPI({ provider });
 
 /**
  * Find transaction objects from the given bundle
@@ -13,6 +12,9 @@ const iota = composeAPI({ provider });
  */
 export const findTransactions = async (bundle) => {
     try {
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const iota = composeAPI(loadBalancerSettings);
+
         return new Promise((resolve, reject) => {
             iota.findTransactionObjects({ bundles: [bundle] })
                 .then(resolve)
@@ -29,11 +31,11 @@ export const findTransactions = async (bundle) => {
 
 /**
  * Check to see if there is connectivity to a node.
- * @param _provider The provider to check for connectivity.
+ * @param provider The provider to check for connectivity.
  * @param throwIfNoConnectivity Throw an exception if there is no tangle connectivity.
  * @returns True if there is connectivity.
  */
-export const isNodeAvailable = async (_provider, throwIfNoConnectivity = false) => {
+export const isNodeAvailable = async (provider: string, throwIfNoConnectivity: boolean = false): Promise<boolean> => {
     let hasConnectivity;
 
     try {
@@ -109,4 +111,27 @@ export const getPayload = async (bundle) => {
         console.error('getPayload catch', error, bundle);
         return error;
     }
+};
+
+export const getAvailableProvider = async () => {
+    let providerCandidates = providers;
+
+    if (onlineNodeConfig) {
+        const response = await axios.get(onlineNodeConfigURL);
+        const data = response.data;
+        if (data && data.nodes) {
+            providerCandidates = data.nodes;
+        }
+    }
+
+    let provider;
+    for (const providerCandidate of providerCandidates) {
+        const isAvailable = await isNodeAvailable(providerCandidate);
+        if (isAvailable) {
+            provider = providerCandidate;
+            break;
+        }
+    }
+    console.log('getAvailableProvider', provider);
+    return provider;
 };

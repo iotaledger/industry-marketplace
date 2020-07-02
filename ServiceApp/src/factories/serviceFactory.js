@@ -18,6 +18,9 @@ export class ServiceFactory {
      */
     static register(name, instanceCallback) {
         this._services[name] = instanceCallback;
+        if (this._instances[name]) {
+            delete this._instances[name];
+        }
     }
 
     /**
@@ -26,6 +29,9 @@ export class ServiceFactory {
      */
     static unregister(name) {
         delete this._services[name];
+        if (this._instances[name]) {
+            delete this._instances[name];
+        }
     }
 
     /**

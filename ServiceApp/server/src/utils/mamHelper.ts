@@ -1,64 +1,73 @@
+import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
-import Mam, { MamMode } from '@iota/mam';
-import crypto from 'crypto';
-import { depth, minWeightMagnitude, provider, security } from '../config.json';
+import {
+    createChannel,
+    createMessage,
+    IMamMessage,
+    mamAttach,
+    mamFetchAll
+} from '@iota/mam.js';
+import { depth, minWeightMagnitude, security } from '../config.json';
+import { ServiceFactory } from '../factories/serviceFactory';
 import { readData, writeData } from './databaseHelper';
+import { generateSeed } from './iotaHelper';
+
+// An enumerator for the different MAM Modes. Prevents typos in regards to the different modes.
+enum MAM_MODE {
+    private = 'private',
+    public = 'public',
+    restricted = 'restricted'
+}
 
 interface IMamState {
     id?: string;
     root?: string;
     seed?: string;
-    next_root?: string;
-    side_key?: string;
+    nextRoot?: string;
+    sideKey?: string;
     start?: number;
+    mode?: MAM_MODE;
+    security?: number;
+    count?: number;
+    nextCount?: number;
+    index?: number;
+    keyIndex?: number;
+    keyId?: string;
 }
 
-// Random Key Generator
-const generateRandomKey = length => {
-    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9';
-    const values = crypto.randomBytes(length);
-    return Array.from(new Array(length), (x, i) => charset[values[i] % charset.length]).join('');
-};
-
 // Publish to tangle
-export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'SEMARKETMAM') => {
+export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMAM') => {
     try {
-        let mamState = Mam.init(provider);
+        let mamState;
         let secretKey;
         const mamStateFromDB: IMamState = await readData('mam', id);
         if (mamStateFromDB) {
-            mamState = {
-                subscribed: [],
-                channel: {
-                    side_key: mamStateFromDB.side_key,
-                    mode,
-                    next_root: mamStateFromDB.next_root,
-                    security,
-                    start: mamStateFromDB.start,
-                    count: 1,
-                    next_count: 1,
-                    index: 0
-                },
-                seed: mamStateFromDB.seed
-            };
-            secretKey = mamStateFromDB.side_key;
+            secretKey = mamStateFromDB.sideKey;
+            mamState = mamStateFromDB;
+            mamState.index = mamStateFromDB.keyIndex;
         } else {
             // Set channel mode & update key
-            secretKey = generateRandomKey(81);
-            mamState = Mam.changeMode(mamState, mode, secretKey);
+            secretKey = generateSeed(81);
+            mamState = createChannel(generateSeed(81), security, MAM_MODE[mode], secretKey);
         }
 
         // Create MAM Payload - STRING OF TRYTES
         const trytes = asciiToTrytes(encodeURI(JSON.stringify(packet)));
-        const message = Mam.create(mamState, trytes);
-        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
-        const { channel: { next_root, side_key, start }, seed } = message.state;
-      
+        const message = createMessage(mamState, trytes);
+
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, depth, minWeightMagnitude, tag);
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const api = composeAPI(loadBalancerSettings);
+
+        const bundle = await mamAttach(api, message, depth, minWeightMagnitude, tag);
+        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
+      
         if (bundle && bundle.length && bundle[0].hash) {
+            // Check if the message was attached
+            await checkAttachedMessage(api, root, secretKey, mode);
+
             // Save new mamState
-            await writeData('mam', { id, root, seed, next_root, side_key, start });
+            await writeData('mam', { ...mamState, id, root });
             return { hash: bundle[0].hash, root, secretKey };
         }
         return null;
@@ -68,37 +77,47 @@ export const publish = async (id, packet, mode: MamMode = 'restricted', tag = 'S
     }
 };
 
+const checkAttachedMessage = async (api, root, secretKey, mode) => {
+    let retries = 0;
+
+    while (retries++ < 10) {
+        const fetched = await mamFetchAll(api, root, MAM_MODE[mode], secretKey, 20);
+        const result = [];
+        
+        if (fetched && fetched.length > 0) {
+            for (let i = 0; i < fetched.length; i++) {
+                result.push(trytesToAscii(fetched[i].message));
+            }
+        }
+
+        if (result.length > 0) {
+            return result.length;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+};
+
 // Publish to tangle
 export const publishDID = async (publicKey, privateKey) => {
     try {
-        let mamState = Mam.init(provider);
+        let mamState;
         const mamStateFromDB: IMamState = await readData('did');
         if (mamStateFromDB) {
-            mamState = {
-                subscribed: [],
-                channel: {
-                    side_key: null,
-                    mode: 'public',
-                    next_root: mamStateFromDB.next_root,
-                    security,
-                    start: mamStateFromDB.start,
-                    count: 1,
-                    next_count: 1,
-                    index: 0
-                },
-                seed: mamStateFromDB.seed
-            };
+            mamState = mamStateFromDB;
         }
 
-        const message = Mam.create(mamState, asciiToTrytes(publicKey));
-        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
-        const { channel: { next_root, start }, seed } = message.state;
-      
+        const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
+
         // Attach the payload
-        const bundle = await Mam.attach(message.payload, message.address, depth, minWeightMagnitude);
+        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+        const api = composeAPI(loadBalancerSettings);
+
+        const bundle = await mamAttach(api, message, depth, minWeightMagnitude);
+        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
+        
         if (bundle && bundle.length && bundle[0].hash) {
             // Save new mamState
-            await writeData('did', { root, privateKey, seed, next_root, start });
+            await writeData('did', { ...mamState, root, privateKey });
             return message.root;
         }
         return null;
@@ -109,47 +128,16 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
-    Mam.init(provider);
-    const result: any = await Mam.fetch(root, 'public');
-    return result && result.messages && result.messages.map(trytesToAscii);
+    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
+    const api = composeAPI(loadBalancerSettings);
+
+    const fetched = await mamFetchAll(api, root, 'public', null, 20);
+    const result = [];
+    
+    if (fetched && fetched.length > 0) {
+        for (let i = 0; i < fetched.length; i++) {
+            result.push(trytesToAscii(fetched[i].message));
+        }
+    }
+    return result;
 };
-
-// export const fetchFromRoot = async (root, secretKey) => {
-//     // Output syncronously once fetch is completed
-//     const mode = 'restricted';
-//     const result = await Mam.fetch(root, mode, secretKey);
-//     return result && result.messages.map(message => JSON.parse(trytesToAscii(message)));
-// };
-
-// export const fetchFromChannelId = async channelId => {
-//     const channelData: IMamState = await readData('mam', channelId);
-//     if (channelData) {
-//         return await fetchFromRoot(channelData.root, channelData.side_key);
-//     }
-//     return [];
-// };
-
-/*
-Example write operation:
-
-import uuid from 'uuid/v4';
-import { publish } from './mamHelper';
-
-const channelId = uuid();
-
-await publish(channelId, { message: 'Message from Alice' });
-await publish(channelId, { message: 'Message from Bob' });
-
-*/
-
-/*
-Example read operation:
-
-import { fetchFromChannelId } from './mamHelper';
-
-const fetchData = async channelId => {
-    const messages = await fetchFromChannelId(channelId);
-    messages.forEach(message => console.log(message));
-}
-
-*/

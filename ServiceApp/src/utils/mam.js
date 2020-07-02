@@ -1,14 +1,21 @@
 import { trytesToAscii } from '@iota/converter';
-import Mam from '@iota/mam';
-import { provider } from '../config.json';
+import { composeAPI } from '@iota/client-load-balancer';
+import { mamFetchAll } from '@iota/mam.js';
+import { ServiceFactory } from '../factories/serviceFactory';
 
 export const fetch = (root, key, reportEvent, onFetchComplete) => {
-  if (!provider || !root) return;
+  if (!root) return;
   const promise = new Promise(async (resolve, reject) => {
     try {
-      Mam.init(provider);
-      const convertAndReport = event => reportEvent(JSON.parse(decodeURI(trytesToAscii(event))));
-      await Mam.fetch(root, 'restricted', key, convertAndReport);
+      const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
+      const iota = composeAPI(loadBalancerSettings);
+
+      const fetched = await mamFetchAll(iota, root, 'restricted', key, 20);
+          
+      if (fetched && fetched.length > 0) {
+        fetched.forEach(({ message }) => reportEvent(JSON.parse(decodeURI(trytesToAscii(message)))));
+      }
+
       return resolve(onFetchComplete());
     } catch (error) {
       console.log('MAM fetch error', error);

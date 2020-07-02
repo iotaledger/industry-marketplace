@@ -10,9 +10,9 @@ const db = new sqlite3.Database(
         }
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
-        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, next_root TEXT, side_key TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, next_root TEXT, start INTEGER)');
+        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
     }
@@ -21,7 +21,7 @@ const db = new sqlite3.Database(
 export const close = async () => {
     db.close(error => {
         if (error) {
-            return console.error(error.message);
+            return console.error('DB close', error.message);
         }
     });
 };
@@ -42,20 +42,20 @@ export const createPaymentQueue = async ({ address, value }) => {
     await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
 };
 
-export const createDID = async ({ root, privateKey, keyId, seed, next_root, start }) => {
+export const createDID = async ({ root, privateKey, keyId, seed, mode = 'private', sideKey = '', security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
     const insert = `
         INSERT INTO did (
-        root, privateKey, keyId, seed, next_root, start)
-        VALUES (?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [root, privateKey, keyId, seed, next_root, start]);
+        root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, keyIndex, nextRoot)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    await db.run(insert, [root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, index, nextRoot]);
 };
 
-export const createMAMChannel = async ({ id, root, seed, next_root, side_key, start }) => {
+export const createMAMChannel = async ({ id, root, seed, mode, sideKey, security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
     const insert = `
         REPLACE INTO mam (
-        id, root, seed, next_root, side_key, start)
-        VALUES (?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [id, root, seed, next_root, side_key, start]);
+        id, root, seed, mode, sideKey, security, start, count, nextCount, keyIndex, nextRoot)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    await db.run(insert, [id, root, seed, mode, sideKey, security, start, count, nextCount, index, nextRoot]);
 };
 
 export const createCredential = async ({ id, credential }) => {

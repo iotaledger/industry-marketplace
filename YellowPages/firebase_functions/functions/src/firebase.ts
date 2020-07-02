@@ -66,3 +66,21 @@ exports.getEmailSettings = async () => {
   console.error('getEmailSettings failed. Setting does not exist', doc);
   throw Error(`The getEmailSettings setting doesn't exist.`);
 };
+
+exports.getNodeSettings = async () => {
+  const doc = await admin
+    .firestore()
+    .collection('settings')
+    .doc('settings')
+    .get();
+  if (doc.exists) {
+    const data = doc.data();
+
+    delete data.email;
+    delete data.googleMapsApiKey;
+
+    return data;
+  }
+  console.log('getNodeSettings failed. Setting does not exist', doc);
+  throw Error(`The getNodeSettings setting doesn't exist.`);
+};

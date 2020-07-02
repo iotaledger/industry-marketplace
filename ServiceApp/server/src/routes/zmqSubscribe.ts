@@ -1,4 +1,5 @@
 import { ServiceFactory } from '../factories/serviceFactory';
+import { ZmqService } from '../services/zmqService';
 
 /**
  * Subscribe to zmq events.
@@ -14,7 +15,7 @@ export function zmqSubscribe(config, socket, request) {
         const subscriptionIds = [];
 
         if (request.events && request.events.length > 0) {
-            const zmqService = ServiceFactory.get('zmq');
+            const zmqService = ServiceFactory.get<ZmqService>('zmq');
 
             for (let i = 0; i < request.events.length; i++) {
                 const subscriptionId = zmqService.subscribeEvent(request.events[i], (event, data) => {

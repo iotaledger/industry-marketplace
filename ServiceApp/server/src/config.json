@@ -27,9 +27,13 @@
         "0173-1#01-BAH005#005"
     ],
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
-    "faucet": "https://api.marketplace.tangle.works/semarket",
-    "faucetAmount": 2000,
-    "provider": "https://iri01.bare01.devnet.iota.cafe",
+    "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
+    "faucetAmount": 5000,
+    "providers": [
+        "http://bare01.devnet.iota.cafe:14265",
+        "https://altnodes.devnet.iota.org:443",
+        "https://nodes.devnet.iota.org:443"
+    ],
     "security": 2,
     "depth": 3,
     "minWeightMagnitude": 9,
@@ -44,5 +48,7 @@
             "unit": "C"
         }]
     },
-    "keyId": "keys-1"
+    "keyId": "keys-1",
+    "onlineNodeConfig": true,
+    "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
 }

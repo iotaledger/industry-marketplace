@@ -1,7 +1,7 @@
 import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
 import zmq from 'zeromq';
-import { maxDistance, operations } from '../config.json';
+import { maxDistance, operations, security } from '../config.json';
 import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentials } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
@@ -336,9 +336,14 @@ export class ZmqService {
                                                 id: channelId,
                                                 root: data.mam.root,
                                                 seed: '',
-                                                next_root: '',
-                                                side_key: secretKey,
-                                                start: 0
+                                                nextRoot: '',
+                                                sideKey: secretKey,
+                                                start: 0,
+                                                mode: '',
+                                                security,
+                                                count: 1,
+                                                nextCount: 1,
+                                                index: 0
                                             });
                                             await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         } else {
