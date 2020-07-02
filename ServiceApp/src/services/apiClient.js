@@ -6,7 +6,15 @@ import SocketIOClient from 'socket.io-client';
 export class ApiClient {
     constructor(endpoint) {
         this._endpoint = endpoint; // The endpoint for performing communications.
-        this._socket = SocketIOClient(this._endpoint); // The web socket to communicate on.
+        this._socket = SocketIOClient(this._endpoint, {
+            autoConnect: true,
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 500,
+            jsonp: false,
+            secure: true,
+            transports: ['websocket']
+        }); // The web socket to communicate on.
     }
     
     /**
