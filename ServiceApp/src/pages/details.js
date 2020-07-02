@@ -31,7 +31,7 @@ class Details extends React.Component {
       const data = await api.get('mam', { conversationId });
       if (data.root) {
         this.setState({ loading: true });
-        fetch(data.root, data.side_key, this.appendToMessages, this.fetchComplete);
+        fetch(data.root, data.sideKey, this.appendToMessages, this.fetchComplete);
       }
 
       const card = await readFromStorage(conversationId);
