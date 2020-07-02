@@ -16,7 +16,7 @@
         "build-watch": "tsc --watch",
         "build": "npm-run-all build-clean build-compile",
         "serve-mon": "nodemon ./build/src/index",
-        "start-dev": "NODE_OPTIONS=--enable-source-maps run-p serve-mon build-watch",
+        "start-dev": "run-p serve-mon build-watch",
         "start": "node ./build/src/index",
         "deploy": "now --docker"
     },
@@ -55,7 +55,7 @@
         "typescript": "^3.8.3"
     },
     "engines": {
-        "node": ">=13.0"
+        "node": ">=10.0"
     },
     "resolutions": {
         "minimist": "^1.2.5"

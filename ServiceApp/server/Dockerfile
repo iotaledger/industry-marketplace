@@ -1,5 +1,5 @@
 FROM node:10.16.2-alpine
-RUN apk --no-cache add git python make g++
+RUN apk --no-cache add git python python3 make g++
 
 # Working DIR
 WORKDIR /usr/src/app
@@ -14,7 +14,7 @@ RUN npm run build
 RUN cd build/src/utils/ && node userHelper.js --create user --role SR --name ServiceRequester --location 52.507339,13.377982
 
 # Remove unneccesary so the docker image doesn't exceeds max size
-RUN apk del git python make g++
+RUN apk del git python python3 make g++
 
 EXPOSE 4000
 

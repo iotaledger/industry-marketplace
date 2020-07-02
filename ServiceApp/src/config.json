@@ -9,12 +9,11 @@
   "datePickerFormat": "dd-MM-yyyy HH:mm",
   "providers": [
     "https://altnodes.devnet.iota.org:443",
-    "https://nodes.devnet.iota.org:443",
-    "http://bare01.devnet.iota.cafe:14265"
+    "https://nodes.devnet.iota.org:443"
   ],
   "security": 2,
   "depth": 3,
   "minWeightMagnitude": 9,
-  "onlineNodeConfig": true,
+  "onlineNodeConfig": false,
   "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
 }

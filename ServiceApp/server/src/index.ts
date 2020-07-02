@@ -17,7 +17,7 @@ AppHelper.build(
 
         if (onlineNodeConfig) {
             const response = await axios.get(onlineNodeConfigURL);
-            const data = response?.data;
+            const data = response && response.data;
             if (data) {
                 settings = data;
             }
@@ -25,10 +25,10 @@ AppHelper.build(
 
         const loadBalancerSettings: LoadBalancerSettings = {
             nodeWalkStrategy: new LinearWalkStrategy(
-                (settings?.providers || providers).map(provider => ({ provider }))
+                (settings && settings.providers || providers).map(provider => ({ provider }))
             ),
-            depth: settings?.depth || depth,
-            mwm: settings?.minWeightMagnitude || minWeightMagnitude,
+            depth: settings && settings.depth || depth,
+            mwm: settings && settings.minWeightMagnitude || minWeightMagnitude,
             successMode: SuccessMode.keep,
             failMode: FailMode.all,
             timeoutMs: 10000,
