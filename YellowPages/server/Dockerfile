@@ -1,5 +1,5 @@
-FROM node:8.16.0-alpine
-RUN apk --no-cache add git python make g++
+FROM node:10.16.2-alpine
+RUN apk --no-cache add git python python3 make g++
 
 # Working DIR
 WORKDIR /usr/src/app
@@ -12,7 +12,7 @@ RUN yarn
 RUN yarn build
 
 # Remove unneccesary so the docker image doesn't exceeds max size
-RUN apk del git python make g++
+RUN apk del git python python3 make g++
 
 EXPOSE 5000
 
