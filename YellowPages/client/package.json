@@ -56,7 +56,7 @@
   "engines": {
     "node": ">=10.0"
   },
-  "proxy": "https://yellow-pages-dot-semarket-iota.appspot.com/",
+  "proxy": "https://yellow-pages-dot-semarket-iota.ew.r.appspot.com/",
   "browserslist": [
     ">0.2%",
     "not dead",
