@@ -45,5 +45,8 @@
         "tslint-eslint-rules": "^5.4.0",
         "tslint-microsoft-contrib": "^6.2.0",
         "typescript": "^3.8.3"
+    },
+    "resolutions": {
+        "lodash": "4.17.19"
     }
 }

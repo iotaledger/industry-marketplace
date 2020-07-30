@@ -58,6 +58,7 @@
         "node": ">=10.0"
     },
     "resolutions": {
+        "lodash": "4.17.19",
         "minimist": "^1.2.5"
     }
 }
