@@ -66,6 +66,7 @@
   "resolutions": {
     "acorn": "^7.1.1",
     "kind-of": "^6.0.3",
+    "lodash": "4.17.19",
     "minimist": "^1.2.5",
     "websocket-extensions": "^0.1.4"
   }
