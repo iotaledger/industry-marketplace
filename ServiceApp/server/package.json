@@ -26,7 +26,7 @@
         "@iota/core": "1.0.0-beta.30",
         "@iota/industry_4.0_language": "1.0.6",
         "@iota/mam.js": "github:iotaledger/mam.js",
-        "axios": "^0.20.0",
+        "axios": "^0.21.0",
         "body-parser": "^1.19.0",
         "copyfiles": "^2.4.0",
         "cors": "^2.8.5",
@@ -40,19 +40,19 @@
         "zeromq": "^5.2.0"
     },
     "devDependencies": {
-        "@types/express": "^4.17.8",
-        "@types/node": "^14.11.2",
+        "@types/express": "^4.17.9",
+        "@types/node": "^14.14.9",
         "@types/socket.io": "^2.1.11",
-        "@types/yargs": "^15.0.7",
+        "@types/yargs": "^15.0.10",
         "@types/zeromq": "^4.6.3",
         "concurrently": "^5.3.0",
-        "nodemon": "^2.0.4",
+        "nodemon": "^2.0.6",
         "npm-run-all": "^4.1.5",
         "rimraf": "^3.0.2",
-        "tslint": "^6.1.3",
+        "tslint": "5.1.0",
         "tslint-eslint-rules": "^5.4.0",
         "tslint-microsoft-contrib": "^6.2.0",
-        "typescript": "^3.8.3"
+        "typescript": "3.7.3"
     },
     "engines": {
         "node": ">=10.0"
