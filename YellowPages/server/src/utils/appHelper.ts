@@ -35,11 +35,7 @@ export class AppHelper {
 
         const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
         if (!customListener) {
-            app.listen(port, async err => {
-                if (err) {
-                    throw err;
-                }
-
+            app.listen(port, () => {
                 console.log(`Started API Server on port ${port} v${packageJson.version}`);
 
                 if (onComplete) {

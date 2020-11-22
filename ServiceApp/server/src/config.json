@@ -30,8 +30,6 @@
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
     "faucetAmount": 5000,
     "providers": [
-        "http://bare01.devnet.iota.cafe:14265",
-        "https://altnodes.devnet.iota.org:443",
         "https://nodes.devnet.iota.org:443"
     ],
     "security": 2,
@@ -49,6 +47,6 @@
         }]
     },
     "keyId": "keys-1",
-    "onlineNodeConfig": true,
+    "onlineNodeConfig": false,
     "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
 }
