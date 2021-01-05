@@ -24,7 +24,7 @@
         "@iota/client-load-balancer": "github:iotaledger/client-load-balancer#no-mam",
         "@iota/converter": "1.0.0-beta.30",
         "@iota/core": "1.0.0-beta.30",
-        "axios": "^0.21.0",
+        "axios": "^0.21.1",
         "body-parser": "^1.19.0",
         "cors": "^2.8.5",
         "express": "^4.17.1",
