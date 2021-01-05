@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@iota/area-codes": "^0.1.1",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "bluebird": "^3.7.2",
     "cors": "^2.8.5",
     "firebase-admin": "^9.2.0",
