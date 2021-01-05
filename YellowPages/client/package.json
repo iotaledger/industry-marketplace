@@ -11,7 +11,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.31",
     "@fortawesome/free-solid-svg-icons": "^5.15.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.2",
     "classnames": "^2.2.6",
     "industry_4.0_language": "iotaledger/industry_4.0_language",
