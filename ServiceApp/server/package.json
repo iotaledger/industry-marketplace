@@ -33,7 +33,7 @@
         "express": "^4.17.1",
         "identity_ts": "iotaledger/identity.ts",
         "mqtt": "^3.0.0",
-        "socket.io": "^2.3.0",
+        "socket.io": "^2.4.0",
         "sqlite3": "^4.1.1",
         "uuid": "^7.0.3",
         "yargs": "^15.3.1",
