@@ -6,9 +6,7 @@ import cors from 'cors';
 import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
-import { ServiceFactory } from '../factories/serviceFactory';
-import { ZmqService } from '../services/zmqService';
-import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
+import { createNewUser } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
@@ -122,9 +120,6 @@ export class AppHelper {
                     user = createNewUser(name, role, location);
                 }
 
-                // Set TangleCommunicationService Address
-                ServiceFactory.get<ZmqService>('zmq').setAddressToListenTo(user.address);
-
                 const wallet: any = await readData('wallet');
                 let newWallet;
                 if (!wallet) {
@@ -174,13 +169,6 @@ export class AppHelper {
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('callForProposal', submodelId);
 
-                // 2. Create a DID Authentication Challenge
-                try {
-                    const verifiablePresentation = await createAuthenticationPresentation();
-                    request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
-                
                 // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -214,13 +202,6 @@ export class AppHelper {
                 const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
-
-                // 2. Sign DID Authentication
-                try {
-                    const verifiablePresentation = await createAuthenticationPresentation();
-                    request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
                 const user: any = await readData('user');
