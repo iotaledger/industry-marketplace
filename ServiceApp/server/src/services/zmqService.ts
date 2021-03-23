@@ -214,10 +214,14 @@ export class ZmqService {
         // const address = messageParams[2];
         const tag = messageParams[12];
 
+        // console.log('handleMessage 1.0', event, tag, this._config.prefix);
+
         const operationList = await convertOperationsList(operations);
 
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
+
+            // console.log('handleMessage 2.0', messageType, address);
 
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
@@ -264,27 +268,22 @@ export class ZmqService {
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
 
-                                    // Find the challenge
-                                    if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        if (!location || !maxDistance) {
-                                            await this.sendEvent(data, messageType, messageParams);
-                                        }
+                                    if (!location || !maxDistance) {
+                                        await this.sendEvent(data, messageType, messageParams);
+                                    }
 
-                                        // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                        if (location && maxDistance) {
-                                            try {
-                                                const distance = await calculateDistance(location, senderLocation);
+                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                    if (location && maxDistance) {
+                                        try {
+                                            const distance = await calculateDistance(location, senderLocation);
 
-                                                // 3.3.1 If distance within accepted range, send message to UI
-                                                if (distance <= maxDistance) {
-                                                    await this.sendEvent(data, messageType, messageParams);
-                                                }
-                                            } catch (error) {
-                                                console.error(error);
+                                            // 3.3.1 If distance within accepted range, send message to UI
+                                            if (distance <= maxDistance) {
+                                                await this.sendEvent(data, messageType, messageParams);
                                             }
+                                        } catch (error) {
+                                            console.error(error);
                                         }
-                                    } else {
-                                        console.log('No identification found', data);
                                     }
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver ID
