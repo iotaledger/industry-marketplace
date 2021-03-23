@@ -34,7 +34,7 @@ gcloud components update
 Select current project from the list. Select `semarket-iota`
 Select region. Select `europe-west-4a` 
 
-5. Navigate to the folder whese server code resides
+5. Navigate to the folder where server code resides
 
 6. Check `app.yaml` to make sure the project name matches the value of `service` attribute
 
@@ -45,4 +45,4 @@ Select region. Select `europe-west-4a`
 
 9. Copy the deployed service URL and insert it into client `config.json` and `package.json`
 
-10. Deploy client, make sure the the project name matches the value of `name` attribute in `now.json`
+10. Deploy client, make sure the the project name matches the value of `name` attribute in `vercel.json`

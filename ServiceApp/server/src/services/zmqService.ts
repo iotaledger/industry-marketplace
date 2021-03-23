@@ -2,7 +2,7 @@ import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
 import zmq from 'zeromq';
 import { maxDistance, operations, security } from '../config.json';
-import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentials } from '../utils/credentialHelper';
+import { processReceivedCredentialForUser, VERIFICATION_LEVEL } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -202,7 +202,7 @@ export class ZmqService {
     /**
      * Send out an event
      */
-    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
+    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.DID_TRUSTED) {
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
 
@@ -231,6 +231,9 @@ export class ZmqService {
         if (event === 'tx' && this._subscriptions[event]) {
             const messageType = extractMessageType(tag);
 
+            // tslint:disable-next-line:no-unused-expression
+            messageType && console.log('handleMessage', messageType, tag);
+
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                 const bundle = messageParams[8];
 
@@ -257,22 +260,9 @@ export class ZmqService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
-                                    if (messageType === 'proposal') {
-                                        // Find the challenge
-                                        if (data.identification && data.identification.didAuthenticationPresentation) {
-                                            verifyCredentials(data.identification.didAuthenticationPresentation)
-                                            .then(async (verificationResult) => {
-                                                // Check if the correct challenge is used and if the signatures are correct
-                                                if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                    // Only send to UI if the DID Authentication is succesful
-                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                }
-                                            }).catch((err) => {
-                                                console.log('Verification failed, so message is ignored with error: ', err);
-                                            });
-                                        }
-                                    } else {
-                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
+                                    await this.sendEvent(data, messageType, messageParams);
+
+                                    if (messageType !== 'proposal') {
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);
                                     }
@@ -284,43 +274,30 @@ export class ZmqService {
                             if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
                                 const data = await getPayload(bundle);
 
+                                console.log('handleMessage 3', data);
+
                                 // 3.1 Decode every message of type A, retrieve location.
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
 
-                                    // Find the challenge
-                                    if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        verifyCredentials(data.identification.didAuthenticationPresentation)
-                                        .then(async (verificationResult) => {
-                                            // 3.2 If NO own location and NO accepted range are set, send message to UI
-                                            if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                if (!location || !maxDistance) {
-                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                }
-
-                                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                                if (location && maxDistance) {
-                                                    try {
-                                                        const distance = await calculateDistance(location, senderLocation);
-
-                                                        // 3.3.1 If distance within accepted range, send message to UI
-                                                        if (distance <= maxDistance) {
-                                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                        }
-                                                    } catch (error) {
-                                                        console.error(error);
-                                                    }
-                                                }
-                                            } else {
-                                                // tslint:disable-next-line:max-line-length
-                                                console.log('Found identification, but verification failed', verificationResult > VERIFICATION_LEVEL.UNVERIFIED, verificationResult, data.identification);
-                                            }
-                                        }).catch((err) => {
-                                            console.log('Verification failed, so message is ignored with error: ', err);
-                                        });
-                                    } else {
-                                        console.log('No identification found', data);
+                                    if (!location || !maxDistance) {
+                                        await this.sendEvent(data, messageType, messageParams);
                                     }
+
+                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                    if (location && maxDistance) {
+                                        try {
+                                            const distance = await calculateDistance(location, senderLocation);
+
+                                            // 3.3.1 If distance within accepted range, send message to UI
+                                            if (distance <= maxDistance) {
+                                                await this.sendEvent(data, messageType, messageParams);
+                                            }
+                                        } catch (error) {
+                                            console.error(error);
+                                        }
+                                    }
+  
                                 } else {
                                     // 3.4 Decode every message of type C, D, F and retrieve receiver ID
                                     const receiverID = data.frame.receiver.identification.id;
@@ -345,10 +322,8 @@ export class ZmqService {
                                                 nextCount: 1,
                                                 index: 0
                                             });
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        } else {
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         }
+                                        await this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }
