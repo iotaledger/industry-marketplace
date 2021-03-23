@@ -114,6 +114,7 @@ export const getPayload = async (bundle) => {
 };
 
 export const getAvailableProvider = async () => {
+    return providers[0];
     let providerCandidates = providers;
 
     if (onlineNodeConfig) {
