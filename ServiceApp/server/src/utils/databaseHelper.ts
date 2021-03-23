@@ -10,8 +10,10 @@ const db = new sqlite3.Database(
         }
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        // tslint:disable-next-line:max-line-length
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
+        // tslint:disable-next-line:max-line-length
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
@@ -136,7 +138,7 @@ export const readAllData = async (table) => {
 export const removeData = (table) => {
     return new Promise(async resolve => {
         await db.run(`DELETE FROM ${table}`);
-        resolve();
+        resolve(true);
     });
 };
 

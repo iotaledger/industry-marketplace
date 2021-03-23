@@ -3,7 +3,6 @@ import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import {
     createChannel,
     createMessage,
-    IMamMessage,
     mamAttach,
     mamFetchAll
 } from '@iota/mam.js';
@@ -95,49 +94,4 @@ const checkAttachedMessage = async (api, root, secretKey, mode) => {
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
-};
-
-// Publish to tangle
-export const publishDID = async (publicKey, privateKey) => {
-    try {
-        let mamState;
-        const mamStateFromDB: IMamState = await readData('did');
-        if (mamStateFromDB) {
-            mamState = mamStateFromDB;
-        }
-
-        const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
-
-        // Attach the payload
-        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const api = composeAPI(loadBalancerSettings);
-
-        const bundle = await mamAttach(api, message, depth, minWeightMagnitude);
-        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
-        
-        if (bundle && bundle.length && bundle[0].hash) {
-            // Save new mamState
-            await writeData('did', { ...mamState, root, privateKey });
-            return message.root;
-        }
-        return null;
-    } catch (error) {
-        console.log('MAM publishDID Error', error);
-        throw new Error(error);
-    }
-};
-
-export const fetchDID = async root => {
-    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-    const api = composeAPI(loadBalancerSettings);
-
-    const fetched = await mamFetchAll(api, root, 'public', null, 20);
-    const result = [];
-    
-    if (fetched && fetched.length > 0) {
-        for (let i = 0; i < fetched.length; i++) {
-            result.push(trytesToAscii(fetched[i].message));
-        }
-    }
-    return result;
 };

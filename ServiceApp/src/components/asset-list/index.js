@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { Switch } from 'react-md';
 import AssetCard from '../card/asset';
 import NoRequests from '../no-requests';
 
 export default props => {
-  const [trustLevel, limitTrustLevel] = useState(0);
-  const assets = props.assets.filter(asset => asset.trustLevel >= trustLevel);
-
-  function toggleTrustLevel(selected) {
-    selected ? limitTrustLevel(2) : limitTrustLevel(0);
-  }
+  const assets = props.assets;
 
   return (
     <React.Fragment>
@@ -18,16 +12,6 @@ export default props => {
         <CountWrapper>
           Active: {assets.length}
         </CountWrapper>
-        <TrustWrapper>
-          <Switch
-            id="trustLevel"
-            type="switch"
-            label="Filter Trusted Requests"
-            name="trustLevel"
-            checked={trustLevel === 2}
-            onChange={toggleTrustLevel}
-          />
-        </TrustWrapper>
       </CountTrustWrapper>
       {
         assets && assets.length ? (
@@ -58,14 +42,6 @@ const CountWrapper = styled.div`
   font-size: 24px;
   font-weight: 600;
   color: #485776;
-`;
-
-const TrustWrapper = styled.div`
-  #trustLevel-label {
-    font-size: 22px;
-    font-weight: 600;
-    color: #485776;
-  }
 `;
 
 const InfoCol = styled.div`
