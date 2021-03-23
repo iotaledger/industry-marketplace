@@ -95,6 +95,7 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
 
         importVerifiableCredential.Verify(provider)
             .then(async () => {
+                // tslint:disable-next-line:no-string-literal
                 if (credentialSubject['DID'] === user.id) {
                     //Store the credential in the DB, sorted under the DID of the Issuer
                     await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
@@ -102,6 +103,7 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
                 }
             })
             .catch(() => {
+                // tslint:disable-next-line:no-string-literal
                 console.log('Credential Target: ', credentialSubject['DID']);
             });
     } catch (e) {
