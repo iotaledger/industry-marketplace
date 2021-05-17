@@ -30,7 +30,7 @@
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
     "faucetAmount": 5000,
     "providers": [
-        "https://nodes.devnet.iota.org:443"
+        "https://chrysalis-nodes.iota.org"
     ],
     "security": 2,
     "depth": 3,
