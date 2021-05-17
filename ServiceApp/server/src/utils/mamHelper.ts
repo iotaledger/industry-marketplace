@@ -1,4 +1,3 @@
-import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import {
     createChannel,
@@ -7,10 +6,9 @@ import {
     mamAttach,
     mamFetchAll
 } from '@iota/mam.js';
-import { depth, minWeightMagnitude, security } from '../config.json';
-import { ServiceFactory } from '../factories/serviceFactory';
+import { security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
-import { generateSeed } from './iotaHelper';
+import { generateSeed, getAvailableProvider } from './iotaHelper';
 
 // An enumerator for the different MAM Modes. Prevents typos in regards to the different modes.
 enum MAM_MODE {
@@ -56,19 +54,17 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         const message = createMessage(mamState, trytes);
 
         // Attach the payload
-        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const api = composeAPI(loadBalancerSettings);
-
-        const bundle = await mamAttach(api, message, depth, minWeightMagnitude, tag);
+        const provider = getAvailableProvider();
+        const bundle = await mamAttach(provider, message, tag);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
       
-        if (bundle && bundle.length && bundle[0].hash) {
+        if (bundle && bundle.messageId) {
             // Check if the message was attached
-            await checkAttachedMessage(api, root, secretKey, mode);
+            await checkAttachedMessage(root, secretKey, mode);
 
             // Save new mamState
             await writeData('mam', { ...mamState, id, root });
-            return { hash: bundle[0].hash, root, secretKey };
+            return { hash: bundle.messageId, root, secretKey };
         }
         return null;
     } catch (error) {
@@ -77,11 +73,12 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
     }
 };
 
-const checkAttachedMessage = async (api, root, secretKey, mode) => {
+const checkAttachedMessage = async (root, secretKey, mode) => {
     let retries = 0;
 
     while (retries++ < 10) {
-        const fetched = await mamFetchAll(api, root, MAM_MODE[mode], secretKey, 20);
+        const provider = getAvailableProvider();
+        const fetched = await mamFetchAll(provider, root, MAM_MODE[mode], secretKey, 20);
         const result = [];
         
         if (fetched && fetched.length > 0) {
@@ -109,13 +106,11 @@ export const publishDID = async (publicKey, privateKey) => {
         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
 
         // Attach the payload
-        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const api = composeAPI(loadBalancerSettings);
-
-        const bundle = await mamAttach(api, message, depth, minWeightMagnitude);
+        const provider = getAvailableProvider();
+        const bundle = await mamAttach(provider, message);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         
-        if (bundle && bundle.length && bundle[0].hash) {
+        if (bundle && bundle.messageId) {
             // Save new mamState
             await writeData('did', { ...mamState, root, privateKey });
             return message.root;
@@ -128,10 +123,8 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
-    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-    const api = composeAPI(loadBalancerSettings);
-
-    const fetched = await mamFetchAll(api, root, 'public', null, 20);
+    const provider = getAvailableProvider();
+    const fetched = await mamFetchAll(provider, root, 'public', null, 20);
     const result = [];
     
     if (fetched && fetched.length > 0) {
