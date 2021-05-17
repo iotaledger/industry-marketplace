@@ -47,7 +47,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
                 tangleComsAddress
             )
         );
-        const provider = await getAvailableProvider();
+        const provider = getAvailableProvider();
         const publisher = new DIDPublisher(provider, seed);
         const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude, depth);
         const state = publisher.ExportMAMChannelState();
@@ -84,7 +84,7 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
 
     // Verify the credential is valid and for this user
     try {
-        const provider = await getAvailableProvider();
+        const provider = getAvailableProvider();
         const credentialJSON = JSON.parse(credentialString);
         const credentialFormat = <VerifiableCredentialDataModel>credentialJSON;
         
@@ -117,7 +117,7 @@ export async function createAuthenticationPresentation(): Promise<VerifiablePres
         try {
             const challenge = Date.now().toString();
             const did: any = await readData('did');
-            const provider = await getAvailableProvider();
+            const provider = getAvailableProvider();
 
             // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
             const issuerDID = await DIDDocument.readDIDDocument(provider, did.root);
@@ -162,7 +162,7 @@ export async function verifyCredentials(presentationData: VerifiablePresentation
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             // Create objects
-            const provider = await getAvailableProvider();
+            const provider = getAvailableProvider();
             const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.proof, provider);
             const verifiablePresentation: VerifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
             

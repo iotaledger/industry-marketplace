@@ -113,26 +113,26 @@ export const getPayload = async (bundle) => {
     }
 };
 
-export const getAvailableProvider = async () => {
+export const getAvailableProvider = () => {
     return providers[0];
-    let providerCandidates = providers;
+    // let providerCandidates = providers;
 
-    if (onlineNodeConfig) {
-        const response = await axios.get(onlineNodeConfigURL);
-        const data = response.data;
-        if (data && data.nodes) {
-            providerCandidates = data.nodes;
-        }
-    }
+    // if (onlineNodeConfig) {
+    //     const response = await axios.get(onlineNodeConfigURL);
+    //     const data = response.data;
+    //     if (data && data.nodes) {
+    //         providerCandidates = data.nodes;
+    //     }
+    // }
 
-    let provider;
-    for (const providerCandidate of providerCandidates) {
-        const isAvailable = await isNodeAvailable(providerCandidate);
-        if (isAvailable) {
-            provider = providerCandidate;
-            break;
-        }
-    }
-    console.log('getAvailableProvider', provider);
-    return provider;
+    // let provider;
+    // for (const providerCandidate of providerCandidates) {
+    //     const isAvailable = await isNodeAvailable(providerCandidate);
+    //     if (isAvailable) {
+    //         provider = providerCandidate;
+    //         break;
+    //     }
+    // }
+    // console.log('getAvailableProvider', provider);
+    // return provider;
 };

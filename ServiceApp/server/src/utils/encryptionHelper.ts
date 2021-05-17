@@ -4,7 +4,7 @@ import { readData } from './databaseHelper';
 import { getAvailableProvider } from './iotaHelper';
 
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
-    const provider = await getAvailableProvider();
+    const provider = getAvailableProvider();
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
     const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
