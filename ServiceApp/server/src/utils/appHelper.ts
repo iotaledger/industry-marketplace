@@ -16,7 +16,8 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { fundWallet, generateNewWallet, getBalance } from './walletHelper';
+// import { fundWallet, generateNewWallet, getBalance, generateNewAccount, getBalanceC2, fundWalletC2 } from './walletHelper';
+import { fundWallet, getBalance, generateNewAccount } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -59,7 +60,7 @@ export class AppHelper {
                     role?: string;
                     name?: string;
                 }
-                const existingUser: IUser = await readData('user');
+                const existingUser: IUser = await readData('userC4');
                 const user = { ...existingUser };
 
                 if (gps || location) {
@@ -113,48 +114,84 @@ export class AppHelper {
 
         app.get('/user', async (req, res) => {
             try {
-                let user: any = await readData('user');
+                let user: any = await readData('userC4');
                 if (!user || !user.id) {
                     // Creating a NEW Identity following the DID standard
                     const name =  user && user.name ? user.name : '';
                     const role =  user && user.role ? user.role : '';
                     const location = user && user.location ? user.location : '';
-                    user = createNewUser(name, role, location);
+                    user = await createNewUser(name, role, location);
+                    console.log('USER', user)
                 }
 
                 // Set TangleCommunicationService Address
                 ServiceFactory.get<ZmqService>('zmq').setAddressToListenTo(user.address);
 
-                const wallet: any = await readData('wallet');
+                // const wallet: any = await readData('wallet');
+                const wallet: any = await readData('walletC2');
                 let newWallet;
                 if (!wallet) {
-                    newWallet = generateNewWallet();
-                    await writeData('wallet', newWallet);
+                    // newWallet = generateNewWallet();
+                    newWallet = generateNewAccount(user.role);
+                    await writeData('walletC2', newWallet);
                 }
 
                 res.json({
                     ...user,
-                    balance: (wallet ? await getBalance(wallet.address) : 0),
+                    // balance: (wallet ? await getBalance(wallet.address) : 0),
+                    balance: (wallet ? await getBalance(wallet.alias) : 0),
                     wallet: (wallet ? wallet.address : newWallet.address)
                 });
             } catch (error) {
                 console.log('get user error', error);
-                res.send({ error });
+                res.send({ error: error });
             }
         });
 
+        // app.get('/wallet', async (req, res) => {
+        //     try {
+        //         const newWallet = generateNewWallet();
+        //         console.log('Initiated new wallet generation', newWallet);
+        //         const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+        //         const data = response.data;
+        //         if (data.success) {
+        //             const balance = await getBalance(newWallet.address);
+        //             await writeData('wallet', { ...newWallet, balance });
+        //         }
+        //         console.log('Finished new wallet generation', newWallet);
+        //         res.send({ newWallet });
+        //     } catch (error) {
+        //         console.log('fund wallet error', error);
+        //         res.send({ error: 'fund wallet error' });
+        //     }
+        // });
+
+        // app.get('/send', async (req, res) => {
+        //     try {
+        //         const response = await transferFundsC2('requester', 'atoi1qrs95hsa2gvqp2m9duwr64x8d4wqzyp3xfky6frxda4s65jl2h6cvsahnat', 5000000)
+        //         res.send({ response });
+        //     } catch (error) {
+        //         console.log('fund wallet error', error);
+        //         res.send({ error: 'fund wallet error' });
+        //     }
+        // });
+
         app.get('/wallet', async (req, res) => {
             try {
-                const newWallet = generateNewWallet();
-                console.log('Initiated new wallet generation', newWallet);
-                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
-                const data = response.data;
-                if (data.success) {
-                    const balance = await getBalance(newWallet.address);
-                    await writeData('wallet', { ...newWallet, balance });
+                const { alias } = req.body;
+                const newWalletC2 = await generateNewAccount(alias);
+                console.log('Initiated new wallet generation', newWalletC2);
+                
+                const response = await axios.get(`${config.faucetC2}?address=${newWalletC2.address}`);
+                if (response && response.status === 200) {
+                    // wait ~9sec for balance to be available to be read and written to db
+                    // I think this is an ugly fix so it's temporary?
+                    await new Promise(r => setTimeout(r, 9000));
+                    const balance = await getBalance(newWalletC2.alias);
+                    await writeData('walletC2', { ...newWalletC2, balance });
                 }
-                console.log('Finished new wallet generation', newWallet);
-                res.send({ newWallet });
+                console.log('Finished new wallet generation', newWalletC2);
+                res.send({ newWalletC2 });
             } catch (error) {
                 console.log('fund wallet error', error);
                 res.send({ error: 'fund wallet error' });
@@ -182,7 +219,7 @@ export class AppHelper {
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
                 
                 // 3. Send transaction
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 // 4. Create new MAM channel
@@ -223,7 +260,7 @@ export class AppHelper {
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 console.log('proposal success', hash);
@@ -260,7 +297,7 @@ export class AppHelper {
                 const tag = buildTag('acceptProposal', submodelId);
 
                 // 6. Send transaction, include MAM channel info
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
                 const hash = await sendMessage({ ...request, mam, userName: user.name }, tag);
 
                 console.log('acceptProposal success', hash);
@@ -288,7 +325,7 @@ export class AppHelper {
                 const tag = buildTag('rejectProposal', submodelId);
 
                 // 2. Send transaction
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 console.log('rejectProposal success', hash);
@@ -318,10 +355,11 @@ export class AppHelper {
                 interface IWallet {
                     address?: string;
                 }
-                const wallet: IWallet = await readData('wallet');
+                // const wallet: IWallet = await readData('wallet');
+                const wallet: IWallet = await readData('walletC2');
                 const { address } = wallet;
 
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
                 const payload = { ...request, walletAddress: address, userName: user.name };
 
                 // 3. For data request include access credentials from DB
@@ -361,7 +399,7 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 const request: any = await generate(req.body);
-                const user: any = await readData('user');
+                const user: any = await readData('userC4');
 
                 // 1. Retrieve wallet
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));

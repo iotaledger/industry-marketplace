@@ -191,7 +191,8 @@ class Dashboard extends React.Component {
   }
 
   async generateRequest(type, id, partner = null, price = null) {
-    const { irdi, originalMessage, partnerName } = await readFromStorage(partner ? `${id}#${partner}` : id);
+    // const { irdi, originalMessage, partnerName } = await readFromStorage(partner ? `${id}#${partner}` : id); // gives error when readFromStorage() is called with it
+    const { irdi, originalMessage, partnerName } = await readFromStorage(id);
     const request = {
       messageType: type,
       userId: this.context.user.id,
@@ -206,8 +207,9 @@ class Dashboard extends React.Component {
   }
 
   async removeAsset(id, partner, type) {
-    const cardId = type === 'proposal' ? `${id}#${partner}` : id;
-    const { irdi, operation } = await readFromStorage(cardId);
+    // const cardId = type === 'proposal' ? `${id}#${partner}` : id; // gives error when readFromStorage() is called with it
+    const cardId = id;
+    const { irdi, operation } = await readFromStorage(cardId); 
     const notification = `Do you really want to remove request "${operation}" with IRDI "${irdi}" from the list?`;
     this.setState({ notification, confirmRemove: cardId });
   }

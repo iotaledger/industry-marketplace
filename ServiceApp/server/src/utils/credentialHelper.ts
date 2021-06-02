@@ -90,7 +90,7 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
         
         const proofParameters: ProofParameters = await DecodeProofDocument(credentialFormat.proof, provider);
         const importVerifiableCredential: VerifiableCredential = await VerifiableCredential.DecodeFromJSON(credentialFormat, proofParameters);
-        const user: any = await readData('user');
+        const user: any = await readData('userC4');
         const credentialSubject = importVerifiableCredential.EncodeToJSON().credentialSubject;
 
         importVerifiableCredential.Verify(provider)

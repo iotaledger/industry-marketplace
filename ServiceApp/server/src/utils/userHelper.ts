@@ -1,9 +1,11 @@
 import axios from 'axios';
 import yargs from 'yargs';
-import { faucet, faucetAmount } from '../config.json';
+// import { faucet, faucetAmount, faucetC2 } from '../config.json';
+import { faucetC2 } from '../config.json';
 import { createNewUser } from './credentialHelper';
-import { writeData } from './databaseHelper';
-import { generateNewWallet, getBalance } from './walletHelper.js';
+import { writeData, readData } from './databaseHelper';
+// import { generateNewWallet, getBalance, generateNewAccount, getBalanceC2 } from './walletHelper.js';
+import { getBalance, generateNewAccount } from './walletHelper.js';
 
 const createUser = async () => {
     try {
@@ -20,13 +22,27 @@ const createUser = async () => {
     }
 };
 
+// const createNewWallet = async () => {
+//     console.log('Creating wallet...');
+//     const wallet = generateNewWallet();
+//     const response = await axios.get(`${faucet}?address=${wallet.address}&amount=${faucetAmount}`);
+//     if (response.data.success) {
+//         const balance = await getBalance(wallet.address);
+//         await writeData('wallet', { ...wallet, balance });
+//     }
+// };
+
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    const wallet = generateNewWallet();
-    const response = await axios.get(`${faucet}?address=${wallet.address}&amount=${faucetAmount}`);
-    if (response.data.success) {
-        const balance = await getBalance(wallet.address);
-        await writeData('wallet', { ...wallet, balance });
+    const user: any = await readData('userC4');
+    const wallet = await generateNewAccount(user.role);
+    const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
+    if (response && response.status === 200) {
+        // wait ~9sec for balance to be available to be read and written to db
+        // I think this is an ugly fix so it's temporary?
+        await new Promise(r => setTimeout(r, 9000));
+        const balance = await getBalance(wallet.alias);
+        await writeData('walletC2', { ...wallet, balance });
     }
 };
 

@@ -1254,17 +1254,18 @@
   resolved "https://codeload.github.com/iotaledger/client-load-balancer/tar.gz/799f989247ead54ac822b4bdc16364b402daa160"
   dependencies:
     "@iota/core" "^1.0.0-beta.30"
+    "@iota/mam" "github:iotaledger/mam.client.js"
     "@iota/validators" "^1.0.0-beta.30"
     bluebird "^3.7.2"
 
-"@iota/converter@1.0.0-beta.30", "@iota/converter@^1.0.0-beta.30":
+"@iota/converter@1.0.0-beta.30", "@iota/converter@^1.0.0-beta.12", "@iota/converter@^1.0.0-beta.30":
   version "1.0.0-beta.30"
   resolved "https://registry.yarnpkg.com/@iota/converter/-/converter-1.0.0-beta.30.tgz#a56ec7c2b8599f9f4474394a475ce6254d756924"
   integrity sha512-DxyTXatWZiVb2EKN1JVdaZs1zg8JUCHngk94hK2quV7JM3weemLOKd6OL8GQOJtjjoGIWBIZFpKpYZd2gaIBmg==
   dependencies:
     core-js "^3.1.4"
 
-"@iota/core@^1.0.0-beta.30":
+"@iota/core@^1.0.0-beta.12", "@iota/core@^1.0.0-beta.30":
   version "1.0.0-beta.30"
   resolved "https://registry.yarnpkg.com/@iota/core/-/core-1.0.0-beta.30.tgz#746b3edc7896befc608a5c1660ad0011b646a164"
   integrity sha512-BYnQnTY2lOAOz4LEPT2jDKb9z25EeU0lUVE4vO6mV+rcVlkn8NDUkOvJpEi9XWdPySx6MqtcSiVMvGcAAGh4Tw==
@@ -1282,7 +1283,7 @@
     "@iota/transaction-converter" "^1.0.0-beta.30"
     bluebird "^3.5.5"
 
-"@iota/curl@^1.0.0-beta.19":
+"@iota/curl@^1.0.0-beta.12", "@iota/curl@^1.0.0-beta.19":
   version "1.0.0-beta.19"
   resolved "https://registry.yarnpkg.com/@iota/curl/-/curl-1.0.0-beta.19.tgz#7c30bec4c7225eaf1a691802251c9199177a54a8"
   integrity sha512-bUr6VW8lP1XYhAkzUacc8U28qO2Ibdl6R5CSF7N34GgjO2sEkn4DnlzL1VU8cCv+8rfBlZ9qIvYGzklic49JJw==
@@ -1311,6 +1312,15 @@
     "@iota/core" "^1.0.0-beta.30"
     "@iota/validators" "^1.0.0-beta.30"
     big-integer "^1.6.48"
+
+"@iota/mam@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@iota/mam/-/mam-0.7.3.tgz#7666b0bd7aeefd0bc8b11c72304e9351345124f3"
+  integrity sha512-KGwqX/RReh5iOd2jjTs63KHOBfGLqwSSkhI0KPMBVaX7UxZzeoyg9FCLNYiVNlGjBc29mJtaBDnawazesJENjg==
+  dependencies:
+    "@iota/converter" "^1.0.0-beta.12"
+    "@iota/core" "^1.0.0-beta.12"
+    "@iota/curl" "^1.0.0-beta.12"
 
 "@iota/pad@^1.0.0-beta.30":
   version "1.0.0-beta.30"

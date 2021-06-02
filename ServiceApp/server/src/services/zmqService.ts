@@ -247,7 +247,7 @@ export class ZmqService {
                         location?: string;
                         address?: string;
                     }
-                    const { id, role, location }: IUser = await readData('user');
+                    const { id, role, location }: IUser = await readData('userC4');
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
