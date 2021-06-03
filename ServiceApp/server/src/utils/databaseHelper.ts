@@ -9,8 +9,7 @@ const db = new sqlite3.Database(
             return console.error('New database Error', error);
         }
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS userC4 (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        // await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS walletC2 (alias TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
@@ -32,13 +31,9 @@ export const createUser = async ({ id, name = '', role = '', location = '', addr
     await db.run('REPLACE INTO user (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
 };
 
-export const createUserC4 = async ({ id, name = '', role = '', location = '', address = '' }) => {
-    await db.run('REPLACE INTO userC4 (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
-};
-
-export const createWallet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
-};
+// export const createWallet = async ({ seed, address, balance, keyIndex }) => {
+//     await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
+// };
 
 export const createWalletC2 = async ({ alias, address, balance, keyIndex }) => {
     await db.run('REPLACE INTO walletC2 (alias, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [alias, address, balance, keyIndex]);
@@ -79,12 +74,9 @@ export const writeData = async (table, data) => {
             case 'user':
                 await createUser(data);
                 return;
-            case 'userC4':
-                await createUser(data);
-                return;
-            case 'wallet':
-                await createWallet(data);
-                return;
+            // case 'wallet':
+            //     await createWallet(data);
+            //     return;
             case 'walletC2':
                 await createWalletC2(data);
                 return;

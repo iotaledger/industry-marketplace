@@ -60,7 +60,7 @@ export class AppHelper {
                     role?: string;
                     name?: string;
                 }
-                const existingUser: IUser = await readData('userC4');
+                const existingUser: IUser = await readData('user');
                 const user = { ...existingUser };
 
                 if (gps || location) {
@@ -114,14 +114,13 @@ export class AppHelper {
 
         app.get('/user', async (req, res) => {
             try {
-                let user: any = await readData('userC4');
+                let user: any = await readData('user');
                 if (!user || !user.id) {
                     // Creating a NEW Identity following the DID standard
                     const name =  user && user.name ? user.name : '';
                     const role =  user && user.role ? user.role : '';
                     const location = user && user.location ? user.location : '';
-                    user = await createNewUser(name, role, location);
-                    console.log('USER', user)
+                    user = createNewUser(name, role, location);
                 }
 
                 // Set TangleCommunicationService Address
@@ -132,7 +131,7 @@ export class AppHelper {
                 let newWallet;
                 if (!wallet) {
                     // newWallet = generateNewWallet();
-                    newWallet = generateNewAccount(user.role);
+                    newWallet = await generateNewAccount(user.role);
                     await writeData('walletC2', newWallet);
                 }
 
@@ -166,19 +165,12 @@ export class AppHelper {
         //     }
         // });
 
-        // app.get('/send', async (req, res) => {
-        //     try {
-        //         const response = await transferFundsC2('requester', 'atoi1qrs95hsa2gvqp2m9duwr64x8d4wqzyp3xfky6frxda4s65jl2h6cvsahnat', 5000000)
-        //         res.send({ response });
-        //     } catch (error) {
-        //         console.log('fund wallet error', error);
-        //         res.send({ error: 'fund wallet error' });
-        //     }
-        // });
-
         app.get('/wallet', async (req, res) => {
             try {
+                // let user: any = await readData('user');
+                // const newWalletC2 = await generateNewAccount(user.alias);
                 const { alias } = req.body;
+                console.log('alias', alias);
                 const newWalletC2 = await generateNewAccount(alias);
                 console.log('Initiated new wallet generation', newWalletC2);
                 
@@ -219,7 +211,7 @@ export class AppHelper {
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
                 
                 // 3. Send transaction
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 // 4. Create new MAM channel
@@ -260,7 +252,7 @@ export class AppHelper {
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 console.log('proposal success', hash);
@@ -297,7 +289,7 @@ export class AppHelper {
                 const tag = buildTag('acceptProposal', submodelId);
 
                 // 6. Send transaction, include MAM channel info
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, mam, userName: user.name }, tag);
 
                 console.log('acceptProposal success', hash);
@@ -325,7 +317,7 @@ export class AppHelper {
                 const tag = buildTag('rejectProposal', submodelId);
 
                 // 2. Send transaction
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
 
                 console.log('rejectProposal success', hash);
@@ -359,7 +351,7 @@ export class AppHelper {
                 const wallet: IWallet = await readData('walletC2');
                 const { address } = wallet;
 
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
                 const payload = { ...request, walletAddress: address, userName: user.name };
 
                 // 3. For data request include access credentials from DB
@@ -399,7 +391,7 @@ export class AppHelper {
         app.post('/informPayment', async (req, res) => {
             try {
                 const request: any = await generate(req.body);
-                const user: any = await readData('userC4');
+                const user: any = await readData('user');
 
                 // 1. Retrieve wallet
                 const priceObject = request.dataElements.submodels[0].identification.submodelElements.find(({ idShort }) => ['preis', 'price'].includes(idShort));

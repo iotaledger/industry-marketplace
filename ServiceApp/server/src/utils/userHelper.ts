@@ -34,7 +34,7 @@ const createUser = async () => {
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    const user: any = await readData('userC4');
+    const user: any = await readData('user');
     const wallet = await generateNewAccount(user.role);
     const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
     if (response && response.status === 200) {

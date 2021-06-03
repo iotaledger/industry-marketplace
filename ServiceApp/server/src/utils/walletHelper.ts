@@ -59,10 +59,11 @@ export const generateNewAccount = async (alias) => {
         storagePath: `./${alias.toLowerCase()}-database`,
     })
 
+    //TODO: password for every alias (SR || SP)?
     manager.setStrongholdPassword(process.env.SH_PASSWORD);
     manager.storeMnemonic(SignerType.Stronghold);
 
-    const account = await manager.createAccount({
+    const account = manager.createAccount({
         clientOptions: { node: `${providersC2}`, localPow: false },
         alias: alias,
     })
@@ -210,7 +211,7 @@ export const transferFunds = async (alias, receivingAddress, totalAmount) => {
         console.log('nodeResponse', nodeResponse);
         const newBalance = await getBalance(alias);
         const address = account.latestAddress();
-        await updateWalletC2(alias, address.address, address.keyIndex, newBalance);
+        await updateWallet(alias, address.address, address.keyIndex, newBalance);
     return nodeResponse;
     } catch (error) {
         console.error('transferFunds', error);
@@ -222,7 +223,7 @@ export const transferFunds = async (alias, receivingAddress, totalAmount) => {
 //     await writeData('wallet', { address, balance, keyIndex, seed });
 // };
 
-const updateWalletC2 = async (alias, address, keyIndex, balance) => {
+const updateWallet = async (alias, address, keyIndex, balance) => {
     await writeData('walletC2', { alias, address, balance, keyIndex });
 };
 
