@@ -105,7 +105,7 @@ export const getBalance = async alias => {
         const synced = await account.sync();
         if (synced) {
             console.log('Available balance', account.balance().available);
-            return { balance: account.balance().available, account: account };
+            return account.balance().available;
         }
     }
     catch (error) {
