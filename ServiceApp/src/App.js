@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { FailMode, LinearWalkStrategy, SuccessMode } from '@iota/client-load-balancer';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ServiceFactory } from './factories/serviceFactory';
@@ -26,14 +25,6 @@ class App extends Component {
             ServiceFactory.register('api', () => new ApiClient(config.domain));
 
             let settings = config;
-
-            if (config.onlineNodeConfig) {
-                const response = await axios.get(config.onlineNodeConfigURL);
-                const data = response.data;
-                if (data) {
-                    settings = data;
-                }
-            }
 
             const loadBalancerSettings = {
                 nodeWalkStrategy: new LinearWalkStrategy(

@@ -1,20 +1,24 @@
+import { ClientBuilder } from '@iota/client';
 import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
-import zmq from 'zeromq';
-import { maxDistance, operations, security } from '../config.json';
+import { maxDistance, operations, provider, security } from '../config.json';
 import { processReceivedCredentialForUser, VERIFICATION_LEVEL } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
-import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
 
+const client = new ClientBuilder()
+  .node(provider)
+//   .brokerOptions({ useWs: false })
+  .build();
+
 /**
- * Class to handle ZMQ service.
+ * Class to handle MQTT service.
  */
-export class ZmqService {
+export class MqttService {
 
     /**
      * Bundle hashes that were already send to not send twice
@@ -53,8 +57,8 @@ export class ZmqService {
     private listenAddress: string | undefined;
 
     /**
-     * Create a new instance of ZmqService.
-     * @param config The gateway for the zmq service.
+     * Create a new instance of MqttService.
+     * @param config The gateway for the mqtt service.
      */
     constructor(config) {
         this._config = config;
@@ -133,24 +137,23 @@ export class ZmqService {
     }
 
     /**
-     * Connect the ZMQ service.
+     * Connect the MQTT service.
      */
     private connect() {
-        try {
-            if (!this._socket) {
-                this._socket = zmq.socket('sub');
-                this._socket.connect(this._config.endpoint);
-
-                this._socket.on('message', (msg) => this.handleMessage(msg));
-
-                const keys = Object.keys(this._subscriptions);
-                for (let i = 0; i < keys.length; i++) {
-                    this._socket.subscribe(keys[i]);
+        client.subscriber().topics(['messages']).subscribe(async (err, msg) => {
+            try {
+                if (err) {
+                    console.log(err);
                 }
+                this.handleMessage(msg);
+                // const keys = Object.keys(this._subscriptions);
+                // for (let i = 0; i < keys.length; i++) {
+                //     this._socket.subscribe(keys[i]);
+                // }
+            } catch (err) {
+                throw new Error(`Unable to connect to MQTT.\n${err}`);
             }
-        } catch (err) {
-            throw new Error(`Unable to connect to ZMQ.\n${err}`);
-        }
+         });
     }
 
     /**
@@ -179,6 +182,7 @@ export class ZmqService {
         const id = uuid();
         this._subscriptions[event].push({ id, callback });
 
+        console.log('internalAddEventCallback');
         this.connect();
 
         return id;
@@ -219,27 +223,28 @@ export class ZmqService {
      */
     private async handleMessage(message) {
 
+        const messageData = JSON.parse(message.payload);
+        let data;
+        let tag;
+        try {
+          data = (Buffer.from(messageData.payload.data.data)).toString();
+          tag = (Buffer.from(messageData.payload.data.index)).toString();
+        } catch {}
+
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
-        const event = messageParams[0];
         const address = messageParams[2];
-        const tag = messageParams[12];
-
         const operationList = await convertOperationsList(operations);
 
-        if (event === 'tx' && this._subscriptions[event]) {
+        // tslint:disable-next-line:no-string-literal
+        if (this._subscriptions['tx']) {
             const messageType = extractMessageType(tag);
 
             // tslint:disable-next-line:no-unused-expression
             messageType && console.log('handleMessage', messageType, tag);
 
             if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
-                const bundle = messageParams[8];
-
-                if (!this.sentBundles.includes(bundle)) {
-                    this.sentBundles.push(bundle);
-
                     interface IUser {
                         id?: string;
                         name?: string;
@@ -255,7 +260,6 @@ export class ZmqService {
                             // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
                             if (['proposal', 'informConfirm'].includes(messageType)) {
                                 // 2.1 Decode every such message and retrieve receiver ID
-                                const data = await getPayload(bundle);
                                 const receiverID = data.frame.receiver.identification.id;
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
@@ -272,10 +276,6 @@ export class ZmqService {
                         case 'SP':
                             // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
                             if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
-                                const data = await getPayload(bundle);
-
-                                console.log('handleMessage 3', data);
-
                                 // 3.1 Decode every message of type A, retrieve location.
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
@@ -331,21 +331,13 @@ export class ZmqService {
                         default:
                             // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
                             if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                                const data = await getPayload(bundle);
                                 // 4.1 Send every such message to UI
                                 this.sendEvent(data, messageType, messageParams);
                             }
                     }
-                }
             } else if (this.listenAddress && address === this.listenAddress) {
-                const bundle = messageParams[8];
-                if (!this.sentBundles.includes(bundle)) {
-                    this.sentBundles.push(bundle);
-
-                    // A message has been received through the ServiceEndpoint of the DID
-                    const unstructuredData = await getPayload(bundle);
-                    processReceivedCredentialForUser(unstructuredData);
-                }
+                // A message has been received through the ServiceEndpoint of the DID
+                processReceivedCredentialForUser(data);
             }
         }
     }

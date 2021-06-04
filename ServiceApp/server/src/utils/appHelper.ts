@@ -7,7 +7,7 @@ import express from 'express';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
-import { ZmqService } from '../services/zmqService';
+import { MqttService } from '../services/mqttService';
 import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
@@ -123,7 +123,7 @@ export class AppHelper {
                 }
 
                 // Set TangleCommunicationService Address
-                ServiceFactory.get<ZmqService>('zmq').setAddressToListenTo(user.address);
+                ServiceFactory.get<MqttService>('mqtt').setAddressToListenTo(user.address);
 
                 const wallet: any = await readData('wallet');
                 let newWallet;
