@@ -1,40 +1,31 @@
-import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
-import { asciiToTrytes } from '@iota/converter';
-import { defaultAddress, depth, minWeightMagnitude } from '../config.json';
-import { ServiceFactory } from '../factories/serviceFactory';
-import { generateSeed } from './iotaHelper';
+import { ClientBuilder } from '@iota/client';
+import { provider } from '../config.json';
 
-export const sendMessage = (payload, tag) => {
-    const seed = generateSeed();
-    const message = asciiToTrytes(encodeURI(JSON.stringify(payload)));
+export const sendMessage = async (payload, tag) => {
+    try {
+        const message = encodeURI(JSON.stringify(payload));
+        return await publish(message, tag); // previously: bundle[0].hash
+    } catch (error) {
+        console.error('sendMessage', error);
+    }
+    
+};
 
-    const transfers = [{
-        value: 0,
-        address: defaultAddress,
-        message,
-        tag
-    }];
+const publish = async (data, tag) => {
+    const client = new ClientBuilder()
+        .node(provider)
+        .build();
 
-    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-    const iota = composeAPI(loadBalancerSettings);
+    try {
+        const msgSender = client
+            .message()
+            .index(tag)
+            .accountIndex(0)
+            .data(data);
 
-    return new Promise((resolve, reject) => {
-        iota.prepareTransfers(seed, transfers)
-            .then(trytes => {
-                iota.sendTrytes(trytes, depth, minWeightMagnitude)
-                    .then(bundle => {
-                        // console.log(`Published transaction with tail hash: ${bundle[0].hash}`);
-                        // console.log(`Bundle: ${JSON.stringify(bundle, null, 1)}`);
-                        resolve(bundle[0].hash);
-                    })
-                    .catch(error => {
-                        console.log('sendTrytes Error', error);
-                        reject(error);
-                    });
-            })
-            .catch(error => {
-                console.log('prepareTransfers Error', error);
-                reject(error);
-            });
-    });
+        const msg = await msgSender.submit();
+        return msg.messageId;
+    } catch (e) {
+        throw new Error(`Could not establish a connection to the node ${e}`);
+    }
 };
