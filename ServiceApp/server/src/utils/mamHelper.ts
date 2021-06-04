@@ -6,9 +6,9 @@ import {
     mamAttach,
     mamFetchAll
 } from '@iota/mam.js';
-import { security } from '../config.json';
+import { provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
-import { generateSeed, getAvailableProvider } from './iotaHelper';
+import { generateSeed } from './iotaHelper';
 
 // An enumerator for the different MAM Modes. Prevents typos in regards to the different modes.
 enum MAM_MODE {
@@ -54,7 +54,6 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         const message = createMessage(mamState, trytes);
 
         // Attach the payload
-        const provider = getAvailableProvider();
         const bundle = await mamAttach(provider, message, tag);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
       
@@ -77,7 +76,6 @@ const checkAttachedMessage = async (root, secretKey, mode) => {
     let retries = 0;
 
     while (retries++ < 10) {
-        const provider = getAvailableProvider();
         const fetched = await mamFetchAll(provider, root, MAM_MODE[mode], secretKey, 20);
         const result = [];
         
@@ -106,7 +104,6 @@ export const publishDID = async (publicKey, privateKey) => {
         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
 
         // Attach the payload
-        const provider = getAvailableProvider();
         const bundle = await mamAttach(provider, message);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         
@@ -123,7 +120,6 @@ export const publishDID = async (publicKey, privateKey) => {
 };
 
 export const fetchDID = async root => {
-    const provider = getAvailableProvider();
     const fetched = await mamFetchAll(provider, root, 'public', null, 20);
     const result = [];
     
