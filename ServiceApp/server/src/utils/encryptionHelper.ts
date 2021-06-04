@@ -1,10 +1,9 @@
 import crypto from 'crypto';
 import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
+import { provider } from '../config.json';
 import { readData } from './databaseHelper';
-import { getAvailableProvider } from './iotaHelper';
 
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
-    const provider = getAvailableProvider();
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
     const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');

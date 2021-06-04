@@ -1,10 +1,10 @@
-import { zmq } from '../config.json';
+import { prefix } from '../config.json';
 import { convertSubmodelId, getCodeFromMessageType } from './eclassHelper';
 
 export const buildTag = (type, submodelId) => {
     try {
         const serviceId = convertSubmodelId(submodelId);
-        return `${zmq.prefix}${getCodeFromMessageType(type)}${serviceId}`;
+        return `${prefix}${getCodeFromMessageType(type)}${serviceId}`;
     } catch (error) {
         throw new Error(error);
     }
