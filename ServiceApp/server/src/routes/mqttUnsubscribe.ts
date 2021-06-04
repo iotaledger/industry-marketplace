@@ -1,24 +1,24 @@
 import { ServiceFactory } from '../factories/serviceFactory';
-import { ZmqService } from '../services/zmqService';
+import { MqttService } from '../services/mqttService';
 
 /**
- * Unsubscribe from zmq events.
+ * Unsubscribe from mqtt events.
  * @param config The configuration.
  * @param socket The websocket.
  * @param request The request.
  * @returns The response.
  */
-export function zmqUnsubscribe(config, socket, request) {
+export function mqttUnsubscribe(config, socket, request) {
     let response;
 
     try {
         if (request.subscriptionIds && request.subscriptionIds.length > 0) {
-            const zmqService = ServiceFactory.get<ZmqService>('zmq');
+            const mqttService = ServiceFactory.get<MqttService>('mqtt');
 
             for (let i = 0; i < request.subscriptionIds.length; i++) {
-                zmqService.unsubscribe(request.subscriptionIds[i]);
+                mqttService.unsubscribe(request.subscriptionIds[i]);
             }
-            console.log('zmqUnsubscribe', request.subscriptionIds);
+            console.log('mqttUnsubscribe', request.subscriptionIds);
         }
 
         response = {
