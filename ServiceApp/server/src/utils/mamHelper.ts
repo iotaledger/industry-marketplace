@@ -96,7 +96,8 @@ const checkAttachedMessage = async (api, root, secretKey, mode) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 };
-
+//TODO: Migrate DID; Changes in publishDID and fetchDID
+//TODO: Both methods seem to be unused
 // Publish to tangle
 export const publishDID = async (publicKey, privateKey) => {
     try {

@@ -10,11 +10,11 @@ import {
     ProofParameters,
     ProofTypeManager, 
     SchemaManager, 
-    Service, 
+    Service as ServiceLegacy,
     SignDIDAuthentication, 
-    VerifiableCredential,
+    VerifiableCredential as VerifiableCredentialLegacy,
     VerifiableCredentialDataModel,
-    VerifiablePresentation,
+    VerifiablePresentation as VerifiablePresentationLegacy,
     VerifiablePresentationDataModel
 } from 'identity_ts';
 import { depth, keyId, minWeightMagnitude, security } from '../config.json';
@@ -22,6 +22,8 @@ import { createCredential, readData, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 import { getAvailableProvider } from './iotaHelper';
 
+import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
+//TODO: Migrate DID
 export interface IUser {
     id: string;
     name: string;
@@ -30,7 +32,78 @@ export interface IUser {
     address: string;
 }
 
-export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise <IUser> {
+export function createNewUserC2(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
+    return new Promise<IUser>(async (resolve, reject) => {
+        const clientConfig = {
+            network: "main",
+            node: "https://chrysalis-nodes.iota.org:443",
+        }
+        try {
+
+            // Create a new DID Document with the KeyPair as the default authentication method
+            //@ts-ignore
+            const { doc, key } = new Document(KeyType.Ed25519, clientConfig.network);
+
+            const keyId = "#key";
+
+            const privateKey = key.secret;
+            const publicKey = key.public;
+
+            //TODO: For now static
+            const serviceEndpoint = "iota1qpw6k49dedaxrt854rau02talgfshgt0jlm5w8x9nk5ts6f5x5m759nh2ml" //TODO: Generate address here
+
+            //Add a new ServiceEndpoint
+            //TODO: nameFragment does not exist anymore + concept of serviceEndpoints=address still valid?
+            const service: any = {
+                "id": doc.id + "#tanglecom", //TODO: Is this how I would now insert a nameFragment?
+                "type": "TangleCommunicationAddress",
+                "serviceEndpoint": serviceEndpoint
+            };
+
+            // doc.insertService(Service.fromJSON(service));
+
+            //Needed, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
+            const serviceDummy = [service]
+            const docWithService = Document.fromJSON({
+                ...doc.toJSON(),
+                serviceDummy
+            });
+
+
+            docWithService.sign(key);
+
+            if (!docWithService.verify()) {
+                reject('Created DID is not valid!');
+            }
+
+
+            // Create a default client configuration from the parent config network.
+            const config = Config.fromNetwork(Network.mainnet());
+
+            // Create a client instance to publish messages to the Tangle.
+            const client = Client.fromConfig(config);
+
+            // Publish the Identity to the IOTA Network, this may take a few seconds to complete Proof-of-Work.
+            const messageId = await client.publishDocument(docWithService.toJSON());
+
+            //TODO: "keyId": was previously "keys-1", now recommended #_sign-1 -Default is however "#key"
+            await writeData('didC2', { messageId, id: docWithService.id.toString(), privateKey, publicKey, keyId });
+
+            const docId = docWithService.id.toString();
+
+            const user: IUser = { id: docId, name, role, location, address: serviceEndpoint };
+
+            await writeData('user', user);
+            resolve(user)
+        }
+        catch (error) {
+            console.error('Credential create user', error);
+            reject(error)
+        }
+    });
+}
+
+export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
     return new Promise<IUser>(async (resolve, reject) => {
         try {
         const seed = GenerateSeed();
@@ -40,7 +113,7 @@ export function createNewUser(name: string = '', role: string = '', location: st
         const tangleComsAddress = GenerateSeed(81);
         userDIDDocument.AddKeypair(keypair, keyId);
         userDIDDocument.AddServiceEndpoint(
-            new Service(
+            new ServiceLegacy(
                 userDIDDocument.GetDID(), 
                 'tanglecom', 
                 'TangleCommunicationAddress', 
@@ -87,9 +160,8 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
         const provider = await getAvailableProvider();
         const credentialJSON = JSON.parse(credentialString);
         const credentialFormat = <VerifiableCredentialDataModel>credentialJSON;
-        
         const proofParameters: ProofParameters = await DecodeProofDocument(credentialFormat.proof, provider);
-        const importVerifiableCredential: VerifiableCredential = await VerifiableCredential.DecodeFromJSON(credentialFormat, proofParameters);
+        const importVerifiableCredential: VerifiableCredentialLegacy = await VerifiableCredentialLegacy.DecodeFromJSON(credentialFormat, proofParameters);
         const user: any = await readData('user');
         const credentialSubject = importVerifiableCredential.EncodeToJSON().credentialSubject;
 
@@ -110,10 +182,83 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
         console.log('Credential Verification Error: ', e);
     }
 }
-// request.frame.conversationId
-export async function createAuthenticationPresentation(): Promise<VerifiablePresentation> {
+
+export async function createAuthenticationPresentationC2(): Promise<VerifiablePresentation> {
     // 1.25 Sign DID Authentication
-    return new Promise<VerifiablePresentation> (async (resolve, reject) => {
+    return new Promise<VerifiablePresentation>(async (resolve, reject) => {
+        try {
+            const challenge = Date.now().toString();
+            const did: any = await readData('didC2');
+
+            // Create a default client configuration from the parent config network.
+            const config = Config.fromNetwork(Network.mainnet());
+
+            // Create a client instance to publish messages to the Tangle.
+            const client = Client.fromConfig(config);
+
+            // Resolve a DID.
+            // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
+            //@ts-ignore
+            const resolveRequest = await client.resolve(did.id);
+
+            const issuerDID = resolveRequest.document;
+
+            let credentialSubject = {
+                id: issuerDID.id.toString(),
+                challenge: challenge
+            };
+
+            const unsignedVc = VerifiableCredential.extend({
+                id: "http://example.edu/credentials/3732", //TODO: ???
+                type: "DIDAuthenticationCredential",
+                issuer: issuerDID.id.toString(),
+                credentialSubject,
+            });
+
+            const didAuthCredential: VerifiableCredential = issuerDID.signCredential(unsignedVc, {
+                method: issuerDID.id.toString() + "#" + did.keyId,
+                public: did.public,
+                secret: did.secret,
+            });
+
+
+
+            // Add the stored Credentials
+            const credentialsArray: VerifiableCredential[] = [didAuthCredential];
+            const whiteListCredential: any = await readData('credentialsC2'); //TODO: We are never writing to this actually
+            if (whiteListCredential) {
+                const parsed = JSON.parse(whiteListCredential.credential);
+                credentialsArray.push(VerifiableCredential.fromJSON(parsed)) //TODO: No idea if this is properly done
+
+                // const decodedProof = await DecodeProofDocument(parsed.proof, provider); //TODO: How to migrate?
+                // credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
+            }
+
+            // Create presentation
+            // const unsignedVp = new VerifiablePresentation(issuerDID, didAuthCredential.toJSON());
+            const unsignedVp = new VerifiablePresentation(issuerDID, JSON.stringify(credentialsArray));
+
+            const signedVp = issuerDID.signPresentation(unsignedVp, {
+                method: did.keyId,
+                secret: did.secret,
+            })
+
+            if (await client.checkPresentation(signedVp.toString())) {
+                resolve(signedVp);
+            }
+            else {
+                reject("Could not create the DIDAuthenticationCredential");
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+// request.frame.conversationId
+export async function createAuthenticationPresentation(): Promise<VerifiablePresentationLegacy> {
+    // 1.25 Sign DID Authentication
+    return new Promise<VerifiablePresentationLegacy>(async (resolve, reject) => {
         try {
             const challenge = Date.now().toString();
             const did: any = await readData('did');
@@ -123,16 +268,14 @@ export async function createAuthenticationPresentation(): Promise<VerifiablePres
             const issuerDID = await DIDDocument.readDIDDocument(provider, did.root);
             issuerDID.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
             SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(issuerDID.GetDID());
-            
             const didAuthCredential = SignDIDAuthentication(issuerDID, did.keyId, challenge);
-
             // Add the stored Credential
-            const credentialsArray: VerifiableCredential[] = [didAuthCredential];
+            const credentialsArray: VerifiableCredentialLegacy[] = [didAuthCredential];
             const whiteListCredential: any = await readData('credentials');
             if (whiteListCredential) {
                 const parsed = JSON.parse(whiteListCredential.credential);
                 const decodedProof = await DecodeProofDocument(parsed.proof, provider);
-                credentialsArray.push(VerifiableCredential.DecodeFromJSON(parsed, decodedProof));
+                credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
             }
 
             // Create presentation
@@ -145,7 +288,7 @@ export async function createAuthenticationPresentation(): Promise<VerifiablePres
             });
 
             presentationProof.Sign(presentation.EncodeToJSON());
-            resolve(VerifiablePresentation.Create(presentation, presentationProof));
+            resolve(VerifiablePresentationLegacy.Create(presentation, presentationProof));
         } catch (error) {
             reject(error);
         }
@@ -156,7 +299,59 @@ export enum VERIFICATION_LEVEL {
     UNVERIFIED = 0,
     DID_OWNER = 1,
     DID_TRUSTED = 2
-}   
+}  // Check the validation status of the Verifiable Presentation
+
+export async function verifyCredentialsC2(presentationData: VerifiablePresentation): Promise<VERIFICATION_LEVEL> {
+    return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
+        try {
+            // Create objects
+            const provider = await getAvailableProvider();
+            const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.toJSON().proof, provider);
+            const verifiablePresentation: VerifiablePresentationLegacy = await VerifiablePresentationLegacy.DecodeFromJSON(presentationData.toJSON(), provider, proofParameters);
+
+
+
+            // Create a default client configuration from the parent config network.
+            const config = Config.fromNetwork(Network.mainnet());
+
+            // Create a client instance to publish messages to the Tangle.
+            const client = Client.fromConfig(config);
+
+            // Resolve a DID.
+            // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
+            //@ts-ignore
+            //TODO: readDocument() not in types, but given in examples as current approach.
+            const issuerDID: Document = await client.readDocument(did.id);
+
+
+            // Verify
+
+            client.checkPresentation(presentationData.toString())
+                .then(() => {
+                    // Determine level of trust
+                    let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
+
+                    // presentationData.toJSON
+                    // if ((parseInt(presentationData.proof.nonce, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
+                    //     verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
+                    //     if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
+                    //         verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
+                    //     }
+                    // }
+
+                    resolve(verificationLevel);
+                })
+                .catch(() => {
+                    resolve(VERIFICATION_LEVEL.UNVERIFIED);
+                })
+                .finally(() => {
+                    SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').RemoveTrustedDID(proofParameters.issuer.GetDID());
+                });
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
 
 export async function verifyCredentials(presentationData: VerifiablePresentationDataModel): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
@@ -164,16 +359,13 @@ export async function verifyCredentials(presentationData: VerifiablePresentation
             // Create objects
             const provider = await getAvailableProvider();
             const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.proof, provider);
-            const verifiablePresentation: VerifiablePresentation = await VerifiablePresentation.DecodeFromJSON(presentationData, provider, proofParameters);
-            
+            const verifiablePresentation: VerifiablePresentationLegacy = await VerifiablePresentationLegacy.DecodeFromJSON(presentationData, provider, proofParameters);
             // Verify
             SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(proofParameters.issuer.GetDID());
-            
             verifiablePresentation.Verify(provider)
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-                    
                     if ((parseInt(presentationData.proof.nonce, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
                         if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {

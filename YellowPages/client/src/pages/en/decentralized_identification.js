@@ -8,7 +8,7 @@ import image1 from '../../assets/img/content/Page13.png';
 import image2 from '../../assets/img/content/Page18.png';
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/decentralized_identification'
-
+//TODO: Migrate DID; changes to the text
 export default () => {
     window.scrollTo(0, 0);
     // const { language } = useContext(LanguageContext);

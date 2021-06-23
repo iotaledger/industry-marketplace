@@ -6,6 +6,7 @@
       "esnext",
       // "es2017.iterable"
     ],
+    "sourceMap": true,
     "esModuleInterop": true,
     "module": "commonjs",
     "moduleResolution": "node",

@@ -8,6 +8,7 @@ import image from '../../assets/img/content/Page19.png';
 // import LanguageContext from '../../context/language-context'
 // import TranslatedPage from '../de/decentralized_identification'
 
+//TODO: Migrate DID; Text about IOTA Identity
 export default () => {
     window.scrollTo(0, 0);
     // const { language } = useContext(LanguageContext);

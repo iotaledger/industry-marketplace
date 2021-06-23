@@ -3,13 +3,14 @@ import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
 import { readData } from './databaseHelper';
 import { getAvailableProvider } from './iotaHelper';
 
+//TODO: Migrate DID
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
     const provider = await getAvailableProvider();
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
     const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
-
+//TODO: Migrate DID
 export const decryptWithReceiversPrivateKey = async (payload) => {
     const did: any = await readData('did');
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');

@@ -24,6 +24,7 @@
         "@iota/client-load-balancer": "github:iotaledger/client-load-balancer#no-mam",
         "@iota/converter": "1.0.0-beta.30",
         "@iota/core": "1.0.0-beta.30",
+        "@iota/identity-wasm": "^0.3.4",
         "@iota/industry_4.0_language": "1.0.6",
         "@iota/mam.js": "github:iotaledger/mam.js",
         "axios": "^0.21.1",

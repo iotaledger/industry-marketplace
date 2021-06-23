@@ -10,7 +10,7 @@ import { getPayload } from '../utils/iotaHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
-
+//TODO: Migrate DID
 /**
  * Class to handle ZMQ service.
  */

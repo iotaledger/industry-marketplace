@@ -4,6 +4,7 @@ import { defaultAddress, depth, minWeightMagnitude } from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { generateSeed } from './iotaHelper';
 
+//TODO: Migrate DID ?
 export const sendMessage = (payload, tag) => {
     const seed = generateSeed();
     const message = asciiToTrytes(encodeURI(JSON.stringify(payload)));
