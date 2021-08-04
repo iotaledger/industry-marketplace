@@ -8,7 +8,8 @@ import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { MqttService } from '../services/mqttService';
-import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
+import { createAuthenticationPresentation, createAuthenticationPresentationC2, createNewUser, createNewUserC2 } from './credentialHelper';
+import identity from '@iota/identity-wasm/node';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';
@@ -119,7 +120,7 @@ export class AppHelper {
                     const name =  user && user.name ? user.name : '';
                     const role =  user && user.role ? user.role : '';
                     const location = user && user.location ? user.location : '';
-                    user = createNewUser(name, role, location);
+                    user = await createNewUserC2(name, role, location);
                 }
 
                 // Set TangleCommunicationService Address
@@ -176,9 +177,10 @@ export class AppHelper {
 
                 // 2. Create a DID Authentication Challenge
                 try {
-                    const verifiablePresentation = await createAuthenticationPresentation();
+                    const verifiablePresentation = await createAuthenticationPresentationC2();
+                    // const unsignedVp = new identity.VerifiablePresentation(alice.doc, signedVc.toJSON())
                     request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                    // request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
                 
                 // 3. Send transaction
@@ -214,9 +216,10 @@ export class AppHelper {
                 const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
-
+                
                 // 2. Sign DID Authentication
                 try {
+                    //TODO: Migrate DID, same as in /cfp
                     const verifiablePresentation = await createAuthenticationPresentation();
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
@@ -242,6 +245,7 @@ export class AppHelper {
             }
         });
 
+        //TODO: Migrate DID
         app.post('/acceptProposal', async (req, res) => {
             try {
                 // 1. Retrieve MAM channel from DB

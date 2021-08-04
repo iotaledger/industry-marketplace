@@ -3,12 +3,13 @@ import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
 import { provider } from '../config.json';
 import { readData } from './databaseHelper';
 
+//TODO: Migrate DID
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
     const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
-
+//TODO: Migrate DID
 export const decryptWithReceiversPrivateKey = async (payload) => {
     const did: any = await readData('did');
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');
