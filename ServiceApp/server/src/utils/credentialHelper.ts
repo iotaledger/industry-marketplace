@@ -196,7 +196,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             // Resolve a DID.
             // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
             //@ts-ignore
-            const resolveRequest = await client.resolve(did.id);
+            const resolveRequest = await client.resolve(did.id); //TODO: Source of error
 
             const issuerDID = resolveRequest.document;
 
