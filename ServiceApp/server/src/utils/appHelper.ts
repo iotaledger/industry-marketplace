@@ -117,8 +117,8 @@ export class AppHelper {
                 let user: any = await readData('user');
                 if (!user || !user.id) {
                     // Creating a NEW Identity following the DID standard
-                    const name =  user && user.name ? user.name : '';
-                    const role =  user && user.role ? user.role : '';
+                    const name = user && user.name ? user.name : '';
+                    const role = user && user.role ? user.role : '';
                     const location = user && user.location ? user.location : '';
                     user = await createNewUserC2(name, role, location);
                 }
@@ -180,9 +180,10 @@ export class AppHelper {
                     const verifiablePresentation = await createAuthenticationPresentationC2();
                     // const unsignedVp = new identity.VerifiablePresentation(alice.doc, signedVc.toJSON())
                     request.identification = {};
-                    // request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                    request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
+
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
-                
+
                 // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -216,7 +217,7 @@ export class AppHelper {
                 const request: any = await generate(req.body);
                 const submodelId = request.dataElements.submodels[0].identification.id;
                 const tag = buildTag('proposal', submodelId);
-                
+
                 // 2. Sign DID Authentication
                 try {
                     //TODO: Migrate DID, same as in /cfp

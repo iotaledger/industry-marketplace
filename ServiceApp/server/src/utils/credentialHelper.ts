@@ -195,10 +195,10 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
 
             // Resolve a DID.
             // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
-            //@ts-ignore
-            const resolveRequest = await client.resolve(did.id); //TODO: Source of error
+            const resolveRequest = await client.resolve(did.id);
 
-            const issuerDID = resolveRequest.document;
+            const issuerDIDJSON = resolveRequest.document;
+            const issuerDID = Document.fromJSON(issuerDIDJSON)
 
             let credentialSubject = {
                 id: issuerDID.id.toString(),
@@ -212,32 +212,34 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
                 credentialSubject,
             });
 
-            const didAuthCredential: VerifiableCredential = issuerDID.signCredential(unsignedVc, {
+
+
+            const didAuthCredential: VerifiableCredential = issuerDID.signCredential(unsignedVc, { //TODO: Fails: IssuerDID.signCredential is not a function
                 method: issuerDID.id.toString() + "#" + did.keyId,
-                public: did.public,
-                secret: did.secret,
+                public: did.publicKey,
+                secret: did.privateKey,
             });
 
 
 
             // Add the stored Credentials
-            const credentialsArray: VerifiableCredential[] = [didAuthCredential];
-            const whiteListCredential: any = await readData('credentialsC2'); //TODO: We are never writing to this actually
-            if (whiteListCredential) {
-                const parsed = JSON.parse(whiteListCredential.credential);
-                credentialsArray.push(VerifiableCredential.fromJSON(parsed)) //TODO: No idea if this is properly done
+            // const credentialsArray: VerifiableCredential[] = [didAuthCredential];
+            // const whiteListCredential: any = await readData('credentialsC2'); //TODO: We are never writing to this actually
+            // if (whiteListCredential) {
+            //     const parsed = JSON.parse(whiteListCredential.credential);
+            //     credentialsArray.push(VerifiableCredential.fromJSON(parsed)) //TODO: No idea if this is properly done
 
                 // const decodedProof = await DecodeProofDocument(parsed.proof, provider); //TODO: How to migrate?
                 // credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
-            }
+            // }
 
             // Create presentation
             // const unsignedVp = new VerifiablePresentation(issuerDID, didAuthCredential.toJSON());
-            const unsignedVp = new VerifiablePresentation(issuerDID, JSON.stringify(credentialsArray));
+            const unsignedVp = new VerifiablePresentation(issuerDID, didAuthCredential.toJSON());
 
             const signedVp = issuerDID.signPresentation(unsignedVp, {
                 method: did.keyId,
-                secret: did.secret,
+                secret: did.privateKey,
             })
 
             if (await client.checkPresentation(signedVp.toString())) {
