@@ -68,6 +68,7 @@ export class MqttService {
         this.listenAddress = null;
 
         // Add trusted identities (Initially, the DID of the IOTA Foundation)
+        //TODO: Trusted Identites stuff, how to proceed?
         const schema = SchemaManager.GetInstance().GetSchema('WhiteListedCredential');
         for (let i = 0; i < this?._config?.trustedIdentities.length; i++) {
             schema.AddTrustedDID(new DID(this._config.trustedIdentities[i]));

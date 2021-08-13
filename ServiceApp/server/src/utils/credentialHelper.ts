@@ -242,6 +242,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
                 secret: did.privateKey,
             })
 
+            console.log(signedVp.toString())
             if (await client.checkPresentation(signedVp.toString())) {
                 resolve(signedVp);
             }
@@ -299,15 +300,10 @@ export enum VERIFICATION_LEVEL {
     DID_TRUSTED = 2
 }  // Check the validation status of the Verifiable Presentation
 
-export async function verifyCredentialsC2(presentationData: VerifiablePresentation): Promise<VERIFICATION_LEVEL> {
+export async function verifyCredentialsC2(presentationDataString: string): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             // Create objects
-            const provider = await getAvailableProvider();
-            const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.toJSON().proof, provider);
-            const verifiablePresentation: VerifiablePresentationLegacy = await VerifiablePresentationLegacy.DecodeFromJSON(presentationData.toJSON(), provider, proofParameters);
-
-
 
             // Create a default client configuration from the parent config network.
             const config = Config.fromNetwork(Network.mainnet());
@@ -315,27 +311,22 @@ export async function verifyCredentialsC2(presentationData: VerifiablePresentati
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
 
-            // Resolve a DID.
-            // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
-            //@ts-ignore
-            //TODO: readDocument() not in types, but given in examples as current approach.
-            const issuerDID: Document = await client.readDocument(did.id);
-
-
             // Verify
 
-            client.checkPresentation(presentationData.toString())
+            client.checkPresentation(presentationDataString) //TODO: Should already be correct format
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
 
-                    // presentationData.toJSON
-                    // if ((parseInt(presentationData.proof.nonce, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
-                    //     verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
-                    //     if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
-                    //         verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
-                    //     }
-                    // }
+                    
+                    const presentationData = JSON.parse(presentationDataString);
+                    if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
+                        verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
+                        //TODO: Trusted Identities stuff
+                        if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
+                            verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
+                        }
+                    }
 
                     resolve(verificationLevel);
                 })

@@ -8,7 +8,7 @@ import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { MqttService } from '../services/mqttService';
-import { createAuthenticationPresentation, createAuthenticationPresentationC2, createNewUser, createNewUserC2 } from './credentialHelper';
+import { createAuthenticationPresentationC2, createNewUserC2 } from './credentialHelper';
 import identity from '@iota/identity-wasm/node';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
@@ -178,7 +178,6 @@ export class AppHelper {
                 // 2. Create a DID Authentication Challenge
                 try {
                     const verifiablePresentation = await createAuthenticationPresentationC2();
-                    // const unsignedVp = new identity.VerifiablePresentation(alice.doc, signedVc.toJSON())
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
 
