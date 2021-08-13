@@ -91,43 +91,43 @@ const checkAttachedMessage = async (root, secretKey, mode) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 };
-//TODO: Migrate DID; Changes in publishDID and fetchDID
-//TODO: Both methods seem to be unused
-// Publish to tangle
-export const publishDID = async (publicKey, privateKey) => {
-    try {
-        let mamState;
-        const mamStateFromDB: IMamState = await readData('did');
-        if (mamStateFromDB) {
-            mamState = mamStateFromDB;
-        }
 
-        const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
+// //TODO: Both methods seem to be unused, also before remove-did-pr
+// // Publish to tangle
+// export const publishDID = async (publicKey, privateKey) => {
+//     try {
+//         let mamState;
+//         const mamStateFromDB: IMamState = await readData('did');
+//         if (mamStateFromDB) {
+//             mamState = mamStateFromDB;
+//         }
 
-        // Attach the payload
-        const bundle = await mamAttach(provider, message);
-        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
+//         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
+
+//         // Attach the payload
+//         const bundle = await mamAttach(provider, message);
+//         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         
-        if (bundle && bundle.messageId) {
-            // Save new mamState
-            await writeData('did', { ...mamState, root, privateKey });
-            return message.root;
-        }
-        return null;
-    } catch (error) {
-        console.log('MAM publishDID Error', error);
-        throw new Error(error);
-    }
-};
+//         if (bundle && bundle.messageId) {
+//             // Save new mamState
+//             await writeData('did', { ...mamState, root, privateKey });
+//             return message.root;
+//         }
+//         return null;
+//     } catch (error) {
+//         console.log('MAM publishDID Error', error);
+//         throw new Error(error);
+//     }
+// };
 
-export const fetchDID = async root => {
-    const fetched = await mamFetchAll(provider, root, 'public', null, 20);
-    const result = [];
+// export const fetchDID = async root => {
+//     const fetched = await mamFetchAll(provider, root, 'public', null, 20);
+//     const result = [];
     
-    if (fetched && fetched.length > 0) {
-        for (let i = 0; i < fetched.length; i++) {
-            result.push(trytesToAscii(fetched[i].message));
-        }
-    }
-    return result;
-};
+//     if (fetched && fetched.length > 0) {
+//         for (let i = 0; i < fetched.length; i++) {
+//             result.push(trytesToAscii(fetched[i].message));
+//         }
+//     }
+//     return result;
+// };

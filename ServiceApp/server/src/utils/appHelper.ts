@@ -221,9 +221,9 @@ export class AppHelper {
                 // 2. Sign DID Authentication
                 try {
                     //TODO: Migrate DID, same as in /cfp
-                    const verifiablePresentation = await createAuthenticationPresentation();
+                    const verifiablePresentation = await createAuthenticationPresentationC2();
                     request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                    request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction

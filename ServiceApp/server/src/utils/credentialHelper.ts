@@ -214,7 +214,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
 
 
 
-            const didAuthCredential: VerifiableCredential = issuerDID.signCredential(unsignedVc, { //TODO: Fails: IssuerDID.signCredential is not a function
+            const didAuthCredential: VerifiableCredential = issuerDID.signCredential(unsignedVc, {
                 method: issuerDID.id.toString() + "#" + did.keyId,
                 public: did.publicKey,
                 secret: did.privateKey,
@@ -222,19 +222,19 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
 
 
 
+            //TODO: We are never writing to this actually, so I just comment it out
             // Add the stored Credentials
             // const credentialsArray: VerifiableCredential[] = [didAuthCredential];
-            // const whiteListCredential: any = await readData('credentialsC2'); //TODO: We are never writing to this actually
+            // const whiteListCredential: any = await readData('credentialsC2'); 
             // if (whiteListCredential) {
             //     const parsed = JSON.parse(whiteListCredential.credential);
-            //     credentialsArray.push(VerifiableCredential.fromJSON(parsed)) //TODO: No idea if this is properly done
+            //     credentialsArray.push(VerifiableCredential.fromJSON(parsed))
 
-                // const decodedProof = await DecodeProofDocument(parsed.proof, provider); //TODO: How to migrate?
+                // const decodedProof = await DecodeProofDocument(parsed.proof, provider);
                 // credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
             // }
 
             // Create presentation
-            // const unsignedVp = new VerifiablePresentation(issuerDID, didAuthCredential.toJSON());
             const unsignedVp = new VerifiablePresentation(issuerDID, didAuthCredential.toJSON());
 
             const signedVp = issuerDID.signPresentation(unsignedVp, {
@@ -255,43 +255,43 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
 }
 
 // request.frame.conversationId
-export async function createAuthenticationPresentation(): Promise<VerifiablePresentationLegacy> {
-    // 1.25 Sign DID Authentication
-    return new Promise<VerifiablePresentationLegacy>(async (resolve, reject) => {
-        try {
-            const challenge = Date.now().toString();
-            const did: any = await readData('did');
+// export async function createAuthenticationPresentation(): Promise<VerifiablePresentationLegacy> {
+//     // 1.25 Sign DID Authentication
+//     return new Promise<VerifiablePresentationLegacy>(async (resolve, reject) => {
+//         try {
+//             const challenge = Date.now().toString();
+//             const did: any = await readData('did');
 
-            // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
-            const issuerDID = await DIDDocument.readDIDDocument(provider, did.root);
-            issuerDID.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
-            SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(issuerDID.GetDID());
-            const didAuthCredential = SignDIDAuthentication(issuerDID, did.keyId, challenge);
-            // Add the stored Credential
-            const credentialsArray: VerifiableCredentialLegacy[] = [didAuthCredential];
-            const whiteListCredential: any = await readData('credentials');
-            if (whiteListCredential) {
-                const parsed = JSON.parse(whiteListCredential.credential);
-                const decodedProof = await DecodeProofDocument(parsed.proof, provider);
-                credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
-            }
+//             // Read DID Document might fail when no DID is actually located at the root - Unlikely as it is the DID of this instance
+//             const issuerDID = await DIDDocument.readDIDDocument(provider, did.root);
+//             issuerDID.GetKeypair(did.keyId).GetEncryptionKeypair().SetPrivateKey(did.privateKey);
+//             SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(issuerDID.GetDID());
+//             const didAuthCredential = SignDIDAuthentication(issuerDID, did.keyId, challenge);
+//             // Add the stored Credential
+//             const credentialsArray: VerifiableCredentialLegacy[] = [didAuthCredential];
+//             const whiteListCredential: any = await readData('credentials');
+//             if (whiteListCredential) {
+//                 const parsed = JSON.parse(whiteListCredential.credential);
+//                 const decodedProof = await DecodeProofDocument(parsed.proof, provider);
+//                 credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
+//             }
 
-            // Create presentation
-            const presentation = Presentation.Create(credentialsArray);
-            const presentationProof = ProofTypeManager.GetInstance()
-                .CreateProofWithBuilder('EcdsaSecp256k1VerificationKey2019', { 
-                    issuer: issuerDID, 
-                    issuerKeyId: keyId, 
-                    challengeNonce: challenge
-            });
+//             // Create presentation
+//             const presentation = Presentation.Create(credentialsArray);
+//             const presentationProof = ProofTypeManager.GetInstance()
+//                 .CreateProofWithBuilder('EcdsaSecp256k1VerificationKey2019', { 
+//                     issuer: issuerDID, 
+//                     issuerKeyId: keyId, 
+//                     challengeNonce: challenge
+//             });
 
-            presentationProof.Sign(presentation.EncodeToJSON());
-            resolve(VerifiablePresentationLegacy.Create(presentation, presentationProof));
-        } catch (error) {
-            reject(error);
-        }
-    });    
-}
+//             presentationProof.Sign(presentation.EncodeToJSON());
+//             resolve(VerifiablePresentationLegacy.Create(presentation, presentationProof));
+//         } catch (error) {
+//             reject(error);
+//         }
+//     });    
+// }
 
 export enum VERIFICATION_LEVEL {
     UNVERIFIED = 0,
@@ -351,6 +351,7 @@ export async function verifyCredentialsC2(presentationData: VerifiablePresentati
     });
 }
 
+//TODO: not even called?
 export async function verifyCredentials(presentationData: VerifiablePresentationDataModel): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {

@@ -2,7 +2,7 @@ import { ClientBuilder } from '@iota/client';
 import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
 import { maxDistance, operations, provider, security } from '../config.json';
-import { processReceivedCredentialForUser, VERIFICATION_LEVEL } from '../utils/credentialHelper';
+import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentialsC2 } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -206,7 +206,7 @@ export class MqttService {
     /**
      * Send out an event
      */
-    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.DID_TRUSTED) {
+    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) { //TODO: Changed back to default unverified
         const event = messageParams[0];
         const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
 
@@ -228,13 +228,13 @@ export class MqttService {
         let tag;
         try {
           data = (Buffer.from(messageData.payload.data.data)).toString();
-          tag = (Buffer.from(messageData.payload.data.index)).toString();
+          tag = (Buffer.from(messageData.payload.data.index)).toString(); //TODO: I think this should be messageData.payload.index
         } catch {}
 
         const messageContent = message.toString();
         const messageParams = messageContent.split(' ');
 
-        const address = messageParams[2];
+        const address = messageParams[2];   //TODO: Not sure if this is needed
         const operationList = await convertOperationsList(operations);
 
         // tslint:disable-next-line:no-string-literal
@@ -264,9 +264,22 @@ export class MqttService {
 
                                 // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
                                 if (id === receiverID) {
-                                    await this.sendEvent(data, messageType, messageParams);
-
-                                    if (messageType !== 'proposal') {
+                                    if (messageType === 'proposal') {
+                                        // Find the challenge
+                                        if (data.identification && data.identification.didAuthenticationPresentation) {
+                                            verifyCredentialsC2(data.identification.didAuthenticationPresentation)
+                                                .then(async (verificationResult) => {
+                                                    // Check if the correct challenge is used and if the signatures are correct
+                                                    if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                        // Only send to UI if the DID Authentication is succesful
+                                                        await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                    }
+                                                }).catch((err) => {
+                                                    console.log('Verification failed, so message is ignored with error: ', err);
+                                                });
+                                        }
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         const channelId = data.frame.conversationId;
                                         await publish(channelId, data);
                                     }
@@ -280,22 +293,38 @@ export class MqttService {
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
 
-                                    if (!location || !maxDistance) {
-                                        await this.sendEvent(data, messageType, messageParams);
-                                    }
+                                    // Find the challenge
+                                    if (data.identification && data.identification.didAuthenticationPresentation) {
+                                        verifyCredentialsC2(data.identification.didAuthenticationPresentation)
+                                        .then(async (verificationResult) => {
+                                            // 3.2 If NO own location and NO accepted range are set, send message to UI
+                                            if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                if (!location || !maxDistance) {
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
 
-                                    // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                    if (location && maxDistance) {
-                                        try {
-                                            const distance = await calculateDistance(location, senderLocation);
+                                                // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
+                                                if (location && maxDistance) {
+                                                    try {
+                                                        const distance = await calculateDistance(location, senderLocation);
 
-                                            // 3.3.1 If distance within accepted range, send message to UI
-                                            if (distance <= maxDistance) {
-                                                await this.sendEvent(data, messageType, messageParams);
+                                                        // 3.3.1 If distance within accepted range, send message to UI
+                                                        if (distance <= maxDistance) {
+                                                            await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                        }
+                                                    } catch (error) {
+                                                        console.error(error);
+                                                    }
+                                                }
+                                            } else {
+                                                // tslint:disable-next-line:max-line-length
+                                                console.log('Found identification, but verification failed', verificationResult > VERIFICATION_LEVEL.UNVERIFIED, verificationResult, data.identification);
                                             }
-                                        } catch (error) {
-                                            console.error(error);
-                                        }
+                                        }).catch((err) => {
+                                            console.log('Verification failed, so message is ignored with error: ', err);
+                                        });
+                                    } else {
+                                        console.log('No identification found', data);
                                     }
   
                                 } else {
@@ -322,8 +351,10 @@ export class MqttService {
                                                 nextCount: 1,
                                                 index: 0
                                             });
+                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
+                                        } else {
+                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         }
-                                        await this.sendEvent(data, messageType, messageParams);
                                     }
                                 }
                             }
@@ -337,6 +368,7 @@ export class MqttService {
                     }
             } else if (this.listenAddress && address === this.listenAddress) {
                 // A message has been received through the ServiceEndpoint of the DID
+                //TODO: Change
                 processReceivedCredentialForUser(data);
             }
         }

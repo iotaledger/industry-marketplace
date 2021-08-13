@@ -150,7 +150,7 @@ export const readAllData = async (table) => {
 export const removeData = (table) => {
     return new Promise(async resolve => {
         await db.run(`DELETE FROM ${table}`);
-        resolve();
+        resolve(true);
     });
 };
 
