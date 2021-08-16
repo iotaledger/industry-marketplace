@@ -8,7 +8,7 @@ import { AppHelper } from './utils/appHelper';
 
 AppHelper.build(
     async (app, config, port) => {
-        ServiceFactory.register('mqtt', () => new MqttService(config.mqtt));
+        ServiceFactory.register('mqtt', () => new MqttService()); // config.mqtt was undefined and does not seem to be needed
 
         const server = new Server(app);
         const socketServer = SocketIO(server);

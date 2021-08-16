@@ -15,7 +15,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
 
         await db.run('CREATE TABLE IF NOT EXISTS didC2 (messageId TEXT, id TEXT, privateKey TEXT, publicKey TEXT, keyId TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS trustedDIDAuthentication (id TEXT');
+        await db.run('CREATE TABLE IF NOT EXISTS trustedDIDAuthentication (id TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
     }

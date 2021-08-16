@@ -136,6 +136,51 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 //     });
 // }
 
+//TODO: No work done yet, as I havent figured out how to call this
+export async function processReceivedCredentialForUserC2(unstructuredData: any) {
+    // Filter out incorrectly structured transactions
+    if (!unstructuredData.key || !unstructuredData.iv || !unstructuredData.data) {
+        return;
+    }
+    const data: { key: string; iv: string; data: string } = unstructuredData;
+
+    // Get pieces for decryption
+    const did: any = await readData('did');
+    // const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
+    // data.key = await encryptionKeypair.PrivateDecrypt(Buffer.from(data.key, 'hex'));
+    const credentialString = decryptCipher({
+        key : Buffer.from(data.key, 'hex'), 
+        iv: Buffer.from(data.iv, 'hex'), 
+        encoded: Buffer.from(data.data, 'hex')
+    }).toString('utf8');
+
+    // Verify the credential is valid and for this user
+    try {
+        const credentialJSON = JSON.parse(credentialString);
+        const credentialFormat = <VerifiableCredentialDataModel>credentialJSON;
+        const proofParameters: ProofParameters = await DecodeProofDocument(credentialFormat.proof, provider);
+        const importVerifiableCredential: VerifiableCredentialLegacy = await VerifiableCredentialLegacy.DecodeFromJSON(credentialFormat, proofParameters);
+        const user: any = await readData('user');
+        const credentialSubject = importVerifiableCredential.EncodeToJSON().credentialSubject;
+
+        importVerifiableCredential.Verify(provider)
+            .then(async () => {
+                // tslint:disable-next-line:no-string-literal
+                if (credentialSubject['DID'] === user.id) {
+                    //Store the credential in the DB, sorted under the DID of the Issuer
+                    await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
+                    console.log('Credential Stored: ', credentialString);
+                }
+            })
+            .catch(() => {
+                // tslint:disable-next-line:no-string-literal
+                console.log('Credential Target: ', credentialSubject['DID']);
+            });
+    } catch (e) {
+        console.log('Credential Verification Error: ', e);
+    }
+}
+
 export async function processReceivedCredentialForUser(unstructuredData: any) {
     // Filter out incorrectly structured transactions
     if (!unstructuredData.key || !unstructuredData.iv || !unstructuredData.data) {

@@ -1,7 +1,7 @@
 import { ClientBuilder } from '@iota/client';
 import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
-import { maxDistance, operations, provider, security } from '../config.json';
+import { maxDistance, operations, provider, security, prefix } from '../config.json';
 import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentialsC2 } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
@@ -39,7 +39,7 @@ export class MqttService {
     /**
      * The configuration for the service.
      */
-    private readonly _config;
+    // private readonly _config;
 
     /**
      * The connected socket.
@@ -60,8 +60,8 @@ export class MqttService {
      * Create a new instance of MqttService.
      * @param config The gateway for the mqtt service.
      */
-    constructor(config) {
-        this._config = config;
+    constructor() {
+        // this._config = config;
         this._subscriptions = {};
         this._bundleInterval = setInterval(this.emptyBundleArray.bind(this), 10000);
         this._paymentInterval = setInterval(this.processPayments.bind(this), 5 * 60 * 1000);
@@ -231,7 +231,7 @@ export class MqttService {
         const messageParams = messageContent.split(' ');
 
         const address = messageParams[2];   //TODO: Not sure if this is needed
-        const operationList = await convertOperationsList(operations);
+        const operationList = await convertOperationsList(operations); //TODO: Extract 
 
         // tslint:disable-next-line:no-string-literal
         if (this._subscriptions['tx']) {
@@ -240,7 +240,7 @@ export class MqttService {
             // tslint:disable-next-line:no-unused-expression
             messageType && console.log('handleMessage', messageType, tag);
 
-            if (tag.startsWith(this._config.prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
+            if (tag.startsWith(prefix) && messageType && operationList.includes(tag.slice(9, 15))) { //TODO: WHy is config undefined
                     interface IUser {
                         id?: string;
                         name?: string;
