@@ -17,8 +17,8 @@ import {
     VerifiablePresentation as VerifiablePresentationLegacy,
     VerifiablePresentationDataModel
 } from 'identity_ts';
-import { depth, keyId, minWeightMagnitude, provider, security } from '../config.json';
-import { createCredential, readData, writeData } from './databaseHelper';
+import { depth, keyId, minWeightMagnitude, provider, security, trustedIdentities } from '../config.json';
+import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
@@ -102,39 +102,39 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
     });
 }
 
-export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
-    return new Promise<IUser>(async (resolve, reject) => {
-        try {
-        const seed = GenerateSeed();
-        const userDIDDocument = CreateRandomDID(seed);
-        const keypair = await GenerateECDSAKeypair();
-        const privateKey = keypair.GetPrivateKey();
-        const tangleComsAddress = GenerateSeed(81);
-        userDIDDocument.AddKeypair(keypair, keyId);
-        userDIDDocument.AddServiceEndpoint(
-            new ServiceLegacy(
-                userDIDDocument.GetDID(), 
-                'tanglecom', 
-                'TangleCommunicationAddress', 
-                tangleComsAddress
-            )
-        );
-        const publisher = new DIDPublisher(provider, seed);
-        const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude, depth);
-        const state = publisher.ExportMAMChannelState();
-        await writeData('did', { root, privateKey, keyId, seed, security, start: state.start, nextRoot: state.nextRoot });
+// export function createNewUser(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
+//     return new Promise<IUser>(async (resolve, reject) => {
+//         try {
+//         const seed = GenerateSeed();
+//         const userDIDDocument = CreateRandomDID(seed);
+//         const keypair = await GenerateECDSAKeypair();
+//         const privateKey = keypair.GetPrivateKey();
+//         const tangleComsAddress = GenerateSeed(81);
+//         userDIDDocument.AddKeypair(keypair, keyId);
+//         userDIDDocument.AddServiceEndpoint(
+//             new ServiceLegacy(
+//                 userDIDDocument.GetDID(), 
+//                 'tanglecom', 
+//                 'TangleCommunicationAddress', 
+//                 tangleComsAddress
+//             )
+//         );
+//         const publisher = new DIDPublisher(provider, seed);
+//         const root = await publisher.PublishDIDDocument(userDIDDocument, 'SEMARKET', minWeightMagnitude, depth);
+//         const state = publisher.ExportMAMChannelState();
+//         await writeData('did', { root, privateKey, keyId, seed, security, start: state.start, nextRoot: state.nextRoot });
 
-        // Store user
-        const id = userDIDDocument.GetDID().GetDID();
-        const user: IUser = { id, name, role, location, address: tangleComsAddress };
-        await writeData('user', user);
-        resolve(user);
-        } catch (error) {
-            console.error('Credential create user', error);
-            reject(error);
-        }
-    });
-}
+//         // Store user
+//         const id = userDIDDocument.GetDID().GetDID();
+//         const user: IUser = { id, name, role, location, address: tangleComsAddress };
+//         await writeData('user', user);
+//         resolve(user);
+//         } catch (error) {
+//             console.error('Credential create user', error);
+//             reject(error);
+//         }
+//     });
+// }
 
 export async function processReceivedCredentialForUser(unstructuredData: any) {
     // Filter out incorrectly structured transactions
@@ -199,6 +199,8 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
 
             const issuerDIDJSON = resolveRequest.document;
             const issuerDID = Document.fromJSON(issuerDIDJSON)
+
+            writeData('trustedDIDAuthentication', issuerDID.id.toString());
 
             let credentialSubject = {
                 id: issuerDID.id.toString(),
@@ -300,6 +302,7 @@ export enum VERIFICATION_LEVEL {
     DID_TRUSTED = 2
 }  // Check the validation status of the Verifiable Presentation
 
+//TODO: Still not called
 export async function verifyCredentialsC2(presentationDataString: string): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
@@ -311,19 +314,19 @@ export async function verifyCredentialsC2(presentationDataString: string): Promi
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
 
+            const presentationData = JSON.parse(presentationDataString);
             // Verify
-
+            writeData('trustedDIDAuthentication', presentationData.verifiableCredential.credentialSubject.id)
             client.checkPresentation(presentationDataString) //TODO: Should already be correct format
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
 
-                    
-                    const presentationData = JSON.parse(presentationDataString);
                     if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
-                        //TODO: Trusted Identities stuff
-                        if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
+                        
+                        if(trustedIdentities.some(presentationData.verifiableCredential.credentialSubject.id)) {
+                            //id is set as a trusted identity in the config file 
                             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
                         }
                     }
@@ -334,7 +337,7 @@ export async function verifyCredentialsC2(presentationDataString: string): Promi
                     resolve(VERIFICATION_LEVEL.UNVERIFIED);
                 })
                 .finally(() => {
-                    SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').RemoveTrustedDID(proofParameters.issuer.GetDID());
+                    removeDataWhere('trustedDIDAuthentication', `id = ${presentationData.verifiableCredential.credentialSubject.id}`)
                 });
         } catch (error) {
             reject(error);
@@ -343,35 +346,35 @@ export async function verifyCredentialsC2(presentationDataString: string): Promi
 }
 
 //TODO: not even called?
-export async function verifyCredentials(presentationData: VerifiablePresentationDataModel): Promise<VERIFICATION_LEVEL> {
-    return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
-        try {
-            // Create objects
-            const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.proof, provider);
-            const verifiablePresentation: VerifiablePresentationLegacy = await VerifiablePresentationLegacy.DecodeFromJSON(presentationData, provider, proofParameters);
-            // Verify
-            SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(proofParameters.issuer.GetDID());
-            verifiablePresentation.Verify(provider)
-                .then(() => {
-                    // Determine level of trust
-                    let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-                    if ((parseInt(presentationData.proof.nonce, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
-                        verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
-                        if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
-                            verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
-                        }
-                    }
+// export async function verifyCredentials(presentationData: VerifiablePresentationDataModel): Promise<VERIFICATION_LEVEL> {
+//     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
+//         try {
+//             // Create objects
+//             const proofParameters: ProofParameters = await DecodeProofDocument(presentationData.proof, provider);
+//             const verifiablePresentation: VerifiablePresentationLegacy = await VerifiablePresentationLegacy.DecodeFromJSON(presentationData, provider, proofParameters);
+//             // Verify
+//             SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').AddTrustedDID(proofParameters.issuer.GetDID());
+//             verifiablePresentation.Verify(provider)
+//                 .then(() => {
+//                     // Determine level of trust
+//                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
+//                     if ((parseInt(presentationData.proof.nonce, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
+//                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
+//                         if (verifiablePresentation.GetVerifiedTypes().includes('WhiteListedCredential')) {
+//                             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
+//                         }
+//                     }
 
-                    resolve(verificationLevel);
-                })
-                .catch(() => {
-                    resolve(VERIFICATION_LEVEL.UNVERIFIED);
-                })
-                .finally(() => {
-                    SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').RemoveTrustedDID(proofParameters.issuer.GetDID());
-                });
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
+//                     resolve(verificationLevel);
+//                 })
+//                 .catch(() => {
+//                     resolve(VERIFICATION_LEVEL.UNVERIFIED);
+//                 })
+//                 .finally(() => {
+//                     SchemaManager.GetInstance().GetSchema('DIDAuthenticationCredential').RemoveTrustedDID(proofParameters.issuer.GetDID());
+//                 });
+//         } catch (error) {
+//             reject(error);
+//         }
+//     });
+// }

@@ -15,6 +15,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
 
         await db.run('CREATE TABLE IF NOT EXISTS didC2 (messageId TEXT, id TEXT, privateKey TEXT, publicKey TEXT, keyId TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS trustedDIDAuthentication (id TEXT');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
     }
@@ -73,6 +74,10 @@ export const createCredential = async ({ id, credential }) => {
     await db.run('INSERT INTO credentials (id, credential) VALUES (?, ?)', [id, credential]);
 };
 
+export const createTrustedDIDAuthentication = async ({ id }) => {
+    await db.run('INSERT INTO trustedDIDAuthentication (id) VALUES (?)', [id]);
+};
+
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -91,6 +96,9 @@ export const writeData = async (table, data) => {
                 return;
             case 'didC2':
                 await createDIDC2(data);
+                return;
+            case 'trustedDIDAuthentication':
+                await createTrustedDIDAuthentication(data);
                 return;
             case 'paymentQueue':
                 await createPaymentQueue(data);
@@ -154,6 +162,12 @@ export const removeData = (table) => {
     });
 };
 
+export const removeDataWhere = (table, whereStatement) => {
+    return new Promise(async resolve => {
+        await db.run(`DELETE FROM ${table} WHERE ${whereStatement}`);
+        resolve(true);
+    });
+};
 /*
 Example write operation:
 
