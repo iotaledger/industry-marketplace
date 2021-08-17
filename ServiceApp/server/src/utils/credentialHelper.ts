@@ -17,7 +17,7 @@ import {
     VerifiablePresentation as VerifiablePresentationLegacy,
     VerifiablePresentationDataModel
 } from 'identity_ts';
-import { depth, keyId, minWeightMagnitude, provider, security, trustedIdentities } from '../config.json';
+import { depth, keyId, minWeightMagnitude, provider, security, trustedIdentities, networkType } from '../config.json';
 import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
 import { decryptCipher } from './encryptionHelper';
 
@@ -33,15 +33,12 @@ export interface IUser {
 
 export function createNewUserC2(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
     return new Promise<IUser>(async (resolve, reject) => {
-        const clientConfig = {
-            network: "main",
-            node: "https://chrysalis-nodes.iota.org:443",
-        }
+        
         try {
 
             // Create a new DID Document with the KeyPair as the default authentication method
             //@ts-ignore
-            const { doc, key } = new Document(KeyType.Ed25519, clientConfig.network);
+            const { doc, key } = new Document(KeyType.Ed25519, networkType);
 
             const keyId = "#key";
 
@@ -77,7 +74,7 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(Network.mainnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -253,7 +250,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             };
 
             const unsignedVc = VerifiableCredential.extend({
-                id: "http://example.edu/credentials/3732", //TODO: ???
+                id: "IMPAuthenticationCredential",
                 type: "DIDAuthenticationCredential",
                 issuer: issuerDID.id.toString(),
                 credentialSubject,
