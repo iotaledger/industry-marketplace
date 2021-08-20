@@ -230,7 +230,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             const did: any = await readData('didC2');
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(Network.mainnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -250,7 +250,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             };
 
             const unsignedVc = VerifiableCredential.extend({
-                id: "IMPAuthenticationCredential",
+                id: "http://example.edu/credentials/3732",
                 type: "DIDAuthenticationCredential",
                 issuer: issuerDID.id.toString(),
                 credentialSubject,
@@ -286,7 +286,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
                 secret: did.privateKey,
             })
 
-            console.log(signedVp.toString())
+            // console.log(signedVp.toString())
             if (await client.checkPresentation(signedVp.toString())) {
                 resolve(signedVp);
             }
@@ -345,21 +345,21 @@ export enum VERIFICATION_LEVEL {
 }  // Check the validation status of the Verifiable Presentation
 
 //TODO: Still not called
-export async function verifyCredentialsC2(presentationDataString: string): Promise<VERIFICATION_LEVEL> {
+export async function verifyCredentialsC2(presentationData): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             // Create objects
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(Network.mainnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
 
-            const presentationData = JSON.parse(presentationDataString);
+            // const presentationData = JSON.parse(presentationData);
             // Verify
             writeData('trustedDIDAuthentication', presentationData.verifiableCredential.credentialSubject.id)
-            client.checkPresentation(presentationDataString) //TODO: Should already be correct format
+            client.checkPresentation(presentationData.toString()) //TODO: Should already be correct format
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;

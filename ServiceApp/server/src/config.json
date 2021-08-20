@@ -5,7 +5,7 @@
     ],
     "mqttConfig": {
         "domain": "http://localhost:4000",
-        "broker": "mqtt://test.mosquitto.org"
+        "broker": "mqtt.lb-1.h.chrysalis-devnet.iota.cafe:1883"
     },
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 2000,
@@ -26,8 +26,8 @@
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
     "faucetAmount": 5000,
-    "provider": "https://chrysalis-nodes.iota.org:443",
-    "networkType": "main",
+    "provider": "https://api.lb-1.h.chrysalis-devnet.iota.cafe/",
+    "networkType": "testnet",
     "security": 2,
     "depth": 3,
     "minWeightMagnitude": 9,

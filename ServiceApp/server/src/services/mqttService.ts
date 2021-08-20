@@ -223,8 +223,8 @@ export class MqttService {
         let data;
         let tag;
         try {
-          data = (Buffer.from(messageData.payload.data.data)).toString();
-          tag = (Buffer.from(messageData.payload.data.index)).toString(); //TODO: I think this should be messageData.payload.index
+          data = JSON.parse(decodeURI((Buffer.from(messageData.payload.data.data)).toString()));
+          tag = decodeURI((Buffer.from(messageData.payload.data.index)).toString());
         } catch {}
 
         const messageContent = message.toString();
@@ -234,13 +234,13 @@ export class MqttService {
         const operationList = await convertOperationsList(operations); //TODO: Extract 
 
         // tslint:disable-next-line:no-string-literal
-        if (this._subscriptions['tx']) {
+        if (this._subscriptions['tx'] && tag) {
             const messageType = extractMessageType(tag);
 
             // tslint:disable-next-line:no-unused-expression
             messageType && console.log('handleMessage', messageType, tag);
 
-            if (tag.startsWith(prefix) && messageType && operationList.includes(tag.slice(9, 15))) { //TODO: WHy is config undefined
+            if (tag.startsWith(prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
                     interface IUser {
                         id?: string;
                         name?: string;
