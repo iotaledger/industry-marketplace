@@ -15,6 +15,8 @@ const client = new ClientBuilder()
 //   .brokerOptions({ useWs: false })
   .build();
 
+const operationList = convertOperationsList(operations); 
+
 /**
  * Class to handle MQTT service.
  */
@@ -191,10 +193,10 @@ export class MqttService {
         return {
             data,
             messageType,
-            tag: messageParams[12],
-            hash: messageParams[1],
-            address: messageParams[2],
-            timestamp: parseInt(messageParams[5], 10),
+            tag: messageParams.tag,
+            hash: messageParams.messageId,
+            // address: messageParams.address,
+            timestamp: messageParams.timestamp,
             trustLevel
         };
     }
@@ -203,7 +205,7 @@ export class MqttService {
      * Send out an event
      */
     private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) { //TODO: Changed back to default unverified
-        const event = messageParams[0];
+        const event = 'tx' //TODO: Used to be event = messageParams[0]
         const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
 
         console.log(`Sending ${messageType}`);
@@ -227,14 +229,9 @@ export class MqttService {
           tag = decodeURI((Buffer.from(messageData.payload.data.index)).toString());
         } catch {}
 
-        const messageContent = message.toString();
-        const messageParams = messageContent.split(' ');
-
-        const address = messageParams[2];   //TODO: Not sure if this is needed
-        const operationList = await convertOperationsList(operations); //TODO: Extract 
 
         // tslint:disable-next-line:no-string-literal
-        if (this._subscriptions['tx'] && tag) {
+        if (this._subscriptions['tx'] && tag) { //TODO: Is subscriptions['tx'] even correct? We are subscribing to the 'messages'-topic on the client 
             const messageType = extractMessageType(tag);
 
             // tslint:disable-next-line:no-unused-expression
@@ -249,6 +246,17 @@ export class MqttService {
                         address?: string;
                     }
                     const { id, role, location }: IUser = await readData('user');
+
+                    const messageId = client.getMessageId(message.payload);
+                    // const address = "_no_address_"; //TODO: Not needed with C2, dont think it is actually used?
+                    const timestamp = Date.now();
+                    const messageParams = {
+                        messageId,
+                        // address,
+                        timestamp,
+                        tag,
+                        data
+                    }
 
                     // 1. Check user role (SR, SP, YP)
                     switch (role) {
@@ -334,7 +342,7 @@ export class MqttService {
 
                                             // Check if the correct challenge is used and if the signatures are correct
                                             const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', {
+                                            await writeData('mam', { //TODO: Is this up to date? 
                                                 id: channelId,
                                                 root: data.mam.root,
                                                 seed: '',
@@ -362,11 +370,12 @@ export class MqttService {
                                 this.sendEvent(data, messageType, messageParams);
                             }
                     }
-            } else if (this.listenAddress && address === this.listenAddress) {
+            } 
+            // else if (this.listenAddress && address === this.listenAddress) {
                 // A message has been received through the ServiceEndpoint of the DID
-                //TODO: Change
-                processReceivedCredentialForUser(data);
-            }
+                //TODO: Migrate
+            //    processReceivedCredentialForUser(data);
+            // }
         }
     }
 }

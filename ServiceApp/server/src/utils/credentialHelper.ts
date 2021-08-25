@@ -133,7 +133,7 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 //     });
 // }
 
-//TODO: No work done yet, as I havent figured out how to call this
+//TODO: No work done yet, as this is of low priority for now
 export async function processReceivedCredentialForUserC2(unstructuredData: any) {
     // Filter out incorrectly structured transactions
     if (!unstructuredData.key || !unstructuredData.iv || !unstructuredData.data) {
@@ -356,18 +356,19 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
 
-            // const presentationData = JSON.parse(presentationData);
             // Verify
             writeData('trustedDIDAuthentication', presentationData.verifiableCredential.credentialSubject.id)
-            client.checkPresentation(presentationData.toString()) //TODO: Should already be correct format
+            const verifiablePresentation = VerifiablePresentation.fromJSON(presentationData);
+
+            client.checkPresentation(JSON.stringify(verifiablePresentation.toJSON()))
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-
-                    if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 60000) > Date.now()) { // Allow 1 minute old Authentications.
+                      
+                    if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 90000) > Date.now()) { // Allow 1,5 minutes old Authentications.
                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
                         
-                        if(trustedIdentities.some(presentationData.verifiableCredential.credentialSubject.id)) {
+                        if(trustedIdentities.includes(presentationData.verifiableCredential.credentialSubject.id)) {
                             //id is set as a trusted identity in the config file 
                             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
                         }
@@ -375,7 +376,8 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
 
                     resolve(verificationLevel);
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.log(error)
                     resolve(VERIFICATION_LEVEL.UNVERIFIED);
                 })
                 .finally(() => {
