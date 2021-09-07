@@ -40,14 +40,13 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
             //@ts-ignore
             const { doc, key } = new Document(KeyType.Ed25519, networkType);
 
-            const keyId = "#key";
-
             const privateKey = key.secret;
             const publicKey = key.public;
 
+            
+            //TODO: Concept of Services actually not needed right now, as we dont do anything related to services (e.g. making identities trusted via processReceivedCredentialsForUser())            
             //TODO: For now static
             const serviceEndpoint = "iota1qpw6k49dedaxrt854rau02talgfshgt0jlm5w8x9nk5ts6f5x5m759nh2ml" //TODO: Generate address here
-
             //Add a new ServiceEndpoint
             //TODO: nameFragment does not exist anymore + concept of serviceEndpoints=address still valid?
             const service: any = {
@@ -55,19 +54,14 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
                 "type": "TangleCommunicationAddress",
                 "serviceEndpoint": serviceEndpoint
             };
-
             // doc.insertService(Service.fromJSON(service));
-
-            //Needed, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
+            //Workaround, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
             const serviceDummy = [service]
             const docWithService = Document.fromJSON({
                 ...doc.toJSON(),
                 serviceDummy
             });
-
-
             docWithService.sign(key);
-
             if (!docWithService.verify()) {
                 reject('Created DID is not valid!');
             }

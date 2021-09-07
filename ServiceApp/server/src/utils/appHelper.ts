@@ -259,7 +259,7 @@ export class AppHelper {
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = request.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, 'keys-1', mam.secretKey);
+                mam.secretKey = await encryptWithReceiversPublicKey(id, config.keyId, mam.secretKey);
 
                 // 5. Create Tag
                 const submodelId = request.dataElements.submodels[0].identification.id;
