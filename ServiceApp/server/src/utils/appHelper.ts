@@ -221,7 +221,6 @@ export class AppHelper {
 
                 // 2. Sign DID Authentication
                 try {
-                    //TODO: Migrate DID, same as in /cfp
                     const verifiablePresentation = await createAuthenticationPresentationC2();
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
@@ -247,7 +246,7 @@ export class AppHelper {
             }
         });
 
-        //TODO: Migrate DID
+        //TODO: Migrate DID, only encryptWithReceiversKey needs touch
         app.post('/acceptProposal', async (req, res) => {
             try {
                 // 1. Retrieve MAM channel from DB

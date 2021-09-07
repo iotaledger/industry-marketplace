@@ -22,7 +22,7 @@ import { createCredential, readData, removeDataWhere, writeData } from './databa
 import { decryptCipher } from './encryptionHelper';
 
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
-//TODO: Migrate DID
+
 export interface IUser {
     id: string;
     name: string;
@@ -50,7 +50,7 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
             //Add a new ServiceEndpoint
             //TODO: nameFragment does not exist anymore + concept of serviceEndpoints=address still valid?
             const service: any = {
-                "id": doc.id + "#tanglecom", //TODO: Is this how I would now insert a nameFragment?
+                "id": doc.id + "#tanglecom",
                 "type": "TangleCommunicationAddress",
                 "serviceEndpoint": serviceEndpoint
             };
@@ -339,7 +339,7 @@ export enum VERIFICATION_LEVEL {
     DID_TRUSTED = 2
 }  // Check the validation status of the Verifiable Presentation
 
-//TODO: Still not called
+
 export async function verifyCredentialsC2(presentationData): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
@@ -376,7 +376,7 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
                     resolve(VERIFICATION_LEVEL.UNVERIFIED);
                 })
                 .finally(() => {
-                    removeDataWhere('trustedDIDAuthentication', `id = ${presentationData.verifiableCredential.credentialSubject.id}`)
+                    removeDataWhere('trustedDIDAuthentication', `id = '${presentationData.verifiableCredential.credentialSubject.id}'`)
                 });
         } catch (error) {
             reject(error);
