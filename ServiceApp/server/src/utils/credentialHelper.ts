@@ -80,10 +80,11 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
             const client = Client.fromConfig(config);
 
             // Publish the Identity to the IOTA Network, this may take a few seconds to complete Proof-of-Work.
-            const messageId = await client.publishDocument(docWithService.toJSON());
+            const messageWrapper = await client.publishDocument(docWithService.toJSON());
 
-            //TODO: "keyId": was previously "keys-1", now recommended #_sign-1 -Default is however "#key"
-            await writeData('didC2', { messageId, id: docWithService.id.toString(), privateKey, publicKey, keyId });
+            //TODO: "keyId": was previously "keys-1", now as a default "#key" is recommended, to which I propose we switch
+            const didInfo = { id: docWithService.id.toString(), messageId: messageWrapper.messageId, privateKey, publicKey, keyId }
+            await writeData('did', didInfo);
 
             const docId = docWithService.id.toString();
 
@@ -227,7 +228,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
     return new Promise<VerifiablePresentation>(async (resolve, reject) => {
         try {
             const challenge = Date.now().toString();
-            const did: any = await readData('didC2');
+            const did: any = await readData('did');
 
             // Create a default client configuration from the parent config network.
             const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());

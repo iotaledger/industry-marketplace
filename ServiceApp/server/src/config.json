@@ -27,7 +27,7 @@
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
     "faucetAmount": 5000,
     "provider": "https://api.lb-1.h.chrysalis-devnet.iota.cafe/",
-    "networkType": "testnet",
+    "networkType": "dev",
     "security": 2,
     "depth": 3,
     "minWeightMagnitude": 9,

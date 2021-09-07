@@ -181,7 +181,9 @@ export class AppHelper {
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
 
-                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
+                } 
+                //TODO: Is it correct that we try-catch here? Shouldnt the whole process abort if we fail this?
+                catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
                 const user: any = await readData('user');

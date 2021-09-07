@@ -12,9 +12,7 @@ const db = new sqlite3.Database(
         await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
-
-        await db.run('CREATE TABLE IF NOT EXISTS didC2 (messageId TEXT, id TEXT, privateKey TEXT, publicKey TEXT, keyId TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS did (id TEXT PRIMARY KEY, messageId TEXT, privateKey TEXT, publicKey TEXT, keyId TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS trustedDIDAuthentication (id TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
@@ -45,21 +43,13 @@ export const createPaymentQueue = async ({ address, value }) => {
     await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
 };
 
-//TODO: Migrate DID; need to do more research, but most likely some attribute values are no longer required
-export const createDID = async ({ root, privateKey, keyId, seed, mode = 'private', sideKey = '', security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
+
+export const createDID = async ({ id, messageId, privateKey, publicKey, keyId }) => {
     const insert = `
         INSERT INTO did (
-        root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, keyIndex, nextRoot)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, index, nextRoot]);
-};
-
-export const createDIDC2 = async ({ messageId, id, privateKey, publicKey, keyId }) => {
-    const insert = `
-        INSERT INTO didC2 (
-            messageId, id, privateKey, publicKey, keyId )
+            id, messageId, privateKey, publicKey, keyId )
         VALUES (?, ?, ?, ?, ?)`;
-    await db.run(insert, [messageId, id, privateKey, publicKey, keyId]);
+    await db.run(insert, [id, messageId, privateKey, publicKey, keyId]);
 };
 
 export const createMAMChannel = async ({ id, root, seed, mode, sideKey, security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
@@ -93,9 +83,6 @@ export const writeData = async (table, data) => {
                 return;
             case 'did':
                 await createDID(data);
-                return;
-            case 'didC2':
-                await createDIDC2(data);
                 return;
             case 'trustedDIDAuthentication':
                 await createTrustedDIDAuthentication(data);
