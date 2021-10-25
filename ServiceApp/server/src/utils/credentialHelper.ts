@@ -1,4 +1,4 @@
-import { 
+/* import { 
     CreateRandomDID, 
     DecodeProofDocument, 
     DIDDocument, 
@@ -16,10 +16,10 @@ import {
     VerifiableCredentialDataModel,
     VerifiablePresentation as VerifiablePresentationLegacy,
     VerifiablePresentationDataModel
-} from 'identity_ts';
-import { depth, keyId, minWeightMagnitude, provider, security, trustedIdentities, networkType } from '../config.json';
+} from 'identity_ts'; */
+import { provider, trustedIdentities, networkType } from '../config.json';
 import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
-import { decryptCipher } from './encryptionHelper';
+//import { decryptCipher } from './encryptionHelper';
 
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
 //TODO: Migrate DID
@@ -74,7 +74,7 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.dev());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -135,50 +135,11 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 
 //TODO: No work done yet, as this is of low priority for now
 export async function processReceivedCredentialForUserC2(unstructuredData: any) {
-    // Filter out incorrectly structured transactions
-    if (!unstructuredData.key || !unstructuredData.iv || !unstructuredData.data) {
-        return;
-    }
-    const data: { key: string; iv: string; data: string } = unstructuredData;
-
-    // Get pieces for decryption
-    const did: any = await readData('did');
-    // const encryptionKeypair = new ECDSAKeypair('', did.privateKey);
-    // data.key = await encryptionKeypair.PrivateDecrypt(Buffer.from(data.key, 'hex'));
-    const credentialString = decryptCipher({
-        key : Buffer.from(data.key, 'hex'), 
-        iv: Buffer.from(data.iv, 'hex'), 
-        encoded: Buffer.from(data.data, 'hex')
-    }).toString('utf8');
-
-    // Verify the credential is valid and for this user
-    try {
-        const credentialJSON = JSON.parse(credentialString);
-        const credentialFormat = <VerifiableCredentialDataModel>credentialJSON;
-        const proofParameters: ProofParameters = await DecodeProofDocument(credentialFormat.proof, provider);
-        const importVerifiableCredential: VerifiableCredentialLegacy = await VerifiableCredentialLegacy.DecodeFromJSON(credentialFormat, proofParameters);
-        const user: any = await readData('user');
-        const credentialSubject = importVerifiableCredential.EncodeToJSON().credentialSubject;
-
-        importVerifiableCredential.Verify(provider)
-            .then(async () => {
-                // tslint:disable-next-line:no-string-literal
-                if (credentialSubject['DID'] === user.id) {
-                    //Store the credential in the DB, sorted under the DID of the Issuer
-                    await createCredential({ id: credentialFormat.proof.creator, credential : credentialString});
-                    console.log('Credential Stored: ', credentialString);
-                }
-            })
-            .catch(() => {
-                // tslint:disable-next-line:no-string-literal
-                console.log('Credential Target: ', credentialSubject['DID']);
-            });
-    } catch (e) {
-        console.log('Credential Verification Error: ', e);
-    }
+    throw new Error("Not Implemented yet!")
 }
 
-export async function processReceivedCredentialForUser(unstructuredData: any) {
+
+/* export async function processReceivedCredentialForUser(unstructuredData: any) {
     // Filter out incorrectly structured transactions
     if (!unstructuredData.key || !unstructuredData.iv || !unstructuredData.data) {
         return;
@@ -220,7 +181,7 @@ export async function processReceivedCredentialForUser(unstructuredData: any) {
     } catch (e) {
         console.log('Credential Verification Error: ', e);
     }
-}
+ }*/
 
 export async function createAuthenticationPresentationC2(): Promise<VerifiablePresentation> {
     // 1.25 Sign DID Authentication
@@ -230,7 +191,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             const did: any = await readData('didC2');
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -344,14 +305,13 @@ export enum VERIFICATION_LEVEL {
     DID_TRUSTED = 2
 }  // Check the validation status of the Verifiable Presentation
 
-//TODO: Still not called
 export async function verifyCredentialsC2(presentationData): Promise<VERIFICATION_LEVEL> {
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             // Create objects
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.testnet());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);

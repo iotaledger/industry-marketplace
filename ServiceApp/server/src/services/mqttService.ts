@@ -1,8 +1,8 @@
 import { ClientBuilder } from '@iota/client';
-import { DID, SchemaManager } from 'identity_ts';
+//import { DID, SchemaManager } from 'identity_ts';
 import { v4 as uuid } from 'uuid';
 import { maxDistance, operations, provider, security, prefix } from '../config.json';
-import { processReceivedCredentialForUser, VERIFICATION_LEVEL, verifyCredentialsC2 } from '../utils/credentialHelper';
+import { processReceivedCredentialForUserC2, VERIFICATION_LEVEL, verifyCredentialsC2 } from '../utils/credentialHelper';
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
@@ -374,7 +374,7 @@ export class MqttService {
             // else if (this.listenAddress && address === this.listenAddress) {
                 // A message has been received through the ServiceEndpoint of the DID
                 //TODO: Migrate
-            //    processReceivedCredentialForUser(data);
+            //    processReceivedCredentialForUserC2(data);
             // }
         }
     }

@@ -9,7 +9,6 @@ import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { MqttService } from '../services/mqttService';
 import { createAuthenticationPresentationC2, createNewUserC2 } from './credentialHelper';
-import identity from '@iota/identity-wasm/node';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
 import { publish } from './mamHelper';

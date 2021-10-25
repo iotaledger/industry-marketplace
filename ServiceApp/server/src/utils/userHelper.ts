@@ -1,7 +1,7 @@
 import axios from 'axios';
 import yargs from 'yargs';
 import { faucet, faucetAmount } from '../config.json';
-import { createNewUser } from './credentialHelper';
+import { createNewUserC2 } from './credentialHelper';
 import { writeData } from './databaseHelper';
 import { generateNewWallet, getBalance } from './walletHelper.js';
 
@@ -10,7 +10,7 @@ const createUser = async () => {
         const { name, role = '', location = '' } = argv;	
         if (name && (role === 'SR' || role === 'SP')) {	
             console.log('Creating user...');
-            createNewUser(name, role, location);	
+            createNewUserC2(name, role, location);	
         } else {	
             console.log('Params are missing or wrong');	
             return;	

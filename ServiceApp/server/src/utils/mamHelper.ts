@@ -2,7 +2,6 @@ import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import {
     createChannel,
     createMessage,
-    IMamMessage,
     mamAttach,
     mamFetchAll
 } from '@iota/mam.js';
