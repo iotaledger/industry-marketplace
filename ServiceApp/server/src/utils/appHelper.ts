@@ -180,7 +180,9 @@ export class AppHelper {
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
 
-                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
+                } 
+                //TODO: Is it correct that we try-catch here? Shouldnt the whole process abort if we fail this?
+                catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
                 const user: any = await readData('user');
@@ -218,7 +220,6 @@ export class AppHelper {
 
                 // 2. Sign DID Authentication
                 try {
-                    //TODO: Migrate DID, same as in /cfp
                     const verifiablePresentation = await createAuthenticationPresentationC2();
                     request.identification = {};
                     request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
@@ -244,7 +245,7 @@ export class AppHelper {
             }
         });
 
-        //TODO: Migrate DID
+        //TODO: Migrate DID, only encryptWithReceiversKey needs touch
         app.post('/acceptProposal', async (req, res) => {
             try {
                 // 1. Retrieve MAM channel from DB
@@ -256,7 +257,7 @@ export class AppHelper {
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = request.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, 'keys-1', mam.secretKey);
+                mam.secretKey = await encryptWithReceiversPublicKey(id, config.keyId, mam.secretKey);
 
                 // 5. Create Tag
                 const submodelId = request.dataElements.submodels[0].identification.id;

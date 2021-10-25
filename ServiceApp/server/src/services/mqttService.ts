@@ -204,7 +204,7 @@ export class MqttService {
     /**
      * Send out an event
      */
-    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) { //TODO: Changed back to default unverified
+    private async sendEvent(data, messageType, messageParams, trustLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED) {
         const event = 'tx' //TODO: Used to be event = messageParams[0]
         const payload = this.buildPayload(data, messageType, messageParams, trustLevel);
 

@@ -22,7 +22,7 @@ import { createCredential, readData, removeDataWhere, writeData } from './databa
 //import { decryptCipher } from './encryptionHelper';
 
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
-//TODO: Migrate DID
+
 export interface IUser {
     id: string;
     name: string;
@@ -40,34 +40,28 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
             //@ts-ignore
             const { doc, key } = new Document(KeyType.Ed25519, networkType);
 
-            const keyId = "#key";
-
             const privateKey = key.secret;
             const publicKey = key.public;
 
+            
+            //TODO: Concept of Services actually not needed right now, as we dont do anything related to services (e.g. making identities trusted via processReceivedCredentialsForUser())            
             //TODO: For now static
             const serviceEndpoint = "iota1qpw6k49dedaxrt854rau02talgfshgt0jlm5w8x9nk5ts6f5x5m759nh2ml" //TODO: Generate address here
-
             //Add a new ServiceEndpoint
             //TODO: nameFragment does not exist anymore + concept of serviceEndpoints=address still valid?
             const service: any = {
-                "id": doc.id + "#tanglecom", //TODO: Is this how I would now insert a nameFragment?
+                "id": doc.id + "#tanglecom",
                 "type": "TangleCommunicationAddress",
                 "serviceEndpoint": serviceEndpoint
             };
-
             // doc.insertService(Service.fromJSON(service));
-
-            //Needed, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
+            //Workaround, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
             const serviceDummy = [service]
             const docWithService = Document.fromJSON({
                 ...doc.toJSON(),
                 serviceDummy
             });
-
-
             docWithService.sign(key);
-
             if (!docWithService.verify()) {
                 reject('Created DID is not valid!');
             }
@@ -80,10 +74,11 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
             const client = Client.fromConfig(config);
 
             // Publish the Identity to the IOTA Network, this may take a few seconds to complete Proof-of-Work.
-            const messageId = await client.publishDocument(docWithService.toJSON());
+            const messageWrapper = await client.publishDocument(docWithService.toJSON());
 
-            //TODO: "keyId": was previously "keys-1", now recommended #_sign-1 -Default is however "#key"
-            await writeData('didC2', { messageId, id: docWithService.id.toString(), privateKey, publicKey, keyId });
+            //TODO: "keyId": was previously "keys-1", now as a default "#key" is recommended, to which I propose we switch
+            const didInfo = { id: docWithService.id.toString(), messageId: messageWrapper.messageId, privateKey, publicKey, keyId }
+            await writeData('did', didInfo);
 
             const docId = docWithService.id.toString();
 
@@ -188,7 +183,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
     return new Promise<VerifiablePresentation>(async (resolve, reject) => {
         try {
             const challenge = Date.now().toString();
-            const did: any = await readData('didC2');
+            const did: any = await readData('did');
 
             // Create a default client configuration from the parent config network.
             const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
@@ -341,7 +336,7 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
                     resolve(VERIFICATION_LEVEL.UNVERIFIED);
                 })
                 .finally(() => {
-                    removeDataWhere('trustedDIDAuthentication', `id = ${presentationData.verifiableCredential.credentialSubject.id}`)
+                    removeDataWhere('trustedDIDAuthentication', `id = '${presentationData.verifiableCredential.credentialSubject.id}'`)
                 });
         } catch (error) {
             reject(error);
