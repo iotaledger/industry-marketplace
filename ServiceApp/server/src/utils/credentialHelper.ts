@@ -17,10 +17,9 @@
     VerifiablePresentation as VerifiablePresentationLegacy,
     VerifiablePresentationDataModel
 } from 'identity_ts'; */
-import { provider, trustedIdentities, networkType } from '../config.json';
+import { provider, trustedIdentities, networkType, keyId } from '../config.json';
 import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
 //import { decryptCipher } from './encryptionHelper';
-
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
 
 export interface IUser {
@@ -68,7 +67,7 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
 
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.dev());
+            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -205,6 +204,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
                 challenge: challenge
             };
 
+            //TODO: Still contains dummy-elements
             const unsignedVc = VerifiableCredential.extend({
                 id: "http://example.edu/credentials/3732",
                 type: "DIDAuthenticationCredential",

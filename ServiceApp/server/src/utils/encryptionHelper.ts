@@ -6,7 +6,7 @@ import { readData } from './databaseHelper';
 
 export const encryptWithReceiversPublicKeyC2 = async (receiverId, keyId, payload) => {
     // Create a default client configuration from the parent config network.
-    const config = Config.fromNetwork(networkType === "main" ? Network.mainnet() : Network.testnet());
+    const config = Config.fromNetwork(networkType === "main" ? Network.mainnet() : Network.devnet());
     const client = Client.fromConfig(config);
     const resolveRequest = await client.resolve(receiverId);
     const issuerDIDJSON = resolveRequest.document;
