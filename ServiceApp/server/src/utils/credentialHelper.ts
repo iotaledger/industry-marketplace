@@ -21,6 +21,7 @@ import { provider, trustedIdentities, networkType, keyId } from '../config.json'
 import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
 //import { decryptCipher } from './encryptionHelper';
 import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
+import { createIdentity } from './integrationServiceHelper';
 
 export interface IUser {
     id: string;
@@ -34,54 +35,16 @@ export function createNewUserC2(name: string = '', role: string = '', location: 
     return new Promise<IUser>(async (resolve, reject) => {
         
         try {
-
-            // Create a new DID Document with the KeyPair as the default authentication method
-            //@ts-ignore
-            const { doc, key } = new Document(KeyType.Ed25519, networkType);
-
-            const privateKey = key.secret;
-            const publicKey = key.public;
-
-            
-            //TODO: Concept of Services actually not needed right now, as we dont do anything related to services (e.g. making identities trusted via processReceivedCredentialsForUser())            
-            //TODO: For now static
-            const serviceEndpoint = "iota1qpw6k49dedaxrt854rau02talgfshgt0jlm5w8x9nk5ts6f5x5m759nh2ml" //TODO: Generate address here
-            //Add a new ServiceEndpoint
-            //TODO: nameFragment does not exist anymore + concept of serviceEndpoints=address still valid?
-            const service: any = {
-                "id": doc.id + "#tanglecom",
-                "type": "TangleCommunicationAddress",
-                "serviceEndpoint": serviceEndpoint
-            };
-            // doc.insertService(Service.fromJSON(service));
-            //Workaround, as serviceEndpoint currently only works with URIs and not with IOTA addresses. Scheme is otherwise the same (attribute is only called serviceDummy instead of service)
-            const serviceDummy = [service]
-            const docWithService = Document.fromJSON({
-                ...doc.toJSON(),
-                serviceDummy
-            });
-            docWithService.sign(key);
-            if (!docWithService.verify()) {
-                reject('Created DID is not valid!');
-            }
-
-
-            // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
-
-            // Create a client instance to publish messages to the Tangle.
-            const client = Client.fromConfig(config);
-
-            // Publish the Identity to the IOTA Network, this may take a few seconds to complete Proof-of-Work.
-            const messageWrapper = await client.publishDocument(docWithService.toJSON());
+            const userObject = {name: name, role: role, location: location};
+            const { documentId, messageId, secretKey, publicKey } = await createIdentity(userObject);
 
             //TODO: "keyId": was previously "keys-1", now as a default "#key" is recommended, to which I propose we switch
-            const didInfo = { id: docWithService.id.toString(), messageId: messageWrapper.messageId, privateKey, publicKey, keyId }
+            const didInfo = { id: documentId, messageId: messageId, privateKey: secretKey, publicKey: publicKey, keyId }
             await writeData('did', didInfo);
 
-            const docId = docWithService.id.toString();
 
-            const user: IUser = { id: docId, name, role, location, address: serviceEndpoint };
+            //TODO: Concept of Services actually not needed right now, as we dont do anything related to services (e.g. making identities trusted via processReceivedCredentialsForUser())            
+            const user: IUser = { id: documentId, name, role, location, address: "serviceEndpoint-dummy" };
 
             await writeData('user', user);
             resolve(user)

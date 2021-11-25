@@ -192,7 +192,7 @@ export class AppHelper {
                 // 5. Publish first message with payload
                 // 6. Save channel details to DB
                 const channelId = request.frame.conversationId;
-                const mam = await publish(channelId, request);
+                const mam = await publish(channelId, request); //TODO: replace with Audit trail(request)
 
                 console.log('CfP success', hash);
                 res.send({

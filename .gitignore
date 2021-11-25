@@ -7,3 +7,4 @@ ServiceApp/docs
 node_modules/
 ServiceApp/.vscode/launch.json
 ServiceApp/.vscode/tasks.json
+ServiceApp/server/.env
