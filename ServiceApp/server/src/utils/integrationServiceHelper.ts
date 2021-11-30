@@ -1,7 +1,4 @@
-import { rejects } from "assert";
 import axios from "axios";
-import { resolve } from "path";
-import { string } from "yargs";
 import {integrationServiceEndpoint} from "../config.json"
 import dotenv from "dotenv";
 

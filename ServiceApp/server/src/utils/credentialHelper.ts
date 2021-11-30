@@ -20,8 +20,12 @@
 import { provider, trustedIdentities, networkType, keyId } from '../config.json';
 import { createCredential, readData, removeDataWhere, writeData } from './databaseHelper';
 //import { decryptCipher } from './encryptionHelper';
-import { Network,  KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
+import { Network, KeyType, Document, Client, Config, Service, VerifiableCredential, VerifiablePresentation } from '@iota/identity-wasm/node';
 import { createIdentity } from './integrationServiceHelper';
+import { rejects } from 'assert';
+import * as ed from 'noble-ed25519';
+import * as bs58 from 'bs58';
+import { IVerificationRequest } from './identityAuthenticationHelper';
 
 export interface IUser {
     id: string;
@@ -31,11 +35,37 @@ export interface IUser {
     address: string;
 }
 
+export async function createOwnershipProof(): Promise<IVerificationRequest> {
+    return new Promise<IVerificationRequest>(async (resolve, reject) => {
+        try {
+            const did: any = await readData('did');
+
+            const privateKey = did.privateKey;
+            const id = did.id;
+            const timestamp = new Date().getTime();
+            const decodedPrivateKey = bs58.decode(privateKey);
+            const signature = await ed.sign(Buffer.from(timestamp.toString()), decodedPrivateKey);
+            if (id && timestamp && signature) {
+                resolve({
+                    did: id,
+                    timestamp,
+                    signature: Buffer.from(signature).toString("hex")
+                });
+            }
+            reject("Unable to create Ownership-proof. Did you create an identity?")
+        }
+        catch {
+            reject("Unable to create Ownership-proof. Did you create an identity?")
+        }
+    });
+}
+
+
 export function createNewUserC2(name: string = '', role: string = '', location: string = ''): Promise<IUser> {
     return new Promise<IUser>(async (resolve, reject) => {
-        
+
         try {
-            const userObject = {name: name, role: role, location: location};
+            const userObject = { name: name, role: role, location: location };
             const { documentId, messageId, secretKey, publicKey } = await createIdentity(userObject);
 
             //TODO: "keyId": was previously "keys-1", now as a default "#key" is recommended, to which I propose we switch
@@ -148,7 +178,7 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             const did: any = await readData('did');
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
+            const config = Config.fromNetwork(networkType === "main" ? Network.mainnet() : Network.devnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -269,7 +299,7 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
             // Create objects
 
             // Create a default client configuration from the parent config network.
-            const config = Config.fromNetwork(networkType === "main"? Network.mainnet(): Network.devnet());
+            const config = Config.fromNetwork(networkType === "main" ? Network.mainnet() : Network.devnet());
 
             // Create a client instance to publish messages to the Tangle.
             const client = Client.fromConfig(config);
@@ -285,7 +315,7 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
                       
                     if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 90000) > Date.now()) { // Allow 1,5 minutes old Authentications.
                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
-                        
+
                         if(trustedIdentities.includes(presentationData.verifiableCredential.credentialSubject.id)) {
                             //id is set as a trusted identity in the config file 
                             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;

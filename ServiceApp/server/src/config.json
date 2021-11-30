@@ -8,6 +8,7 @@
         "broker": "mqtt.lb-1.h.chrysalis-devnet.iota.cafe:1883"
     },
     "integrationServiceEndpoint": "https://ensuresec.solutions.iota.org/api/v0.1",
+    "identityAuthenticationEndpoint": "http://localhost:2000",
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 2000,
     "operations": [
