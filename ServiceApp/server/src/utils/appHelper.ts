@@ -4,13 +4,15 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import { VerifiablePresentation } from 'identity_ts/typings/src';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
 import { MqttService } from '../services/mqttService';
-import { createAuthenticationPresentationC2, createNewUserC2 } from './credentialHelper';
+import { createAuthenticationPresentationC2, createNewUserC2, createOwnershipProof } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
+import { proveOwnership } from './identityAuthenticationHelper';
 import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
@@ -176,10 +178,9 @@ export class AppHelper {
 
                 // 2. Create a DID Authentication Challenge
                 try {
-                    const verifiablePresentation = await createAuthenticationPresentationC2();
+                    const ownershipProof = await createOwnershipProof();
                     request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
-
+                    request.identification.didOwnershipProof = JSON.stringify(ownershipProof);
                 } 
                 //TODO: Is it correct that we try-catch here? Shouldnt the whole process abort if we fail this?
                 catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }

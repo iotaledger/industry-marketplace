@@ -6,6 +6,7 @@ import { processReceivedCredentialForUserC2, VERIFICATION_LEVEL, verifyCredentia
 import { readData, writeData } from '../utils/databaseHelper';
 import { convertOperationsList, extractMessageType } from '../utils/eclassHelper';
 import { decryptWithReceiversPrivateKey } from '../utils/encryptionHelper';
+import { IVerificationRequest, proveOwnership } from '../utils/identityAuthenticationHelper';
 import { calculateDistance, getLocationFromMessage } from '../utils/locationHelper';
 import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
@@ -225,9 +226,9 @@ export class MqttService {
         let data;
         let tag;
         try {
-          data = JSON.parse(decodeURI((Buffer.from(messageData.payload.data.data)).toString()));
-          tag = decodeURI((Buffer.from(messageData.payload.data.index)).toString());
-        } catch {}
+            data = JSON.parse(decodeURI(Buffer.from(messageData?.payload?.data, "hex")?.toString()));
+            tag = decodeURI((Buffer.from(messageData?.payload?.index, "hex"))?.toString());
+        } catch { }
 
 
         // tslint:disable-next-line:no-string-literal
@@ -270,8 +271,9 @@ export class MqttService {
                                 if (id === receiverID) {
                                     if (messageType === 'proposal') {
                                         // Find the challenge
-                                        if (data.identification && data.identification.didAuthenticationPresentation) {
-                                            verifyCredentialsC2(data.identification.didAuthenticationPresentation)
+                                        if (data.identification && data.identification.didOwnershipProof) {
+                                            const ownershipProofObject: IVerificationRequest = JSON.parse(data.identification.didOwnershipProof)
+                                            proveOwnership(ownershipProofObject)
                                                 .then(async (verificationResult) => {
                                                     // Check if the correct challenge is used and if the signatures are correct
                                                     if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -297,9 +299,10 @@ export class MqttService {
                                 if (messageType === 'callForProposal') {
                                     const senderLocation = await getLocationFromMessage(data);
 
-                                    // Find the challenge
-                                    if (data.identification && data.identification.didAuthenticationPresentation) {
-                                        verifyCredentialsC2(data.identification.didAuthenticationPresentation)
+                                // Find the challenge
+                                    if (data.identification && data.identification.didOwnershipProof) {
+                                        const ownershipProofObject: IVerificationRequest = JSON.parse(data.identification.didOwnershipProof)
+                                        proveOwnership(ownershipProofObject)
                                         .then(async (verificationResult) => {
                                             // 3.2 If NO own location and NO accepted range are set, send message to UI
                                             if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -308,12 +311,13 @@ export class MqttService {
                                                 }
 
                                                 // 3.3 If own location and accepted range are set, calculate distance between own location and location of the request.
-                                                if (location && maxDistance) {
+                                                if (location && location !== '' && maxDistance) { //TODO: Else errors
                                                     try {
                                                         const distance = await calculateDistance(location, senderLocation);
 
                                                         // 3.3.1 If distance within accepted range, send message to UI
                                                         if (distance <= maxDistance) {
+                                                            //TODO: This is exactly the same message we send before
                                                             await this.sendEvent(data, messageType, messageParams, verificationResult);
                                                         }
                                                     } catch (error) {
@@ -342,7 +346,7 @@ export class MqttService {
 
                                             // Check if the correct challenge is used and if the signatures are correct
                                             const secretKey = await decryptWithReceiversPrivateKey(data.mam);
-                                            await writeData('mam', { //TODO: Is this up to date? 
+                                        await writeData('mam', { //TODO: Is this up to date? 
                                                 id: channelId,
                                                 root: data.mam.root,
                                                 seed: '',
@@ -355,6 +359,7 @@ export class MqttService {
                                                 nextCount: 1,
                                                 index: 0
                                             });
+                                            //TODO: Why trusted?
                                             await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                         } else {
                                             await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
@@ -372,8 +377,8 @@ export class MqttService {
                     }
             } 
             // else if (this.listenAddress && address === this.listenAddress) {
-                // A message has been received through the ServiceEndpoint of the DID
-                //TODO: Migrate
+            // A message has been received through the ServiceEndpoint of the DID
+            //TODO: Migrate
             //    processReceivedCredentialForUserC2(data);
             // }
         }

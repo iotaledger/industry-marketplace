@@ -4,20 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: __dirname+'/../../../.env' });
 
-const postConfig = {
-    headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-};
-const getConfig = {
-    headers: {
-        'accept': 'application/json',
-    }
-};
-
 const createIdentityEndpoint = "/identities/create/";
-const proveOwnershipEndpoint = "/authentication/prove-ownership/"
 
 export interface ICreateIdentityResult {
     documentId: string;
@@ -49,53 +36,3 @@ export const createIdentity = async (userObject): Promise<ICreateIdentityResult>
         }
     });
 }
-
-
-//TODO: Micheles methods
-// export const getAuthenticationToken = async (id) => {
-
-//     //data = null as there is no need for any metadata 
-//     await axios.get(integrationServiceEndpoint + getProveOwnershipEndpoint + id, getConfig)
-//         .then(async returnObject => {
-//             const nonce = returnObject.data.nonce;
-
-//             let signedNonce = null;
-//             //TODO: Actually sign nonce
-//             await axios.post(integrationServiceEndpoint + getProveOwnershipEndpoint + id , 
-//                 {
-//                     "signedNonce": signedNonce
-//                 }, postConfig)
-//                 .then(returnObject => {
-//                     return returnObject.data.jwt;
-//                 })
-
-//         })
-//         //TODO: Better to throw an error here?
-//         return null;
-// }
-
-//TODO: Also not really needed anymore, as for now we dont intend to do the nonce-handshake with the API
-// export const fetchAuth = async (identity: any) => {
-// 	console.log('requesting nonce to sign...');
-// 	//const apiKey = Config.apiKey ? `?api-key=${Config.apiKey}` : '';
-// 	const url = `${integrationServiceEndpoint}${ProveOwnershipEndpoint}${identity.doc.id}${apiKey}`;
-
-// 	const res = await axios.get(url);
-// 	if (res.status !== 200) {
-// 		console.error('didnt receive status 200 on get request for prove-ownership!');
-// 		return;
-// 	}
-// 	const body = await res.data;
-// 	const nonce: string = body.nonce;
-// 	console.log('received nonce: ', nonce);
-
-// 	const encodedKey = await getHexEncodedKey(identity.key.secret);
-// 	const signedNonce = await signNonce(encodedKey, nonce);
-// 	console.log('signed nonce: ', signedNonce);
-
-// 	console.log('requesting authentication token using signed nonce...', identity.doc.id);
-// 	const response = await axios.post(`${integrationServiceEndpoint}${ProveOwnershipEndpoint}${identity.doc.id}${apiKey}`, JSON.stringify({ signedNonce }),
-// 		postConfig);
-
-// 	return response; //res.data.jwt contains the JWT Token
-// };
