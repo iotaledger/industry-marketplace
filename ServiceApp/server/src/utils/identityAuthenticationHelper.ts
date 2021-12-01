@@ -18,7 +18,6 @@ export const proveOwnership = async (verificationRequestObject: IVerificationReq
     return new Promise<VERIFICATION_LEVEL>(async (resolve, reject) => {
         try {
             //data = null if there is no metadata, however, decided to just include the user data in the identity?
-            
             await axios.post("http://localhost:2000/api/v1/ownership/prove", verificationRequestObject)
                 .then(returnObject => {
                     console.log(returnObject);

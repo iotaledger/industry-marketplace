@@ -223,8 +223,8 @@ export async function createAuthenticationPresentationC2(): Promise<VerifiablePr
             //     const parsed = JSON.parse(whiteListCredential.credential);
             //     credentialsArray.push(VerifiableCredential.fromJSON(parsed))
 
-                // const decodedProof = await DecodeProofDocument(parsed.proof, provider);
-                // credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
+            // const decodedProof = await DecodeProofDocument(parsed.proof, provider);
+            // credentialsArray.push(VerifiableCredentialLegacy.DecodeFromJSON(parsed, decodedProof));
             // }
 
             // Create presentation
@@ -312,11 +312,11 @@ export async function verifyCredentialsC2(presentationData): Promise<VERIFICATIO
                 .then(() => {
                     // Determine level of trust
                     let verificationLevel: VERIFICATION_LEVEL = VERIFICATION_LEVEL.UNVERIFIED;
-                      
+
                     if ((parseInt(presentationData.verifiableCredential.credentialSubject.challenge, 10) + 90000) > Date.now()) { // Allow 1,5 minutes old Authentications.
                         verificationLevel = VERIFICATION_LEVEL.DID_OWNER;
 
-                        if(trustedIdentities.includes(presentationData.verifiableCredential.credentialSubject.id)) {
+                        if (trustedIdentities.includes(presentationData.verifiableCredential.credentialSubject.id)) {
                             //id is set as a trusted identity in the config file 
                             verificationLevel = VERIFICATION_LEVEL.DID_TRUSTED;
                         }

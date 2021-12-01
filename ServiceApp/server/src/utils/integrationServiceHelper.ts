@@ -1,8 +1,8 @@
 import axios from "axios";
-import {integrationServiceEndpoint} from "../config.json"
+import { integrationServiceEndpoint } from "../config.json"
 import dotenv from "dotenv";
 
-dotenv.config({ path: __dirname+'/../../../.env' });
+dotenv.config({ path: __dirname + '/../../../.env' });
 
 const createIdentityEndpoint = "/identities/create/";
 
@@ -18,7 +18,7 @@ export const createIdentity = async (userObject): Promise<ICreateIdentityResult>
         try {
             //data = null if there is no metadata, however, decided to just include the user data in the identity?
             console.log(integrationServiceEndpoint + createIdentityEndpoint)
-            await axios.post(integrationServiceEndpoint + createIdentityEndpoint+ "?api-key=" + process.env.INTEGRATION_SERVICE_API_KEY, userObject)
+            await axios.post(integrationServiceEndpoint + createIdentityEndpoint + "?api-key=" + process.env.INTEGRATION_SERVICE_API_KEY, userObject)
                 .then(returnObject => {
                     const documentId = returnObject.data.doc.id;
                     const secretKey = returnObject.data.key.secret;
@@ -31,7 +31,7 @@ export const createIdentity = async (userObject): Promise<ICreateIdentityResult>
                 })
 
         } catch (error) {
-            
+
             reject(error);
         }
     });

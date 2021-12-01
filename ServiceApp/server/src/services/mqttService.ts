@@ -12,11 +12,11 @@ import { publish } from '../utils/mamHelper';
 import { processPayment } from '../utils/walletHelper';
 
 const client = new ClientBuilder()
-  .node(provider)
-//   .brokerOptions({ useWs: false })
-  .build();
+    .node(provider)
+    //   .brokerOptions({ useWs: false })
+    .build();
 
-const operationList = convertOperationsList(operations); 
+const operationList = convertOperationsList(operations);
 
 /**
  * Class to handle MQTT service.
@@ -152,7 +152,7 @@ export class MqttService {
             } catch (err) {
                 throw new Error(`Unable to connect to MQTT.\n${err}`);
             }
-         });
+        });
     }
 
     /**
@@ -239,70 +239,70 @@ export class MqttService {
             messageType && console.log('handleMessage', messageType, tag);
 
             if (tag.startsWith(prefix) && messageType && operationList.includes(tag.slice(9, 15))) {
-                    interface IUser {
-                        id?: string;
-                        name?: string;
-                        role?: string;
-                        location?: string;
-                        address?: string;
-                    }
-                    const { id, role, location }: IUser = await readData('user');
+                interface IUser {
+                    id?: string;
+                    name?: string;
+                    role?: string;
+                    location?: string;
+                    address?: string;
+                }
+                const { id, role, location }: IUser = await readData('user');
 
-                    const messageId = client.getMessageId(message.payload);
-                    // const address = "_no_address_"; //TODO: Not needed with C2, dont think it is actually used?
-                    const timestamp = Date.now();
-                    const messageParams = {
-                        messageId,
-                        // address,
-                        timestamp,
-                        tag,
-                        data
-                    }
+                const messageId = client.getMessageId(message.payload);
+                // const address = "_no_address_"; //TODO: Not needed with C2, dont think it is actually used?
+                const timestamp = Date.now();
+                const messageParams = {
+                    messageId,
+                    // address,
+                    timestamp,
+                    tag,
+                    data
+                }
 
-                    // 1. Check user role (SR, SP, YP)
-                    switch (role) {
-                        case 'SR':
-                            // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
-                            if (['proposal', 'informConfirm'].includes(messageType)) {
-                                // 2.1 Decode every such message and retrieve receiver ID
-                                const receiverID = data.frame.receiver.identification.id;
+                // 1. Check user role (SR, SP, YP)
+                switch (role) {
+                    case 'SR':
+                        // 2. For SR only react on message types B, E ('proposal' and 'informConfirm')
+                        if (['proposal', 'informConfirm'].includes(messageType)) {
+                            // 2.1 Decode every such message and retrieve receiver ID
+                            const receiverID = data.frame.receiver.identification.id;
 
-                                // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
-                                if (id === receiverID) {
-                                    if (messageType === 'proposal') {
-                                        // Find the challenge
-                                        if (data.identification && data.identification.didOwnershipProof) {
-                                            const ownershipProofObject: IVerificationRequest = JSON.parse(data.identification.didOwnershipProof)
-                                            proveOwnership(ownershipProofObject)
-                                                .then(async (verificationResult) => {
-                                                    // Check if the correct challenge is used and if the signatures are correct
-                                                    if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
-                                                        // Only send to UI if the DID Authentication is succesful
-                                                        await this.sendEvent(data, messageType, messageParams, verificationResult);
-                                                    }
-                                                }).catch((err) => {
-                                                    console.log('Verification failed, so message is ignored with error: ', err);
-                                                });
-                                        }
-                                    } else {
-                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        const channelId = data.frame.conversationId;
-                                        await publish(channelId, data);
-                                    }
-                                }
-                            }
-                            break;
-                        case 'SP':
-                            // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
-                            if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
-                                // 3.1 Decode every message of type A, retrieve location.
-                                if (messageType === 'callForProposal') {
-                                    const senderLocation = await getLocationFromMessage(data);
-
-                                // Find the challenge
+                            // 2.2 Compare receiver ID with user ID. Only if match, send message to UI
+                            if (id === receiverID) {
+                                if (messageType === 'proposal') {
+                                    // Find the challenge
                                     if (data.identification && data.identification.didOwnershipProof) {
                                         const ownershipProofObject: IVerificationRequest = JSON.parse(data.identification.didOwnershipProof)
                                         proveOwnership(ownershipProofObject)
+                                            .then(async (verificationResult) => {
+                                                // Check if the correct challenge is used and if the signatures are correct
+                                                if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
+                                                    // Only send to UI if the DID Authentication is succesful
+                                                    await this.sendEvent(data, messageType, messageParams, verificationResult);
+                                                }
+                                            }).catch((err) => {
+                                                console.log('Verification failed, so message is ignored with error: ', err);
+                                            });
+                                    }
+                                } else {
+                                    await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
+                                    const channelId = data.frame.conversationId;
+                                    await publish(channelId, data);
+                                }
+                            }
+                        }
+                        break;
+                    case 'SP':
+                        // 3. For SP only react on message types A, C, D, F ('callForProposal', 'acceptProposal', 'rejectProposal', and 'informPayment')
+                        if (['callForProposal', 'acceptProposal', 'rejectProposal', 'informPayment'].includes(messageType)) {
+                            // 3.1 Decode every message of type A, retrieve location.
+                            if (messageType === 'callForProposal') {
+                                const senderLocation = await getLocationFromMessage(data);
+
+                                // Find the challenge
+                                if (data.identification && data.identification.didOwnershipProof) {
+                                    const ownershipProofObject: IVerificationRequest = JSON.parse(data.identification.didOwnershipProof)
+                                    proveOwnership(ownershipProofObject)
                                         .then(async (verificationResult) => {
                                             // 3.2 If NO own location and NO accepted range are set, send message to UI
                                             if (verificationResult > VERIFICATION_LEVEL.UNVERIFIED) {
@@ -331,51 +331,51 @@ export class MqttService {
                                         }).catch((err) => {
                                             console.log('Verification failed, so message is ignored with error: ', err);
                                         });
-                                    } else {
-                                        console.log('No identification found', data);
-                                    }
-  
                                 } else {
-                                    // 3.4 Decode every message of type C, D, F and retrieve receiver ID
-                                    const receiverID = data.frame.receiver.identification.id;
+                                    console.log('No identification found', data);
+                                }
 
-                                    // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
-                                    if (id === receiverID) {
-                                        if (messageType === 'acceptProposal') {
-                                            const channelId = data.frame.conversationId;
+                            } else {
+                                // 3.4 Decode every message of type C, D, F and retrieve receiver ID
+                                const receiverID = data.frame.receiver.identification.id;
 
-                                            // Check if the correct challenge is used and if the signatures are correct
-                                            const secretKey = await decryptWithReceiversPrivateKey(data.mam);
+                                // 3.5 Compare receiver ID with user ID. Only if match, send message to UI
+                                if (id === receiverID) {
+                                    if (messageType === 'acceptProposal') {
+                                        const channelId = data.frame.conversationId;
+
+                                        // Check if the correct challenge is used and if the signatures are correct
+                                        const secretKey = await decryptWithReceiversPrivateKey(data.mam);
                                         await writeData('mam', { //TODO: Is this up to date? 
-                                                id: channelId,
-                                                root: data.mam.root,
-                                                seed: '',
-                                                nextRoot: '',
-                                                sideKey: secretKey,
-                                                start: 0,
-                                                mode: '',
-                                                security,
-                                                count: 1,
-                                                nextCount: 1,
-                                                index: 0
-                                            });
-                                            //TODO: Why trusted?
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        } else {
-                                            await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
-                                        }
+                                            id: channelId,
+                                            root: data.mam.root,
+                                            seed: '',
+                                            nextRoot: '',
+                                            sideKey: secretKey,
+                                            start: 0,
+                                            mode: '',
+                                            security,
+                                            count: 1,
+                                            nextCount: 1,
+                                            index: 0
+                                        });
+                                        //TODO: Why trusted?
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
+                                    } else {
+                                        await this.sendEvent(data, messageType, messageParams, VERIFICATION_LEVEL.DID_TRUSTED);
                                     }
                                 }
                             }
-                            break;
-                        default:
-                            // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
-                            if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
-                                // 4.1 Send every such message to UI
-                                this.sendEvent(data, messageType, messageParams);
-                            }
-                    }
-            } 
+                        }
+                        break;
+                    default:
+                        // 4. For YP only react on message types A, B, C ('callForProposal', 'proposal' and 'acceptProposal')
+                        if (['callForProposal', 'proposal', 'acceptProposal'].includes(messageType)) {
+                            // 4.1 Send every such message to UI
+                            this.sendEvent(data, messageType, messageParams);
+                        }
+                }
+            }
             // else if (this.listenAddress && address === this.listenAddress) {
             // A message has been received through the ServiceEndpoint of the DID
             //TODO: Migrate
