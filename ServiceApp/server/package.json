@@ -28,6 +28,7 @@
         "@iota/identity-wasm": "^0.3.11",
         "@iota/industry_4.0_language": "1.0.6",
         "@iota/mam.js": "github:iotaledger/mam.js",
+        "@iota/wallet": "^1.0.5",
         "axios": "^0.21.1",
         "body-parser": "^1.19.0",
         "bs58": "^4.0.1",

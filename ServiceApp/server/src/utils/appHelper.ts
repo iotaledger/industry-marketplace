@@ -18,7 +18,8 @@ import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHe
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { fundWallet, generateNewWallet, getBalance } from './walletHelper';
+// import { fundWallet, generateNewWallet, getBalance, generateNewAccount, getBalanceC2, fundWalletC2 } from './walletHelper';
+import { fundWallet, getBalance, generateNewAccount } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -127,36 +128,64 @@ export class AppHelper {
                 // Set TangleCommunicationService Address
                 ServiceFactory.get<MqttService>('mqtt').setAddressToListenTo(user.address);
 
-                const wallet: any = await readData('wallet');
+                // const wallet: any = await readData('wallet');
+                const wallet: any = await readData('walletC2');
                 let newWallet;
                 if (!wallet) {
-                    newWallet = generateNewWallet();
-                    await writeData('wallet', newWallet);
+                    // newWallet = generateNewWallet();
+                    newWallet = await generateNewAccount(user.role);
+                    await writeData('walletC2', newWallet);
                 }
 
                 res.json({
                     ...user,
-                    balance: (wallet ? await getBalance(wallet.address) : 0),
+                    // balance: (wallet ? await getBalance(wallet.address) : 0),
+                    balance: (wallet ? await getBalance(wallet.alias) : 0),
                     wallet: (wallet ? wallet.address : newWallet.address)
                 });
             } catch (error) {
                 console.log('get user error', error);
-                res.send({ error });
+                res.send({ error: error });
             }
         });
 
+        // app.get('/wallet', async (req, res) => {
+        //     try {
+        //         const newWallet = generateNewWallet();
+        //         console.log('Initiated new wallet generation', newWallet);
+        //         const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+        //         const data = response.data;
+        //         if (data.success) {
+        //             const balance = await getBalance(newWallet.address);
+        //             await writeData('wallet', { ...newWallet, balance });
+        //         }
+        //         console.log('Finished new wallet generation', newWallet);
+        //         res.send({ newWallet });
+        //     } catch (error) {
+        //         console.log('fund wallet error', error);
+        //         res.send({ error: 'fund wallet error' });
+        //     }
+        // });
+
         app.get('/wallet', async (req, res) => {
             try {
-                const newWallet = generateNewWallet();
-                console.log('Initiated new wallet generation', newWallet);
-                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
-                const data = response.data;
-                if (data.success) {
-                    const balance = await getBalance(newWallet.address);
-                    await writeData('wallet', { ...newWallet, balance });
+                // let user: any = await readData('user');
+                // const newWalletC2 = await generateNewAccount(user.alias);
+                const { alias } = req.body;
+                console.log('alias', alias);
+                const newWalletC2 = await generateNewAccount(alias);
+                console.log('Initiated new wallet generation', newWalletC2);
+                
+                const response = await axios.get(`${config.faucetC2}?address=${newWalletC2.address}`);
+                if (response && response.status === 200) {
+                    // wait ~9sec for balance to be available to be read and written to db
+                    // I think this is an ugly fix so it's temporary?
+                    await new Promise(r => setTimeout(r, 9000));
+                    const balance = await getBalance(newWalletC2.alias);
+                    await writeData('walletC2', { ...newWalletC2, balance });
                 }
-                console.log('Finished new wallet generation', newWallet);
-                res.send({ newWallet });
+                console.log('Finished new wallet generation', newWalletC2);
+                res.send({ newWalletC2 });
             } catch (error) {
                 console.log('fund wallet error', error);
                 res.send({ error: 'fund wallet error' });
@@ -323,7 +352,8 @@ export class AppHelper {
                 interface IWallet {
                     address?: string;
                 }
-                const wallet: IWallet = await readData('wallet');
+                // const wallet: IWallet = await readData('wallet');
+                const wallet: IWallet = await readData('walletC2');
                 const { address } = wallet;
 
                 const user: any = await readData('user');

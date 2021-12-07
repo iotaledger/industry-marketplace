@@ -27,9 +27,16 @@
     ],
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
+    "faucetC2": "https://faucet.testnet.chrysalis2.com/api",
     "faucetAmount": 5000,
     "provider": "https://api.lb-1.h.chrysalis-devnet.iota.cafe/",
     "networkType": "dev",
+    "providers": [ 
+        "https://nodes.devnet.iota.org:443"
+    ],
+    "providersC2": [
+        "https://api.lb-0.testnet.chrysalis2.com"
+    ],
     "security": 2,
     "depth": 3,
     "minWeightMagnitude": 9,
