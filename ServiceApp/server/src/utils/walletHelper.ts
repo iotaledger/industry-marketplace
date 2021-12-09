@@ -3,7 +3,7 @@
 import { AccountManager, SignerType, RemainderValueStrategy } from '@iota/wallet';
 import axios from 'axios';
 // import { depth, faucet, faucetC2, faucetAmount, minWeightMagnitude, security, providersC2 } from '../config.json';
-import { faucetC2, providersC2 } from '../config.json';
+import { faucetC2, providersC2 } from '../config.json'; //TODO: Merge providersC2, provider with my previously introduced config values
 // import { ServiceFactory } from '../factories/serviceFactory';
 import { readData, writeData } from './databaseHelper';
 // import { generateSeed } from './iotaHelper';
