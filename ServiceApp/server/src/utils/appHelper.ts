@@ -171,7 +171,8 @@ export class AppHelper {
             try {
                 // let user: any = await readData('user');
                 // const newWalletC2 = await generateNewAccount(user.alias);
-                const { alias } = req.body;
+                //const { alias } = req.body; //TODO: Dont understand where the alias would come from?
+                const alias = "asdf"
                 console.log('alias', alias);
                 const newWalletC2 = await generateNewAccount(alias);
                 console.log('Initiated new wallet generation', newWalletC2);
