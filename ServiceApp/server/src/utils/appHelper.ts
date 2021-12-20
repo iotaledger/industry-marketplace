@@ -4,6 +4,7 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import crypto from 'crypto';
 import { VerifiablePresentation } from 'identity_ts/typings/src';
 import packageJson from '../../package.json';
 import config from '../config.json';
@@ -19,7 +20,7 @@ import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
 // import { fundWallet, generateNewWallet, getBalance, generateNewAccount, getBalanceC2, fundWalletC2 } from './walletHelper';
-import { fundWallet, getBalance, generateNewAccount } from './walletHelper';
+import { fundWallet, getBalance, generateNewAccount, awaitBalanceChange } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -172,21 +173,25 @@ export class AppHelper {
                 // let user: any = await readData('user');
                 // const newWalletC2 = await generateNewAccount(user.alias);
                 //const { alias } = req.body; //TODO: Dont understand where the alias would come from?
-                const alias = "asdf"
+                const alias =  crypto.randomBytes(20).toString('hex')
                 console.log('alias', alias);
                 const newWalletC2 = await generateNewAccount(alias);
                 console.log('Initiated new wallet generation', newWalletC2);
-                
-                const response = await axios.get(`${config.faucetC2}?address=${newWalletC2.address}`);
-                if (response && response.status === 200) {
+                const faucetRequestBody = {address: newWalletC2.address, waitingRequests: 1}
+                const response = await axios.post(config.faucetC2, faucetRequestBody)
+
+                if (response && response.status === 202) { //TODO: Is now 202, as it is asynchronous
                     // wait ~9sec for balance to be available to be read and written to db
                     // I think this is an ugly fix so it's temporary?
-                    await new Promise(r => setTimeout(r, 9000));
-                    const balance = await getBalance(newWalletC2.alias);
+                    const balance = await awaitBalanceChange(newWalletC2.manager);
                     await writeData('walletC2', { ...newWalletC2, balance });
+                    console.log('Finished new wallet generation', newWalletC2);
+                    return res.send({ newWalletC2 });
                 }
-                console.log('Finished new wallet generation', newWalletC2);
-                res.send({ newWalletC2 });
+                else {
+                    res.send({ error: 'fund wallet error: Error during communication with Faucet' });
+                }
+                
             } catch (error) {
                 console.log('fund wallet error', error);
                 res.send({ error: 'fund wallet error' });

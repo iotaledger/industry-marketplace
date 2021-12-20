@@ -55,22 +55,22 @@ export const fundWallet = async () => {
 
 export const generateNewAccount = async (alias) => {
     try {
-    const manager = new AccountManager({
-        storagePath: `./${alias.toLowerCase()}-database`,
-    })
+        const manager = new AccountManager({
+            storagePath: `./${alias.toLowerCase()}-database`,
+        })
 
-    //TODO: password for every alias (SR || SP)?
-    manager.setStrongholdPassword(process.env.SH_PASSWORD);
-    manager.storeMnemonic(SignerType.Stronghold);
+        //TODO: password for every alias (SR || SP)?
+        manager.setStrongholdPassword(process.env.SH_PASSWORD);
+        manager.storeMnemonic(SignerType.Stronghold);
 
-    const account = manager.createAccount({
-        clientOptions: { node: `${providersC2}`, localPow: false },
-        alias: alias,
-    })
-    alias = account.alias();
-    const address = account.latestAddress()
+        const account = manager.createAccount({
+            clientOptions: { node: `${providersC2}`, localPow: false },
+            alias: alias,
+        })
+        alias = account.alias();
+        const address = account.latestAddress()
 
-    return { alias: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex };
+        return { alias: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex, manager: manager };
     } catch (error) {
         console.error('generateNewAccount error', error);
         return {};
@@ -99,7 +99,7 @@ export const getBalance = async alias => {
         }
         const manager = new AccountManager({
             storagePath: `./${alias.toLowerCase()}-database`
-        })    
+        })
         const account = manager.getAccount(alias);
         console.log('Account:', account.alias());
         const synced = await account.sync();
@@ -114,6 +114,30 @@ export const getBalance = async alias => {
     }
 };
 
+export const awaitBalanceChange = async manager => {
+    return new Promise((resolve, reject) => {
+        const callback = function (err, data) {
+            if (err) {
+                console.error(err);
+                manager.removeEventListeners('BalanceChange');
+                reject(err)
+            } else {
+                const parsedData = JSON.parse(data);
+                manager.removeEventListeners('BalanceChange');
+                resolve(parsedData.balanceChange.received)
+            }
+        };
+
+        manager.listen('BalanceChange', callback);
+
+        // Event listeners would be removed after 30 seconds.
+        setTimeout(() => {
+            manager.removeEventListeners('BalanceChange');
+            reject('Faucet did not send funds. Event listeners removed')
+        }, 30000);
+    });
+
+}
 // const transferFunds = async (wallet, totalAmount, transfers) => {
 //     try {
 //         const { address, keyIndex, seed } = wallet;
@@ -164,7 +188,7 @@ export const getBalance = async alias => {
 //                             // Once the payment is confirmed fetch the real wallet balance and update the wallet again
 //                             const newBalance = await getBalance(remainderAddress);
 //                             await updateWallet(seed, remainderAddress, keyIndex + 1, newBalance);
-                            
+
 //                             resolve(transactions);
 //                         })
 //                         .catch(error => {
@@ -203,16 +227,16 @@ export const transferFunds = async (alias, receivingAddress, totalAmount) => {
         if (balance < totalAmount) {
             throw new Error(`Insufficient balance: ${balance}. Needed: ${totalAmount}`);
         }
-	    const nodeResponse = await account.send(
-		receivingAddress,
-		totalAmount,
-        {remainderValueStrategy: RemainderValueStrategy.reuseAddress()}
-    )
+        const nodeResponse = await account.send(
+            receivingAddress,
+            totalAmount,
+            { remainderValueStrategy: RemainderValueStrategy.reuseAddress() }
+        )
         console.log('nodeResponse', nodeResponse);
         const newBalance = await getBalance(alias);
         const address = account.latestAddress();
         await updateWallet(alias, address.address, address.keyIndex, newBalance);
-    return nodeResponse;
+        return nodeResponse;
     } catch (error) {
         console.error('transferFunds', error);
         return error;
@@ -238,7 +262,7 @@ const updateWallet = async (alias, address, keyIndex, balance) => {
 //         }
 
 //         const wallet: IWallet = await readData('wallet');
-    
+
 //         if (!wallet) {
 //             console.log('processPayment error. No Wallet');
 //             return null;
@@ -271,7 +295,7 @@ const updateWallet = async (alias, address, keyIndex, balance) => {
 //         console.log('processPayment paymentQueue', paymentQueue);
 //         paymentQueue.forEach(({ value }) => totalAmount += value);
 //         console.log('processPayment', totalAmount, wallet);
-        
+
 //         if (paymentQueue.length === 0 || totalAmount === 0) {
 //             return null;
 //         }
@@ -298,7 +322,7 @@ export const processPayment = async () => {
         }
 
         const wallet: IWallet = await readData('walletC2');
-    
+
         if (!wallet) {
             console.log('processPayment error. No Wallet');
             return null;
@@ -312,20 +336,20 @@ export const processPayment = async () => {
             try {
                 const response = await axios.get(`${faucetC2}?address=${newWallet.address}`);
                 if (response && response.status === 200) {
-                // wait ~9sec for balance to be available to be read and written to db
-                // I think this is an ugly fix so it's temporary?
-                await new Promise(r => setTimeout(r, 9000));
-                const balance = await getBalance(newWallet.alias);
-                await writeData('walletC2', { ...newWallet, balance });
+                    // wait ~9sec for balance to be available to be read and written to db
+                    // I think this is an ugly fix so it's temporary?
+                    await new Promise(r => setTimeout(r, 9000));
+                    const balance = await getBalance(newWallet.alias);
+                    await writeData('walletC2', { ...newWallet, balance });
+                    return null;
+                }
+            } catch (error) {
+                console.log('fund wallet error', error);
+                throw new Error('Wallet funding error');
                 return null;
-                } 
-        } catch (error) {
-            console.log('fund wallet error', error);
-            throw new Error('Wallet funding error');
+            }
+            console.log('processPayment funding new wallet', newWallet);
             return null;
-        }
-        console.log('processPayment funding new wallet', newWallet);
-        return null;
         }
 
         let totalAmount = 0;
@@ -333,7 +357,7 @@ export const processPayment = async () => {
         console.log('processPayment paymentQueue', paymentQueue);
         paymentQueue.forEach(({ value }) => totalAmount += value);
         console.log('processPayment', totalAmount, wallet);
-        
+
         if (paymentQueue.length === 0 || totalAmount === 0) {
             return null;
         }

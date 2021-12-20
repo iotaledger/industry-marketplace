@@ -101,7 +101,7 @@ class Dashboard extends React.Component {
 
   async sendMessage(endpoint, packet) {
     this.setState({ loading: true });
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
       // Call server
       const data = await api.post(endpoint, packet);
       // Check success
@@ -114,7 +114,9 @@ class Dashboard extends React.Component {
         if (endpoint !== 'rejectProposal') {
           await this.newMessage({ data: data.request }, true);
         }        
-      } else if (data.error) {
+      } else if (data.error) { //TODO: Getting really weird erros here in the workflow
+        //reject(data.error)  
+        console.log(data.error)
         this.setState({
           error: data.error,
           loading: false,
