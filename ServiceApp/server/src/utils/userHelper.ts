@@ -5,7 +5,7 @@ import { faucetC2 } from '../config.json';
 import { createNewUserC2 } from './credentialHelper';
 import { writeData, readData } from './databaseHelper';
 // import { generateNewWallet, getBalance, generateNewAccount, getBalanceC2 } from './walletHelper.js';
-import { getBalance, generateNewAccount } from './walletHelper.js';
+import { getBalance, generateNewAccount, fundWallet } from './walletHelper.js';
 
 const createUser = async () => {
     try {
@@ -36,14 +36,15 @@ const createNewWallet = async () => {
     console.log('Creating wallet...');
     const user: any = await readData('user');
     const wallet = await generateNewAccount(user.role);
-    const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
-    if (response && response.status === 200) {
-        // wait ~9sec for balance to be available to be read and written to db
-        // I think this is an ugly fix so it's temporary?
-        await new Promise(r => setTimeout(r, 9000));
-        const balance = await getBalance(wallet.alias);
-        await writeData('walletC2', { ...wallet, balance });
-    }
+    await fundWallet(wallet.alias);
+    // const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
+    // if (response && response.status === 200) {
+    //     // wait ~9sec for balance to be available to be read and written to db
+    //     // I think this is an ugly fix so it's temporary?
+    //     await new Promise(r => setTimeout(r, 9000));
+    //     const balance = await getBalance(wallet.alias);
+    //     await writeData('walletC2', { ...wallet, balance });
+    // }
 };
 
 const argv = yargs

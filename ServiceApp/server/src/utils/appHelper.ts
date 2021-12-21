@@ -183,7 +183,7 @@ export class AppHelper {
                 if (response && response.status === 202) { //TODO: Is now 202, as it is asynchronous
                     // wait ~9sec for balance to be available to be read and written to db
                     // I think this is an ugly fix so it's temporary?
-                    const balance = await awaitBalanceChange(newWalletC2.manager);
+                    const balance = await awaitBalanceChange(newWalletC2.alias);
                     await writeData('walletC2', { ...newWalletC2, balance });
                     console.log('Finished new wallet generation', newWalletC2);
                     return res.send({ newWalletC2 });

@@ -26,14 +26,21 @@ require('dotenv').config();
 //     }
 // };
 
-export const fundWallet = async () => {
+export const fundWallet = async (alias = undefined) => {
     try {
-        const userWallet: any = await readData('walletC2');
+        let userWallet: any;
+        if (typeof(alias) != "undefined"){
+            userWallet = await readData('walletC2', alias);
+        }
+        else{
+            userWallet = await readData('walletC2');
+        }
+
         const faucetRequestBody = { address: userWallet.address, waitingRequests: 1 };
         const response = await axios.post(config.faucetC2, faucetRequestBody);
 
         if (response && response.status === 202) { // Is now 202, as it is asynchronous
-            const balance = await awaitBalanceChange(userWallet.manager);
+            const balance = await awaitBalanceChange(userWallet.alias);
             await writeData('walletC2', { ...userWallet, balance });
             console.log('Finished wallet funding', userWallet);
         }
@@ -74,7 +81,7 @@ export const generateNewAccount = async (alias) => {
         alias = account.alias();
         const address = account.latestAddress()
 
-        return { alias: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex, manager: manager };
+        return { alias: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex};
     } catch (error) {
         console.error('generateNewAccount error', error);
         return {};
@@ -118,8 +125,13 @@ export const getBalance = async alias => {
     }
 };
 
-export const awaitBalanceChange = async manager => {
+export const awaitBalanceChange = async alias => {
     return new Promise((resolve, reject) => {
+        const manager = new AccountManager({
+            storagePath: `./${alias.toLowerCase()}-database`
+        });
+        manager.setStrongholdPassword(process.env.SH_PASSWORD);
+        
         const callback = function (err, data) {
             if (err) {
                 console.error(err);
@@ -338,7 +350,7 @@ export const processPayment = async () => {
             //const newWallet = await generateNewAccount(wallet.alias);
             //console.log('processPayment generating new wallet', newWallet);
             try {
-                fundWallet()
+                fundWallet(wallet.alias)
                 console.log('processPayment funding wallet again');
             } catch (error) {
                 console.log('fund wallet error', error);
