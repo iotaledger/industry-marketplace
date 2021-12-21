@@ -8,6 +8,7 @@ import { faucetC2, providersC2 } from '../config.json'; //TODO: Merge providersC
 import { readData, writeData } from './databaseHelper';
 // import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
+import config from '../config.json';
 require('dotenv').config();
 
 // export const fundWallet = async () => {
@@ -28,13 +29,16 @@ require('dotenv').config();
 export const fundWallet = async () => {
     try {
         const userWallet: any = await readData('walletC2');
-        const response = await axios.get(`${faucetC2}?address=${userWallet.address}`);
-        if (response && response.status === 200) {
-            // wait ~9sec for balance to be available to be read and written to db
-            // I think this is an ugly fix so it's temporary?
-            await new Promise(r => setTimeout(r, 9000));
-            const balance = await getBalance(userWallet.alias);
+        const faucetRequestBody = { address: userWallet.address, waitingRequests: 1 };
+        const response = await axios.post(config.faucetC2, faucetRequestBody);
+
+        if (response && response.status === 202) { // Is now 202, as it is asynchronous
+            const balance = await awaitBalanceChange(userWallet.manager);
             await writeData('walletC2', { ...userWallet, balance });
+            console.log('Finished wallet funding', userWallet);
+        }
+        else {
+            throw new Error("Wallet funding error, issues with faucet communication.");
         }
     } catch (error) {
         console.log('fund wallet error', error);
@@ -331,42 +335,45 @@ export const processPayment = async () => {
         const walletBalance = await getBalance(wallet.alias);
         console.log('processPayment check wallet', wallet.address, walletBalance);
         if (walletBalance === 0) {
-            const newWallet = await generateNewAccount(wallet.alias);
-            console.log('processPayment generating new wallet', newWallet);
+            //const newWallet = await generateNewAccount(wallet.alias);
+            //console.log('processPayment generating new wallet', newWallet);
             try {
-                const response = await axios.get(`${faucetC2}?address=${newWallet.address}`);
-                if (response && response.status === 200) {
-                    // wait ~9sec for balance to be available to be read and written to db
-                    // I think this is an ugly fix so it's temporary?
-                    await new Promise(r => setTimeout(r, 9000));
-                    const balance = await getBalance(newWallet.alias);
-                    await writeData('walletC2', { ...newWallet, balance });
-                    return null;
-                }
+                fundWallet()
+                console.log('processPayment funding wallet again');
             } catch (error) {
                 console.log('fund wallet error', error);
                 throw new Error('Wallet funding error');
                 return null;
             }
-            console.log('processPayment funding new wallet', newWallet);
+            console.log('processPayment funding new wallet', wallet);
             return null;
         }
 
         let totalAmount = 0;
+        let paymentDict:any = {};
         const paymentQueue: any = await processPaymentQueue();
         console.log('processPayment paymentQueue', paymentQueue);
-        paymentQueue.forEach(({ value }) => totalAmount += value);
+
+        //TODO: Needs testing. I think paymentQueue can contain multiple addresses, so we need to separate for the total payment
+        paymentQueue.forEach(({ address,value }) => {
+            if (typeof paymentDict[address] === 'undefined') {
+                paymentDict[address] = value;
+            }
+            else{
+                paymentDict[address] += value;
+            }
+            totalAmount += value;
+        });
         console.log('processPayment', totalAmount, wallet);
 
         if (paymentQueue.length === 0 || totalAmount === 0) {
             return null;
         }
 
-        return await transferFunds(
-            wallet,
-            totalAmount,
-            paymentQueue
-        );
+        for (const [address, value] of Object.entries(paymentQueue)) {
+            await transferFunds(wallet.alias, address, value);
+        }
+
     } catch (error) {
         console.error('transferFunds catch', error);
         return error;
