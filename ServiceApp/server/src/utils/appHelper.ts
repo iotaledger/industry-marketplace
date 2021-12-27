@@ -134,14 +134,16 @@ export class AppHelper {
                 let newWallet;
                 if (!wallet) {
                     // newWallet = generateNewWallet();
-                    newWallet = await generateNewAccount(user.role);
+                    const alias =  crypto.randomBytes(20).toString('hex')
+                    newWallet = await generateNewAccount(alias);
                     await writeData('walletC2', newWallet);
+                    await fundWallet(alias);
                 }
 
                 res.json({
                     ...user,
                     // balance: (wallet ? await getBalance(wallet.address) : 0),
-                    balance: (wallet ? await getBalance(wallet.alias) : 0),
+                    balance: (wallet ? await getBalance(wallet.id) : 0),
                     wallet: (wallet ? wallet.address : newWallet.address)
                 });
             } catch (error) {
@@ -176,21 +178,9 @@ export class AppHelper {
                 const alias =  crypto.randomBytes(20).toString('hex')
                 console.log('alias', alias);
                 const newWalletC2 = await generateNewAccount(alias);
+                await writeData('walletC2', newWalletC2);
                 console.log('Initiated new wallet generation', newWalletC2);
-                const faucetRequestBody = {address: newWalletC2.address, waitingRequests: 1}
-                const response = await axios.post(config.faucetC2, faucetRequestBody)
-
-                if (response && response.status === 202) { //TODO: Is now 202, as it is asynchronous
-                    // wait ~9sec for balance to be available to be read and written to db
-                    // I think this is an ugly fix so it's temporary?
-                    const balance = await awaitBalanceChange(newWalletC2.alias);
-                    await writeData('walletC2', { ...newWalletC2, balance });
-                    console.log('Finished new wallet generation', newWalletC2);
-                    return res.send({ newWalletC2 });
-                }
-                else {
-                    res.send({ error: 'fund wallet error: Error during communication with Faucet' });
-                }
+                fundWallet(newWalletC2.id);
                 
             } catch (error) {
                 console.log('fund wallet error', error);

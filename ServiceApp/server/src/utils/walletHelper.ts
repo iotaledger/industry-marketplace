@@ -8,7 +8,6 @@ import { faucetC2, providersC2 } from '../config.json'; //TODO: Merge providersC
 import { readData, writeData } from './databaseHelper';
 // import { generateSeed } from './iotaHelper';
 import { processPaymentQueue } from './paymentQueueHelper';
-import config from '../config.json';
 require('dotenv').config();
 
 // export const fundWallet = async () => {
@@ -26,21 +25,21 @@ require('dotenv').config();
 //     }
 // };
 
-export const fundWallet = async (alias = undefined) => {
+export const fundWallet = async (id = undefined) => {
     try {
         let userWallet: any;
-        if (typeof(alias) != "undefined"){
-            userWallet = await readData('walletC2', alias);
+        if (typeof(id) != "undefined"){
+            userWallet = await readData('walletC2', id);
         }
         else{
             userWallet = await readData('walletC2');
         }
 
         const faucetRequestBody = { address: userWallet.address, waitingRequests: 1 };
-        const response = await axios.post(config.faucetC2, faucetRequestBody);
+        const response = await axios.post(faucetC2, faucetRequestBody);
 
         if (response && response.status === 202) { // Is now 202, as it is asynchronous
-            const balance = await awaitBalanceChange(userWallet.alias);
+            const balance = await awaitBalanceChange(userWallet.id);
             await writeData('walletC2', { ...userWallet, balance });
             console.log('Finished wallet funding', userWallet);
         }
@@ -67,7 +66,7 @@ export const fundWallet = async (alias = undefined) => {
 export const generateNewAccount = async (alias) => {
     try {
         const manager = new AccountManager({
-            storagePath: `./${alias.toLowerCase()}-database`,
+            storagePath: `./wallet-db/${alias.toLowerCase()}-database`,
         })
 
         //TODO: password for every alias (SR || SP)?
@@ -81,7 +80,7 @@ export const generateNewAccount = async (alias) => {
         alias = account.alias();
         const address = account.latestAddress()
 
-        return { alias: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex};
+        return { id: alias, address: address.address, balance: address.balance, keyIndex: address.keyIndex};
     } catch (error) {
         console.error('generateNewAccount error', error);
         return {};
@@ -109,7 +108,7 @@ export const getBalance = async alias => {
             return 0;
         }
         const manager = new AccountManager({
-            storagePath: `./${alias.toLowerCase()}-database`
+            storagePath: `./wallet-db/${alias.toLowerCase()}-database`
         })
         const account = manager.getAccount(alias);
         console.log('Account:', account.alias());
@@ -128,7 +127,7 @@ export const getBalance = async alias => {
 export const awaitBalanceChange = async alias => {
     return new Promise((resolve, reject) => {
         const manager = new AccountManager({
-            storagePath: `./${alias.toLowerCase()}-database`
+            storagePath: `./wallet-db/${alias.toLowerCase()}-database`
         });
         manager.setStrongholdPassword(process.env.SH_PASSWORD);
         
@@ -150,7 +149,7 @@ export const awaitBalanceChange = async alias => {
         setTimeout(() => {
             manager.removeEventListeners('BalanceChange');
             reject('Faucet did not send funds. Event listeners removed')
-        }, 30000);
+        }, 60000);
     });
 
 }
@@ -229,7 +228,7 @@ export const transferFunds = async (alias, receivingAddress, totalAmount) => {
             console.error('Invalid account.');
         }
         const manager = new AccountManager({
-            storagePath: `./${alias.toLowerCase()}-database`
+            storagePath: `./wallet-db/${alias.toLowerCase()}-database`
         })
         manager.setStrongholdPassword(process.env.SH_PASSWORD);
 
@@ -331,7 +330,7 @@ export const processPayment = async () => {
     try {
         console.log('processPayment start');
         interface IWallet {
-            alias?: string;
+            id?: string;
             address?: string;
             balance?: number;
             keyIndex?: number;
@@ -344,13 +343,13 @@ export const processPayment = async () => {
             return null;
         }
 
-        const walletBalance = await getBalance(wallet.alias);
+        const walletBalance = await getBalance(wallet.id);
         console.log('processPayment check wallet', wallet.address, walletBalance);
         if (walletBalance === 0) {
             //const newWallet = await generateNewAccount(wallet.alias);
             //console.log('processPayment generating new wallet', newWallet);
             try {
-                fundWallet(wallet.alias)
+                fundWallet(wallet.id)
                 console.log('processPayment funding wallet again');
             } catch (error) {
                 console.log('fund wallet error', error);
@@ -383,7 +382,7 @@ export const processPayment = async () => {
         }
 
         for (const [address, value] of Object.entries(paymentQueue)) {
-            await transferFunds(wallet.alias, address, value);
+            await transferFunds(wallet.id, address, value);
         }
 
     } catch (error) {

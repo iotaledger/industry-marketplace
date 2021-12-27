@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import format from 'date-fns/format'
 import { trytesToAscii } from '@iota/converter';
 import { mamFetch } from '@iota/mam.js';
-import { composeAPI } from '@iota/client-load-balancer';
 import { ServiceFactory } from '../../factories/serviceFactory';
 
 const SensorCard = ({ schema, packet }) => {
@@ -26,10 +25,9 @@ const SensorCard = ({ schema, packet }) => {
 
       return new Promise(async (resolve, reject) => {
         try {
-          const loadBalancerSettings = ServiceFactory.get('load-balancer-settings');
-          const iota = composeAPI(loadBalancerSettings);
+          const node = ServiceFactory.get('node');
 
-          const result = await mamFetch(iota, packet.root, 'restricted', packet.sidekey);
+          const result = await mamFetch(node, packet.root, 'restricted', packet.sidekey);
           const newData = await JSON.parse(trytesToAscii(result.message));
           setSensorData(newData);
           setTimeout(() => toggleVisible(true), 300);

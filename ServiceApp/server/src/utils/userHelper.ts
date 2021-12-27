@@ -6,6 +6,7 @@ import { createNewUserC2 } from './credentialHelper';
 import { writeData, readData } from './databaseHelper';
 // import { generateNewWallet, getBalance, generateNewAccount, getBalanceC2 } from './walletHelper.js';
 import { getBalance, generateNewAccount, fundWallet } from './walletHelper.js';
+import crypto from 'crypto';
 
 const createUser = async () => {
     try {
@@ -34,15 +35,16 @@ const createUser = async () => {
 
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    const user: any = await readData('user');
-    const wallet = await generateNewAccount(user.role);
-    await fundWallet(wallet.alias);
+    const alias =  crypto.randomBytes(20).toString('hex');
+    const wallet = await generateNewAccount(alias);
+    await writeData('walletC2', wallet);
+    await fundWallet(wallet.id);
     // const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
     // if (response && response.status === 200) {
     //     // wait ~9sec for balance to be available to be read and written to db
     //     // I think this is an ugly fix so it's temporary?
     //     await new Promise(r => setTimeout(r, 9000));
-    //     const balance = await getBalance(wallet.alias);
+    //     const balance = await getBalance(wallet.id);
     //     await writeData('walletC2', { ...wallet, balance });
     // }
 };

@@ -31,9 +31,6 @@
     "faucetAmount": 5000,
     "provider": "https://api.lb-1.h.chrysalis-devnet.iota.cafe/",
     "networkType": "dev",
-    "providers": [ 
-        "https://nodes.devnet.iota.org:443"
-    ],
     "providersC2": [
         "https://api.lb-0.h.chrysalis-devnet.iota.cafe/",
         "https://api.lb-1.h.chrysalis-devnet.iota.cafe/"
