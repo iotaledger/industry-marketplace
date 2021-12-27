@@ -4,19 +4,23 @@ import axios from 'axios';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import crypto from 'crypto';
+import { VerifiablePresentation } from 'identity_ts/typings/src';
 import packageJson from '../../package.json';
 import config from '../config.json';
 import { ServiceFactory } from '../factories/serviceFactory';
-import { ZmqService } from '../services/zmqService';
-import { createAuthenticationPresentation, createNewUser } from './credentialHelper';
+import { MqttService } from '../services/mqttService';
+import { createAuthenticationPresentationC2, createNewUserC2, createOwnershipProof } from './credentialHelper';
 import { readData, writeData } from './databaseHelper';
 import { encryptWithReceiversPublicKey } from './encryptionHelper';
+import { proveOwnership } from './identityAuthenticationHelper';
 import { publish } from './mamHelper';
 import { createHelperClient, unsubscribeHelperClient, zmqToMQTT } from './mqttHelper';
 import { addToPaymentQueue } from './paymentQueueHelper';
 import { buildTag } from './tagHelper';
 import { sendMessage } from './transactionHelper';
-import { fundWallet, generateNewWallet, getBalance } from './walletHelper';
+// import { fundWallet, generateNewWallet, getBalance, generateNewAccount, getBalanceC2, fundWalletC2 } from './walletHelper';
+import { fundWallet, getBalance, generateNewAccount, awaitBalanceChange } from './walletHelper';
 
 /**
  * Class to help with expressjs routing.
@@ -116,45 +120,68 @@ export class AppHelper {
                 let user: any = await readData('user');
                 if (!user || !user.id) {
                     // Creating a NEW Identity following the DID standard
-                    const name =  user && user.name ? user.name : '';
-                    const role =  user && user.role ? user.role : '';
+                    const name = user && user.name ? user.name : '';
+                    const role = user && user.role ? user.role : '';
                     const location = user && user.location ? user.location : '';
-                    user = createNewUser(name, role, location);
+                    user = await createNewUserC2(name, role, location);
                 }
 
                 // Set TangleCommunicationService Address
-                ServiceFactory.get<ZmqService>('zmq').setAddressToListenTo(user.address);
+                ServiceFactory.get<MqttService>('mqtt').setAddressToListenTo(user.address);
 
-                const wallet: any = await readData('wallet');
+                // const wallet: any = await readData('wallet');
+                const wallet: any = await readData('walletC2');
                 let newWallet;
                 if (!wallet) {
-                    newWallet = generateNewWallet();
-                    await writeData('wallet', newWallet);
+                    // newWallet = generateNewWallet();
+                    const alias =  crypto.randomBytes(20).toString('hex')
+                    newWallet = await generateNewAccount(alias);
+                    await writeData('walletC2', newWallet);
+                    await fundWallet(alias);
                 }
 
                 res.json({
                     ...user,
-                    balance: (wallet ? await getBalance(wallet.address) : 0),
+                    // balance: (wallet ? await getBalance(wallet.address) : 0),
+                    balance: (wallet ? await getBalance(wallet.id) : 0),
                     wallet: (wallet ? wallet.address : newWallet.address)
                 });
             } catch (error) {
                 console.log('get user error', error);
-                res.send({ error });
+                res.send({ error: error });
             }
         });
 
+        // app.get('/wallet', async (req, res) => {
+        //     try {
+        //         const newWallet = generateNewWallet();
+        //         console.log('Initiated new wallet generation', newWallet);
+        //         const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
+        //         const data = response.data;
+        //         if (data.success) {
+        //             const balance = await getBalance(newWallet.address);
+        //             await writeData('wallet', { ...newWallet, balance });
+        //         }
+        //         console.log('Finished new wallet generation', newWallet);
+        //         res.send({ newWallet });
+        //     } catch (error) {
+        //         console.log('fund wallet error', error);
+        //         res.send({ error: 'fund wallet error' });
+        //     }
+        // });
+
         app.get('/wallet', async (req, res) => {
             try {
-                const newWallet = generateNewWallet();
-                console.log('Initiated new wallet generation', newWallet);
-                const response = await axios.get(`${config.faucet}?address=${newWallet.address}&amount=${config.faucetAmount}`);
-                const data = response.data;
-                if (data.success) {
-                    const balance = await getBalance(newWallet.address);
-                    await writeData('wallet', { ...newWallet, balance });
-                }
-                console.log('Finished new wallet generation', newWallet);
-                res.send({ newWallet });
+                // let user: any = await readData('user');
+                // const newWalletC2 = await generateNewAccount(user.alias);
+                //const { alias } = req.body; //TODO: Dont understand where the alias would come from?
+                const alias =  crypto.randomBytes(20).toString('hex')
+                console.log('alias', alias);
+                const newWalletC2 = await generateNewAccount(alias);
+                await writeData('walletC2', newWalletC2);
+                console.log('Initiated new wallet generation', newWalletC2);
+                fundWallet(newWalletC2.id);
+                
             } catch (error) {
                 console.log('fund wallet error', error);
                 res.send({ error: 'fund wallet error' });
@@ -176,11 +203,13 @@ export class AppHelper {
 
                 // 2. Create a DID Authentication Challenge
                 try {
-                    const verifiablePresentation = await createAuthenticationPresentation();
+                    const ownershipProof = await createOwnershipProof();
                     request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
-                } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
-                
+                    request.identification.didOwnershipProof = JSON.stringify(ownershipProof);
+                } 
+                //TODO: Is it correct that we try-catch here? Shouldnt the whole process abort if we fail this?
+                catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
+
                 // 3. Send transaction
                 const user: any = await readData('user');
                 const hash = await sendMessage({ ...request, userName: user.name }, tag);
@@ -189,7 +218,7 @@ export class AppHelper {
                 // 5. Publish first message with payload
                 // 6. Save channel details to DB
                 const channelId = request.frame.conversationId;
-                const mam = await publish(channelId, request);
+                const mam = await publish(channelId, request); //TODO: replace with Audit trail(request)
 
                 console.log('CfP success', hash);
                 res.send({
@@ -217,9 +246,9 @@ export class AppHelper {
 
                 // 2. Sign DID Authentication
                 try {
-                    const verifiablePresentation = await createAuthenticationPresentation();
+                    const verifiablePresentation = await createAuthenticationPresentationC2();
                     request.identification = {};
-                    request.identification.didAuthenticationPresentation = verifiablePresentation.EncodeToJSON();
+                    request.identification.didAuthenticationPresentation = verifiablePresentation.toJSON();
                 } catch (err) { console.log('Unable to create DID Authentication, does this instance have a correct DID? ', err); }
 
                 // 3. Send transaction
@@ -242,6 +271,7 @@ export class AppHelper {
             }
         });
 
+        //TODO: Migrate DID, only encryptWithReceiversKey needs touch
         app.post('/acceptProposal', async (req, res) => {
             try {
                 // 1. Retrieve MAM channel from DB
@@ -253,7 +283,7 @@ export class AppHelper {
 
                 // 4. encrypt sensitive data using the public key from the MAM channel
                 const id = request.frame.receiver.identification.id;
-                mam.secretKey = await encryptWithReceiversPublicKey(id, 'keys-1', mam.secretKey);
+                mam.secretKey = await encryptWithReceiversPublicKey(id, config.keyId, mam.secretKey);
 
                 // 5. Create Tag
                 const submodelId = request.dataElements.submodels[0].identification.id;
@@ -318,7 +348,8 @@ export class AppHelper {
                 interface IWallet {
                     address?: string;
                 }
-                const wallet: IWallet = await readData('wallet');
+                // const wallet: IWallet = await readData('wallet');
+                const wallet: IWallet = await readData('walletC2');
                 const { address } = wallet;
 
                 const user: any = await readData('user');

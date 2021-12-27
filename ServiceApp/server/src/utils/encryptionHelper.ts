@@ -1,15 +1,38 @@
 import crypto from 'crypto';
 import { DID, DIDDocument, ECDSAKeypair } from 'identity_ts';
+import { Network, Document, Client, Config, KeyPair } from '@iota/identity-wasm/node';
+import { provider, networkType } from '../config.json';
 import { readData } from './databaseHelper';
-import { getAvailableProvider } from './iotaHelper';
 
+export const encryptWithReceiversPublicKeyC2 = async (receiverId, keyId, payload) => {
+    // Create a default client configuration from the parent config network.
+    const config = Config.fromNetwork(networkType === "main" ? Network.mainnet() : Network.devnet());
+    const client = Client.fromConfig(config);
+    const resolveRequest = await client.resolve(receiverId);
+    const issuerDIDJSON = resolveRequest.document;
+    const document = Document.fromJSON(issuerDIDJSON)
+
+    //TODO: How do I access the public-key? How would I encrypt with the public key?
+    
+
+    //const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
+    //return encryptedBuffer.toString('base64');
+};
+
+export const decryptWithReceiversPrivateKeyC2 = async (payload) => {
+    const did: any = await readData('did');
+    const messageBuffer = Buffer.from(payload.secretKey, 'base64');
+    //TODO: How to proceed with encryption without ECDSAKeyPair?
+    //return decryptedBuffer.toString();
+};
+
+//TODO: Migrate DID
 export const encryptWithReceiversPublicKey = async (receiverId, keyId, payload) => {
-    const provider = await getAvailableProvider();
     const document = await DIDDocument.readDIDDocument(provider, new DID(receiverId).GetUUID());
     const encryptedBuffer = await document.GetKeypair(keyId).GetEncryptionKeypair().PublicEncrypt(payload);
     return encryptedBuffer.toString('base64');
 };
-
+//TODO: Migrate DID
 export const decryptWithReceiversPrivateKey = async (payload) => {
     const did: any = await readData('did');
     const messageBuffer = Buffer.from(payload.secretKey, 'base64');

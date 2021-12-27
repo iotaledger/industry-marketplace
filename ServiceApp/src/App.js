@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import { FailMode, LinearWalkStrategy, SuccessMode } from '@iota/client-load-balancer';
+import { SingleNodeClient } from '@iota/iota.js';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ServiceFactory } from './factories/serviceFactory';
 import { ApiClient } from './services/apiClient';
@@ -25,30 +24,8 @@ class App extends Component {
         try {
             ServiceFactory.register('api', () => new ApiClient(config.domain));
 
-            let settings = config;
-
-            if (config.onlineNodeConfig) {
-                const response = await axios.get(config.onlineNodeConfigURL);
-                const data = response.data;
-                if (data) {
-                    settings = data;
-                }
-            }
-
-            const loadBalancerSettings = {
-                nodeWalkStrategy: new LinearWalkStrategy(
-                    settings.providers.map(provider => ({ provider }))
-                ),
-                depth: settings.depth,
-                mwm: settings.minWeightMagnitude,
-                successMode: SuccessMode.keep,
-                failMode: FailMode.all,
-                timeoutMs: 10000,
-                failNodeCallback: (node, err) => {
-                    console.log(`Failed node ${node.provider}, ${err.message}`);
-                }
-            };
-            ServiceFactory.register('load-balancer-settings', () => loadBalancerSettings);
+            const node = new SingleNodeClient(config.providersC2[0]);
+            ServiceFactory.register('node', () => node );
 
             this._configuration = config;
 

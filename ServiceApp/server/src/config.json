@@ -1,15 +1,14 @@
 {
-    "zmq": {
-        "endpoint": "tcp://zmq.devnet.iota.org:5556",
-        "prefix": "SEMARKET",
-        "trustedIdentities" : [
-            "did:IOTA:FO9FJMZEQLYMZSBGXUAAKFTPGNYIWRZRPJOFFPRQIFWH9JVBKRJDVQSVXNCYBSQD9ZZVQXVXOTANSKDAK"
-        ]
-    },
+    "prefix": "SEMARKET",
+    "trustedIdentities" : [
+        "did:IOTA:FO9FJMZEQLYMZSBGXUAAKFTPGNYIWRZRPJOFFPRQIFWH9JVBKRJDVQSVXNCYBSQD9ZZVQXVXOTANSKDAK"
+    ],
     "mqttConfig": {
         "domain": "http://localhost:4000",
-        "broker": "mqtt://test.mosquitto.org"
+        "broker": "mqtt.lb-1.h.chrysalis-devnet.iota.cafe:1883"
     },
+    "integrationServiceEndpoint": "https://ensuresec.solutions.iota.org/api/v0.1",
+    "identityAuthenticationEndpoint": "http://localhost:2000",
     "database": "../../../db/marketmanager.sqlite3",
     "maxDistance": 2000,
     "operations": [
@@ -28,9 +27,13 @@
     ],
     "dataRequest": ["0173-1#01-BAF777#004", "0173-1#01-BAF888#004"],
     "faucet": "https://us-central1-datamarket-617e1.cloudfunctions.net/semarket",
+    "faucetC2": "https://faucet.chrysalis-devnet.iota.cafe/api/plugins/faucet/enqueue",
     "faucetAmount": 5000,
-    "providers": [
-        "https://nodes.devnet.iota.org:443"
+    "provider": "https://api.lb-1.h.chrysalis-devnet.iota.cafe/",
+    "networkType": "dev",
+    "providersC2": [
+        "https://api.lb-0.h.chrysalis-devnet.iota.cafe/",
+        "https://api.lb-1.h.chrysalis-devnet.iota.cafe/"
     ],
     "security": 2,
     "depth": 3,
@@ -46,7 +49,5 @@
             "unit": "C"
         }]
     },
-    "keyId": "keys-1",
-    "onlineNodeConfig": false,
-    "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
+    "keyId": "#key"
 }

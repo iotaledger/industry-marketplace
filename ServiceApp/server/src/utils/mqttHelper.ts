@@ -8,7 +8,7 @@ const socket = io(mqttConfig.domain);
 export const createHelperClient = () => {
     return new Promise((resolve, reject) => {
         try {
-            socket.emit('subscribe', { events: ['tx'] });
+            socket.emit('subscribe', { events: ['tx'] }); //TODO: Replace this with 'messages'?
             socket.on('subscribe', data => {
                 resolve(data.subscriptionIds[0]);
             });

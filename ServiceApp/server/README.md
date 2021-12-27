@@ -149,7 +149,7 @@ Returns success or failure notification, tag and transaction hash and MAM inform
 Returns userId, role, gps coordinates, wallet address and wallet balance
 
 
-#### GET /mam/{conversationId}
+#### GET /mam/?conversationId={conversationId}
 
 Returns MAM channel content 
 

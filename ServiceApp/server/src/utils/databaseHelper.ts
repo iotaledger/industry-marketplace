@@ -9,10 +9,13 @@ const db = new sqlite3.Database(
             return console.error('New database Error', error);
         }
         await db.run('CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT, role TEXT, location TEXT, address TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        // await db.run('CREATE TABLE IF NOT EXISTS wallet (seed TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
+        //await db.run('DROP TABLE IF EXISTS walletC2')
+        await db.run('CREATE TABLE IF NOT EXISTS walletC2 (id TEXT PRIMARY KEY, address TEXT, keyIndex INTEGER, balance INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS mam (id TEXT PRIMARY KEY, root TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS data (id TEXT PRIMARY KEY, deviceId TEXT, userId TEXT, schema TEXT)');
-        await db.run('CREATE TABLE IF NOT EXISTS did (root TEXT, privateKey TEXT, keyId TEXT, seed TEXT, mode TEXT, sideKey TEXT, security INTEGER, start INTEGER, count INTEGER, nextCount INTEGER, keyIndex INTEGER, nextRoot TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS did (id TEXT PRIMARY KEY, messageId TEXT, privateKey TEXT, publicKey TEXT, keyId TEXT)');
+        await db.run('CREATE TABLE IF NOT EXISTS trustedDIDAuthentication (id TEXT)');
         await db.run('CREATE TABLE IF NOT EXISTS paymentQueue (address TEXT, value INTEGER)');
         await db.run('CREATE TABLE IF NOT EXISTS credentials (id TEXT, credential TEXT)');
     }
@@ -30,8 +33,12 @@ export const createUser = async ({ id, name = '', role = '', location = '', addr
     await db.run('REPLACE INTO user (id, name, role, location, address) VALUES (?, ?, ?, ?, ?)', [id, name, role, location, address]);
 };
 
-export const createWallet = async ({ seed, address, balance, keyIndex }) => {
-    await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
+// export const createWallet = async ({ seed, address, balance, keyIndex }) => {
+//     await db.run('REPLACE INTO wallet (seed, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [seed, address, balance, keyIndex]);
+// };
+
+export const createWalletC2 = async ({ id, address, balance, keyIndex }) => {
+    await db.run('REPLACE INTO walletC2 (id, address, balance, keyIndex) VALUES (?, ?, ?, ?)', [id, address, balance, keyIndex]);
 };
 
 export const createSensorData = async ({ id, deviceId, userId, schema }) => {
@@ -42,12 +49,13 @@ export const createPaymentQueue = async ({ address, value }) => {
     await db.run('REPLACE INTO paymentQueue (address, value) VALUES (?, ?)', [address, value]);
 };
 
-export const createDID = async ({ root, privateKey, keyId, seed, mode = 'private', sideKey = '', security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
+
+export const createDID = async ({ id, messageId, privateKey, publicKey, keyId }) => {
     const insert = `
         INSERT INTO did (
-        root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, keyIndex, nextRoot)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    await db.run(insert, [root, privateKey, keyId, seed, mode, sideKey, security, start, count, nextCount, index, nextRoot]);
+            id, messageId, privateKey, publicKey, keyId )
+        VALUES (?, ?, ?, ?, ?)`;
+    await db.run(insert, [id, messageId, privateKey, publicKey, keyId]);
 };
 
 export const createMAMChannel = async ({ id, root, seed, mode, sideKey, security, start, count = 1, nextCount = 1, index = 0, nextRoot }) => {
@@ -62,6 +70,10 @@ export const createCredential = async ({ id, credential }) => {
     await db.run('INSERT INTO credentials (id, credential) VALUES (?, ?)', [id, credential]);
 };
 
+export const createTrustedDIDAuthentication = async ({ id }) => {
+    await db.run('INSERT INTO trustedDIDAuthentication (id) VALUES (?)', [id]);
+};
+
 export const writeData = async (table, data) => {
     try {
         console.log('writeData', table, data);
@@ -69,14 +81,20 @@ export const writeData = async (table, data) => {
             case 'user':
                 await createUser(data);
                 return;
-            case 'wallet':
-                await createWallet(data);
+            // case 'wallet':
+            //     await createWallet(data);
+            //     return;
+            case 'walletC2':
+                await createWalletC2(data);
                 return;
             case 'data':
                 await createSensorData(data);
                 return;
             case 'did':
                 await createDID(data);
+                return;
+            case 'trustedDIDAuthentication':
+                await createTrustedDIDAuthentication(data);
                 return;
             case 'paymentQueue':
                 await createPaymentQueue(data);
@@ -136,10 +154,16 @@ export const readAllData = async (table) => {
 export const removeData = (table) => {
     return new Promise(async resolve => {
         await db.run(`DELETE FROM ${table}`);
-        resolve();
+        resolve(true);
     });
 };
 
+export const removeDataWhere = (table, whereStatement) => {
+    return new Promise(async resolve => {
+        await db.run(`DELETE FROM ${table} WHERE ${whereStatement}`);
+        resolve(true);
+    });
+};
 /*
 Example write operation:
 

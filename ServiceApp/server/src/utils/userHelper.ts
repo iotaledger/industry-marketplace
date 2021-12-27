@@ -1,16 +1,19 @@
 import axios from 'axios';
 import yargs from 'yargs';
-import { faucet, faucetAmount } from '../config.json';
-import { createNewUser } from './credentialHelper';
-import { writeData } from './databaseHelper';
-import { generateNewWallet, getBalance } from './walletHelper.js';
+// import { faucet, faucetAmount, faucetC2 } from '../config.json';
+import { faucetC2 } from '../config.json';
+import { createNewUserC2 } from './credentialHelper';
+import { writeData, readData } from './databaseHelper';
+// import { generateNewWallet, getBalance, generateNewAccount, getBalanceC2 } from './walletHelper.js';
+import { getBalance, generateNewAccount, fundWallet } from './walletHelper.js';
+import crypto from 'crypto';
 
 const createUser = async () => {
     try {
         const { name, role = '', location = '' } = argv;	
         if (name && (role === 'SR' || role === 'SP')) {	
             console.log('Creating user...');
-            createNewUser(name, role, location);	
+            createNewUserC2(name, role, location);	
         } else {	
             console.log('Params are missing or wrong');	
             return;	
@@ -20,14 +23,30 @@ const createUser = async () => {
     }
 };
 
+// const createNewWallet = async () => {
+//     console.log('Creating wallet...');
+//     const wallet = generateNewWallet();
+//     const response = await axios.get(`${faucet}?address=${wallet.address}&amount=${faucetAmount}`);
+//     if (response.data.success) {
+//         const balance = await getBalance(wallet.address);
+//         await writeData('wallet', { ...wallet, balance });
+//     }
+// };
+
 const createNewWallet = async () => {
     console.log('Creating wallet...');
-    const wallet = generateNewWallet();
-    const response = await axios.get(`${faucet}?address=${wallet.address}&amount=${faucetAmount}`);
-    if (response.data.success) {
-        const balance = await getBalance(wallet.address);
-        await writeData('wallet', { ...wallet, balance });
-    }
+    const alias =  crypto.randomBytes(20).toString('hex');
+    const wallet = await generateNewAccount(alias);
+    await writeData('walletC2', wallet);
+    await fundWallet(wallet.id);
+    // const response = await axios.get(`${faucetC2}?address=${wallet.address}`);
+    // if (response && response.status === 200) {
+    //     // wait ~9sec for balance to be available to be read and written to db
+    //     // I think this is an ugly fix so it's temporary?
+    //     await new Promise(r => setTimeout(r, 9000));
+    //     const balance = await getBalance(wallet.id);
+    //     await writeData('walletC2', { ...wallet, balance });
+    // }
 };
 
 const argv = yargs

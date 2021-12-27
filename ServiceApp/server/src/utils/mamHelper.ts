@@ -1,14 +1,11 @@
-import { composeAPI, LoadBalancerSettings } from '@iota/client-load-balancer';
 import { asciiToTrytes, trytesToAscii } from '@iota/converter';
 import {
     createChannel,
     createMessage,
-    IMamMessage,
     mamAttach,
     mamFetchAll
 } from '@iota/mam.js';
-import { depth, minWeightMagnitude, security } from '../config.json';
-import { ServiceFactory } from '../factories/serviceFactory';
+import { provider, security } from '../config.json';
 import { readData, writeData } from './databaseHelper';
 import { generateSeed } from './iotaHelper';
 
@@ -56,19 +53,16 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
         const message = createMessage(mamState, trytes);
 
         // Attach the payload
-        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const api = composeAPI(loadBalancerSettings);
-
-        const bundle = await mamAttach(api, message, depth, minWeightMagnitude, tag);
+        const bundle = await mamAttach(provider, message, tag);
         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
       
-        if (bundle && bundle.length && bundle[0].hash) {
+        if (bundle && bundle.messageId) {
             // Check if the message was attached
-            await checkAttachedMessage(api, root, secretKey, mode);
+            await checkAttachedMessage(root, secretKey, mode);
 
             // Save new mamState
             await writeData('mam', { ...mamState, id, root });
-            return { hash: bundle[0].hash, root, secretKey };
+            return { hash: bundle.messageId, root, secretKey };
         }
         return null;
     } catch (error) {
@@ -77,11 +71,11 @@ export const publish = async (id, packet, mode = 'restricted', tag = 'SEMARKETMA
     }
 };
 
-const checkAttachedMessage = async (api, root, secretKey, mode) => {
+const checkAttachedMessage = async (root, secretKey, mode) => {
     let retries = 0;
 
     while (retries++ < 10) {
-        const fetched = await mamFetchAll(api, root, MAM_MODE[mode], secretKey, 20);
+        const fetched = await mamFetchAll(provider, root, MAM_MODE[mode], secretKey, 20);
         const result = [];
         
         if (fetched && fetched.length > 0) {
@@ -97,47 +91,42 @@ const checkAttachedMessage = async (api, root, secretKey, mode) => {
     }
 };
 
-// Publish to tangle
-export const publishDID = async (publicKey, privateKey) => {
-    try {
-        let mamState;
-        const mamStateFromDB: IMamState = await readData('did');
-        if (mamStateFromDB) {
-            mamState = mamStateFromDB;
-        }
+// //TODO: Both methods seem to be unused, also before remove-did-pr
+// // Publish to tangle
+// export const publishDID = async (publicKey, privateKey) => {
+//     try {
+//         let mamState;
+//         const mamStateFromDB: IMamState = await readData('did');
+//         if (mamStateFromDB) {
+//             mamState = mamStateFromDB;
+//         }
 
-        const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
+//         const message: IMamMessage = createMessage(mamState, asciiToTrytes(publicKey));
 
-        // Attach the payload
-        const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-        const api = composeAPI(loadBalancerSettings);
-
-        const bundle = await mamAttach(api, message, depth, minWeightMagnitude);
-        const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
+//         // Attach the payload
+//         const bundle = await mamAttach(provider, message);
+//         const root = mamStateFromDB && mamStateFromDB.root ? mamStateFromDB.root : message.root;
         
-        if (bundle && bundle.length && bundle[0].hash) {
-            // Save new mamState
-            await writeData('did', { ...mamState, root, privateKey });
-            return message.root;
-        }
-        return null;
-    } catch (error) {
-        console.log('MAM publishDID Error', error);
-        throw new Error(error);
-    }
-};
+//         if (bundle && bundle.messageId) {
+//             // Save new mamState
+//             await writeData('did', { ...mamState, root, privateKey });
+//             return message.root;
+//         }
+//         return null;
+//     } catch (error) {
+//         console.log('MAM publishDID Error', error);
+//         throw new Error(error);
+//     }
+// };
 
-export const fetchDID = async root => {
-    const loadBalancerSettings = ServiceFactory.get<LoadBalancerSettings>('load-balancer-settings');
-    const api = composeAPI(loadBalancerSettings);
-
-    const fetched = await mamFetchAll(api, root, 'public', null, 20);
-    const result = [];
+// export const fetchDID = async root => {
+//     const fetched = await mamFetchAll(provider, root, 'public', null, 20);
+//     const result = [];
     
-    if (fetched && fetched.length > 0) {
-        for (let i = 0; i < fetched.length; i++) {
-            result.push(trytesToAscii(fetched[i].message));
-        }
-    }
-    return result;
-};
+//     if (fetched && fetched.length > 0) {
+//         for (let i = 0; i < fetched.length; i++) {
+//             result.push(trytesToAscii(fetched[i].message));
+//         }
+//     }
+//     return result;
+// };

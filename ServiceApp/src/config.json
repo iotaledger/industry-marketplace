@@ -7,13 +7,11 @@
   "sensorDataDomain": "https://us-central1-datamarket-617e1.cloudfunctions.net/stream?",
   "eClassCatalog": "https://www.eclasscontent.com/index.php?action=cc2prdet&language=en&version=11.0&pridatt=",
   "datePickerFormat": "dd-MM-yyyy HH:mm",
-  "providers": [
-    "https://altnodes.devnet.iota.org:443",
-    "https://nodes.devnet.iota.org:443"
-  ],
+  "providersC2": [
+    "https://api.lb-0.h.chrysalis-devnet.iota.cafe/",
+    "https://api.lb-1.h.chrysalis-devnet.iota.cafe/"
+],
   "security": 2,
   "depth": 3,
-  "minWeightMagnitude": 9,
-  "onlineNodeConfig": false,
-  "onlineNodeConfigURL": "https://us-central1-semarket-iota.cloudfunctions.net/getNodeSettings"
+  "minWeightMagnitude": 9
 }
